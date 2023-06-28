@@ -1,1 +1,9 @@
-<p>home works!</p>
+<form>
+    <label>Password :</label>
+    <input type="password" name="password" [(ngModel)]="password" />
+    <label>Plaintext :</label>
+    <input type="text" name="plaintext" [(ngModel)]="plaintext" />
+    <button type="submit" (click)="login()">Encrypt</button>
+</form>
+<p>Encrypted : {{encrypted}}</p>
+<p>salt : {{salt}}</p>
