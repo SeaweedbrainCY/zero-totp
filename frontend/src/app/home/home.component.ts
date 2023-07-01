@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {Buffer} from 'buffer';
+import { timeLog } from 'console';
 
 
 @Component({
@@ -7,11 +8,29 @@ import {Buffer} from 'buffer';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+
+export class HomeComponent implements OnInit {
   password: string = "";
   encrypted = "";
   plaintext = "";
   decrypted="";
+  totp = require('totp-generator');
+  code = "";
+  duration=0;
+
+  ngOnInit(){
+    // each second :
+    setInterval(()=> { this.generateCode() }, 500);
+
+
+  }
+
+  generateCode(){
+    console.log("generate code")
+       this.duration = 30 - Math.floor(Date.now() / 1000 % 30);
+      this.code=this.totp("JBSWY3DPEHPK3PXP");
+  }
+
   
 
  login(){
