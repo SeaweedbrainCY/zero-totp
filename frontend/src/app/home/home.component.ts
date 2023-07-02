@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {Crypto} from '../common/Crypto/crypto';
+import {User} from '../common/User/user';
+import {UserService} from '../common/User/user.service';
 
 
 @Component({
@@ -8,7 +10,12 @@ import {Crypto} from '../common/Crypto/crypto';
   styleUrls: ['./home.component.css']
 })
 
+
+
 export class HomeComponent implements OnInit {
+
+  user:User;
+
   password: string = "";
   encrypted = "";
   plaintext = "";
@@ -17,11 +24,18 @@ export class HomeComponent implements OnInit {
   code = "";
   duration=0;
 
+  constructor(private userService:UserService){
+    this.user = userService.getUser();
+  }
+
   ngOnInit(){
     // each second :
     setInterval(()=> { this.generateCode() }, 500);
-
-
+    if (this.user == null) {
+      this.user = new User();
+      console.log("user is null")
+    }
+   console.log(this.user.id)
   }
 
   generateCode(){
