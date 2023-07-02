@@ -1,12 +1,6 @@
 export class User {
-    id:number;
-    key:CryptoKey;
-    salt:string;
+    id:number| null =null;;
+    key:CryptoKey| null =null;;
+    salt:string| null =null;;
     vault:[string:string] | null =null;
-
-    constructor(id:number, key:CryptoKey, salt:string){
-        this.id = id;
-        this.key = key;
-        this.salt = salt;
-    }
 }
