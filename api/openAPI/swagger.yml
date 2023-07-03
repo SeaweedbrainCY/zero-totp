@@ -1,0 +1,21 @@
+
+openapi: 3.0.3
+info:
+  title: zero-totp API
+  description: API for the zero-totp application
+  version: "1.0"
+servers:
+  - url: http://localhost:8000
+    description: local API server
+paths:
+  /vault:
+    get:
+      operationId: controllers.get_vault
+      tags:
+        - Item
+      summary: Returns a list of items.
+      description: Returns a list of items.
+      responses:
+        "200": # status code
+          description: Return the entire list of items.
+          
