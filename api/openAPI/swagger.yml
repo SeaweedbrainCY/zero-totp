@@ -5,17 +5,39 @@ info:
   description: API for the zero-totp application
   version: "1.0"
 servers:
-  - url: http://localhost:8000
+  - url: http://127.0.0.1:8080
     description: local API server
 paths:
   /vault:
-    get:
-      operationId: controllers.get_vault
+    post:
+      operationId: controllers.signup
       tags:
-        - Item
-      summary: Returns a list of items.
-      description: Returns a list of items.
+        - User
+      summary: Sign a user up to the application
+      parameters:
+        - name: email
+          in: query
+          description: The email of the user
+          required: true
+          schema:
+            type: string
+        - name : username
+          in: query
+          description: The username of the user
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password of the user
+          required: true
+          schema:
+            type: string
       responses:
-        "200": # status code
-          description: Return the entire list of items.
-          
+        "201": # status code
+          description: Sign up successful
+        "400":
+          description: Missing required parameters
+        "409":
+          description: User already exists
+        
