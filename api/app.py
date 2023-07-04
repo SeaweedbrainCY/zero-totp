@@ -1,8 +1,7 @@
 import connexion
 from flask_cors import CORS
 import environment as env
-from flask_sqlalchemy import SQLAlchemy
-
+from database.db import db
 
 app_instance = connexion.App(__name__, specification_dir="./openAPI/")
 app_instance.add_api("swagger.yml")
@@ -15,7 +14,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = env.db_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PROPAGATE_EXCEPTIONS"] = True
 
-db = SQLAlchemy()
+
 
 
 @app.before_first_request
