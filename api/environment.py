@@ -9,3 +9,8 @@ db_uri = os.environ.get('DATABASE_URI')
 if db_uri == None:
     logging.error("DATABASE_URI environment variable not set. Please set it to a valid database URI. Aborting...")
     raise Exception("DATABASE_URI environment variable not set. Please set it to a valid database URI.")
+
+environment = "production" if os.environ.get('ENVIRONMENT') == "production" else "development"
+if environment == "development":
+    logging.basicConfig(level=logging.DEBUG)
+    logging.debug("Environment set to development")

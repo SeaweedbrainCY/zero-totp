@@ -3,16 +3,22 @@ import json
 from database.dbFunctions import User as UserDB
 from Crypto.hash_func import Bcrypt
 import logging
+import environment as env
+
+if env.environment == "development":
+    logging.getLogger().setLevel(logging.INFO)
+
 
 # POST /signup
 def signup():
-    dataJSON = request.get_json()
+    dataJSON = json.dumps(request.get_json())
     try:
-        data = json.load(dataJSON)
+        data = json.loads(dataJSON)
         data["username"] = data["username"].strip()
         data["password"] = data["password"].strip()
         data["email"] = data["email"].strip()
-    except:
+    except Exception as e:
+        logging.info(e)
         return {"message": "Invalid request"}, 400
     
     if not data["username"] or not data["password"] or not data["email"]:

@@ -14,25 +14,19 @@ paths:
       tags:
         - User
       summary: Sign a user up to the application
-      parameters:
-        - name: email
-          in: query
-          description: The email of the user
-          required: true
-          schema:
-            type: string
-        - name : username
-          in: query
-          description: The username of the user
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: The password of the user
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
       responses:
         "201": # status code
           description: Sign up successful
