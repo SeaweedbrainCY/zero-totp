@@ -35,4 +35,4 @@ The code is under GPL-3.0 Licence
 
 Images and icons are free of use, but please, don't use them for commercial purpose.
 
-The Zero-TOTP projet is a project of Nathan Stchepinsky © 2023 copyright. All rights reserved.
+Zero-TOTP is a project of Nathan Stchepinsky © 2023 copyright. All rights reserved.
