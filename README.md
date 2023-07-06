@@ -1,4 +1,10 @@
 # Zero-TOTP
+[![CodeQL](https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/github-code-scanning/codeql)
+![GitHub](https://img.shields.io/github/license/seaweedbraincy/zero-totp)
+
+**Contributors :**
+
+![GitHub Contributors Image](https://contrib.rocks/image?repo=seaweedbraincy/zero-totp)
 
 ## The project 
 Zero-totp is a TOTP client project available as a **web app**, an **iOS app** and a **CLI app**, where you can **safely store all your TOTP codes** and retrieve easly retrieve them anywhere, anytime.
