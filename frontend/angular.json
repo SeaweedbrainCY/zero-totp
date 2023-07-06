@@ -25,9 +25,12 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/animate.css/animate.min.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/bulma-toast/dist/bulma-toast.min.js"
+            ]
           },
           "configurations": {
             "production": {
