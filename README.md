@@ -1,13 +1,13 @@
-# totp_webapp
+# Zero-TOTP
 
-## Project 
+## The project 
 Zero-totp is a TOTP client project available as a **web app**, an **iOS app** and a **CLI app**, where you can **safely store all your TOTP codes** and retrieve easly retrieve them anywhere, anytime.
 
 It's a **100% open source project**, based on a **zero-knowledge encryption**, which means that nobody, even your the hosting platform, can read your data, except you and yourself. 
 
 You are the one and only able to decrypt these information, thanks to your strong and secure `passphrase` ;) 
 
-    *Zero Knowledge Encryption (ZKE) refers to a robust security measure that ensures the utmost protection of your data. With ZKE, your information is encrypted locally on your device before being uploaded to the cloud, and only you hold the encryption keys, guaranteeing that no one, including the service provider, can access your data without your explicit permission. This empowers you with complete control over your sensitive information while enjoying the convenience and flexibility of cloud storage.*
+*Zero Knowledge Encryption (ZKE) refers to a robust security measure that ensures the utmost protection of your data. With ZKE, your information is encrypted locally on your device before being uploaded to the cloud, and only you hold the encryption keys, guaranteeing that no one, including the service provider, can access your data without your explicit permission. This empowers you with complete control over your sensitive information while enjoying the convenience and flexibility of cloud storage.*
 
 ## Secure and reliable
 
