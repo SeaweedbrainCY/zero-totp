@@ -11,7 +11,7 @@
     <div class="has-text-centered	is-full is-flex is-flex-direction-column is-justify-content-center">
       <div class="field is-full is-flex is-justify-content-center">
         <p class="control has-icons-left has-icons-right">
-          <input class="input" type="text" placeholder="Username"/>
+       <input class="input" type="text" placeholder="Username" name="username" [(ngModel)]="username"/>
           <span class="icon is-small is-left">
             <fa-icon [icon]="faUser"></fa-icon>
           </span>
@@ -23,33 +23,42 @@
       </div>
       <div class="field is-full is-flex is-justify-content-center">
         <p class="control has-icons-left has-icons-right">
-          <input class="input" type="email" placeholder="Email"/>
+           <input class="input" type="email" placeholder="Email" name="email" [(ngModel)]="email"/>
           <span class="icon is-small is-left">
             <fa-icon [icon]="faEnvelope"></fa-icon>
           </span>
           <span class="icon is-small is-right">
-            <fa-icon [icon]="faCheck"></fa-icon>
+            <fa-icon [icon]="faCheck" *ngIf="!emailHasError"></fa-icon>
+            <fa-icon [icon]="faXmark" *ngIf="emailHasError"></fa-icon>
           </span>
         </p>
        
       </div>
       <div class="field is-full is-flex is-justify-content-center">
         <p class="control has-icons-left has-icons-right">
-          <input class="input" type="password" placeholder="Password">
+       <input class="input" type="password" placeholder="Password" name="password" [(ngModel)]="password" >
           <span class="icon is-small is-left">
             <fa-icon [icon]="faLock"></fa-icon>
           </span>
           <span class="icon is-small is-right">
-            <fa-icon [icon]="faCheck"></fa-icon>
+            <fa-icon [icon]="faCheck" *ngIf="!passwordHasError"></fa-icon>
+            <fa-icon [icon]="faXmark" *ngIf="passwordHasError"></fa-icon>
           </span>
         </p>
       </div>
       <div class="field">
         <div class="control">
           <label class="checkbox">
-            <input type="checkbox">
+            <input type="checkbox" name="terms" [(ngModel)]="terms">
             I agree to the <a href="#">terms and conditions</a>
           </label>
+        </div>
+        <div class="column " *ngIf="emailHasError || passwordHasError">
+          <div class="notification is-primary is-light is-half has-text-left">
+            <ul>
+              <li *ngFor="let error of errors"><span *ngIf="error!=''"><fa-icon [icon]="faXmark" ></fa-icon> <strong>{{error}}</strong></span></li>
+            </ul>
+        </div>
         </div>
       </div>
       </div>
@@ -57,7 +66,7 @@
       
       <div class="field">
         <div class="control">
-          <button class="button is-info is-medium ">Start my zero-trip 
+          <button class="button is-info is-medium " (click)="signup()" [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading">Start my zero-trip 
             </button>
         </div>
       </div>
