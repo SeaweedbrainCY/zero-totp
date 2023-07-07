@@ -1,0 +1,46 @@
+<section class="hero  is-fullheight-with-navbar ">
+    <div class="hero-body is-flex is-flex-direction-column	is-fullheight">
+      <div class="has-text-centered	is-full is-flex is-justify-content-center p-6">
+        <p><span class="title is-1 is-full has-text-centered has-text-primary has-text-weight-bold">
+            It's time to open your vault !</span><br />
+  
+          <span class="has-text-weight-bold has-text-grey">This time, you do the magic 🪄</span>
+  
+        </p>
+      </div>
+      <div class="has-text-centered	is-full is-flex is-flex-direction-column is-justify-content-center">
+        <div class="field is-full is-flex is-justify-content-center">
+          <p class="control has-icons-left has-icons-right">
+             <input class="input" type="email" placeholder="Email" name="email" [(ngModel)]="email"/>
+            <span class="icon is-small is-left">
+              <fa-icon [icon]="faEnvelope"></fa-icon>
+            </span>
+            <span class="icon is-small is-right">
+              <fa-icon [icon]="faCheck"></fa-icon>
+            </span>
+          </p>
+         
+        </div>
+        <div class="field is-full is-flex is-justify-content-center">
+          <p class="control has-icons-left has-icons-right">
+         <input class="input" type="password" placeholder="Password" name="password" [(ngModel)]="password" >
+            <span class="icon is-small is-left">
+              <fa-icon [icon]="faLock"></fa-icon>
+            </span>
+            <span class="icon is-small is-right">
+              <fa-icon [icon]="faCheck"></fa-icon>
+            </span>
+          </p>
+        </div>
+        </div>
+        <div class="has-text-centered	p-6">
+        
+        <div class="field">
+          <div class="control">
+            <button class="button is-primary is-medium " (click)="login()" [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading">Give me my zero-vault
+              </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
