@@ -7,6 +7,8 @@ info:
 servers:
   - url: http://127.0.0.1:8080
     description: local API server
+security:
+  - JWTAuth: []
 paths:
   /signup:
     post:
@@ -14,6 +16,7 @@ paths:
       tags:
         - User
       summary: Sign a user up to the application
+      security: []
       requestBody:
         required: true
         content: 
@@ -34,4 +37,52 @@ paths:
           description: Missing required parameters
         "409":
           description: User already exists
-        
+  /login:
+    post:
+      operationId: controllers.login
+      tags:
+        - User
+      summary: Log a user in the application
+      security: []
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200": # status code
+          description: successful login. The JWT is returned in the response body
+        "400":
+          description: Missing required parameters
+        "403":
+          description: Authentication failed
+  /vault:
+    get:
+      operationId: controllers.getVault
+      tags:
+        - Vault
+      summary: Get the user's vault
+      responses:
+        "200": # status code
+          description: Return the user's vault
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+
+components:
+  securitySchemes:
+    JWTAuth:
+      type: apiKey
+      in: cookie
+      name: api-key
+      x-apikeyInfoFunc: Crypto.jwt_func.verify_jwt
+

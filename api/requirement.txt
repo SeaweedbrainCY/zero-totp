@@ -6,6 +6,7 @@ charset-normalizer==3.1.0
 click==8.1.3
 clickclick==20.10.2
 connexion==2.14.2
+dparse==0.6.3
 Flask==2.2.5
 Flask-Cors==4.0.0
 Flask-SQLAlchemy==3.0.5
@@ -16,10 +17,15 @@ Jinja2==3.1.2
 jsonschema==4.17.3
 MarkupSafe==2.1.3
 mysqlclient==2.2.0
-packaging==23.1
+packaging==21.3
+PyJWT==2.7.0
+pyparsing==3.1.0
 pyrsistent==0.19.3
 PyYAML==6.0
 requests==2.31.0
+ruamel.yaml==0.17.32
+ruamel.yaml.clib==0.2.7
+safety==2.3.5
 SQLAlchemy==2.0.17
 swagger-ui-bundle==0.0.9
 typing_extensions==4.7.1

@@ -1,4 +1,5 @@
 import bcrypt
+import logging
 
 class Bcrypt():
     password:str
@@ -14,4 +15,9 @@ class Bcrypt():
         return bcrypt.hashpw(self.password.encode("utf-8"), self.salt)
     
     def checkpw(self, hashedpw):
-        return bcrypt.checkpw(self.password.encode("utf-8"), hashedpw.encode("utf-8"))
+        try :
+             isOk = bcrypt.checkpw(self.password.encode("utf-8"), hashedpw.encode("utf-8"))
+             return isOk
+        except Exception as e:
+            logging.info("Rejected password : " + str(e))
+            return False
