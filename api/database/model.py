@@ -6,3 +6,4 @@ class User(db.Model):
     mail = db.Column(db.String(256), nullable=False)
     password = db.Column(db.String(256), nullable=False)
     username = db.Column(db.String(256), nullable=False)
+    derivedKeySalt = db.Column(db.String(256), nullable=False)

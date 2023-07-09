@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, Response
 import connexion
 import json
 from database.dbFunctions import User as UserDB
@@ -9,6 +9,9 @@ import random
 import string
 from flask_cors import CORS
 import Crypto.jwt_func as jwt_auth
+import os
+import base64
+
 
 
 if env.environment == "development":
@@ -45,7 +48,8 @@ def signup():
         logging.warning("Uknown error occured while hashing password")
         return {"message": "Unknown error while hashing your password"}, 500
     
-    user = userDB.create(data["username"], data["email"], hashedpw)
+    randomSalt = base64.b64encode(os.urandom(16)).decode('utf-8')
+    user = userDB.create(data["username"], data["email"], hashedpw, randomSalt)
     if user :
         return {"message": "User created"}, 201
     else :
@@ -79,7 +83,9 @@ def login():
     if not checked:
         return {"message": "Invalid credentials"}, 403
     jwt_token = jwt_auth.generate_jwt(user.id)
-    return {"message": "Logged in", "jwt": jwt_token}, 200
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt}))
+    response.set_cookie("jwt", jwt_token, httponly=True, secure=True, samesite="Lax")
+    return response
     
 
 
