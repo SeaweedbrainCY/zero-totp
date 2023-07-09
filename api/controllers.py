@@ -103,7 +103,7 @@ def login():
         return {"message": "Invalid credentials"}, 403
     jwt_token = jwt_auth.generate_jwt(user.id)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt}))
-    response.set_cookie("jwt", jwt_token, httponly=True, secure=True, samesite="Lax")
+    response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax")
     return response
     
 
@@ -117,3 +117,21 @@ def getVault():
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
+
+#GET /zke_key
+def getZKEKey():
+    try:
+        user_id = connexion.context.get("user")
+        zke_db = ZKE_DB()
+        try:
+            zke_key = zke_db.getByUserId(user_id)
+            if zke_key:
+                return {"zke_encrypted_key": zke_key.ZKE_key}, 200
+            else:
+                return {"message": "No ZKE key found for this user"}, 404
+        except Exception as e:
+            logging.warning("Unknown error while fetching ZKE key of user" + str(user_id) + " : " + str(e))
+            return {"message": "Unknown error while fetching ZKE key"}, 500
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400

@@ -8,3 +8,6 @@ class ZKE:
         db.session.add(zke_keys)
         db.session.commit()
         return zke_keys
+    
+    def getByUserId(self, user_id):
+        return db.session.query(ZKEModel).filter_by(user_id=user_id).first()

@@ -81,6 +81,20 @@ paths:
         "403":
           description: Access denied
 
+  /zke_key:
+    get:
+      operationId: controllers.getZKEKey
+      tags:
+        - Vault
+      summary: Return the user's ZKE key, that were encrypted by the user
+      responses:
+        "200": # status code
+          description: Return the user's ZKE key
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+
 components:
   securitySchemes:
     JWTAuth:
