@@ -44,14 +44,15 @@ def generate_jwt(user_id):
         raise e
 
 
-def generate_storage_jwt(uuid):
+def generate_storage_jwt(uuid, user_id, expirationDate):
     try:
         payload = {
             "iss": "https://api.zero-totp.fr",
             "sub": uuid,
             "iat": datetime.datetime.utcnow(),
             "nbf": datetime.datetime.utcnow(),
-            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+            "exp": expirationDate,
+            "scope": user_id
         }
         return jwt.encode(payload, env.jwt_secret, algorithm="HS256")
     except Exception as e:

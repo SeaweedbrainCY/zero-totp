@@ -108,7 +108,8 @@ def login():
     storageKeysDb = StorageKeysDB()
     rand_uuid = str(uuid.uuid4())
     storage_key = base64.b64encode(os.urandom(16)).decode('utf-8')
-    expiration =  str((datetime.datetime.utcnow() + datetime.timedelta(hours=1)).timestamp())
+    expirationDate = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+    expiration =  str(expirationDate.timestamp())
     try:
         storageKeysDb.create( rand_uuid, storage_key, expiration)
     except Exception as e:
@@ -119,7 +120,7 @@ def login():
     jwt_token = jwt_auth.generate_jwt(user.id)
 
     try :
-        storage_jwt = jwt_auth.generate_jwt(rand_uuid)
+        storage_jwt = jwt_auth.generate_jwt(rand_uuid, user.id,expirationDate)
     except Exception as e:
         logging.error("Unknown error while generating storage jwt" + str(e))
         return {"message": "Unknown error while generating storage jwt"}, 500
