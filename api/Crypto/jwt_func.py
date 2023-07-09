@@ -42,3 +42,18 @@ def generate_jwt(user_id):
     except Exception as e:
         logging.warning("Error while generating JWT : " + str(e))
         raise e
+
+
+def generate_storage_jwt(uuid):
+    try:
+        payload = {
+            "iss": "https://api.zero-totp.fr",
+            "sub": uuid,
+            "iat": datetime.datetime.utcnow(),
+            "nbf": datetime.datetime.utcnow(),
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+        }
+        return jwt.encode(payload, env.jwt_secret, algorithm="HS256")
+    except Exception as e:
+        logging.warning("Error while generating JWT : " + str(e))
+        raise e
