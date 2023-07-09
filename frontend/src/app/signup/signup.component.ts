@@ -19,6 +19,7 @@ export class SignupComponent implements OnInit {
   username="";
   email="";
   password="";
+  confirmPassword="";
   terms=false;
   isLoading=false;
   declare bulmaToast : any;
@@ -55,6 +56,10 @@ export class SignupComponent implements OnInit {
     }
     if(!number.test(this.password)){
       this.errors.push("Your password must contain at least one number");
+      this.passwordHasError = true;
+    }
+    if(this.password != this.confirmPassword){
+      this.errors.push("Your passwords do not match");
       this.passwordHasError = true;
     }
   }
@@ -116,6 +121,9 @@ export class SignupComponent implements OnInit {
     (error) => {
       console.log(error);
       this.isLoading=false;
+      if(error.error.message == undefined){
+        error.error.message = "Something went wrong. Please try again later";
+      }
       superToast({
         message: "Error : "+ error.error.message,
         type: "is-danger",

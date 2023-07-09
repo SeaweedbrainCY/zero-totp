@@ -46,6 +46,18 @@
           </span>
         </p>
       </div>
+      <div class="field is-full is-flex is-justify-content-center">
+        <p class="control has-icons-left has-icons-right">
+       <input class="input" type="password" placeholder="Confirm password" name="confirmPassword" [(ngModel)]="confirmPassword" >
+          <span class="icon is-small is-left">
+            <fa-icon [icon]="faLock"></fa-icon>
+          </span>
+          <span class="icon is-small is-right">
+            <fa-icon [icon]="faCheck" *ngIf="!passwordHasError"></fa-icon>
+            <fa-icon [icon]="faXmark" *ngIf="passwordHasError"></fa-icon>
+          </span>
+        </p>
+      </div>
       <div class="field">
         <div class="control">
           <label class="checkbox">
