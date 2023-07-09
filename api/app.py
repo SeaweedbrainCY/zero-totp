@@ -8,12 +8,11 @@ app_instance.add_api("swagger.yml")
 
 app = app_instance.app
 
-CORS(app, vary_header=True, origins=[env.frontend_domain])
+CORS(app, vary_header=True, origins=env.frontend_domain)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = env.db_uri
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PROPAGATE_EXCEPTIONS"] = True
-app.config
 
 
 

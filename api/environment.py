@@ -10,9 +10,9 @@ if environment == "development":
     logging.basicConfig(level=logging.DEBUG)
     logging.debug("Environment set to development")
     
-    frontend_domain = 'https://127.0.0.1:4200'
+    frontend_domain = ['http://127.0.0.1:4200', 'http://localhost:4200']
 else:
-    frontend_domain="https://zero-totp.fr"
+    frontend_domain=["https://zero-totp.fr"]
 
 
 
