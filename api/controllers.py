@@ -3,6 +3,7 @@ import connexion
 import json
 from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
+from database.storage_key_repo import StorageKeysRepo as StorageKeysDB
 from Crypto.hash_func import Bcrypt
 import logging
 import environment as env
@@ -12,6 +13,8 @@ from flask_cors import CORS
 import Crypto.jwt_func as jwt_auth
 import os
 import base64
+import uuid
+import datetime
 
 
 
@@ -101,9 +104,28 @@ def login():
     checked = bcrypt.checkpw(user.password)
     if not checked:
         return {"message": "Invalid credentials"}, 403
+        
+    storageKeysDb = StorageKeysDB()
+    rand_uuid = str(uuid.uuid4())
+    storage_key = base64.b64encode(os.urandom(16)).decode('utf-8')
+    expiration =  str((datetime.datetime.utcnow() + datetime.timedelta(hours=1)).timestamp())
+    try:
+        storageKeysDb.create( rand_uuid, storage_key, expiration)
+    except Exception as e:
+        logging.error("Unknown error while storing user storage keys" + str(e))
+        return {"message": "Unknown error while registering user encrypted keys"}, 500
+    
+
     jwt_token = jwt_auth.generate_jwt(user.id)
+
+    try :
+        storage_jwt = jwt_auth.generate_jwt(rand_uuid)
+    except Exception as e:
+        logging.error("Unknown error while generating storage jwt" + str(e))
+        return {"message": "Unknown error while generating storage jwt"}, 500
     response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt}))
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax")
+    response.set_cookie("storage-jwt", storage_jwt, httponly=True, secure=True, samesite="Lax")
     return response
     
 
