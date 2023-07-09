@@ -11,6 +11,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { HttpClientModule } from '@angular/common/http';
 import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
+import { VaultComponent } from './vault/vault.component';
+import { UserService } from './common/User/user.service';
 
 
 @NgModule({
@@ -19,7 +21,8 @@ import { LoginComponent } from './login/login.component';
     HomeComponent,
     SignupComponent,
     NavbarComponent,
-    LoginComponent
+    LoginComponent,
+    VaultComponent
   ],
   imports: [
     BrowserModule,
@@ -28,7 +31,7 @@ import { LoginComponent } from './login/login.component';
     FontAwesomeModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [UserService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
