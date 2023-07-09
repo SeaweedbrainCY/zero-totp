@@ -14,3 +14,10 @@ class ZKE_encryption_key(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     ZKE_key = db.Column(db.String(256), nullable=False)
+
+
+class Storage_Keys(db.Model):
+    __tablename__ = "storage_keys"
+    uuid = db.Column(db.String(256), primary_key=True, nullable=False)
+    storage_key = db.Column(db.String(256), nullable=False)
+    expiration = db.Column(db.String(256), nullable=False)
