@@ -30,6 +30,9 @@ paths:
                   type: string
                 password:
                   type: string
+                ZKE_key:
+                  type: string
+                  description: The user's ZKE key ENCRYPTED by the user
       responses:
         "201": # status code
           description: Sign up successful

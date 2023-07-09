@@ -11,3 +11,8 @@ class User:
         db.session.add(user)
         db.session.commit()
         return user
+    
+    def delete(self, user_id):
+        db.session.query(UserModel).filter_by(id=user_id).delete()
+        db.session.commit()
+        return True

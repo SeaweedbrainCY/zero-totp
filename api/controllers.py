@@ -1,7 +1,8 @@
 from flask import request, Response
 import connexion
 import json
-from database.dbFunctions import User as UserDB
+from database.user_repo import User as UserDB
+from database.zke_repo import ZKE as ZKE_DB
 from Crypto.hash_func import Bcrypt
 import logging
 import environment as env
@@ -26,6 +27,7 @@ def signup():
         data["username"] = data["username"].strip()
         data["password"] = data["password"].strip()
         data["email"] = data["email"].strip()
+        data["ZKE_key"] = data["ZKE_key"].strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
@@ -44,15 +46,32 @@ def signup():
     except ValueError as e:
         logging.debug(e)
         return {"message": "Password is too long"}, 400
-    except :
-        logging.warning("Uknown error occured while hashing password")
+    except Exception as e:
+        logging.warning("Uknown error occured while hashing password" + str(e))
         return {"message": "Unknown error while hashing your password"}, 500
     
     randomSalt = base64.b64encode(os.urandom(16)).decode('utf-8')
-    user = userDB.create(data["username"], data["email"], hashedpw, randomSalt)
+    try:
+        user = userDB.create(data["username"], data["email"], hashedpw, randomSalt)
+    except Exception as e:
+        logging.error("Unknown error while creating user" + str(e))
+        return {"message": "Unknown error while creating user"}, 500
     if user :
-        return {"message": "User created"}, 201
+        try:
+            zke_db = ZKE_DB()
+            zke_key = zke_db.create(user.id, data["ZKE_key"])
+        except Exception as e:
+            userDB.delete(user.id)
+            logging.error("Unknown error while storing user ZKE keys" + str(e))
+            return {"message": "Unknown error while registering user encrypted keys"}, 500
+        if zke_key:
+            return {"message": "User created"}, 201
+        else :
+
+            logging.error("Unknown error while storing user ZKE keys" + str(data["username"]))
+            return {"message": "Unknown error while registering user encrypted keys"}, 500
     else :
+        logging.error("Unknown error while creating user" + str(data["username"]))
         return {"message": "Unknown error while creating user"}, 500
 
 
