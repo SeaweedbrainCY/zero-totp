@@ -9,5 +9,5 @@ class StorageKeysRepo:
         db.session.commit()
         return storage_key
     
-    def getByUuid(self, uuid):
+    def getByUUID(self, uuid):
         return db.session.query(StorageKeysModel).filter_by(uuid=uuid).first()

@@ -81,19 +81,34 @@ paths:
         "403":
           description: Access denied
 
-  /zke_key:
+  /zke_encrypted_key:
     get:
-      operationId: controllers.getZKEKey
+      operationId: controllers.get_ZKE_encrypted_key
       tags:
         - Vault
-      summary: Return the user's ZKE key, that were encrypted by the user
+      summary: Return the user's encrypted ZKE key (encrypted by the user, before transmitting)
       responses:
         "200": # status code
-          description: Return the user's ZKE key
+          description: Return the user's ZKE key (encrypted)
         "401":
           description: Unauthorized
         "403":
           description: Access denied
+  /storageKey:
+      get:
+        operationId: controllers.getStorageKey
+        tags:
+          - Vault
+        summary: Return the user's storage key, for the current session
+        description: The storage key is used to encrypt/decrypt the user's vault. The referer must contain the exact path /vault/safe and a specific JWT token to access to the storage key.
+        responses:
+          "200": # status code
+            description: Return the user's storage key
+          "401":
+            description: Unauthorized
+          "403":
+            description: Access denied
+      
 
 components:
   securitySchemes:
