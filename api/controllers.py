@@ -110,7 +110,6 @@ def login():
 
     response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt}))
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
-    response.set_cookie("storage-jwt", storage_jwt, httponly=True, secure=True, samesite="Lax", path="/storageKey", max_age=3600)
     return response
     
 
