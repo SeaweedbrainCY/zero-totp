@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {Crypto} from '../common/Crypto/crypto';
 import {UserService} from '../common/User/user.service';
-
+import { DomSanitizer } from '@angular/platform-browser';
+import { SecurityContext } from '@angular/core';
+import { Utils } from '../common/Utils/utils';
 
 @Component({
   selector: 'app-home',
@@ -21,8 +23,13 @@ export class HomeComponent implements OnInit {
   totp = require('totp-generator');
   code = "";
   duration=0;
+  xss = "<script>alert('xss');</script>https://"
 
-  constructor(private userService:UserService){
+  constructor(
+    private userService:UserService, 
+    private _sanitizer: DomSanitizer,
+    private utils: Utils){
+    this.xss = utils.sanitize(this.xss)!
   }
 
   ngOnInit(){
@@ -32,7 +39,7 @@ export class HomeComponent implements OnInit {
     // each second :
     setInterval(()=> { this.generateCode() }, 500);
 
-   console.log(this.userService.id)
+   console.log(this.userService.getId())
   }
 
   generateCode(){
