@@ -13,7 +13,7 @@
     </div>
   
     <div id="navbarBasicExample" class="navbar-menu">
-      <div class="navbar-start"  *ngIf="userService.id!=null">
+      <div class="navbar-start"  *ngIf="userService.getId()!=null">
         <a class="navbar-item" href="/vault" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault'}">
           My vault
         </a>
@@ -41,13 +41,13 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <a class="button is-info" *ngIf="userService.id == null" href="/signup">
+            <a class="button is-info" *ngIf="userService.getId() == null" href="/signup">
               <span [ngClass]="{'has-text-weight-bold':currentUrl == '/signup'}">Sign up</span>
             </a>
-            <a class="button is-light" *ngIf="userService.id == null" href="/login">
+            <a class="button is-light" *ngIf="userService.getId()== null" href="/login">
               <span [ngClass]="{'has-text-weight-bold':currentUrl == '/login'}">Log in</span>
             </a>
-            <a class="button is-light" *ngIf="userService.id != null" href="/logout">
+            <a class="button is-light" *ngIf="userService.getId() != null" href="/logout">
                 <span>Logout</span>
               </a>
           </div>
