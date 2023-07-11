@@ -13,6 +13,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
 import { VaultComponent } from './vault/vault.component';
 import { UserService } from './common/User/user.service';
+import { Utils } from './common/Utils/utils';
 
 
 @NgModule({
@@ -31,7 +32,7 @@ import { UserService } from './common/User/user.service';
     FontAwesomeModule,
     HttpClientModule
   ],
-  providers: [UserService],
+  providers: [UserService, Utils],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
