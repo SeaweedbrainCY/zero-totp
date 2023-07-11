@@ -9,6 +9,7 @@ const routes: Routes = [
   {path:'', component: HomeComponent},
   {path:'signup', component: SignupComponent},
   {path:'login', component: LoginComponent},
+  {path: 'login/:error_param', component: LoginComponent},
   {path:'vault', component: VaultComponent}
 ];
 

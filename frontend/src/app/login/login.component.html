@@ -8,6 +8,11 @@
   
         </p>
       </div>
+      <div class="has-text-centered columns pb-5" *ngIf="warning_message != ''">
+        <div class="notification is-warning column is-6 is-offset-3">
+          <strong>{{warning_message}}</strong>
+        </div>
+      </div>
       <div class="has-text-centered	is-full is-flex is-flex-direction-column is-justify-content-center">
         <div class="field is-full is-flex is-justify-content-center">
           <p class="control has-icons-left has-icons-right">
