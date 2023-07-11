@@ -11,50 +11,58 @@
     <div class="has-text-centered	is-full is-flex is-flex-direction-column is-justify-content-center">
       <div class="field is-full is-flex is-justify-content-center">
         <p class="control has-icons-left has-icons-right">
-       <input class="input" type="text" placeholder="Username" name="username" [(ngModel)]="username"/>
+       <input class="input" type="text" placeholder="Username" name="username" [(ngModel)]="username" (change)="checkUsername()" [ngClass]="{'is-danger' : usernameErrorMessage != ''}"/>
+       <span class="help has-text-left is-danger" *ngIf="usernameErrorMessage!=''">{{usernameErrorMessage}}</span>
           <span class="icon is-small is-left">
             <fa-icon [icon]="faUser"></fa-icon>
           </span>
           <span class="icon is-small is-right">
-            <fa-icon [icon]="faCheck"></fa-icon>
+            <fa-icon [icon]="faCheck" *ngIf="usernameErrorMessage == ''"></fa-icon>
+            <fa-icon [icon]="faXmark" *ngIf="usernameErrorMessage != ''"></fa-icon>
           </span>
         </p>
        
       </div>
       <div class="field is-full is-flex is-justify-content-center">
         <p class="control has-icons-left has-icons-right">
-           <input class="input" type="email" placeholder="Email" name="email" [(ngModel)]="email"/>
+           <input class="input" type="email" placeholder="Email" name="email" [(ngModel)]="email" (change)="checkEmail()" [ngClass]="{'is-danger' : emailErrorMessage != ''}"/>
+           <span class="help has-text-left is-danger" *ngIf="emailErrorMessage!=''">{{emailErrorMessage}}</span>
           <span class="icon is-small is-left">
             <fa-icon [icon]="faEnvelope"></fa-icon>
           </span>
           <span class="icon is-small is-right">
-            <fa-icon [icon]="faCheck" *ngIf="!emailHasError"></fa-icon>
-            <fa-icon [icon]="faXmark" *ngIf="emailHasError"></fa-icon>
+            <fa-icon [icon]="faCheck" *ngIf="emailErrorMessage == ''"></fa-icon>
+            <fa-icon [icon]="faXmark" *ngIf="emailErrorMessage != ''"></fa-icon>
           </span>
         </p>
        
       </div>
       <div class="field is-full is-flex is-justify-content-center">
         <p class="control has-icons-left has-icons-right">
-       <input class="input" type="password" placeholder="Password" name="password" [(ngModel)]="password" >
+       <input class="input" type="password" placeholder="Password" name="password" [(ngModel)]="password"(change)="checkPassword()" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" >
+       <span class="help has-text-left is-danger" *ngIf="passwordErrorMessage.length >1">
+          <span *ngFor="let error of passwordErrorMessage" >
+            <span *ngIf="error!=''">{{error}}<br></span>
+          </span>
+        </span>
           <span class="icon is-small is-left">
             <fa-icon [icon]="faLock"></fa-icon>
           </span>
           <span class="icon is-small is-right">
-            <fa-icon [icon]="faCheck" *ngIf="!passwordHasError"></fa-icon>
-            <fa-icon [icon]="faXmark" *ngIf="passwordHasError"></fa-icon>
+            <fa-icon [icon]="faCheck" *ngIf="passwordErrorMessage.length == 1"></fa-icon>
+            <fa-icon [icon]="faXmark" *ngIf="passwordErrorMessage.length >1"></fa-icon>
           </span>
         </p>
       </div>
       <div class="field is-full is-flex is-justify-content-center">
         <p class="control has-icons-left has-icons-right">
-       <input class="input" type="password" placeholder="Confirm password" name="confirmPassword" [(ngModel)]="confirmPassword" >
+       <input class="input" type="password" placeholder="Confirm password" name="confirmPassword" [(ngModel)]="confirmPassword" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" >
           <span class="icon is-small is-left">
             <fa-icon [icon]="faLock"></fa-icon>
           </span>
           <span class="icon is-small is-right">
-            <fa-icon [icon]="faCheck" *ngIf="!passwordHasError"></fa-icon>
-            <fa-icon [icon]="faXmark" *ngIf="passwordHasError"></fa-icon>
+            <fa-icon [icon]="faCheck" *ngIf="passwordErrorMessage.length == 1"></fa-icon>
+            <fa-icon [icon]="faXmark" *ngIf="passwordErrorMessage.length >1"></fa-icon>
           </span>
         </p>
       </div>
@@ -65,20 +73,13 @@
             I agree to the <a href="#">terms and conditions</a>
           </label>
         </div>
-        <div class="column " *ngIf="emailHasError || passwordHasError">
-          <div class="notification is-primary is-light is-half has-text-left">
-            <ul>
-              <li *ngFor="let error of errors"><span *ngIf="error!=''"><fa-icon [icon]="faXmark" ></fa-icon> <strong>{{error}}</strong></span></li>
-            </ul>
-        </div>
-        </div>
       </div>
       </div>
       <div class="has-text-centered	">
       
       <div class="field">
         <div class="control">
-          <button class="button is-info is-medium " (click)="signup()" [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading">Start my zero-trip 
+          <button class="button is-info is-medium " (click)="signup()" [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading || emailErrorMessage != '' || passwordErrorMessage.length > 1 || usernameErrorMessage != '' || !terms">Start my zero-trip 
             </button>
         </div>
       </div>

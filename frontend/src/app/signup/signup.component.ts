@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { toast } from 'bulma-toast';
 import { toast as superToast } from 'bulma-toast'
+import { Utils } from '../common/Utils/utils';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -23,61 +24,70 @@ export class SignupComponent implements OnInit {
   terms=false;
   isLoading=false;
   declare bulmaToast : any;
-  errors=[''];
-  emailHasError = false;
-  passwordHasError = false;
+  emailErrorMessage = "";
+  usernameErrorMessage=""
+  passwordErrorMessage : [string]=[""];
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private utils: Utils,
+    ) { }
 
   ngOnInit(): void {
     return;
   }
 
   checkPassword(){
-    this.passwordHasError = false;
+    this.passwordErrorMessage=[""];
     const special = /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/;
     const upper = /[A-Z]/;
     const number = /[0-9]/;
     if(this.password.length < 8){
-      this.errors.push("Your password must be at least 8 characters long");
-      this.passwordHasError = true;
+      this.passwordErrorMessage.push("Your password must be at least 8 characters long");
     }
     else if(this.password.length > 70){
-      this.errors.push("Password must be less than 70 characters long");
-      this.passwordHasError = true;
+      this.passwordErrorMessage.push("Password must be less than 70 characters long");
     }
     if(!special.test(this.password)){
-      this.errors.push("Your password must contain at least one special character");
-      this.passwordHasError = true;
+      this.passwordErrorMessage.push("Your password must contain at least one special character");
     }
     if(!upper.test(this.password)){
-      this.errors.push("Your password must contain at least one uppercase character");
-      this.passwordHasError = true;
+      this.passwordErrorMessage.push("Your password must contain at least one uppercase character");
     }
     if(!number.test(this.password)){
-      this.errors.push("Your password must contain at least one number");
-      this.passwordHasError = true;
+      this.passwordErrorMessage.push("Your password must contain at least one number");
     }
     if(this.password != this.confirmPassword){
-      this.errors.push("Your passwords do not match");
-      this.passwordHasError = true;
+      this.passwordErrorMessage.push("Your passwords do not match");
     }
   }
 
   checkEmail(){
-    this.emailHasError = false;
+    this.emailErrorMessage = "";
     const emailRegex = /\S+@\S+\.\S+/;
     if(!emailRegex.test(this.email)){
-      this.errors.push("Your email is not valid");
-      this.emailHasError = true;
+      this.emailErrorMessage = "Your email is not valid";
+      return;
+    }
+    if(this.email != this.utils.sanitize(this.email)){
+      this.emailErrorMessage = "&, <, >, /, \" and ' are forbidden";
+      return;
+    }
+  }
+
+  checkUsername(){
+    this.usernameErrorMessage = "";
+    if(this.username != this.utils.sanitize(this.username)){
+      this.usernameErrorMessage = "&, <, >, /, \" and ' are forbidden";
+      return;
     }
   }
 
 
   signup() {
-    this.emailHasError = false;
-    this.passwordHasError = false;
-    this.errors = [''];
+    this.emailErrorMessage="";
+    this.usernameErrorMessage="";
+    this.passwordErrorMessage = [''];
     if(!this.terms){
       superToast({
         message: "Dont forget to accept terms & conditions !",
@@ -98,7 +108,7 @@ export class SignupComponent implements OnInit {
     }
     this.checkPassword();
     this.checkEmail();
-    if(this.emailHasError || this.passwordHasError){return;}
+    if(this.emailErrorMessage != '' || this.passwordErrorMessage.length == 1  || this.usernameErrorMessage != ''){return;}
     
 
     this.isLoading=true;
