@@ -29,5 +29,9 @@ export class NavbarComponent implements OnInit{
    
   }
 
+  navigateToRoute(route:string){
+    this.router.navigate([route], {relativeTo:this.route.root});
+  }
+
 
 }

@@ -14,7 +14,7 @@
   
     <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-start"  *ngIf="userService.getId()!=null">
-        <a class="navbar-item" href="/vault" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault'}">
+        <a class="navbar-item" (click)="navigateToRoute('vault')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault'}">
           My vault
         </a>
   
