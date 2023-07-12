@@ -1,1 +1,38 @@
-<p>vault works!</p>
+<div class="container  is-fluid">
+    <div>
+        <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">Here is your TOTP vault</h1>
+        <p class="has-text-centered has-text-grey pb-6">You and only you can access to this data. All the magic is done
+            on your computer.</p>
+        <div class="is-flex is-justify-content-center columns">
+            <div class="column is-3">
+                <a (click)="addNew()"><div class="card  " >
+                    <header class="card-header">
+                        <p class="card-header-title">Add a new TOTP code</p>
+                    </header>
+                    <div class="card-content">
+                        <div class="content has-text-centered">
+                            <p class="is-size-2"><fa-icon [icon]="faSquarePlus" style='color: #dbdbdb; height:20px;' ></fa-icon></p>
+                        </div>
+                    </div>
+                </div></a>
+            </div>
+            <div class="column is-3">
+                <div class="card has-background-primary has-text-white">
+                    <header class="card-header">
+                        <p class="card-header-title  has-text-white">github.com</p>
+                        <button class="card-header-icon" aria-label="more options">
+                            <span class="icon">
+                                <fa-icon [icon]="faPen"></fa-icon>
+                            </span>
+                        </button>
+                    </header>
+                    <div class="card-content">
+                        <div class="content has-text-centered">
+                            <p class="is-size-2 has-text-weight-bold">000 000</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
