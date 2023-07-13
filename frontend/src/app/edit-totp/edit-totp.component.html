@@ -1,1 +1,60 @@
-<p>edit-totp works!</p>
+<section class="hero is-{{color}}">
+    <div class="hero-body has-text-centered">
+        <p class="subtitle">
+          {{name}}<span *ngIf="name==''">example.com</span>
+          </p>
+        <p class="title is-size-2 has-text-weight-bold">
+        <span *ngIf="secret=='' || code == ''">XXX XXX</span>
+        <span *ngIf="secret!=''">{{code}}</span>
+      </p>
+      <div class="is-flex is-justify-content-center">
+        <progress class="progress is-small" value="{{time}}" max="100" style="width:20vw; height: 5px;">{{time}}%</progress></div>
+    </div>
+  </section>
+
+<div class="columns is-flex is-justify-content-center pt-6">
+    <div class="column is-6">
+        <div class="is-flex is-justify-content-space-around is-flex-direction-column	">
+          <div class="is-flex is-justify-content-space-around">
+        <div class="field">
+            <label class="label">Domain or name</label>
+            <div class="control has-icons-left has-icons-right">
+              <input class="input" type="text" placeholder="github.com" name="name" [(ngModel)]="name" (change)="checkName()" [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }">
+              <span class="icon is-small is-left">
+                <fa-icon [icon]="faGlobe"></fa-icon>
+              </span>
+            </div>
+            <p class="help is-danger" *ngIf="nameError != ''">{{nameError}}</p>
+          </div>
+          <div class="field">
+            <label class="label">TOTP secret</label>
+            <div class="control has-icons-left has-icons-right">
+              <input class="input" type="test" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret" (change)="checkSecret()" [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }">
+              <span class="icon is-small is-left">
+                <fa-icon [icon]="faKey"></fa-icon>
+              </span>
+            </div>
+            <p class="help is-danger" *ngIf="secretError != ''">{{secretError}}</p>
+          </div></div>
+          <div class="field p-5 is-flex is-justify-content-center">
+          <div class=" select is-{{color}}">
+            <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color" (change)="changeColor(colorSelected.value)">
+              <option default>Blue</option>
+              <option>Green</option>
+              <option>Orange</option>
+              <option>Red</option>
+            </select>
+          </div>
+        </div>
+        <div class="field is-grouped is-flex is-justify-content-center">
+          <div class="control">
+            <button class="button is-info is-light block" (click)="cancel()">Cancel</button>
+          </div>
+          <div class="control">
+            <button class="button is-info block" (click)="save()">Save</button>
+          </div>
+        </div>
+        </div>
+        
+    </div>
+</div>
