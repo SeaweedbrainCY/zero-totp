@@ -80,6 +80,10 @@ export class VaultComponent implements OnInit {
 
   }
 
+  edit(domain:string){
+    this.router.navigate(["/vault/edit/"+domain], {relativeTo:this.route.root});
+  }
+
 
 
 }

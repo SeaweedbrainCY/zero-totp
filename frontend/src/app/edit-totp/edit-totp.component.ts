@@ -24,15 +24,69 @@ export class EditTOTPComponent implements OnInit{
   code = "";
   time=80;
   duration = 0;
+  currentUrl:string = "";
+  getElementID:string|null = null;
   constructor(
     private router: Router,
     private route : ActivatedRoute,
     private userService : UserService,
     private http: HttpClient,
     private utils: Utils
-  ){}
+  ){
+    router.events.subscribe((url:any) => {
+      if (url instanceof NavigationEnd){
+          this.currentUrl = url.url;
+      }
+    });
+  }
 
   ngOnInit(){
+    if(this.userService.getId() == null){
+      //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+    }
+    this.getElementID = this.route.snapshot.paramMap.get('id');
+    console.log(this.getElementID)
+    if(this.getElementID == null){
+        if(this.currentUrl != "/vault/add"){
+          this.router.navigate(["/vault"], {relativeTo:this.route.root});
+          return;
+        }
+    } else {
+      const vault = this.userService.getVault();
+      if(vault == null || !vault.has(this.getElementID)){
+        this.router.navigate(["/vault"], {relativeTo:this.route.root});
+        return;
+      } else {
+        const property = vault.get(this.getElementID)!;
+        this.name = this.getElementID;
+        this.secret = property.get("secret")!;
+        this.color = property.get("color")!;
+        switch(this.color){
+          case "info":{
+            this.selected_color = "Blue";
+            break;
+          }
+          case "primary":{
+            this.selected_color = "Green";
+            break;
+          }
+          case "warning":{
+            this.selected_color = "Orange";
+            break;
+          }
+          case "danger":{
+            this.selected_color = "Red";
+            break;
+          }
+          default:{
+            this.selected_color = "Blue";
+            break;
+          }
+        }
+      }
+
+    }
+
     setInterval(()=> { this.generateCode() }, 100);
     setInterval(()=> { this.generateTime() }, 20);
   }
@@ -116,11 +170,14 @@ export class EditTOTPComponent implements OnInit{
     }
    let vault = this.userService.getVault();
    if(vault != null){
-      if( vault.has(this.name)){
+      if( vault.has(this.name) && this.getElementID != this.name){
        this.nameError = "A TOTP with this doname already exists";
        return;
       }
   }
+    if(this.getElementID != null){
+      vault!.delete(this.getElementID);
+    }
     const property = new Map<string,string>();
     property.set("secret", this.secret);
     property.set("color", this.color);

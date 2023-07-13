@@ -20,7 +20,7 @@
                 <div class="card has-background-{{vault!.get(element)?.get('color')}} has-text-white">
                     <header class="card-header">
                         <p class="card-header-title  has-text-white">{{element}}</p>
-                        <button class="card-header-icon" aria-label="more options">
+                        <button class="card-header-icon" aria-label="more options" (click)="edit(element)">
                             <span class="icon">
                                 <fa-icon [icon]="faPen"></fa-icon>
                             </span>
