@@ -61,4 +61,13 @@ export class UserService {
     this.vault = vault;
    }
 
+   clear(){
+    this.id = null;
+    this.email = null;
+    this.key = null;
+    this.derivedKeySalt = null;
+    this.vault = null;
+    localStorage.clear();
+   }
+
 }
