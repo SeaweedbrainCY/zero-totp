@@ -10,7 +10,7 @@ export class UserService {
   private email:string| null =null;;
   private key:CryptoKey| null =null;;
   private derivedKeySalt: string| null =null;;
-  private vault:[string:string] | null =null;
+  private vault:Map<string, Map<string,string>> | null =null;
 
   constructor(private utils: Utils) {
    }
@@ -53,11 +53,11 @@ export class UserService {
     this.derivedKeySalt = salt;
    }
 
-   getVault():[string:string] | null {
+   getVault(): Map<string, Map<string,string>>| null {
     return this.vault;
    }
 
-   setVault(vault:[string:string]){
+   setVault(vault:Map<string, Map<string,string>>){
     this.vault = vault;
    }
 
