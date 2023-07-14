@@ -5,6 +5,7 @@ import { ApiService } from '../common/ApiService/api-service';
 import { toast } from 'bulma-toast';
 import { toast as superToast } from 'bulma-toast'
 import { Utils } from '../common/Utils/utils';
+import { Crypto } from '../common/Crypto/crypto';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -27,10 +28,13 @@ export class SignupComponent implements OnInit {
   emailErrorMessage = "";
   usernameErrorMessage=""
   passwordErrorMessage : [string]=[""];
+  isModalActive=false;
+  input="";
 
   constructor(
     private http: HttpClient,
     private utils: Utils,
+    private crypto:Crypto
     ) { }
 
   ngOnInit(): void {
@@ -70,7 +74,7 @@ export class SignupComponent implements OnInit {
       return;
     }
     if(this.email != this.utils.sanitize(this.email)){
-      this.emailErrorMessage = "&, <, >, /, \" and ' are forbidden";
+      this.emailErrorMessage = "&, <, >, \" and ' are forbidden";
       return;
     }
   }
@@ -78,13 +82,14 @@ export class SignupComponent implements OnInit {
   checkUsername(){
     this.usernameErrorMessage = "";
     if(this.username != this.utils.sanitize(this.username)){
-      this.usernameErrorMessage = "&, <, >, /, \" and ' are forbidden";
+      this.usernameErrorMessage = "&, <, >, \" and ' are forbidden";
       return;
     }
   }
 
 
   signup() {
+    this.modal();
     this.emailErrorMessage="";
     this.usernameErrorMessage="";
     this.passwordErrorMessage = [''];
@@ -108,25 +113,36 @@ export class SignupComponent implements OnInit {
     }
     this.checkPassword();
     this.checkEmail();
-    if(this.emailErrorMessage != '' || this.passwordErrorMessage.length == 1  || this.usernameErrorMessage != ''){return;}
-    
-
+    if(this.emailErrorMessage != '' || this.passwordErrorMessage.length > 1  || this.usernameErrorMessage != ''){return;}
     this.isLoading=true;
+    const ZKEkey = this.crypto.generateZKEKey();
+    const randomSalt = this.crypto.generateRandomSalt();
+    this.crypto.deriveKey(randomSalt, this.password).then((key) => {
+      this.crypto.encrypt(ZKEkey, key, randomSalt).then((encryptedZKEkey) => {
+        this.signupRequest(encryptedZKEkey, randomSalt);
+      });
+    });   
+  }
+
+  signupRequest(encryptedZKEkey:string, randomSalt:string){
     const data = {
       username: this.username,
       email: this.email,
-      password: this.password
+      password: this.password,
+      ZKE_key: encryptedZKEkey,
+      salt: randomSalt
     };
 
     this.http.post(ApiService.API_URL+"/signup", data, {observe: 'response'}).subscribe((response) => {
       console.log(response);
       this.isLoading=false;
       superToast({
-        message: "Account created successfully",
+        message: "Account created successfully. You can now log in",
         type: "is-success",
         dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+
     },
     (error) => {
       console.log(error);
@@ -141,6 +157,9 @@ export class SignupComponent implements OnInit {
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
     });
-   
+  }
+
+  modal(){
+    this.isModalActive = !this.isModalActive;
   }
 }

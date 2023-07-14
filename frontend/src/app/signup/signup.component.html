@@ -39,7 +39,7 @@
       </div>
       <div class="field is-full is-flex is-justify-content-center">
         <p class="control has-icons-left has-icons-right">
-       <input class="input" type="password" placeholder="Password" name="password" [(ngModel)]="password"(change)="checkPassword()" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" >
+       <input class="input" type="password" placeholder="Passphrase" name="password" [(ngModel)]="password"(change)="checkPassword()" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" >
        <span class="help has-text-left is-danger" *ngIf="passwordErrorMessage.length >1">
           <span *ngFor="let error of passwordErrorMessage" >
             <span *ngIf="error!=''">{{error}}<br></span>
@@ -56,7 +56,7 @@
       </div>
       <div class="field is-full is-flex is-justify-content-center">
         <p class="control has-icons-left has-icons-right">
-       <input class="input" type="password" placeholder="Confirm password" name="confirmPassword" [(ngModel)]="confirmPassword" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" >
+       <input class="input" type="password" placeholder="Confirm passphrase" name="confirmPassword" [(ngModel)]="confirmPassword" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" (change)="checkPassword()">
           <span class="icon is-small is-left">
             <fa-icon [icon]="faLock"></fa-icon>
           </span>
@@ -79,8 +79,33 @@
       
       <div class="field">
         <div class="control">
-          <button class="button is-info is-medium " (click)="signup()" [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading || emailErrorMessage != '' || passwordErrorMessage.length > 1 || usernameErrorMessage != '' || !terms">Start my zero-trip 
+          <button class="button is-info is-medium " (click)="modal()" data-target="modal-id"  [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading || emailErrorMessage != '' || passwordErrorMessage.length > 1 || usernameErrorMessage != '' || !terms">Start my zero-trip 
             </button>
+            <!-- trigger button -->
+<!--<span class="button modal-button" (click)="modal()">Open modal</span>-->
+
+<!-- related modal with fx class "modal-fx-fadeInScale" -->
+<div id="modal-id" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
+    <div class="modal-background" (click)="modal()"></div>
+    <div class="modal-content">
+      <section class="modal-card-body">
+        <h1 class="is-size-1 has-text-danger">Are you sure ?</h1>
+        zero-totp uses Zero Knowledge Encryption, which means that <strong>you won't be able to recover your password if you lose it !</strong>.<br><br>
+      You and only you can open your vault.<br><br>
+      <strong>To create your vault type the following sentence :</strong><br>
+        <code>My passphrase is strong and I won't forget it</code><br><br>
+        <input class="input" type="text" placeholder="My passphrase is strong and I won't forget it" name="input" [(ngModel)]="input">
+
+      </section>
+      
+      <footer class="modal-card-foot is-flex is-justify-content-right">
+        <button class="button" (click)="modal()">Cancel</button>
+        <button class="button is-success" [disabled]="input != 'My passphrase is strong and I won\'t forget it'" (click)="signup()">Create my vault</button>
+      </footer>
+    </div>
+    <button class="modal-close is-large" aria-label="close" (click)="modal()"></button>
+</div>
+
         </div>
       </div>
     </div>
