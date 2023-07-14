@@ -14,6 +14,9 @@ import { LoginComponent } from './login/login.component';
 import { VaultComponent } from './vault/vault.component';
 import { UserService } from './common/User/user.service';
 import { Utils } from './common/Utils/utils';
+import { EditTOTPComponent } from './edit-totp/edit-totp.component';
+import { LogoutComponent } from './logout/logout.component';
+import { Crypto } from './common/Crypto/crypto';
 
 
 @NgModule({
@@ -23,7 +26,9 @@ import { Utils } from './common/Utils/utils';
     SignupComponent,
     NavbarComponent,
     LoginComponent,
-    VaultComponent
+    VaultComponent,
+    EditTOTPComponent,
+    LogoutComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +37,7 @@ import { Utils } from './common/Utils/utils';
     FontAwesomeModule,
     HttpClientModule
   ],
-  providers: [UserService, Utils],
+  providers: [UserService, Utils, Crypto],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

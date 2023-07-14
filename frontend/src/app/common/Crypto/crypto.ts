@@ -13,6 +13,10 @@ export class Crypto {
         return Buffer.from(window.crypto.getRandomValues(new Uint8Array(16))).toString('base64');
     }
 
+    generateZKEKey():string {
+        return Buffer.from(window.crypto.getRandomValues(new Uint8Array(32))).toString('base64');
+    }
+
 
 
     async deriveKey(salt: string, password: string): Promise<CryptoKey> {
