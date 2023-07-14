@@ -29,6 +29,7 @@ def signup():
         data["username"] = data["username"].strip()
         data["password"] = data["password"].strip()
         data["email"] = data["email"].strip()
+        data["salt"] = data["salt"].strip()
         data["ZKE_key"] = data["ZKE_key"].strip()
     except Exception as e:
         logging.info(e)
@@ -52,7 +53,7 @@ def signup():
         logging.warning("Uknown error occured while hashing password" + str(e))
         return {"message": "Unknown error while hashing your password"}, 500
     
-    randomSalt = base64.b64encode(os.urandom(16)).decode('utf-8')
+    randomSalt = data["salt"]
     try:
         user = userDB.create(data["username"], data["email"], hashedpw, randomSalt)
     except Exception as e:
