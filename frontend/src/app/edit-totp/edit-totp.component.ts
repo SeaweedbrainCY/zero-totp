@@ -15,6 +15,7 @@ export class EditTOTPComponent implements OnInit{
   faGlobe = faGlobe;
   faKey = faKey;
   name = "";
+  uuid="";
   secret = "";
   nameError = "";
   secretError = "";
@@ -58,7 +59,8 @@ export class EditTOTPComponent implements OnInit{
         return;
       } else {
         const property = vault.get(this.getElementID)!;
-        this.name = this.getElementID;
+        this.uuid = this.getElementID;
+        this.name = property.get("name")!;
         this.secret = property.get("secret")!;
         this.color = property.get("color")!;
         switch(this.color){
@@ -169,22 +171,19 @@ export class EditTOTPComponent implements OnInit{
       //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
    let vault = this.userService.getVault();
-   if(vault != null){
-      if( vault.has(this.name) && this.getElementID != this.name){
-       this.nameError = "A TOTP with this doname already exists";
-       return;
-      }
-  }
     if(this.getElementID != null){
       vault!.delete(this.getElementID);
+    } else {
+      this.uuid = crypto.randomUUID();
     }
     const property = new Map<string,string>();
     property.set("secret", this.secret);
     property.set("color", this.color);
+    property.set("name", this.name);
     if(vault == null){
       vault = new Map<string, Map<string,string>>();
     }
-    vault.set(this.name, property);
+    vault.set(this.uuid, property);
     this.userService.setVault(vault);
     this.router.navigate(["/vault"], {relativeTo:this.route.root});
   }
