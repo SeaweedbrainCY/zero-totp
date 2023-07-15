@@ -106,8 +106,6 @@ export class LoginComponent {
       password: this.password
     }
     this.http.post(ApiService.API_URL+"/login", data, {observe: 'response'}).subscribe((response) => {
-      
-     
       superToast({
         message: "Welcome back",
         type: "is-success",

@@ -16,11 +16,11 @@
                     </div>
                 </div></a>
             </div>
-            <div class="column is-3" *ngFor="let element of vaultDomain">
-                <div class="card has-background-{{vault!.get(element)?.get('color')}} has-text-white">
+            <div class="column is-3" *ngFor="let uuid of vaultDomain">
+                <div class="card has-background-{{vault!.get(uuid)?.get('color')}} has-text-white">
                     <header class="card-header">
-                        <p class="card-header-title  has-text-white">{{element}}</p>
-                        <button class="card-header-icon" aria-label="more options" (click)="edit(element)">
+                        <p class="card-header-title  has-text-white">{{vault!.get(uuid)?.get('name')}}</p>
+                        <button class="card-header-icon" aria-label="more options" (click)="edit(uuid)">
                             <span class="icon">
                                 <fa-icon [icon]="faPen"></fa-icon>
                             </span>
@@ -28,7 +28,7 @@
                     </header>
                     <div class="card-content">
                         <div class="content has-text-centered">
-                            <p class="is-size-2 has-text-weight-bold">{{vault!.get(element)?.get('code')}}
+                            <p class="is-size-2 has-text-weight-bold">{{vault!.get(uuid)?.get('code')}}
                                 <br>
                                 <progress class="progress is-small" value="{{remainingTime}}" max="100" style="height: 10px;">{{remainingTime}}%</progress>
                             </p>
