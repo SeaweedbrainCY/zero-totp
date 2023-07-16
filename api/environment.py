@@ -9,10 +9,13 @@ jwt_secret = os.environ.get('JWT_SECRET')
 if environment == "development":
     logging.basicConfig(level=logging.DEBUG)
     logging.debug("Environment set to development")
-    
-    frontend_domain = ['http://127.0.0.1:4200', 'http://localhost:4200']
+    frontend_domain = 'zero-totp.local'
+    frontend_URI = 'http://zero-totp.local:4200'
+    isCookieSecure = False
 else:
-    frontend_domain=["https://zero-totp.fr"]
+    frontend_domain="zero-totp.fr"
+    frontend_URI = "https://zero-totp.fr"
+    isCookieSecure = True
 
 
 
