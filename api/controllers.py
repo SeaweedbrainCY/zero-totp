@@ -110,13 +110,22 @@ def login():
     jwt_token = jwt_auth.generate_jwt(user.id)
 
     response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt}))
-    response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
+    response.set_cookie("api-key", jwt_token, httponly=False, secure=env.isCookieSecure, samesite="Lax", max_age=3600, domain= env.frontend_domain)
     return response
     
 
 
 #GET /vault
 def getVault():
+    try:
+        user_id = connexion.context.get("user")
+        logging.info(user_id)
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    
+#PUT /vault
+def updateVault():
     try:
         user_id = connexion.context.get("user")
         logging.info(user_id)

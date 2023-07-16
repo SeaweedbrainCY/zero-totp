@@ -5,7 +5,7 @@ info:
   description: API for the zero-totp application
   version: "1.0"
 servers:
-  - url: http://127.0.0.1:8080
+  - url: http://zero-totp.local:8080
     description: local API server
 security:
   - JWTAuth: []
@@ -76,6 +76,30 @@ paths:
       responses:
         "200": # status code
           description: Return the user's vault
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+    post:
+      operationId: controllers.updateVault
+      tags:
+        - Vault
+      summary: Update the user's vault
+      security: []
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                enc_vault:
+                  type: string
+      responses:
+        "201": # status code
+          description: Vault updated
         "400":
           description: Missing required parameters
         "401":
