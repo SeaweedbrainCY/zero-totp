@@ -51,7 +51,7 @@ export class VaultComponent implements OnInit {
       //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
       console.log("")
     } else {
-      this.http.get(ApiService.API_URL+"/vault",  {observe: 'response'}).subscribe((response) => {
+      this.http.get(ApiService.API_URL+"/vault",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         try{
           const data = JSON.parse(JSON.stringify(response.body))
          const enc_vault = data.enc_vault;

@@ -105,7 +105,6 @@ export class LoginComponent {
       email: this.email,
       password: this.password
     }
-    const header = {};
 
     this.http.post(ApiService.API_URL+"/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
       superToast({
