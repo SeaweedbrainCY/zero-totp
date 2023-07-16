@@ -4,7 +4,7 @@ install_frontend:
 	cd frontend && npm install 
 
 run_frontend:
-	cd frontend && ng serve
+	cd frontend && ng serve --host=127.0.0.1 --disable-host-check
 
 install_api:
 	rm -rf api/venv
