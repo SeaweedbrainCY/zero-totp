@@ -1,0 +1,14 @@
+/* You can add global styles to this file, and also import other style files */
+
+
+$info: #5AA9E6;
+$danger:#FE6847;
+$warning:#FFCF56;
+$dark:#16262E;
+$success:#63A375;
+$primary:$success;
+$black:$dark;
+$test:$dark;
+
+/*@import "../node_modules/bulma/css/bulma.css";*/
+@import "../node_modules/bulma/bulma.sass";
