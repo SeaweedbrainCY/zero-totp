@@ -3,6 +3,7 @@ import connexion
 import json
 from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
+from database.vault_repo import Vault as VaultDB
 from Crypto.hash_func import Bcrypt
 import logging
 import environment as env
@@ -119,10 +120,15 @@ def login():
 def getVault():
     try:
         user_id = connexion.context.get("user")
-        logging.info(user_id)
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
+    vaultDB =  VaultDB()
+    user_vault = vaultDB.getVaultByUserId(user_id)
+    if user_vault:
+        return {"vault": user_vault}, 200
+    else:
+        return {"message": "No vault found for this user"}, 404
     
 #PUT /vault
 def updateVault():
