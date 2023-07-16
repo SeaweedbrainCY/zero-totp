@@ -13,6 +13,9 @@ class Vault:
     
     def updateVault(self, user_id, enc_vault):
         vault = db.session.query(VaultsModel).filter_by(user_id=user_id).first()
-        vault.enc_vault = enc_vault
+        if vault == None:
+            vault = self.create(user_id, enc_vault)
+        else:
+            vault.enc_vault = enc_vault
         db.session.commit()
         return vault

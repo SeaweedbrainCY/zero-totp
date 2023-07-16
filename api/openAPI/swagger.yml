@@ -82,12 +82,11 @@ paths:
           description: Unauthorized
         "403":
           description: Access denied
-    post:
+    put:
       operationId: controllers.updateVault
       tags:
         - Vault
       summary: Update the user's vault
-      security: []
       requestBody:
         required: true
         content: 

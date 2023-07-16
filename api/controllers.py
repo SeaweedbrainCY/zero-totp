@@ -120,13 +120,16 @@ def login():
 def getVault():
     try:
         user_id = connexion.context.get("user")
+        logging.info(connexion.context)
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
     vaultDB =  VaultDB()
-    user_vault = vaultDB.getVaultByUserId(user_id)
+    user_vault = vaultDB.getVaultByUserId(user_id).enc_vault
     if user_vault:
-        return {"vault": user_vault}, 200
+        return {"enc_vault": user_vault}, 200
     else:
         return {"message": "No vault found for this user"}, 404
     
@@ -134,10 +137,22 @@ def getVault():
 def updateVault():
     try:
         user_id = connexion.context.get("user")
-        logging.info(user_id)
+        logging.info(connexion.context)
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+        dataJSON = json.dumps(request.get_json())
+        data = json.loads(dataJSON)
+        enc_vault = data["enc_vault"].strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
+    
+    vaultDB =  VaultDB()
+    if vaultDB.updateVault(user_id, enc_vault):
+        return {"message": "Vault updated"}, 201
+    else:
+        return {"message" : "An error occurred while updating the vault"}, 500
+
     
 
 #GET /zke_encrypted_key

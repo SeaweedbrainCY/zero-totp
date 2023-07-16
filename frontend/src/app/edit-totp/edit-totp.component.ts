@@ -4,6 +4,9 @@ import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { faChevronCircleLeft, faGlobe, faKey } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
+import { toast as superToast } from 'bulma-toast'
+import { ApiService } from '../common/ApiService/api-service';
+import { Crypto } from '../common/Crypto/crypto';
 
 @Component({
   selector: 'app-edit-totp',
@@ -27,12 +30,14 @@ export class EditTOTPComponent implements OnInit{
   duration = 0;
   currentUrl:string = "";
   getElementID:string|null = null;
+  superToast = require('bulma-toast');
   constructor(
     private router: Router,
     private route : ActivatedRoute,
     private userService : UserService,
     private http: HttpClient,
-    private utils: Utils
+    private utils: Utils,
+    private crypto: Crypto,
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
@@ -170,7 +175,17 @@ export class EditTOTPComponent implements OnInit{
     if(this.userService.getId() == null){
       //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
+    this.getVaultFromAPI(); // get the last up to date vault
    let vault = this.userService.getVault();
+   if (vault == null){
+    superToast({
+      message: "Your session has expired. For safety reasons you have to log out and log in again.",
+     type: "is-warning",
+      dismissible: false,
+      duration: 20000,
+    animate: { in: 'fadeIn', out: 'fadeOut' }
+    });
+   }
     if(this.getElementID != null){
       vault!.delete(this.getElementID);
     } else {
@@ -180,12 +195,142 @@ export class EditTOTPComponent implements OnInit{
     property.set("secret", this.secret);
     property.set("color", this.color);
     property.set("name", this.name);
-    if(vault == null){
-      vault = new Map<string, Map<string,string>>();
+    
+    vault!.set(this.uuid, property);
+    this.userService.setVault(vault!);
+    this.updateVault();
+  }
+
+  getVaultFromAPI(){
+    this.http.get(ApiService.API_URL+"/vault",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      try{
+        const data = JSON.parse(JSON.stringify(response.body))
+       const enc_vault = data.enc_vault;
+       if(this.userService.getKey() != null){
+        try{
+          this.crypto.decrypt(enc_vault, this.userService.getKey()!).then((dec_vault)=>{
+            if(dec_vault == null){
+              superToast({
+                message: "Wrong key. You cannot decrypt this vault or the data retrieved is null. Please log out and log in again.",
+               type: "is-warning",
+                dismissible: false,
+                duration: 20000,
+              animate: { in: 'fadeIn', out: 'fadeOut' }
+              });
+            } else {
+                try{
+                  const vault = this.utils.vaultFromJson(dec_vault);
+                  this.userService.setVault(vault);
+                } catch {
+                  superToast({
+                    message: "Wrong key. You cannot decrypt this vault or the data retrieved not usable. Please log out and log in again.   ",
+                   type: "is-warning",
+                    dismissible: false,
+                    duration: 20000,
+                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                  });
+                }
+              }
+          })
+        } catch {
+          superToast({
+            message: "Wrong key. You cannot decrypt this vault.",
+           type: "is-warning",
+            dismissible: false,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        }
+      } else {
+        superToast({
+          message: "Impossible to decrypt your vault, you're decryption key has expired. Please log out and log in again.",
+         type: "is-warning",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+      } catch(e){
+        superToast({
+          message: "Error : Impossible to retrieve your vault from the server",
+         type: "is-warning",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+    }, (error) => {
+      if(error.status == 404){
+        this.userService.setVault(new Map<string, Map<string,string>>());
+      } else {
+        let errorMessage = "";
+        if(error.error.message != null){
+          errorMessage = error.error.message;
+        } else if(error.error.detail != null){
+          errorMessage = error.error.detail;
+        }
+        superToast({
+          message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
+         type: "is-warning",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+    });
+  }
+
+  updateVault(){
+    if(this.userService.getVault() == null || this.userService.getKey() == null){
+      superToast({
+        message: "Error : Impossible to encrypt your vault. For safety reasons, please log out and log in again.",
+       type: "is-warning",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    } else {
+      const jsonVault = this.utils.vaultToJson(this.userService.getVault()!);
+      try {
+        this.crypto.encrypt(jsonVault, this.userService.getKey()!, this. userService.getDerivedKeySalt()!).then((enc_vault)=>{
+          this.http.put(ApiService.API_URL+"/vault", {enc_vault:enc_vault}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
+            superToast({
+              message: "New TOTP code added ! ",
+              type: "is-success",
+              dismissible: true,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+            });
+            this.router.navigate(["/vault"], {relativeTo:this.route.root});
+            
+          }, (error) => {
+            let errorMessage = "";
+          if(error.error.message != null){
+            errorMessage = error.error.message;
+          } else if(error.error.detail != null){
+            errorMessage = error.error.detail;
+          }
+          superToast({
+            message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
+           type: "is-warning",
+            dismissible: false,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+          });
+        });
+      } catch {
+        superToast({
+          message: "An error happened while encrypting your vault",
+         type: "is-warning",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+
     }
-    vault.set(this.uuid, property);
-    this.userService.setVault(vault);
-    this.router.navigate(["/vault"], {relativeTo:this.route.root});
+    
+
   }
   
 
