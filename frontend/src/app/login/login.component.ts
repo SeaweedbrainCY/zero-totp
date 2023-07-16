@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { toast as superToast } from 'bulma-toast'
 import { faEnvelope, faLock,  faCheck, faXmark, faFlagCheckered } from '@fortawesome/free-solid-svg-icons';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
@@ -105,7 +105,9 @@ export class LoginComponent {
       email: this.email,
       password: this.password
     }
-    this.http.post(ApiService.API_URL+"/login", data, {observe: 'response'}).subscribe((response) => {
+    const header = {};
+
+    this.http.post(ApiService.API_URL+"/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
       superToast({
         message: "Welcome back",
         type: "is-success",
