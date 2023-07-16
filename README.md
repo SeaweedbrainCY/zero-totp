@@ -2,6 +2,8 @@
 [![CodeQL](https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/github-code-scanning/codeql)
 ![GitHub](https://img.shields.io/github/license/seaweedbraincy/zero-totp)
 
+<img src="https://github.com/SeaweedbrainCY/zero-totp/blob/main/frontend/src/assets/logo_zero_totp_dark.png?raw=true"/>
+
 **Contributors :**
 
 ![GitHub Contributors Image](https://contrib.rocks/image?repo=seaweedbraincy/zero-totp)
