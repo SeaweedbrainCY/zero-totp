@@ -7,7 +7,7 @@ on:
 jobs:
   docker-frontend:
     name: Dockerize and publish frontend image
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env:
       REPO: ${{secrets.DOCKER_REPO}}
     steps:
