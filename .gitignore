@@ -162,5 +162,5 @@ cython_debug/
 
 
 
-__database__
+database/dbdata/*
 .DS_Store
