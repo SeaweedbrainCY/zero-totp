@@ -1,5 +1,5 @@
 # Zero-TOTP
-[![CodeQL](https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/github-code-scanning/codeql)
+[![Packages published on DockerHub](https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/main.yml/badge.svg)](https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/main.yml)
 ![GitHub](https://img.shields.io/github/license/seaweedbraincy/zero-totp)
 
 <img src="https://github.com/SeaweedbrainCY/zero-totp/blob/main/frontend/src/assets/logo_zero_totp_dark.png?raw=true"/>
