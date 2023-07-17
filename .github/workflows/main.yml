@@ -6,7 +6,8 @@ on:
       - 'main'
 jobs:
   docker-frontend:
-    name: Dockerize and publish frontend image
+    environment: production
+    name: Publish frontend image
     runs-on: ubuntu-latest
     env:
       REPO: ${{secrets.DOCKER_REPO}}
