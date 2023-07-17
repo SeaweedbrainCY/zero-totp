@@ -9,7 +9,7 @@ RUN apt-get clean \
 RUN apt-get -y install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools gcc default-libmysqlclient-dev pkg-config
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-EXPOSE 9000
+EXPOSE 8080
 
 RUN chmod +x ./start.sh
 USER 65534:65534
