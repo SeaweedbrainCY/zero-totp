@@ -127,9 +127,10 @@ def getVault():
         logging.info(e)
         return {"message": "Invalid request"}, 400
     vaultDB =  VaultDB()
-    user_vault = vaultDB.getVaultByUserId(user_id).enc_vault
+    user_vault = vaultDB.getVaultByUserId(user_id)
     if user_vault:
-        return {"enc_vault": user_vault}, 200
+        enc_vault = user_vault.enc_vault
+        return {"enc_vault": enc_vault}, 200
     else:
         return {"message": "No vault found for this user"}, 404
     
@@ -163,11 +164,7 @@ def get_ZKE_encrypted_key():
         try:
             zke_key = zke_db.getByUserId(user_id)
             if zke_key:
-                if datetime.fromtimestamp(zke_key.expirationDate) > datetime.datetime.utcnow():
                     return {"zke_encrypted_key": zke_key.ZKE_key}, 200
-                else:
-                    zke_db.delete(zke_key.id)
-                    return {"message": "No ZKE key found for this user"}, 404
             else:
                 return {"message": "No ZKE key found for this user"}, 404
         except Exception as e:
