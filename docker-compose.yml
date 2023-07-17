@@ -1,0 +1,31 @@
+version: '1.0'
+
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+    ports: 
+      - "4200:80"
+    env_file:
+      - .env
+
+  api:
+    container_name: api
+    build:
+      context: ./api
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+  
+  database:
+    env_file:
+      - .env
+    image: mysql:latest
+    container_name: database
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/dbdata:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
