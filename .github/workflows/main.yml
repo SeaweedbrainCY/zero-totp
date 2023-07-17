@@ -1,4 +1,4 @@
-name: "Beta deployment"
+name: "Deploy"
 
 on:
   push:
@@ -6,16 +6,30 @@ on:
       - 'main'
 jobs:
     docker-frontend:
-      name: Publish frontend image
+      name: Publish Frontend Docker image
       runs-on: ubuntu-latest
       env:
-        REPO: ${{secrets.DOCKER_REPO}}
+        REPO: ${{secrets.DOCKER_FRONTEND_REPO}}
       steps:
-        - uses: actions/checkout@v1
+        - uses: actions/checkout@v3
         - name: Login to Docker Hub
           run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
         - name: Build Docker image
           working-directory: ./frontend
+          run: docker build -t $REPO:latest -t $REPO:${GITHUB_SHA::8} .
+        - name: Publish Docker Image
+          run: docker push $REPO
+    docker-api:
+      name: Publish API Docker image
+      runs-on: ubuntu-latest
+      env:
+        REPO: ${{secrets.DOCKER_API_REPO}}
+      steps:
+        - uses: actions/checkout@v3
+        - name: Login to Docker Hub
+          run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+        - name: Build Docker image
+          working-directory: ./api
           run: docker build -t $REPO:latest -t $REPO:${GITHUB_SHA::8} .
         - name: Publish Docker Image
           run: docker push $REPO
