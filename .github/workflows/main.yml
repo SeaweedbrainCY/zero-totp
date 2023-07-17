@@ -6,7 +6,6 @@ on:
       - 'main'
 jobs:
   docker-frontend:
-    environment: production
     name: Publish frontend image
     runs-on: ubuntu-latest
     env:
