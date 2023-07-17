@@ -3,7 +3,7 @@ name: "Beta deployment"
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
 jobs:
   docker-frontend:
     name: Dockerize and publish frontend image
