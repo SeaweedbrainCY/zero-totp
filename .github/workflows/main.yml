@@ -1,0 +1,19 @@
+name: "Beta deployment"
+
+on:
+  push:
+    branches:
+      - 'master'
+jobs:
+  docker-frontend:
+    name: Dockerize and publish frontend image
+    runs-on: ubuntu-18.04
+    env:
+      REPO: ${{secrets.DOCKER_REPO}}
+    steps:
+      - name: Login to Docker Hub
+        run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+      - name: Build Docker image
+        run: cd frontend && docker build -t $REPO:latest -t $REPO:${GITHUB_SHA::8} .
+      - name: Publish Docker Image
+        run: docker push $REPO
