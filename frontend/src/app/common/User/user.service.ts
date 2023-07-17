@@ -8,7 +8,7 @@ import { Utils }  from '../Utils/utils';
 export class UserService {
   private id:number| null =null;;
   private email:string| null =null;;
-  private key:CryptoKey| null =null;;
+  private zke_key:CryptoKey| null =null;;
   private derivedKeySalt: string| null =null;;
   private vault:Map<string, Map<string,string>> | null =null;
 
@@ -37,12 +37,12 @@ export class UserService {
     }
    }
 
-   getKey() : CryptoKey | null{
-    return this.key;
+   get_zke_key() : CryptoKey | null{
+    return this.zke_key;
    }
 
-   setKey(key:CryptoKey){
-    this.key = key;
+   set_zke_key(zke_key:CryptoKey){
+    this.zke_key = zke_key;
    }
 
    getDerivedKeySalt(): string | null {
@@ -64,7 +64,7 @@ export class UserService {
    clear(){
     this.id = null;
     this.email = null;
-    this.key = null;
+    this.zke_key = null;
     this.derivedKeySalt = null;
     this.vault = null;
     localStorage.clear();

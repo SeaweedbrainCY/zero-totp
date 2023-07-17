@@ -206,9 +206,9 @@ export class EditTOTPComponent implements OnInit{
       try{
         const data = JSON.parse(JSON.stringify(response.body))
        const enc_vault = data.enc_vault;
-       if(this.userService.getKey() != null){
+       if(this.userService.get_zke_key() != null){
         try{
-          this.crypto.decrypt(enc_vault, this.userService.getKey()!).then((dec_vault)=>{
+          this.crypto.decrypt(enc_vault, this.userService.get_zke_key()!).then((dec_vault)=>{
             if(dec_vault == null){
               superToast({
                 message: "Wrong key. You cannot decrypt this vault or the data retrieved is null. Please log out and log in again.",
@@ -281,7 +281,7 @@ export class EditTOTPComponent implements OnInit{
   }
 
   updateVault(){
-    if(this.userService.getVault() == null || this.userService.getKey() == null){
+    if(this.userService.getVault() == null || this.userService.get_zke_key() == null){
       superToast({
         message: "Error : Impossible to encrypt your vault. For safety reasons, please log out and log in again.",
        type: "is-warning",
@@ -292,7 +292,7 @@ export class EditTOTPComponent implements OnInit{
     } else {
       const jsonVault = this.utils.vaultToJson(this.userService.getVault()!);
       try {
-        this.crypto.encrypt(jsonVault, this.userService.getKey()!, this. userService.getDerivedKeySalt()!).then((enc_vault)=>{
+        this.crypto.encrypt(jsonVault, this.userService.get_zke_key()!, this. userService.getDerivedKeySalt()!).then((enc_vault)=>{
           this.http.put(ApiService.API_URL+"/vault", {enc_vault:enc_vault}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
             superToast({
               message: "New TOTP code added ! ",

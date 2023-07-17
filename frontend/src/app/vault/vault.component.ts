@@ -55,9 +55,9 @@ export class VaultComponent implements OnInit {
           console.log(data)
          const enc_vault = data.enc_vault;
          console.log(enc_vault)
-         if(this.userService.getKey() != null){
+         if(this.userService.get_zke_key() != null){
           try{
-            this.crypto.decrypt(enc_vault, this.userService.getKey()!).then((dec_vault)=>{
+            this.crypto.decrypt(enc_vault, this.userService.get_zke_key()!).then((dec_vault)=>{
               if(dec_vault == null){
                 superToast({
                   message: "Wrong key. You cannot decrypt this vault or the data retrieved is null. Please log out and log in again.",

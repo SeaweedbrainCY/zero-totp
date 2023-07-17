@@ -6,7 +6,7 @@ import { ApiService } from '../common/ApiService/api-service';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import {Crypto} from '../common/Crypto/crypto';
-
+import { Buffer } from 'buffer';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -29,6 +29,7 @@ export class LoginComponent {
     private router: Router,
     private route: ActivatedRoute,
     private userService: UserService,
+    private crypto:Crypto
     ) {
     }
 
@@ -51,14 +52,62 @@ export class LoginComponent {
       
     }
 
+  getZKEKeyAndNavigate(derivedKey: CryptoKey){
+    this.http.get(ApiService.API_URL+"/zke_encrypted_key",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      const data = JSON.parse(JSON.stringify(response.body))
+      const zke_key_encrypted = data.zke_encrypted_key
+      this.crypto.decrypt(zke_key_encrypted, derivedKey).then(zke_key_b64=>{
+        if (zke_key_b64 != null) {
+          const zke_key_raw = Buffer.from(zke_key_b64!, 'base64');
+          try{
+          window.crypto.subtle.importKey(
+            "raw",
+            zke_key_raw,
+            "AES-GCM",
+            true,
+            ["encrypt", "decrypt"]
+          ).then((zke_key)=>{
+            this.userService.set_zke_key(zke_key!);
+          this.router.navigate(["/vault"], {relativeTo:this.route.root});
+          });
+        } catch(e) {
+          superToast({
+            message: "Error : Impossible to import your key." + e,
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        }
+        } else {
+          superToast({
+            message: "Impossible to decrypt your key",
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        }
+      
+      });
+    }, (error)=> {
+      superToast({
+        message: "Impossible to retrieve your encryption key. Please try again later",
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
+    
+  }
+
 
   deriveKeyAndNavigate(){
-    const crypto = new Crypto();
     const derivedKeySalt = this.userService.getDerivedKeySalt();
     if(derivedKeySalt != null){
-      crypto.deriveKey(derivedKeySalt, this.password).then(key=>{
-        this.userService.setKey(key);
-        this.router.navigate(["/vault"], {relativeTo:this.route.root});
+      this.crypto.deriveKey(derivedKeySalt, this.password).then(key=>{
+       this.getZKEKeyAndNavigate(key)
       });
     } else {
       this.isLoading=false;
