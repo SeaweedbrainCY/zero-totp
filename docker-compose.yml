@@ -1,10 +1,9 @@
-version: '1.0'
+version: '3.9'
 
 services:
   frontend:
     container_name: frontend
-    build:
-      context: ./frontend
+    image: seaweedbrain/zero-totp-frontend:latest
     ports: 
       - "4200:80"
     env_file:
@@ -12,8 +11,7 @@ services:
 
   api:
     container_name: api
-    build:
-      context: ./api
+    image: seaweedbrain/zero-totp-api:latest
     ports:
       - "8080:8080"
     env_file:
