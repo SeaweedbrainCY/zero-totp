@@ -1,9 +1,7 @@
 name: "Build images"
 
-on:
-  push:
-    branches:
-      - 'main'
+on : [workflow_call] 
+
 jobs:
     docker-frontend:
       name: Publish Frontend Docker image
