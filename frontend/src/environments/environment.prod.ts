@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    API_URL : "https://zero-totp.h.minet.net"
+    API_URL : "https://api.zero-totp.h.minet.net"
   };
