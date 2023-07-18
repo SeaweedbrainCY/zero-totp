@@ -1,4 +1,4 @@
-name: "Deploy production app"
+name: "zero-totp.fr deployment"
 
 on:
   push:
@@ -42,6 +42,7 @@ jobs:
          - name: Deployment
            uses: distributhor/workflow-webhook@v3
            env:
+             webhook_url: ${{ secrets.WEBHOOK_URL }}
              webhook_auth:: ${{ secrets.WEBHOOK_AUTH }}
 
         
