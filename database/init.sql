@@ -1,3 +1,4 @@
+CREATE DATABASE IF NOT EXISTS zero_totp; 
 USE zero_totp;
 
 -- Création de la table "User" si elle n'existe pas déjà
