@@ -1,0 +1,17 @@
+name: "Deploy"
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  deploy-production:
+    name: Deploy on production server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deployment
+        uses: distributhor/workflow-webhook@v3
+        env:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+
+        
