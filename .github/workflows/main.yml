@@ -42,7 +42,6 @@ jobs:
          - name: Deployment
            uses: distributhor/workflow-webhook@v3
            env:
-             webhook_url: ${{ secrets.WEBHOOK_URL }}
-             webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+             webhook_auth:: ${{ secrets.WEBHOOK_AUTH }}
 
         
