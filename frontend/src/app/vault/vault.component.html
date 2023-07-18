@@ -3,8 +3,12 @@
         <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">Here is your TOTP vault</h1>
         <p class="has-text-centered has-text-grey pb-6">You and only you can access to this data. All the magic is done
             on your computer.</p>
-        <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap">
-            <div class="column is-3">
+        <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
+            <div class="column is-full-mobile
+            is-one-third-tablet
+            is-one-third-desktop
+            is-one-third-widescreen
+            is-one-quarter-fullhd">
                 <a (click)="addNew()"><div class="card  " >
                     <header class="card-header">
                         <p class="card-header-title">Add a new TOTP code</p>
@@ -16,7 +20,11 @@
                     </div>
                 </div></a>
             </div>
-            <div class="column is-3" *ngFor="let uuid of vaultDomain">
+            <div class="column  is-full-mobile
+            is-one-third-tablet
+            is-one-third-desktop
+            is-one-third-widescreen
+            is-one-quarter-fullhd" *ngFor="let uuid of vaultDomain">
                 <div class="card has-background-{{vault!.get(uuid)?.get('color')}} has-text-white">
                     <header class="card-header">
                         <p class="card-header-title  has-text-white">{{vault!.get(uuid)?.get('name')}}</p>

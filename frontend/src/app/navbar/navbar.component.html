@@ -5,14 +5,14 @@
        <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
       </a>
   
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" (click)="navbarBurger()" [ngClass]="{'is-active' : navbarActive}">
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
       </a>
     </div>
   
-    <div id="navbarBasicExample" class="navbar-menu">
+    <div id="navbarBasicExample" class="navbar-menu" [ngClass]="{'is-active' : navbarActive}">
       <div class="navbar-start"  *ngIf="userService.getId()!=null">
         <a class="navbar-item" (click)="navigateToRoute('vault')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault'}">
           My vault
