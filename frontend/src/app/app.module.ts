@@ -17,6 +17,7 @@ import { Utils } from './common/Utils/utils';
 import { EditTOTPComponent } from './edit-totp/edit-totp.component';
 import { LogoutComponent } from './logout/logout.component';
 import { Crypto } from './common/Crypto/crypto';
+import { FooterComponent } from './footer/footer.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { Crypto } from './common/Crypto/crypto';
     LoginComponent,
     VaultComponent,
     EditTOTPComponent,
-    LogoutComponent
+    LogoutComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
