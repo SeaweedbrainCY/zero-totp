@@ -12,11 +12,19 @@
     </div>
   </section>
 
-<div class="columns is-flex is-justify-content-center pt-6">
-    <div class="column is-6">
+<div class="columns is-flex is-justify-content-center pt-6 is-mobile ">
+    <div class="column is-full-mobile
+    is-full-tablet
+    is-full-desktop
+    is-full-widescreen
+    is-three-quarters-fullhd ">
         <div class="is-flex is-justify-content-space-around is-flex-direction-column	">
-          <div class="is-flex is-justify-content-space-around">
-        <div class="field">
+          <div class="is-flex is-justify-content-space-around columns is-flex-wrap-wrap">
+        <div class="field column is-two-thirds-mobile
+        is-one-third-tablet
+        is-one-quarter-desktop
+        is-one-quarter-widescreen
+        is-one-quarter-fullhd">
             <label class="label">Domain or name</label>
             <div class="control has-icons-left has-icons-right">
               <input class="input" type="text" placeholder="github.com" name="name" [(ngModel)]="name" (change)="checkName()" [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }">
@@ -26,7 +34,11 @@
             </div>
             <p class="help is-danger" *ngIf="nameError != ''">{{nameError}}</p>
           </div>
-          <div class="field">
+          <div class="field column is-two-thirds-mobile
+          is-one-third-tablet
+          is-one-quarter-desktop
+          is-one-quarter-widescreen
+          is-one-quarter-fullhd">
             <label class="label">TOTP secret</label>
             <div class="control has-icons-left has-icons-right">
               <input class="input" type="test" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret" (change)="checkSecret()" [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }">
