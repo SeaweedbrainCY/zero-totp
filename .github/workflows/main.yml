@@ -16,6 +16,7 @@ jobs:
         - name: Login to Docker Hub
           run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
         - name: Create environment file
+          working-directory: ./frontend
           run: bash generate-env.sh "git_branch=${GITHUB_REF#refs/heads/}:$(git rev-parse --short "$GITHUB_SHA")"
         - name: Build Docker image
           working-directory: ./frontend
