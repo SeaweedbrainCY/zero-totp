@@ -10,5 +10,9 @@ $primary:$success;
 $black:$dark;
 $test:$dark;
 
+a:hover{
+  text-decoration: underline;
+}
+
 /*@import "../node_modules/bulma/css/bulma.css";*/
 @import "../node_modules/bulma/bulma.sass";
