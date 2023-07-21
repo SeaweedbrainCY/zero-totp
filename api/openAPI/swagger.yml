@@ -67,44 +67,6 @@ paths:
           description: Missing required parameters
         "403":
           description: Authentication failed
-  /vault:
-    get:
-      operationId: controllers.getVault
-      tags:
-        - Vault
-      summary: Get the user's vault
-      responses:
-        "200": # status code
-          description: Return the user's vault
-        "400":
-          description: Missing required parameters
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access denied
-    put:
-      operationId: controllers.updateVault
-      tags:
-        - Vault
-      summary: Update the user's vault
-      requestBody:
-        required: true
-        content: 
-          application/json:
-            schema:
-              type: object
-              properties:
-                enc_vault:
-                  type: string
-      responses:
-        "201": # status code
-          description: Vault updated
-        "400":
-          description: Missing required parameters
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access denied
 
   /zke_encrypted_key:
     get:
@@ -119,6 +81,123 @@ paths:
           description: Unauthorized
         "403":
           description: Access denied
+  /encrypted_secret/{uuid}:
+    get:
+      operationId: controllers.get_encrypted_secret
+      tags:
+        - Vault
+      summary: Return the user's encrypted secret 
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+          required: true
+          description: The uuid of the secret to retrieve
+      responses:
+        "200": # status code
+          description: Return the user's encrypted secret
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+    post:
+      operationId: controllers.add_encrypted_secret
+      tags:
+        - Vault
+      summary: Add an encrypted secret to the user's vault
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+          required: true
+          description: The uuid of the secret to add
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                enc_secret:
+                  type: string
+      responses:
+        "201": # status code
+          description: Secret added
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+    put:
+      operationId: controllers.update_encrypted_secret
+      tags:
+        - Vault
+      summary: Update an encrypted secret in the user's vault
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+          required: true
+          description: The uuid of the secret to update
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                enc_secret:
+                  type: string
+      responses:
+        "201": # status code
+          description: Secret updated
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+    delete:
+      operationId: controllers.delete_encrypted_secret
+      tags:
+        - Vault
+      summary: Delete an encrypted secret from the user's vault
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+          required: true
+          description: The uuid of the secret to delete
+      responses:
+        "201": # status code
+          description: Secret deleted
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+  /all_secrets:
+    get:
+      operationId: controllers.get_all_secrets
+      tags:
+        - Vault
+      summary: Return all the user's encrypted secrets
+      responses:
+        "200": # status code
+          description: Return all the user's encrypted secrets
+        "401":
+          description: Unauthorized
+        "404":
+          description: No secrets found
+    
 
 
 components:
