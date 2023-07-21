@@ -3,18 +3,13 @@ import connexion
 import json
 from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
-from database.vault_repo import Vault as VaultDB
+from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
 from Crypto.hash_func import Bcrypt
 import logging
 import environment as env
 import random
 import string
-from flask_cors import CORS
 import Crypto.jwt_func as jwt_auth
-import os
-import base64
-import uuid
-import datetime
 
 
 
@@ -114,10 +109,8 @@ def login():
     response.set_cookie("api-key", jwt_token, httponly=False, secure=env.isCookieSecure, samesite="Lax", max_age=3600)
     return response
     
-
-
-#GET /vault
-def getVault():
+#GET /encrypted_secret/{uuid}
+def get_encrypted_secret(uuid):
     try:
         user_id = connexion.context.get("user")
         logging.info(connexion.context)
@@ -126,16 +119,19 @@ def getVault():
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
-    vaultDB =  VaultDB()
-    user_vault = vaultDB.getVaultByUserId(user_id)
-    if user_vault:
-        enc_vault = user_vault.enc_vault
-        return {"enc_vault": enc_vault}, 200
+    totp_secretDB =  TOTP_secretDB()
+    enc_secret = totp_secretDB.get_enc_secret_by_uuid(uuid)
+    if not enc_secret:
+        return {"message": "Forbidden"}, 403
     else:
-        return {"message": "No vault found for this user"}, 404
-    
-#PUT /vault
-def updateVault():
+        if enc_secret.user_id == user_id:
+            return {"enc_secret": enc_secret}, 200
+        else :    
+            logging.warning("User " + str(user_id) + " tried to access secret " + str(uuid) + " which is not his")
+            return {"message": "Forbidden"}, 403
+        
+#POST /encrypted_secret/{uuid}
+def add_encrypted_secret(uuid):
     try:
         user_id = connexion.context.get("user")
         logging.info(connexion.context)
@@ -143,17 +139,71 @@ def updateVault():
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
-        enc_vault = data["enc_vault"].strip()
+        enc_secret = data["enc_secret"].strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
-    vaultDB =  VaultDB()
-    if vaultDB.updateVault(user_id, enc_vault):
-        return {"message": "Vault updated"}, 201
+    totp_secretDB =  TOTP_secretDB()
+    if totp_secretDB.get_enc_secret_by_uuid(uuid):
+        return {"message": "Forbidden"}, 403
     else:
-        return {"message" : "An error occurred while updating the vault"}, 500
+        try:
+            totp_secretDB.add(user_id, enc_secret, uuid)
+        except Exception as e:
+            logging.warning("Unknown error while adding encrypted secret for user " + str(user_id) + " : " + str(e))
+            return {"message": "Unknown error while adding encrypted secret"}, 500
+        return {"message": "Encrypted secret added"}, 201
 
+#PUT /encrypted_secret/{uuid}
+def update_encrypted_secret(uuid):
+    try:
+        user_id = connexion.context.get("user")
+        logging.info(connexion.context)
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+        dataJSON = json.dumps(request.get_json())
+        data = json.loads(dataJSON)
+        enc_secret = data["enc_secret"].strip()
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    
+    totp_secretDB =  TOTP_secretDB()
+    totp = totp_secretDB.get_enc_secret_by_uuid(uuid)
+    if not totp:
+        return {"message": "Forbidden"}, 403
+    else:
+        if totp.user_id != user_id:
+            logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " which is not his")
+            return {"message": "Forbidden"}, 403
+        try:
+            totp_secretDB.update_secret(uuid, enc_secret)
+        except Exception as e:
+            logging.warning("Unknown error while updating encrypted secret for user " + str(user_id) + " : " + str(e))
+            return {"message": "Unknown error while updating encrypted secret"}, 500
+        return {"message": "Encrypted secret updated"}, 200
+
+#DELETE /encrypted_secret/{uuid}
+def delete_encrypted_secret(uuid):
+    pass #TODO
+
+#GET /all_secrets
+def get_all_secrets():
+    try:
+        user_id = connexion.context.get("user")
+        logging.info(connexion.context)
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    totp_secretDB =  TOTP_secretDB()
+    enc_secrets = totp_secretDB.get_all_enc_secret_by_user_id(user_id)
+    if not enc_secrets:
+        return {"message": "No secret found"}, 404
+    else:
+        return {"enc_secrets": enc_secrets}, 200
     
 
 #GET /zke_encrypted_key
