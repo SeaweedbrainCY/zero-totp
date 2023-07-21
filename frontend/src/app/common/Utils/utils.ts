@@ -53,4 +53,24 @@ export class Utils {
 
        return map;
          }
+
+      mapToJson(map: Map<string, string>):string{
+        const jsonObject: { [key: string]: string } = {};
+        for (const [key, value] of map) {
+          jsonObject[key] = value;
+        }
+        return JSON.stringify(jsonObject);
+      }
+
+      mapFromJson(json:string): Map<string, string>{
+        const jsonObject = JSON.parse(json);
+
+        const map = new Map<string, string>();
+        for (const key in jsonObject) {
+          if (jsonObject.hasOwnProperty(key)) {
+            map.set(key, jsonObject[key]);
+          }
+        }
+        return map;
+      }
 }
