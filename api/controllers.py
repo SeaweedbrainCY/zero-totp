@@ -120,12 +120,12 @@ def get_encrypted_secret(uuid):
         logging.info(e)
         return {"message": "Invalid request"}, 400
     totp_secretDB =  TOTP_secretDB()
-    enc_secret = totp_secretDB.get_enc_secret_by_uuid(uuid)
+    enc_secret = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
     if not enc_secret:
         return {"message": "Forbidden"}, 403
     else:
         if enc_secret.user_id == user_id:
-            return {"enc_secret": enc_secret}, 200
+            return {"enc_secret": enc_secret.secret_enc}, 200
         else :    
             logging.warning("User " + str(user_id) + " tried to access secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
@@ -143,9 +143,10 @@ def add_encrypted_secret(uuid):
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
-    
+    if(uuid == ""):
+        return {"message": "Invalid request"}, 400
     totp_secretDB =  TOTP_secretDB()
-    if totp_secretDB.get_enc_secret_by_uuid(uuid):
+    if totp_secretDB.get_enc_secret_by_uuid(user_id, uuid):
         return {"message": "Forbidden"}, 403
     else:
         try:
@@ -170,19 +171,24 @@ def update_encrypted_secret(uuid):
         return {"message": "Invalid request"}, 400
     
     totp_secretDB =  TOTP_secretDB()
-    totp = totp_secretDB.get_enc_secret_by_uuid(uuid)
+    totp = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
     if not totp:
+        logging.debug("User " + str(user_id) + " tried to update secret " + str(uuid) + " which does not exist")
         return {"message": "Forbidden"}, 403
     else:
         if totp.user_id != user_id:
             logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
         try:
-            totp_secretDB.update_secret(uuid, enc_secret)
+            totp = totp_secretDB.update_secret(uuid, enc_secret)
+            if totp == None:
+                logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " which does not exist")
+                return {"message": "An error occurred server side while storing your encrypted secret"}, 500
+            else:
+                return {"message": "Encrypted secret updated"}, 201
         except Exception as e:
             logging.warning("Unknown error while updating encrypted secret for user " + str(user_id) + " : " + str(e))
             return {"message": "Unknown error while updating encrypted secret"}, 500
-        return {"message": "Encrypted secret updated"}, 200
 
 #DELETE /encrypted_secret/{uuid}
 def delete_encrypted_secret(uuid):
@@ -203,7 +209,11 @@ def get_all_secrets():
     if not enc_secrets:
         return {"message": "No secret found"}, 404
     else:
-        return {"enc_secrets": enc_secrets}, 200
+        secrets = []
+        for enc_secret in enc_secrets:
+           secret = {"uuid": enc_secret.uuid, "enc_secret": enc_secret.secret_enc}
+           secrets.append(secret)
+        return {"enc_secrets": secrets}, 200
     
 
 #GET /zke_encrypted_key
