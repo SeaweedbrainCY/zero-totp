@@ -49,41 +49,44 @@ export class VaultComponent implements OnInit {
     if(this.userService.getId() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } else {
-      this.http.get(ApiService.API_URL+"/vault",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      this.vault = new Map<string, Map<string,string>>();
+      this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         try{
           const data = JSON.parse(JSON.stringify(response.body))
           console.log(data)
-         const enc_vault = data.enc_vault;
-         console.log(enc_vault)
          if(this.userService.get_zke_key() != null){
           try{
-            this.crypto.decrypt(enc_vault, this.userService.get_zke_key()!).then((dec_vault)=>{
-              if(dec_vault == null){
-                superToast({
-                  message: "Wrong key. You cannot decrypt this vault or the data retrieved is null. Please log out and log in again.",
-                  type: "is-danger",
-                  dismissible: false,
-                  duration: 20000,
-                animate: { in: 'fadeIn', out: 'fadeOut' }
-                });
-              } else {
-                  try{
-                    this.vault = this.utils.vaultFromJson(dec_vault);
-                    console.log(this.vault)
-                    this.userService.setVault(this.vault);
-                    console.log("vault set")
-                    this.startDisplayingCode()
-                  } catch {
-                    superToast({
-                      message: "Wrong key. You cannot decrypt this vault or the data retrieved not usable. Please log out and log in again.   ",
-                      type: "is-danger",
-                      dismissible: false,
-                      duration: 20000,
-                    animate: { in: 'fadeIn', out: 'fadeOut' }
-                    });
+            this.startDisplayingCode()
+            for (let secret of data.enc_secrets){
+              this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
+                if(dec_secret == null){
+                  superToast({
+                    message: "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
+                    type: "is-danger",
+                    dismissible: false,
+                    duration: 20000,
+                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                  });
+                } else {
+                    try{
+                      this.vault?.set(secret.uuid, this.utils.mapFromJson(dec_secret));
+                      console.log(this.vault)
+                      this.userService.setVault(this.vault!);
+                      this.vaultDomain = Array.from(this.vault!.keys()) as string[];
+                      console.log("vault set")
+                    } catch {
+                      superToast({
+                        message: "Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.   ",
+                        type: "is-danger",
+                        dismissible: false,
+                        duration: 20000,
+                      animate: { in: 'fadeIn', out: 'fadeOut' }
+                      });
+                    }
                   }
-                }
-            })
+              })
+            }
+            
           } catch {
             superToast({
               message: "Wrong key. You cannot decrypt this vault.",
@@ -134,7 +137,6 @@ export class VaultComponent implements OnInit {
   }
 
   startDisplayingCode(){
-    this.vaultDomain = Array.from(this.vault!.keys()) as string[];
         console.log("vault = ", this.vaultDomain)
         setInterval(()=> { this.generateTime() }, 20);
         setInterval(()=> { this.generateCode() }, 100);
