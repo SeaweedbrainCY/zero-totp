@@ -15,9 +15,9 @@ class ZKE_encryption_key(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     ZKE_key = db.Column(db.String(256), nullable=False)
 
-class Vaults(db.Model):
-    __tablename__ = "Vaults"
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+class TOTP_secret(db.Model):
+    __tablename__ = "totp_secret_enc"
+    uuid = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
-    # longtext :
-    enc_vault = db.Column(db.Text , nullable=False)
+    secret_enc = db.Column(db.Text, nullable=False)
+
