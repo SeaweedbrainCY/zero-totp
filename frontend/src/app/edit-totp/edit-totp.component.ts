@@ -29,7 +29,7 @@ export class EditTOTPComponent implements OnInit{
   time=80;
   duration = 0;
   currentUrl:string = "";
-  getElementID:string|null = null;
+  secret_uuid:string|null = null;
   superToast = require('bulma-toast');
   constructor(
     private router: Router,
@@ -48,50 +48,17 @@ export class EditTOTPComponent implements OnInit{
 
   ngOnInit(){
     if(this.userService.getId() == null){
-      //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
-    this.getElementID = this.route.snapshot.paramMap.get('id');
-    console.log(this.getElementID)
-    if(this.getElementID == null){
+    this.secret_uuid = this.route.snapshot.paramMap.get('id');
+    console.log(this.secret_uuid)
+    if(this.secret_uuid == null){
         if(this.currentUrl != "/vault/add"){
           this.router.navigate(["/vault"], {relativeTo:this.route.root});
           return;
         }
     } else {
-      const vault = this.userService.getVault();
-      if(vault == null || !vault.has(this.getElementID)){
-        this.router.navigate(["/vault"], {relativeTo:this.route.root});
-        return;
-      } else {
-        const property = vault.get(this.getElementID)!;
-        this.uuid = this.getElementID;
-        this.name = property.get("name")!;
-        this.secret = property.get("secret")!;
-        this.color = property.get("color")!;
-        switch(this.color){
-          case "info":{
-            this.selected_color = "Blue";
-            break;
-          }
-          case "primary":{
-            this.selected_color = "Green";
-            break;
-          }
-          case "warning":{
-            this.selected_color = "Orange";
-            break;
-          }
-          case "danger":{
-            this.selected_color = "Red";
-            break;
-          }
-          default:{
-            this.selected_color = "Blue";
-            break;
-          }
-        }
-      }
-
+      this.getSecretTOTP()
     }
 
     setInterval(()=> { this.generateCode() }, 100);
@@ -171,167 +138,144 @@ export class EditTOTPComponent implements OnInit{
     this.router.navigate(["/vault"], {relativeTo:this.route.root});
   }
 
+  getSecretTOTP(){
+    this.uuid = this.secret_uuid!;
+    this.http.get(ApiService.API_URL+"/encrypted_secret/"+this.uuid,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      try{
+        const data = JSON.parse(JSON.stringify(response.body));
+        console.log("dara = " + data.enc_secret)
+        this.crypto.decrypt(data.enc_secret, this.userService.get_zke_key()!).then((decrypted_secret)=>{
+          console.log("decrypted secret = " + decrypted_secret)
+          if(decrypted_secret == null){
+            superToast({
+              message: "An error occured while decrypting your secret",
+             type: "is-warning",
+              dismissible: false,
+              duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+            });
+          } else {
+            const property = this.utils.mapFromJson(decrypted_secret);
+            this.uuid = this.secret_uuid!;
+            this.name = property.get("name")!;
+            this.secret = property.get("secret")!;
+            this.color = property.get("color")!;
+            switch(this.color){
+              case "info":{
+                this.selected_color = "Blue";
+                break;
+              }
+              case "primary":{
+                this.selected_color = "Green";
+                break;
+              }
+              case "warning":{
+                this.selected_color = "Orange";
+                break;
+              }
+              case "danger":{
+                this.selected_color = "Red";
+                break;
+              }
+              default:{
+                this.selected_color = "Blue";
+                break;
+              }
+            }
+          }
+        });
+      } catch {
+        superToast({
+          message: "An error occured while getting your secret",
+         type: "is-warning",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+    });
+  }
+
   save(){
     if(this.userService.getId() == null){
-      //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
-    }
-    this.getVaultFromAPI(); // get the last up to date vault
-   let vault = this.userService.getVault();
-   if (vault == null){
-    superToast({
-      message: "Your session has expired. For safety reasons you have to log out and log in again.",
-     type: "is-warning",
-      dismissible: false,
-      duration: 20000,
-    animate: { in: 'fadeIn', out: 'fadeOut' }
-    });
-   }
-    if(this.getElementID != null){
-      vault!.delete(this.getElementID);
-    } else {
-      this.uuid = crypto.randomUUID();
+      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
     const property = new Map<string,string>();
     property.set("secret", this.secret);
     property.set("color", this.color);
     property.set("name", this.name);
-    
-    vault!.set(this.uuid, property);
-    this.userService.setVault(vault!);
-    this.updateVault();
-  }
-
-  getVaultFromAPI(){
-    this.http.get(ApiService.API_URL+"/vault",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
-      try{
-        const data = JSON.parse(JSON.stringify(response.body))
-       const enc_vault = data.enc_vault;
-       if(this.userService.get_zke_key() != null){
-        try{
-          this.crypto.decrypt(enc_vault, this.userService.get_zke_key()!).then((dec_vault)=>{
-            if(dec_vault == null){
-              superToast({
-                message: "Wrong key. You cannot decrypt this vault or the data retrieved is null. Please log out and log in again.",
-               type: "is-warning",
-                dismissible: false,
-                duration: 20000,
-              animate: { in: 'fadeIn', out: 'fadeOut' }
-              });
-            } else {
-                try{
-                  const vault = this.utils.vaultFromJson(dec_vault);
-                  this.userService.setVault(vault);
-                } catch {
-                  superToast({
-                    message: "Wrong key. You cannot decrypt this vault or the data retrieved not usable. Please log out and log in again.   ",
-                   type: "is-warning",
-                    dismissible: false,
-                    duration: 20000,
-                  animate: { in: 'fadeIn', out: 'fadeOut' }
-                  });
-                }
-              }
-          })
-        } catch {
-          superToast({
-            message: "Wrong key. You cannot decrypt this vault.",
-           type: "is-warning",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+    const jsonProperty = this.utils.mapToJson(property);
+    try{
+      this.crypto.encrypt(jsonProperty, this.userService.get_zke_key()!, this. userService.getDerivedKeySalt()!).then  ((enc_jsonProperty)=>{
+        if(this.secret_uuid != null){
+          this.updateSecret(enc_jsonProperty, property);
+        } else { 
+          this.addNewSecret(enc_jsonProperty, property);
         }
-      } else {
-        superToast({
-          message: "Impossible to decrypt your vault, you're decryption key has expired. Please log out and log in again.",
-         type: "is-warning",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
-      }
-      } catch(e){
-        superToast({
-          message: "Error : Impossible to retrieve your vault from the server",
-         type: "is-warning",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
-      }
-    }, (error) => {
-      if(error.status == 404){
-        this.userService.setVault(new Map<string, Map<string,string>>());
-      } else {
-        let errorMessage = "";
-        if(error.error.message != null){
-          errorMessage = error.error.message;
-        } else if(error.error.detail != null){
-          errorMessage = error.error.detail;
-        }
-        superToast({
-          message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
-         type: "is-warning",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
-      }
-    });
-  }
-
-  updateVault(){
-    if(this.userService.getVault() == null || this.userService.get_zke_key() == null){
+      });
+    } catch {
       superToast({
-        message: "Error : Impossible to encrypt your vault. For safety reasons, please log out and log in again.",
+        message: "An error happened while encrypting your secret",
        type: "is-warning",
         dismissible: false,
         duration: 20000,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
-    } else {
-      const jsonVault = this.utils.vaultToJson(this.userService.getVault()!);
-      try {
-        this.crypto.encrypt(jsonVault, this.userService.get_zke_key()!, this. userService.getDerivedKeySalt()!).then((enc_vault)=>{
-          this.http.put(ApiService.API_URL+"/vault", {enc_vault:enc_vault}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
-            superToast({
-              message: "New TOTP code added ! ",
-              type: "is-success",
-              dismissible: true,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-            });
-            this.router.navigate(["/vault"], {relativeTo:this.route.root});
-            
-          }, (error) => {
-            let errorMessage = "";
-          if(error.error.message != null){
-            errorMessage = error.error.message;
-          } else if(error.error.detail != null){
-            errorMessage = error.error.detail;
-          }
-          superToast({
-            message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
-           type: "is-warning",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
-          });
-        });
-      } catch {
-        superToast({
-          message: "An error happened while encrypting your vault",
-         type: "is-warning",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
-      }
-
     }
-    
-
   }
-  
+
+  addNewSecret(enc_property:string, property: Map<string,string>){
+    this.uuid = window.crypto.randomUUID();
+    this.http.post(ApiService.API_URL + "/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
+      superToast({
+        message: "TOTP code updated !",
+        type: "is-success",
+        dismissible: true,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+      this.router.navigate(["/vault"], {relativeTo:this.route.root});
+    }, (error) => {
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+      superToast({
+        message: "An error occured while updating your vault with a new code"+ errorMessage,
+       type: "is-warning",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
+  }
+
+  updateSecret(enc_property:string, property: Map<string,string>){
+    this.http.put(ApiService.API_URL + "/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
+      superToast({
+        message: "New TOTP code added ! ",
+        type: "is-success",
+        dismissible: true,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+      this.router.navigate(["/vault"], {relativeTo:this.route.root});
+    }, (error) => {
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+      superToast({
+        message: "An error occured while updating your vault with a new code. "+ errorMessage,
+       type: "is-warning",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
+  }
+
 
 }
