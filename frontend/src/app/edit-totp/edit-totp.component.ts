@@ -242,7 +242,7 @@ export class EditTOTPComponent implements OnInit{
         errorMessage = error.error.detail;
       }
       superToast({
-        message: "An error occured while updating your vault with a new code"+ errorMessage,
+        message: "An error occured while updating your vault with a new code. "+ errorMessage,
        type: "is-warning",
         dismissible: false,
         duration: 20000,
