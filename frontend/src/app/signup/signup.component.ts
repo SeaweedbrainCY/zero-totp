@@ -6,6 +6,8 @@ import { toast } from 'bulma-toast';
 import { toast as superToast } from 'bulma-toast'
 import { Utils } from '../common/Utils/utils';
 import { Crypto } from '../common/Crypto/crypto';
+import { ActivatedRoute, Router } from '@angular/router';
+
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -34,7 +36,9 @@ export class SignupComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private utils: Utils,
-    private crypto:Crypto
+    private crypto:Crypto,
+    private router: Router,
+    private route: ActivatedRoute
     ) { }
 
   ngOnInit(): void {
@@ -142,6 +146,7 @@ export class SignupComponent implements OnInit {
         dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+      this.router.navigate(["/login"], {relativeTo:this.route.root});
 
     },
     (error) => {
