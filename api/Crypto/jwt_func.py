@@ -16,7 +16,7 @@ def verify_jwt(jwt_token):
                            env.jwt_secret, 
                            algorithms=["HS256"], 
                            verify=True, 
-                           iss="https://api.zero-totp.fr",
+                           iss="https://api.zero-totp.com",
                            options={
                               "verify_iss": True, 
                               "verify_nbf": True, 
@@ -32,7 +32,7 @@ def verify_jwt(jwt_token):
 def generate_jwt(user_id):
     try:
         payload = {
-            "iss": "https://api.zero-totp.fr",
+            "iss": "https://api.zero-totp.com",
             "sub": user_id,
             "iat": datetime.datetime.utcnow(),
             "nbf": datetime.datetime.utcnow(),

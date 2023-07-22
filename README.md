@@ -21,14 +21,14 @@ You are the only one able to decrypt these information, thanks to your strong an
 
 To be sure that you always have access to your TOTP codes, we use the benefits of the zero-knowledge encryption to offer you a complete control of your data and its replication : 
 1. You can store your mega-secure encrypted vault **3 different locations**   
-    - The database of zero-totp.fr **(default)**
+    - The database of zero-totp.com **(default)**
     - Into google drive **(recommended and auto-sync)**
     - Into your machine
 2. You have **5 different and independent** platform able to open your vault
-    - zero-totp.fr (for everyday usage)
+    - zero-totp.com (for everyday usage)
     - The iOS application (for your mobile usage)
     - The CLI application (for most geek of us)
-    - rescue.zero-totp.fr (a simple, minimal and ULTRA stable frontend, hosted on github pages where you can upload your vault and decrypt it)
+    - rescue.zero-totp.com (a simple, minimal and ULTRA stable frontend, hosted on github pages where you can upload your vault and decrypt it)
     - On your own machine, thanks to the zero-totp docker image
 
 In summary : Your data is safe, even if your vault leak. Your data is available even if zero-totp.com is unreachable. 

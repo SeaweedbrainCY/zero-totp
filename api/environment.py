@@ -13,8 +13,8 @@ if environment == "development":
     frontend_URI = 'http://localhost:4200'
     isCookieSecure = False
 else:
-    frontend_domain="zero-totp.h.minet.net"
-    frontend_URI = "https://zero-totp.h.minet.net"
+    frontend_domain="zero-totp.com"
+    frontend_URI = "https://zero-totp.com"
     isCookieSecure = True
 
 
