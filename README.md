@@ -1,6 +1,11 @@
 # Zero-TOTP
-[![Packages published on DockerHub](https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/main.yml/badge.svg)](https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/main.yml)
-![GitHub](https://img.shields.io/github/license/seaweedbraincy/zero-totp)
+<p align="center">
+    <img src="https://img.shields.io/uptimerobot/status/m794827592-25c510a0c14f34a3812711a9%20?label=zero-totp.com&link=zero-totp.com"/>
+    <img src="https://img.shields.io/uptimerobot/status/m794828362-be618abc0d9ba7230401e6af?label=api.zero-totp.com&link=zero-totp.com"/>
+    <br>
+    <img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/main.yml/badge.svg"/>
+    <img src="https://img.shields.io/github/license/seaweedbraincy/zero-totp"/>
+</p>
 
 <img src="https://github.com/SeaweedbrainCY/zero-totp/blob/main/frontend/src/assets/logo_zero_totp_dark.png?raw=true"/>
 
