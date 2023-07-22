@@ -17,7 +17,7 @@ class ZKE_encryption_key(db.Model):
 
 class TOTP_secret(db.Model):
     __tablename__ = "totp_secret_enc"
-    uuid = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    uuid = db.Column(db.Integer, primary_key=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     secret_enc = db.Column(db.Text, nullable=False)
 
