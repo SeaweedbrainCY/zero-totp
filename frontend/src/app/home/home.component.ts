@@ -4,6 +4,8 @@ import {UserService} from '../common/User/user.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SecurityContext } from '@angular/core';
 import { Utils } from '../common/Utils/utils';
+import { faLock, faEyeSlash, faFingerprint, faUserLock } from '@fortawesome/free-solid-svg-icons';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +16,10 @@ import { Utils } from '../common/Utils/utils';
 
 
 export class HomeComponent implements OnInit {
+  faLock = faLock;
+  faEyeSlash = faEyeSlash;
+  faGithub = faGithub;
+  faUserLock = faUserLock;
 
 
   password: string = "";
