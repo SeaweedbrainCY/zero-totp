@@ -18,6 +18,7 @@ import { EditTOTPComponent } from './edit-totp/edit-totp.component';
 import { LogoutComponent } from './logout/logout.component';
 import { Crypto } from './common/Crypto/crypto';
 import { FooterComponent } from './footer/footer.component';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 
 @NgModule({
@@ -37,7 +38,8 @@ import { FooterComponent } from './footer/footer.component';
     AppRoutingModule,
     FormsModule,
     FontAwesomeModule,
-    HttpClientModule
+    HttpClientModule, 
+    ClipboardModule
   ],
   providers: [UserService, Utils, Crypto],
   bootstrap: [AppComponent]
