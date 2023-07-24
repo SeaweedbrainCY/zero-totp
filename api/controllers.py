@@ -192,7 +192,31 @@ def update_encrypted_secret(uuid):
 
 #DELETE /encrypted_secret/{uuid}
 def delete_encrypted_secret(uuid):
-    pass #TODO
+    try:
+        user_id = connexion.context.get("user")
+        logging.info(connexion.context)
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    if(uuid == ""):
+        return {"message": "Invalid request"}, 400
+    totp_secretDB =  TOTP_secretDB()
+    totp = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
+    if not totp:
+        logging.debug("User " + str(user_id) + " tried to delete secret " + str(uuid) + " which does not exist")
+        return {"message": "Forbidden"}, 403
+    else:
+        if totp.user_id != user_id:
+            logging.warning("User " + str(user_id) + " tried to delete secret " + str(uuid) + " which is not his")
+            return {"message": "Forbidden"}, 403
+        try:
+            totp_secretDB.delete(uuid)
+        except Exception as e:
+            logging.warning("Unknown error while deleting encrypted secret for user " + str(user_id) + " : " + str(e))
+            return {"message": "Unknown error while deleting encrypted secret"}, 500
+        return {"message": "Encrypted secret deleted"}, 201
 
 #GET /all_secrets
 def get_all_secrets():
