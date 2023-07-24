@@ -29,13 +29,18 @@
                 <div class="card has-background-{{vault!.get(uuid)?.get('color')}} has-text-white">
                     <header class="card-header">
                         <p class="card-header-title  has-text-white">{{vault!.get(uuid)?.get('name')}}</p>
-                        <button class="card-header-icon" aria-label="more options" (click)="edit(uuid)">
+                        <button class="card-header-icon" aria-label="edit" (click)="edit(uuid)">
                             <span class="icon">
                                 <fa-icon [icon]="faPen"></fa-icon>
                             </span>
                         </button>
+                        <button class="card-header-icon" aria-label="copy" (click)="copy()" [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!">
+                            <span class="icon">
+                                <fa-icon [icon]="faCopy"></fa-icon>
+                            </span>
+                        </button>
                     </header>
-                    <div class="card-content">
+                    <a class="noHover" (click)="copy()" [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!"><div class="card-content has-text-white" style="text-decoration: none;">
                         <div class="content has-text-centered">
                             <p class="is-size-2 has-text-weight-bold">{{vault!.get(uuid)?.get('code')}}
                                 <br>
@@ -43,7 +48,7 @@
                             </p>
                            
                         </div>
-                    </div>
+                    </div></a>
                 </div>
             </div>
         </div>

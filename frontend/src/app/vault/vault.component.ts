@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
 import { toast as superToast } from 'bulma-toast'
 import { Utils } from '../common/Utils/utils';
+
 
 @Component({
   selector: 'app-vault',
@@ -16,6 +17,7 @@ import { Utils } from '../common/Utils/utils';
 export class VaultComponent implements OnInit {
   faPen = faPen;
   faSquarePlus = faSquarePlus;
+  faCopy = faCopy;
   vault: Map<string, Map<string,string>> | undefined;
   vaultDomain : string[] = [];
   remainingTime = 0;
@@ -27,7 +29,7 @@ export class VaultComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private crypto: Crypto,
-    private utils: Utils
+    private utils: Utils,
     ) { let property = new Map<string, string>();
       /*property.set("color","info");
       property.set("name", "fake@google.com")
@@ -156,8 +158,7 @@ export class VaultComponent implements OnInit {
     for(let domain of this.vaultDomain){
       const secret = this.vault!.get(domain)!.get("secret")!;
       try{
-        let code=this.totp(secret);
-        code = code[0]+code[1]+code[2] + " " + code[3]+code[4]+code[5] 
+        let code=this.totp(secret); 
         this.vault!.get(domain)!.set("code", code);
       } catch (e){
         let code = "Error"
@@ -173,6 +174,14 @@ export class VaultComponent implements OnInit {
     this.router.navigate(["/vault/edit/"+domain], {relativeTo:this.route.root});
   }
 
+  copy(){
+    superToast({
+      message: "Copied !",
+      type: "is-success",
+      dismissible: true,
+    animate: { in: 'fadeIn', out: 'fadeOut' }
+    });
+  }
 
 
 }
