@@ -9,7 +9,6 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 })
 export class NavbarComponent implements OnInit{
   currentUrl:string = "";
-  navbarActive = false;
   constructor(
     public userService:UserService,
     private router : Router,
@@ -31,12 +30,16 @@ export class NavbarComponent implements OnInit{
   }
 
   navigateToRoute(route:string){
+    window.document.getElementById('navbarBurger')?.click();
     this.router.navigate([route], {relativeTo:this.route.root});
   }
 
-  navbarBurger(){
-    this.navbarActive = !this.navbarActive;
+  changeLocation(url:string){
+    window.document.getElementById('navbarBurger')?.click();
+    window.location.href = url;
   }
+
+
 
 
 }

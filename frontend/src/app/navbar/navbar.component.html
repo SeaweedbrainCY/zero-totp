@@ -1,41 +1,42 @@
 
 <nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-      <a class="navbar-item" (click)="navigateToRoute('/')">
+      <a class="navbar-item" (click)="navigateToRoute('/')" *ngIf="userService.getId()!=null">
        <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
       </a>
+      <a class="navbar-item" href="#" *ngIf="userService.getId()==null">
+        <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
+       </a>
   
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" (click)="navbarBurger()" [ngClass]="{'is-active' : navbarActive}">
+      <a role="button" class="navbar-burger" id="navbarBurger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" >
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
       </a>
     </div>
   
-    <div id="navbarBasicExample" class="navbar-menu" [ngClass]="{'is-active' : navbarActive}">
+    <div id="navbarBasicExample" class="navbar-menu" >
       <div class="navbar-start"  *ngIf="userService.getId()!=null">
         <a class="navbar-item" (click)="navigateToRoute('vault')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault'}">
           My vault
         </a>
-  
-        <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link">
-            More
-          </a>
-  
-          <div class="navbar-dropdown">
-            <a class="navbar-item">
-              Jobs
-            </a>
-            <a class="navbar-item">
-              Contact
-            </a>
-            <hr class="navbar-divider">
-            <a class="navbar-item">
-              Report an issue
-            </a>
-          </div>
-        </div>
+      </div>
+      <div class="navbar-start"  *ngIf="userService.getId()==null">
+        <a class="navbar-item" (click)="changeLocation('#how-it-works')" >
+          How it works
+        </a>
+        <a class="navbar-item" (click)="changeLocation('#never-lose-data')">
+          Never lose your data
+        </a>
+        <a class="navbar-item" (click)="changeLocation('#backup-plan')">
+          Backup plan
+        </a>
+        <a class="navbar-item" (click)="changeLocation('#ZKE')">
+          Zero-Knowledge Encryption
+        </a>
+        <a class="navbar-item" (click)="changeLocation('#project')">
+          About the project
+        </a>
       </div>
   
       <div class="navbar-end">
