@@ -31,6 +31,8 @@ export class EditTOTPComponent implements OnInit{
   currentUrl:string = "";
   secret_uuid:string|null = null;
   superToast = require('bulma-toast');
+  isModalActive = false;  
+  isDestroying = false;
   constructor(
     private router: Router,
     private route : ActivatedRoute,
@@ -277,5 +279,52 @@ export class EditTOTPComponent implements OnInit{
     });
   }
 
+  delete(){
+    this.isDestroying = true;
+    this.http.delete(ApiService.API_URL + "/encrypted_secret/"+this.secret_uuid, {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      if(response.status == 201){
+      this.isDestroying = false;
+      superToast({
+        message: "TOTP code deleted !",
+        type: "is-success",
+        dismissible: true,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+      this.router.navigate(["/vault"], {relativeTo:this.route.root});
+    } else {
+      this.isDestroying = false;
+      superToast({
+        message: "An error occured while deleting your secret.",
+       type: "is-warning",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    }
+     
+    } , (error) => {
+      this.isDestroying = false;
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+      superToast({
+        message: "An error occured while deleting your secret. "+ errorMessage,
+       type: "is-warning",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
+    
+  }
+
+  modal(){
+    if(!this.isDestroying){
+      this.isModalActive = !this.isModalActive;
+    }
+  }
 
 }

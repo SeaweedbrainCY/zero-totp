@@ -62,6 +62,9 @@
           <div class="control">
             <button class="button is-info is-light block" (click)="cancel()">Cancel</button>
           </div>
+          <div class="control" *ngIf="secret_uuid != '' && secret_uuid != null ">
+            <button class="button is-danger block" (click)="modal()" data-target="confirmation">Delete</button>
+          </div>
           <div class="control">
             <button class="button is-info block" (click)="save()">Save</button>
           </div>
@@ -71,3 +74,17 @@
     </div>
 </div>
 </article>
+<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
+  <div class="modal-background" (click)="modal()"></div>
+  <div class="modal-content">
+    <section class="modal-card-body">
+      <h1 class="is-size-1 has-text-danger">Are you sure ?</h1>
+      <strong>You won't be able to undo this action</strong>.<br><br>
+    </section>
+    <footer class="modal-card-foot is-flex is-justify-content-right">
+      <button class="button" (click)="modal()" [disabled]="isDestroying">Cancel</button>
+      <button class="button is-danger"  (click)="delete()" [ngClass]="{'is-loading': isDestroying}">Destroy this secret</button>
+    </footer>
+  </div>
+  <button class="modal-close is-large" aria-label="close" (click)="modal()" *ngIf="!isDestroying"></button>
+</div>
