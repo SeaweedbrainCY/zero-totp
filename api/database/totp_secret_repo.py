@@ -21,3 +21,11 @@ class TOTP_secret:
         enc_totp_secret.secret_enc = enc_secret
         db.session.commit()
         return enc_totp_secret
+
+    def delete(self, uuid):
+        enc_totp_secret = db.session.query(TOTP_secret_model).filter_by(uuid=uuid).first()
+        if enc_totp_secret == None:
+            return None
+        db.session.delete(enc_totp_secret)
+        db.session.commit()
+        return enc_totp_secret
