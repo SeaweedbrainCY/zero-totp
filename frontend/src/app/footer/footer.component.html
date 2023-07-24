@@ -5,14 +5,21 @@
     <div class="is-flex is-justify-content-center">
       <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP" style="height: 50px;" class="mt-4">
     </div>
-    <div class="is-flex is-justify-content-center is-flex-wrap-wrap mt-4">
-        <button href="#" class="button block m-2 is-dark">About</button>
-        <button href="#" class="button block m-2 is-dark">Terms and conditions</button>
-        <button href="#" class="button block m-2 is-dark">Contact</button>
+    <div class="is-flex is-justify-content-center is-flex-wrap-wrap mt-4 is-hidden-mobile is-hidden-tablet-only">
+        <a href="/" class="button block m-2 is-dark">About</a>
+        <a href="#" class="button block m-2 is-dark">Terms and conditions</a>
+        <a href="#" class="button block m-2 is-dark">Contact</a>
+        <a href="https://status.zero-totp.com" class="button block m-2 is-dark">Zero-TOTP status</a>
     </div>
+    <div class="is-flex is-justify-content-center is-flex-direction-column mt-4 is-hidden-desktop">
+      <a href="/" class="button block m-2 is-dark">About</a>
+      <a href="#" class="button block m-2 is-dark">Terms and conditions</a>
+      <a href="#" class="button block m-2 is-dark">Contact</a>
+      <a href="https://status.zero-totp.com" class="button block m-2 is-dark">Zero-TOTP status</a>
+  </div>
     <div class="is-flex is-justify-content-center is-flex-wrap-wrap mt-4 mb-4">
-      <a href="#" ><fa-icon [icon]="faGithub" style="color:white;" size="xl" class="m-4"></fa-icon></a>
-      <a href="#" ><fa-icon [icon]="faLinkedin" style="color:white;" size="xl" class="m-4"></fa-icon></a>
+      <a href="https://github.com/SeaweedbrainCY/zero-totp" ><fa-icon [icon]="faGithub" style="color:white;" size="xl" class="m-4"></fa-icon></a>
+      <a href="https://www.linkedin.com/in/nathan-stchepinsky/" ><fa-icon [icon]="faLinkedin" style="color:white;" size="xl" class="m-4"></fa-icon></a>
       <a href="https://nathan.stchepinsky.net" ><fa-icon [icon]="faGlobe" style="color:white;" size="xl" class="m-4"></fa-icon></a>
       <a href="mailto:nathanstchepinsky+totp@gmail.com" ><fa-icon [icon]="faEnvelope" style="color:white;" size="xl" class="m-4"></fa-icon></a>
   </div>
