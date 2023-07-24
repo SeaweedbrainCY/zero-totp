@@ -17,6 +17,11 @@ a:hover{
 .navbar {
   box-shadow: black 0px 0px 3px;
 }
+*, html {
+
+  scroll-behavior: smooth !important;
+}
+
 
 /*@import "../node_modules/bulma/css/bulma.css";*/
 @import "../node_modules/bulma/bulma.sass";
