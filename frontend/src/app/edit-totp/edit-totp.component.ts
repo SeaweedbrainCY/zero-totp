@@ -90,9 +90,6 @@ export class EditTOTPComponent implements OnInit{
 
   generateCode(){
    this.code=this.totp(this.secret);
-   if(this.code.length == 6){
-    this.code = this.code[0]+this.code[1]+this.code[2] + " " + this.code[3]+this.code[4]+this.code[5] 
-  }
   
    }
    
