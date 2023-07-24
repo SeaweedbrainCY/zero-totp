@@ -20,6 +20,9 @@
         <a class="navbar-item" (click)="navigateToRoute('vault')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault'}">
           My vault
         </a>
+        <a class="navbar-item" (click)="navigateToRoute('vault/add')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault/add'}">
+          Add a new code
+        </a>
       </div>
       <div class="navbar-start"  *ngIf="userService.getId()==null">
         <a class="navbar-item" (click)="changeLocation('#how-it-works')" >
