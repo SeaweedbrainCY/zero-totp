@@ -1,0 +1,37 @@
+<section class="is-flex is-justify-content-center">
+    <div style="width:90vw">
+<h1 class="has-text-centered is-size-1 mt-6 pt-6">Scan the QR code from the website your are activating TOTP 2FA on</h1>
+<div class="is-flex is-justify-content-center">
+    <article class="message is-primary" style="width:60vw">
+    <div class="message-header">
+      <p>The QR scanner is starting ....</p>
+    </div>
+    <div class="message-body">
+        <p>Make sure you have given the browser permission to use your camera</p>
+    </div>
+  </article>
+  <article class="message is-danger" style="width:60vw" *ngIf="scanner.hasPermission == false">
+    <div class="message-header">
+      <p>The refused Zero-TOTP to access to your camero</p>
+    </div>
+    <div class="message-body">
+        <strong>Give the permission to use the camera to be able to scan the QR code</strong><br><br>
+        <strong>Not possible ?</strong> It's not a big deal ! Just copy the secret from the website and enter it manually 
+        <p class="has-text-centered">
+            <button class="button is-success">Configure manually</button>
+        </p>
+    </div>
+  </article>
+</div>
+</div>
+</section>
+<zxing-scanner
+    [enable]="scannerEnabled"
+    [(device)]="desiredDevice"
+    (camerasFound)="camerasFoundHandler($event)"
+    (camerasNotFound)="camerasNotFoundHandler($event)"
+    (scanSuccess)="scanSuccessHandler($event)"
+    (scanError)="scanErrorHandler($event)"
+    (scanFailure)="scanFailureHandler($event)"
+    (scanComplete)="scanCompleteHandler($event)"
+></zxing-scanner>

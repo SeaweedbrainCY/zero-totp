@@ -19,6 +19,9 @@ import { LogoutComponent } from './logout/logout.component';
 import { Crypto } from './common/Crypto/crypto';
 import { FooterComponent } from './footer/footer.component';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
+import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
+
 
 
 @NgModule({
@@ -31,7 +34,8 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     VaultComponent,
     EditTOTPComponent,
     LogoutComponent,
-    FooterComponent
+    FooterComponent,
+    QrcodeReaderComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +43,8 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     FormsModule,
     FontAwesomeModule,
     HttpClientModule, 
-    ClipboardModule
+    ClipboardModule,
+    ZXingScannerModule
   ],
   providers: [UserService, Utils, Crypto],
   bootstrap: [AppComponent]
