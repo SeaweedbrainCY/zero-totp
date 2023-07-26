@@ -6,6 +6,7 @@ import { LoginComponent } from './login/login.component';
 import {VaultComponent} from './vault/vault.component';
 import { EditTOTPComponent } from './edit-totp/edit-totp.component';
 import { LogoutComponent } from './logout/logout.component';
+import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 
 const routes: Routes = [
   {path:'', component: HomeComponent},
@@ -16,6 +17,7 @@ const routes: Routes = [
   {path:'vault/edit/:id', component: EditTOTPComponent},
   {path:'vault/add', component: EditTOTPComponent},
   {path:"logout", component: LogoutComponent},
+  {path:'**', component: PagenotfoundComponent}
 ];
 
 @NgModule({
