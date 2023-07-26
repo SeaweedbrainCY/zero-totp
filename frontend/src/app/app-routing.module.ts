@@ -6,6 +6,7 @@ import { LoginComponent } from './login/login.component';
 import {VaultComponent} from './vault/vault.component';
 import { EditTOTPComponent } from './edit-totp/edit-totp.component';
 import { LogoutComponent } from './logout/logout.component';
+import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 
 const routes: Routes = [
   {path:'', component: HomeComponent},
@@ -15,6 +16,7 @@ const routes: Routes = [
   {path:'vault', component: VaultComponent},
   {path:'vault/edit/:id', component: EditTOTPComponent},
   {path:'vault/add', component: EditTOTPComponent},
+  {path:'qrcode', component: QrcodeReaderComponent},
   {path:"logout", component: LogoutComponent},
 ];
 
