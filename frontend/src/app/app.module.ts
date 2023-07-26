@@ -19,6 +19,7 @@ import { LogoutComponent } from './logout/logout.component';
 import { Crypto } from './common/Crypto/crypto';
 import { FooterComponent } from './footer/footer.component';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     VaultComponent,
     EditTOTPComponent,
     LogoutComponent,
-    FooterComponent
+    FooterComponent,
+    PagenotfoundComponent
   ],
   imports: [
     BrowserModule,
