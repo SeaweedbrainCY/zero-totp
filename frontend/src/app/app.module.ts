@@ -22,6 +22,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
+import { QrCodeTOTP } from './common/qr-code-totp/qr-code-totp.service';
 
 
 
@@ -48,7 +49,7 @@ import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
     ClipboardModule,
     ZXingScannerModule
   ],
-  providers: [UserService, Utils, Crypto],
+  providers: [UserService, Utils, Crypto, QrCodeTOTP],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
