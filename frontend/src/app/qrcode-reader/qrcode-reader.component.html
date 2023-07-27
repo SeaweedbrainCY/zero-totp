@@ -61,3 +61,10 @@
      (permissionResponse)="onHasPermission($event)"
     (camerasFound)="onCamerasFound($event)"></zxing-scanner>
 </article>
+<article class="is-flex is-justify-content-center is-grouped m-4">
+    <div class="box block">
+        <button class="button m-2" (click)="navigate('/vault')">Go back</button> 
+      <button class="button m-2 is-info" (click)="navigate('/vault/add')">Add the TOTP code manually</button>
+    </div>
+</article>
+

@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ZXingScannerComponent } from '@zxing/ngx-scanner';
 import { toast as superToast } from 'bulma-toast'
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { UserService } from '../common/User/user.service';
+import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 
 @Component({
   selector: 'app-qrcode-reader',
@@ -17,10 +20,26 @@ export class QrcodeReaderComponent implements OnInit {
   hasDevices : undefined | boolean = undefined;
   scannerStarted = false;
   totp = require('totp-generator');
+  currentUrl:string = "";
+
+  constructor(
+    private router: Router,
+    private route : ActivatedRoute,
+    private userService : UserService,
+    private qrCode: QrCodeTOTP
+  ){
+    router.events.subscribe((url:any) => {
+      if (url instanceof NavigationEnd){
+          this.currentUrl = url.url;
+      }});
+  }
 
 
   
   ngOnInit(): void {
+    if(this.userService.getId() == null){
+      //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+    }
     this.scanner.camerasFound.subscribe((devices: MediaDeviceInfo[]) => {
       this.hasDevices = true;
       console.log("devices", devices);
@@ -103,5 +122,9 @@ export class QrcodeReaderComponent implements OnInit {
   changeDevice(deviceName: string) {
     const device = this.availableDevices!.find(x => x.deviceId === deviceName);
     this.currentDevice = device || undefined;
+  }
+
+  navigate(route:string){
+    this.router.navigate([route], {relativeTo:this.route.root});
   }
 }
