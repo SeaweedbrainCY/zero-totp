@@ -92,8 +92,9 @@ export class QrcodeReaderComponent implements OnInit {
         if(secret.indexOf('&')>-1){
           secret = secret.split('&')[0]
         } 
-        console.log("label= ", label)
-        console.log("secret= ", secret)
+        this.qrCode.setLabel(label)
+        this.qrCode.setSecret(secret)
+        this.navigate("/vault/add")
       } catch {
         superToast({
           message: "An error occured while reading the QR code information",
