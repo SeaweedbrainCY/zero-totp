@@ -1,15 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 67bb593 (Start of angular functions + Start of API addition for account page requests)
 import { toast as superToast } from 'bulma-toast'
 import { faEnvelope, faLock,  faCheck, faUser} from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Utils } from '../common/Utils/utils';
+<<<<<<< HEAD
 =======
 import { faEnvelope, faLock,  faCheck, faUser} from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 >>>>>>> 8004ceb (Front V1 desktop/mobile for account page)
+=======
+>>>>>>> 67bb593 (Start of angular functions + Start of API addition for account page requests)
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -22,6 +28,7 @@ export class AccountComponent implements OnInit {
   faEnvelope=faEnvelope;
   faLock=faLock;
   faCheck=faCheck;
+<<<<<<< HEAD
   isDestroying=false;
   isModalActive=false;
   isLoading=false;
@@ -35,6 +42,14 @@ export class AccountComponent implements OnInit {
   confirmNewPassword="";
   newPasswordErrorMessage : [string]=[""];
   newPasswordConfirmErrorMessage : [string]=[""];
+=======
+  isDestroying = false;
+  isModalActive = false;
+  isLoading=false;
+  username:string="";
+  email:string = "";
+  confirmEmail:string = "";
+>>>>>>> 67bb593 (Start of angular functions + Start of API addition for account page requests)
   constructor(
     private http: HttpClient,
     private userService: UserService,
@@ -59,10 +74,28 @@ export class AccountComponent implements OnInit {
     }
   }
 
+<<<<<<< HEAD
+=======
+  checkUsername() : boolean{
+  if(this.username != this.utils.sanitize(this.username)){
+      superToast({
+        message: "&, <, >, \" and ' are forbidden",
+        type: "is-danger",
+        dismissible: true,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+>>>>>>> 67bb593 (Start of angular functions + Start of API addition for account page requests)
   changeUsername(){
     //TO DO
   }
 
+<<<<<<< HEAD
   checkEmail(){
     this.emailErrorMessage = "";
     this.emailConfirmErrorMessage="";
@@ -76,6 +109,34 @@ export class AccountComponent implements OnInit {
     } if(this.email != "" && this.confirmEmail != "" && this.email != this.confirmEmail) {
       this.emailConfirmErrorMessage = "Your emails do not match !";
       return;
+=======
+  checkEmail() : boolean{
+    const emailRegex = /\S+@\S+\.\S+/;
+    if(!emailRegex.test(this.email)){
+      superToast({
+        message: "Are your sure about your email ? ",
+        type: "is-danger",
+        dismissible: true,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+      return false;
+    } if(this.email != this.utils.sanitize(this.email)) {
+      superToast({
+        message: "&, <, >, \" and ' are forbidden",
+        type: "is-danger",
+        dismissible: true,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+      return false;
+    } if(this.email != this.confirmEmail) {
+      superToast({
+        message: "Your emails do not match !",
+        type: "is-danger",
+        dismissible: true,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+      return false;
+>>>>>>> 67bb593 (Start of angular functions + Start of API addition for account page requests)
     } else {
       return true;
     }
@@ -109,6 +170,7 @@ export class AccountComponent implements OnInit {
     });
   }
 
+<<<<<<< HEAD
   checkNewPassword(){
     this.newPasswordErrorMessage=[""];
     this.newPasswordConfirmErrorMessage=[""];
@@ -136,6 +198,8 @@ export class AccountComponent implements OnInit {
   }
 
 
+=======
+>>>>>>> 67bb593 (Start of angular functions + Start of API addition for account page requests)
   deleteAccount(){
     this.isDestroying = true;
   }
