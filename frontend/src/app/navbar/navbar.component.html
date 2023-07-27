@@ -4,18 +4,18 @@
       <a class="navbar-item" (click)="navigateToRoute('/')" *ngIf="userService.getId()!=null">
        <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
       </a>
-      <a class="navbar-item" href="#" *ngIf="userService.getId()==null">
+      <a class="navbar-item"  href="#" *ngIf="userService.getId()==null">
         <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
        </a>
   
-      <a role="button" class="navbar-burger" id="navbarBurger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" >
+      <a role="button" class="navbar-burger"  id="navbarBurger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" (click)="isNavbarExpanded = !isNavbarExpanded">
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
       </a>
     </div>
   
-    <div id="navbarBasicExample" class="navbar-menu" >
+    <div id="navbarBasicExample" class="navbar-menu"[ngClass]="{'is-active': isNavbarExpanded}" >
       <div class="navbar-start"  *ngIf="userService.getId()!=null">
         <a class="navbar-item" (click)="navigateToRoute('vault')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault'}">
           My vault
