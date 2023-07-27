@@ -21,6 +21,10 @@ run_database:
 	echo "Starting docker database container ..."
 	docker-compose up database
 
+test:
+	echo "Running tests ..."
+	. .env && . api/venv/bin/activate && cd api && python3 -m pytest -vvv
+
 run:
 	make run_database & \
 	make run_frontend & \
