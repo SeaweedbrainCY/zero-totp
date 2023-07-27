@@ -238,6 +238,8 @@ export class EditTOTPComponent implements OnInit{
         dismissible: true,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+      this.QRCodeService.setLabel('')
+      this.QRCodeService.setSecret('')
       this.router.navigate(["/vault"], {relativeTo:this.route.root});
     }, (error) => {
       let errorMessage = "";
