@@ -32,4 +32,3 @@ clean:
 	rm -rf api/venv
 	rm -rf api/__pycache__
 	docker rm database -f
-	docker system prune -f
