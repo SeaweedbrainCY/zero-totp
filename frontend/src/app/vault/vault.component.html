@@ -10,7 +10,7 @@
             is-one-third-desktop
             is-one-third-widescreen
             is-one-quarter-fullhd">
-                <a (click)="addNew()"><div class="card  " >
+                <a (click)="isModalActive = !isModalActive"><div class="card  " >
                     <header class="card-header">
                         <p class="card-header-title">Add a new TOTP code</p>
                     </header>
@@ -55,3 +55,21 @@
     </div>
 </div>
 </section>
+<div id="addTOTPModal" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
+    <div class="modal-background" (click)="isModalActive = !isModalActive"></div>
+    <div class="modal-content">
+      <section class="modal-card-body">
+        <h1 class="is-size-3">Choose a method to add a new TOTP code </h1>
+      <div class="is-flex is-justify-content-center m-4">
+      <button class="button is-info" (click)="navigate('/qrcode')">Scan a QRCode</button>
+    </div>
+      <div class="is-flex is-justify-content-center m-4">
+      <button class="button" (click)="navigate('/vault/add')">Enter it manually</button>
+    </div>
+    </section>
+      <footer class="modal-card-foot is-flex is-justify-content-right">
+        <button class="button" (click)="isModalActive = !isModalActive">Cancel</button>
+        </footer>
+    <button class="modal-close is-large" aria-label="close" (click)="isModalActive = !isModalActive" ></button>
+  </div>
+  </div>
