@@ -1,27 +1,34 @@
 .DEFAULT_GOAL := run
 
 install_frontend:
-	cd frontend && npm install 
+	echo "Installing frontend dependencies ..."
+	cd frontend && npm install
 
 run_frontend:
+	echo "Starting frontend server ..."
 	cd frontend && ng serve --host=127.0.0.1 --disable-host-check
 
-install_api:
-	rm -rf api/venv
+install_api: clean
+	echo "Installing API dependencies ..."
 	python3 -m venv api/venv
 	api/venv/bin/pip install -r api/requirements.txt
 
 run_api:
+	echo "Starting API server ..."
 	. .env && . api/venv/bin/activate && cd api && python app.py
 
+run_database:
+	echo "Starting docker database container ..."
+	docker-compose up database
 
-run: 
-	echo "Starting frontend server ..."
+run:
+	make run_database & \
 	make run_frontend & \
-	echo "Starting API ..." &&\
 	make run_api
 
-
-
 clean:
-	rm -rf pycache 
+	echo "Cleaning up ..."
+	rm -rf pycache
+	rm -rf api/venv
+	rm -rf api/__pycache__
+	docker rm database -f

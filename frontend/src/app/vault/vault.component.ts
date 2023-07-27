@@ -22,6 +22,7 @@ export class VaultComponent implements OnInit {
   vaultDomain : string[] = [];
   remainingTime = 0;
   totp = require('totp-generator');
+  isModalActive = false
 
   constructor(
     private userService: UserService,
@@ -144,8 +145,8 @@ export class VaultComponent implements OnInit {
         setInterval(()=> { this.generateCode() }, 100);
   }
 
-  addNew(){
-    this.router.navigate(["/vault/add"], {relativeTo:this.route.root});
+  navigate(route:string){
+    this.router.navigate([route], {relativeTo:this.route.root});
    
   }
 
@@ -182,6 +183,8 @@ export class VaultComponent implements OnInit {
     animate: { in: 'fadeIn', out: 'fadeOut' }
     });
   }
+
+  
 
 
 }
