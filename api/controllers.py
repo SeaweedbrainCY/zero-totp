@@ -111,6 +111,44 @@ def login():
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
     
+    
+# POST /update{username/email}
+def update(option):
+    try:
+        user_id = connexion.context.get("user")
+        logging.info(connexion.context)
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    dataJSON = json.dumps(request.get_json())
+    if(option == "username"):
+        return
+    if(option == "email"):
+        try:
+            data = json.loads(dataJSON)
+            data["email"] = data["email"].strip()
+        except Exception as e:
+            logging.info(e)
+            return {"message": "Invalid request"}, 400
+        
+        if not data["email"]:
+            return {"message": "Missing parameters"}, 400 
+        userDB = UserDB()
+        user = userDB.getByEmail(data["email"])
+        if user:
+            return {"message": "User already exists or the email address is the same"}, 409
+        user.email = data["email"]
+        userDB.update_email(user, user.email)
+        return {"message": "Username updated"}, 200
+    
+# #GET /get_user/{username/email}
+# def get_user(option):
+#     if(option == "username"):
+#     if(option == "email"):
+#     return 
+    
 #GET /encrypted_secret/{uuid}
 def get_encrypted_secret(uuid):
     try:

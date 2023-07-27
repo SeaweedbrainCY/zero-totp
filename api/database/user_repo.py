@@ -16,3 +16,11 @@ class User:
         db.session.query(UserModel).filter_by(id=user_id).delete()
         db.session.commit()
         return True
+    
+    def update_username(self, user_id, username):
+        db.session.query(UserModel).filter_by(id=user_id).update({UserModel.username: username})
+        return username
+
+    def update_email(self, user_id, email):
+        db.session.query(UserModel).filter_by(id=user_id).update({UserModel.mail: email})
+        return email
