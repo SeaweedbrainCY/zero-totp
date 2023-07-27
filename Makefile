@@ -32,7 +32,10 @@ run:
 
 clean:
 	echo "Cleaning up ..."
-	rm -rf pycache
 	rm -rf api/venv
-	rm -rf api/__pycache__
-	docker rm database -f
+	rm -rf database
+	find . -type d -name ".pytest_cache" -exec rm -rf {} +
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type d -name "pycache" -exec rm -rf {} +
+	find . -type f -name "*.pyc" -exec rm -f {} +
+	docker rm database -f 2>/dev/null || true
