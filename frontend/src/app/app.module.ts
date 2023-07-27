@@ -20,11 +20,14 @@ import { Crypto } from './common/Crypto/crypto';
 import { FooterComponent } from './footer/footer.component';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
+<<<<<<< HEAD
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { QrCodeTOTP } from './common/qr-code-totp/qr-code-totp.service';
 import { DevComponent } from './dev/dev.component';
 
+=======
+>>>>>>> 431ed3f (Add navbar account options)
 import { AccountComponent } from './account/account.component';
 
 
