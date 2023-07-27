@@ -36,11 +36,8 @@ import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
     EditTOTPComponent,
     LogoutComponent,
     FooterComponent,
-<<<<<<< HEAD
-    PagenotfoundComponent
-=======
+    PagenotfoundComponent,
     QrcodeReaderComponent
->>>>>>> 883d10e (Add Qr code scanner component)
   ],
   imports: [
     BrowserModule,
