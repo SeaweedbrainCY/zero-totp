@@ -25,6 +25,11 @@ a:hover{
   text-decoration: none !important;
 }
 
+video {
+  max-height: 50vh !important;
+  width:auto !important;
+}
+
 
 /*@import "../node_modules/bulma/css/bulma.css";*/
 @import "../node_modules/bulma/bulma.sass";
