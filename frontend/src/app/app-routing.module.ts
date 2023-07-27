@@ -6,6 +6,7 @@ import { LoginComponent } from './login/login.component';
 import {VaultComponent} from './vault/vault.component';
 import { EditTOTPComponent } from './edit-totp/edit-totp.component';
 import { LogoutComponent } from './logout/logout.component';
+import { AccountComponent } from './account/account.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 
@@ -19,6 +20,7 @@ const routes: Routes = [
   {path:'vault/add', component: EditTOTPComponent},
   {path:'qrcode', component: QrcodeReaderComponent},
   {path:"logout", component: LogoutComponent},
+  {path:"account", component: AccountComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 

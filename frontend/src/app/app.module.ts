@@ -24,6 +24,7 @@ import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { QrCodeTOTP } from './common/qr-code-totp/qr-code-totp.service';
 
+import { AccountComponent } from './account/account.component';
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import { QrCodeTOTP } from './common/qr-code-totp/qr-code-totp.service';
     LogoutComponent,
     FooterComponent,
     PagenotfoundComponent,
-    QrcodeReaderComponent
+    QrcodeReaderComponent,
+    AccountComponent
   ],
   imports: [
     BrowserModule,
