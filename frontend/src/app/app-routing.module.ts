@@ -6,6 +6,7 @@ import { LoginComponent } from './login/login.component';
 import {VaultComponent} from './vault/vault.component';
 import { EditTOTPComponent } from './edit-totp/edit-totp.component';
 import { LogoutComponent } from './logout/logout.component';
+import { AccountComponent } from './account/account.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 
 const routes: Routes = [
@@ -17,6 +18,7 @@ const routes: Routes = [
   {path:'vault/edit/:id', component: EditTOTPComponent},
   {path:'vault/add', component: EditTOTPComponent},
   {path:"logout", component: LogoutComponent},
+  {path:"account", component: AccountComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 
