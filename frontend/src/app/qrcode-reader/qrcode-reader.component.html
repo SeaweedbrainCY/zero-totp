@@ -52,12 +52,12 @@
           [selected]="currentDevice && device.deviceId === currentDevice.deviceId">{{device.label}}</option>
       </select>
     </div>
-      <button class="button is-info m-2">Stop scanner</button>
+      <button class="button m-2" [ngClass]="{'is-success' : !scannerEnabled, 'is-danger': scannerEnabled}" (click)="scannerEnabled = !scannerEnabled"><span *ngIf="scannerEnabled">Stop</span><span *ngIf="!scannerEnabled">Start</span></button>
     </div>
 </article>
 
 <article class="is-flex is-justify-content-center">
-<zxing-scanner [(device)]="currentDevice" (scanSuccess)="onCodeResult($event)"
+<zxing-scanner [enable]="scannerEnabled" [(device)]="currentDevice" (scanSuccess)="onCodeResult($event)"
      (permissionResponse)="onHasPermission($event)"
     (camerasFound)="onCamerasFound($event)"></zxing-scanner>
 </article>
