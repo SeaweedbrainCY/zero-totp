@@ -7,6 +7,7 @@ import { Utils  } from '../common/Utils/utils';
 import { toast as superToast } from 'bulma-toast'
 import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
+import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 
 @Component({
   selector: 'app-edit-totp',
@@ -37,6 +38,7 @@ export class EditTOTPComponent implements OnInit{
     private router: Router,
     private route : ActivatedRoute,
     private userService : UserService,
+    private QRCodeService : QrCodeTOTP,
     private http: HttpClient,
     private utils: Utils,
     private crypto: Crypto,
@@ -58,6 +60,10 @@ export class EditTOTPComponent implements OnInit{
         if(this.currentUrl != "/vault/add"){
           this.router.navigate(["/vault"], {relativeTo:this.route.root});
           return;
+        }
+        if(this.QRCodeService.getLabel() != undefined && this.QRCodeService != undefined){
+          this.name = this.QRCodeService.getLabel()!
+          this.secret = this.QRCodeService.getSecret()!
         }
     } else {
       this.getSecretTOTP()
