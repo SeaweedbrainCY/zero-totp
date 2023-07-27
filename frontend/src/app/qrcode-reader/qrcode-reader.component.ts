@@ -8,37 +8,54 @@ import { ZXingScannerComponent } from '@zxing/ngx-scanner';
 })
 export class QrcodeReaderComponent implements OnInit {
   scannerEnabled = true ;
-  desiredDevice: MediaDeviceInfo | undefined = undefined;
+  availableDevices: MediaDeviceInfo[] | undefined = undefined;
+  currentDevice: MediaDeviceInfo | undefined = undefined;
+  qrResultString: string | undefined = undefined;;
   scanner = new ZXingScannerComponent();
-  hasPermission = undefined;
+  hasPermission: undefined | boolean= undefined;
+  hasDevices : undefined | boolean = undefined;
+  scannerStarted = false;
 
 
-  camerasFoundHandler(event: any) {
-    //this.desiredDevice = event[0];
-    //console.log(event);
-  }
-
+  
   ngOnInit(): void {
-    this.hasPermission = this.scanner.askForPermission();
+    this.scanner.camerasFound.subscribe((devices: MediaDeviceInfo[]) => {
+      this.hasDevices = true;
+      console.log("devices", devices);
+      //this.desiredDevice = devices[0];
+    });
+    this.scanner.askForPermission().then((hasPermission: boolean) => {
+      this.hasPermission = hasPermission;
+      console.log("hasPermission", hasPermission);
+    });
   }
 
-  scanSuccessHandler(event: any) {
-    console.log("duucess" ,event);
+  onCamerasFound(devices: MediaDeviceInfo[]): void {
+    this.availableDevices = devices;
+    this.hasDevices = Boolean(devices && devices.length);
+    if(devices.length > 0) {
+      this.scannerStarted = true;
+    }
   }
 
-  scanErrorHandler(event: any) {
-    console.log("error", event);
+  onCodeResult(resultString: string) {
+    console.log("resultString", resultString);
+    this.qrResultString = resultString;
   }
 
-  scanFailureHandler(event: any) {
-    console.log("dailureEvent" , event);
+  onDeviceSelectChange(selected: string) {
+    if(!this.availableDevices) return;
+    const device = this.availableDevices.find(x => x.deviceId === selected);
+    this.currentDevice = device || undefined;
   }
 
-  scanCompleteHandler(event: any) {
-  //  console.log("complete =",  event);
+
+  onHasPermission(has: boolean) {
+    this.hasPermission = has;
   }
 
-  camerasNotFoundHandler(event: any) {
-    console.log("camero not found ", event);
+  changeDevice(deviceName: string) {
+    const device = this.availableDevices!.find(x => x.deviceId === deviceName);
+    this.currentDevice = device || undefined;
   }
 }
