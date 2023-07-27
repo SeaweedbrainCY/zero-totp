@@ -20,6 +20,9 @@ import { Crypto } from './common/Crypto/crypto';
 import { FooterComponent } from './footer/footer.component';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
+import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
+
 
 
 @NgModule({
@@ -33,7 +36,11 @@ import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
     EditTOTPComponent,
     LogoutComponent,
     FooterComponent,
+<<<<<<< HEAD
     PagenotfoundComponent
+=======
+    QrcodeReaderComponent
+>>>>>>> 883d10e (Add Qr code scanner component)
   ],
   imports: [
     BrowserModule,
@@ -41,7 +48,8 @@ import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
     FormsModule,
     FontAwesomeModule,
     HttpClientModule, 
-    ClipboardModule
+    ClipboardModule,
+    ZXingScannerModule
   ],
   providers: [UserService, Utils, Crypto],
   bootstrap: [AppComponent]
