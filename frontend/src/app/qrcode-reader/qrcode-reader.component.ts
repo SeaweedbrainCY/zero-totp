@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ZXingScannerComponent } from '@zxing/ngx-scanner';
+import { toast as superToast } from 'bulma-toast'
 
 @Component({
   selector: 'app-qrcode-reader',
@@ -15,6 +16,7 @@ export class QrcodeReaderComponent implements OnInit {
   hasPermission: undefined | boolean= undefined;
   hasDevices : undefined | boolean = undefined;
   scannerStarted = false;
+  totp = require('totp-generator');
 
 
   
@@ -40,7 +42,51 @@ export class QrcodeReaderComponent implements OnInit {
 
   onCodeResult(resultString: string) {
     console.log("resultString", resultString);
+    if(this.scannerEnabled){ // false positive
+      this.scannerEnabled = false;
+    
     this.qrResultString = resultString;
+    superToast({
+      message: "Got it!",
+      type: "is-success",
+      dismissible: true,
+    animate: { in: 'fadeIn', out: 'fadeOut' }
+    });
+    this.qrResultString = decodeURIComponent(this.qrResultString);
+    console.log("resultString", resultString);
+    const pattern= /^otpauth:\/\/totp\/[A-zÀ-ž0-9@:.\-_]+\?[a-zA-Z0-9]+=[a-zA-Z0-9]+(&[a-zA-Z0-9]+=[a-zA-Z0-9]+)*$/;
+    if(!pattern.test(this.qrResultString)){
+      superToast({
+        message: "This is not a TOTP QR code or it contains error.",
+        type: "is-warning",
+        duration: 20000,
+        dismissible: false,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    } else {
+      const radical = this.qrResultString.split('otpauth://totp/')[1]
+      
+      const label = radical.split("?")[0].replace(' ', '')
+      const parameters = radical.split("?")[1].replace(' ','')
+      try{
+        let secret = parameters.split("secret=")[1]
+        if(secret.indexOf('&')>-1){
+          secret = secret.split('&')[0]
+        } 
+        console.log("label= ", label)
+        console.log("secret= ", secret)
+      } catch {
+        superToast({
+          message: "An error occured while reading the QR code information",
+          type: "is-warning",
+          duration: 20000,
+          dismissible: false,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+
+    }
+  }
   }
 
   onDeviceSelectChange(selected: string) {
