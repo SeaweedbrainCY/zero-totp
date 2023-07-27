@@ -1,10 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+<<<<<<< HEAD
 import { toast as superToast } from 'bulma-toast'
 import { faEnvelope, faLock,  faCheck, faUser} from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Utils } from '../common/Utils/utils';
+=======
+import { faEnvelope, faLock,  faCheck, faUser} from '@fortawesome/free-solid-svg-icons';
+import { UserService } from '../common/User/user.service';
+>>>>>>> 8004ceb (Front V1 desktop/mobile for account page)
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
