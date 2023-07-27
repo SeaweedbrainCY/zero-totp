@@ -9,6 +9,7 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 })
 export class NavbarComponent implements OnInit{
   currentUrl:string = "";
+  isNavbarExpanded = false;
   constructor(
     public userService:UserService,
     private router : Router,
@@ -30,6 +31,7 @@ export class NavbarComponent implements OnInit{
   }
 
   navigateToRoute(route:string){
+    this.isNavbarExpanded = !this.isNavbarExpanded;
     window.document.getElementById('navbarBurger')?.click();
     this.router.navigate([route], {relativeTo:this.route.root});
   }
