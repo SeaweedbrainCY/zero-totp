@@ -1,23 +1,39 @@
 <section class="is-flex is-justify-content-center">
     <div style="width:90vw">
-<h1 class="has-text-centered is-size-1 mt-6 pt-6">Scan the QR code from the website your are activating TOTP 2FA on</h1>
+<h1 class="has-text-centered is-size-2 mt-6 pt-6">Scan the QR code from the website your are activating TOTP 2FA on</h1>
 <div class="is-flex is-justify-content-center">
-    <article class="message is-primary" style="width:60vw">
+    <article class="message is-primary" style="width:60vw" *ngIf="hasPermission != false && hasDevices != false && !scannerStarted">
     <div class="message-header">
       <p>The QR scanner is starting ....</p>
     </div>
     <div class="message-body">
-        <p>Make sure you have given the browser permission to use your camera</p>
+        <p>Make sure you have given the browser permission to use your camera</p><br>
+        <strong>Any trouble ?</strong> It's not a big deal ! Just copy the secret from the website and enter it manually 
+        <p class="has-text-centered"><br>
+            <button class="button is-success">Configure manually</button>
+        </p>
     </div>
   </article>
-  <article class="message is-danger" style="width:60vw" *ngIf="scanner.hasPermission == false">
+  <article class="message is-danger" style="width:60vw" *ngIf="hasPermission == false">
     <div class="message-header">
-      <p>The refused Zero-TOTP to access to your camero</p>
+      <p>You refused Zero-TOTP to access to your camera</p>
     </div>
     <div class="message-body">
         <strong>Give the permission to use the camera to be able to scan the QR code</strong><br><br>
         <strong>Not possible ?</strong> It's not a big deal ! Just copy the secret from the website and enter it manually 
-        <p class="has-text-centered">
+        <p class="has-text-centered"><br>
+            <button class="button is-success">Configure manually</button>
+        </p>
+    </div>
+  </article>
+  <article class="message is-danger" style="width:60vw" *ngIf="hasDevices == false">
+    <div class="message-header">
+      <p>We can't detect any camera</p>
+    </div>
+    <div class="message-body">
+        <strong>A camera is required to scan a QR code</strong><br><br>
+        <strong>Not possible ?</strong> It's not a big deal ! Just copy the secret from the website and enter it manually 
+        <p class="has-text-centered"><br>
             <button class="button is-success">Configure manually</button>
         </p>
     </div>
@@ -25,13 +41,23 @@
 </div>
 </div>
 </section>
-<zxing-scanner
-    [enable]="scannerEnabled"
-    [(device)]="desiredDevice"
-    (camerasFound)="camerasFoundHandler($event)"
-    (camerasNotFound)="camerasNotFoundHandler($event)"
-    (scanSuccess)="scanSuccessHandler($event)"
-    (scanError)="scanErrorHandler($event)"
-    (scanFailure)="scanFailureHandler($event)"
-    (scanComplete)="scanCompleteHandler($event)"
-></zxing-scanner>
+   
+
+<article class="is-flex is-justify-content-center is-grouped m-4" *ngIf="scannerStarted">
+    <div class="box block">
+    <div class="select is-info m-2">
+    <select class="block" #deviceSelected (change)="changeDevice(deviceSelected.value)">
+        <option value="" [selected]="!currentDevice">No Device Selected</option>
+        <option *ngFor="let device of availableDevices" [value]="device.deviceId"
+          [selected]="currentDevice && device.deviceId === currentDevice.deviceId">{{device.label}}</option>
+      </select>
+    </div>
+      <button class="button is-info m-2">Stop scanner</button>
+    </div>
+</article>
+
+<article class="is-flex is-justify-content-center">
+<zxing-scanner [(device)]="currentDevice" (scanSuccess)="onCodeResult($event)"
+     (permissionResponse)="onHasPermission($event)"
+    (camerasFound)="onCamerasFound($event)"></zxing-scanner>
+</article>
