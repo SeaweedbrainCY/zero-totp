@@ -41,12 +41,9 @@
                         <label class="label">New email</label>
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left">
-<<<<<<< HEAD
                                 <input class="input" type="email" placeholder="Email" name="email" [(ngModel)]="email" (change)="checkEmail()" [ngClass]="{'is-danger' : emailErrorMessage != '' || emailConfirmErrorMessage != ''}">
                                 <span class="help has-text-left is-danger" *ngIf="emailErrorMessage != ''">{{emailErrorMessage}}</span>
-=======
-                                <input class="input" type="email" placeholder="Email" name="email">
->>>>>>> 8004ceb (Front V1 desktop/mobile for account page)
+                                <input class="input" type="email" placeholder="Email" name="email" [(ngModel)]="email" (change)="checkEmail()" [ngClass]="{'is-danger' : emailErrorMessage != '' || emailConfirmErrorMessage != ''}">
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faEnvelope"></fa-icon>
                                 </span>
@@ -54,12 +51,9 @@
                         </div>
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left mb-3">
-<<<<<<< HEAD
                                 <input class="input" type="email" placeholder="Confirm email" name="confirmEmail" [(ngModel)]="confirmEmail" (change)="checkEmail()" [ngClass]="{'is-danger' : emailConfirmErrorMessage != ''}">
                                 <span class="help has-text-left is-danger" *ngIf="emailConfirmErrorMessage != ''">{{emailConfirmErrorMessage}}</span>
-=======
-                                <input class="input" type="email" placeholder="Confirm email" name="email">
->>>>>>> 8004ceb (Front V1 desktop/mobile for account page)
+                                <input class="input" type="email" placeholder="Confirm email" name="confirmEmail" [(ngModel)]="confirmEmail" (change)="checkEmail()" [ngClass]="{'is-danger' : emailConfirmErrorMessage != ''}">
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faEnvelope"></fa-icon>
                                 </span>
@@ -89,16 +83,12 @@
                         <label class="label mt-3">New passphrase</label>
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left">
-<<<<<<< HEAD
                                 <input class="input" type="password" placeholder="New passphrase" name="newPassword" [(ngModel)]="newPassword"(change)="checkNewPassword()" [ngClass]="{'is-danger' : newPasswordErrorMessage.length >1 || newPasswordConfirmErrorMessage.length >1 }">
                                 <span class="help has-text-left is-danger" *ngIf="newPasswordErrorMessage.length >1">
                                     <span *ngFor="let error of newPasswordErrorMessage" >
                                         <span *ngIf="error!=''">{{error}}<br></span>
                                     </span>
                                 </span>
-=======
-                                <input class="input" type="password" placeholder="New passphrase" name="password">
->>>>>>> 8004ceb (Front V1 desktop/mobile for account page)
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faLock"></fa-icon>
                                 </span>
@@ -106,16 +96,18 @@
                         </div>
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left mb-3">
-<<<<<<< HEAD
                                 <input class="input" type="password" placeholder="Confirm Passphrase" name="confirmNewPassword" [(ngModel)]="confirmNewPassword" [ngClass]="{'is-danger' : newPasswordConfirmErrorMessage.length >1}" (change)="checkNewPassword()">
                                <span class="help has-text-left is-danger" *ngIf="newPasswordConfirmErrorMessage.length >1">
                                     <span *ngFor="let error of newPasswordConfirmErrorMessage" >
                                         <span *ngIf="error!=''">{{error}}<br></span>
                                     </span>
                                 </span> 
-=======
-                                <input class="input" type="password" placeholder="Confirm Passphrase" name="password">
->>>>>>> 8004ceb (Front V1 desktop/mobile for account page)
+                                <input class="input" type="password" placeholder="Confirm Passphrase" name="confirmNewPassword" [(ngModel)]="confirmNewPassword" [ngClass]="{'is-danger' : newPasswordConfirmErrorMessage.length >1}" (change)="checkNewPassword()">
+                                <span class="help has-text-left is-danger" *ngIf="newPasswordConfirmErrorMessage.length >1">
+                                    <span *ngFor="let error of newPasswordConfirmErrorMessage" >
+                                        <span *ngIf="error!=''">{{error}}<br></span>
+                                    </span>
+                                </span>
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faLock"></fa-icon>
                                 </span>
@@ -161,8 +153,4 @@
         </footer>
     </div>
     <button class="modal-close is-large" aria-label="close" (click)="modal()" *ngIf="!isDestroying"></button>
-<<<<<<< HEAD
 </div>
-=======
-</div>
->>>>>>> 8004ceb (Front V1 desktop/mobile for account page)
