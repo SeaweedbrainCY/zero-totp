@@ -17,12 +17,19 @@ export class AccountComponent implements OnInit {
   faEnvelope=faEnvelope;
   faLock=faLock;
   faCheck=faCheck;
-  isDestroying = false;
-  isModalActive = false;
+  isDestroying=false;
+  isModalActive=false;
   isLoading=false;
   username:string="";
-  email:string = "";
-  confirmEmail:string = "";
+  usernameErrorMessage="";
+  email:string="";
+  confirmEmail:string="";
+  emailErrorMessage="";
+  emailConfirmErrorMessage="";
+  newPassword="";
+  confirmNewPassword="";
+  newPasswordErrorMessage : [string]=[""];
+  newPasswordConfirmErrorMessage : [string]=[""];
   constructor(
     private http: HttpClient,
     private userService: UserService,
@@ -33,23 +40,23 @@ export class AccountComponent implements OnInit {
 
   
   ngOnInit(): void {
-    if(this.userService.getId() == null){
-      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
-    } else {
-    }
+    // if(this.userService.getId() == null){
+    //   this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+    // } else {
+    // }
   }
 
-  checkUsername() : boolean{
+  checkUsername(){
+  this.usernameErrorMessage = "";
   if(this.username != this.utils.sanitize(this.username)){
-      superToast({
-        message: "&, <, >, \" and ' are forbidden",
-        type: "is-danger",
-        dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
-      return false;
-    } else {
-      return true;
+    this.usernameErrorMessage = "&, <, >, \" and ' are forbidden";
+    superToast({
+      message: "Special characters are forbidden",
+      type: "is-danger",
+      dismissible: true,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+    });
+      return;
     }
   }
 
@@ -58,16 +65,20 @@ export class AccountComponent implements OnInit {
   }
 
   checkEmail() : boolean{
+    this.emailErrorMessage = "";
+    this.emailConfirmErrorMessage="";
     const emailRegex = /\S+@\S+\.\S+/;
     if(!emailRegex.test(this.email)){
+      this.emailErrorMessage = "Are your sure about your email ?";
       superToast({
-        message: "Are your sure about your email ? ",
+        message: "Are your sure about your email ?",
         type: "is-danger",
         dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
       return false;
     } if(this.email != this.utils.sanitize(this.email)) {
+      this.emailErrorMessage = "&, <, >, \" and ' are forbidden";
       superToast({
         message: "&, <, >, \" and ' are forbidden",
         type: "is-danger",
@@ -75,9 +86,10 @@ export class AccountComponent implements OnInit {
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
       return false;
-    } if(this.email != this.confirmEmail) {
+    } if(this.email != "" && this.confirmEmail != "" && this.email != this.confirmEmail) {
+      this.emailConfirmErrorMessage = "Your emails do not match !";
       superToast({
-        message: "Your emails do not match !",
+        message: "Your emails do not match ! ",
         type: "is-danger",
         dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -115,6 +127,33 @@ export class AccountComponent implements OnInit {
       //TO FINISH
     });
   }
+
+  checkNewPassword(){
+    this.newPasswordErrorMessage=[""];
+    this.newPasswordConfirmErrorMessage=[""];
+    const special = /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/;
+    const upper = /[A-Z]/;
+    const number = /[0-9]/;
+    if(this.newPassword.length < 8){
+      this.newPasswordErrorMessage.push("Your password must be at least 8 characters long");
+    }
+    else if(this.newPassword.length > 70){
+      this.newPasswordErrorMessage.push("Password must be less than 70 characters long");
+    }
+    if(!special.test(this.newPassword)){
+      this.newPasswordErrorMessage.push("Your password must contain at least one special character");
+    }
+    if(!upper.test(this.newPassword)){
+      this.newPasswordErrorMessage.push("Your password must contain at least one uppercase character");
+    }
+    if(!number.test(this.newPassword)){
+      this.newPasswordErrorMessage.push("Your password must contain at least one number");
+    }
+    if(this.newPassword != "" && this.confirmNewPassword != "" && this.newPassword != this.confirmNewPassword){
+      this.newPasswordConfirmErrorMessage.push("Your passwords do not match");
+    }
+  }
+
 
   deleteAccount(){
     this.isDestroying = true;
