@@ -50,12 +50,6 @@ export class AccountComponent implements OnInit {
   this.usernameErrorMessage = "";
   if(this.username != this.utils.sanitize(this.username)){
     this.usernameErrorMessage = "&, <, >, \" and ' are forbidden";
-    superToast({
-      message: "Special characters are forbidden",
-      type: "is-danger",
-      dismissible: true,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-    });
       return;
     }
   }
@@ -64,37 +58,19 @@ export class AccountComponent implements OnInit {
     //TO DO
   }
 
-  checkEmail() : boolean{
+  checkEmail(){
     this.emailErrorMessage = "";
     this.emailConfirmErrorMessage="";
     const emailRegex = /\S+@\S+\.\S+/;
     if(!emailRegex.test(this.email)){
       this.emailErrorMessage = "Are your sure about your email ?";
-      superToast({
-        message: "Are your sure about your email ?",
-        type: "is-danger",
-        dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
-      return false;
+      return;
     } if(this.email != this.utils.sanitize(this.email)) {
       this.emailErrorMessage = "&, <, >, \" and ' are forbidden";
-      superToast({
-        message: "&, <, >, \" and ' are forbidden",
-        type: "is-danger",
-        dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
-      return false;
+      return;
     } if(this.email != "" && this.confirmEmail != "" && this.email != this.confirmEmail) {
       this.emailConfirmErrorMessage = "Your emails do not match !";
-      superToast({
-        message: "Your emails do not match ! ",
-        type: "is-danger",
-        dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
-      return false;
+      return;
     } else {
       return true;
     }
