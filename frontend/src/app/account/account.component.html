@@ -19,6 +19,7 @@
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left mb-3">
                                 <input class="input" type="text" placeholder="Username" name="username" [(ngModel)]="username" (change)="checkUsername()" [ngClass]="{'is-danger' : usernameErrorMessage != ''}">
+                                <span class="help has-text-left is-danger" *ngIf="usernameErrorMessage != ''">{{usernameErrorMessage}}</span>
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faUser"></fa-icon>
                                 </span>
@@ -41,6 +42,7 @@
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left">
                                 <input class="input" type="email" placeholder="Email" name="email" [(ngModel)]="email" (change)="checkEmail()" [ngClass]="{'is-danger' : emailErrorMessage != '' || emailConfirmErrorMessage != ''}">
+                                <span class="help has-text-left is-danger" *ngIf="emailErrorMessage != ''">{{emailErrorMessage}}</span>
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faEnvelope"></fa-icon>
                                 </span>
@@ -49,6 +51,7 @@
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left mb-3">
                                 <input class="input" type="email" placeholder="Confirm email" name="confirmEmail" [(ngModel)]="confirmEmail" (change)="checkEmail()" [ngClass]="{'is-danger' : emailConfirmErrorMessage != ''}">
+                                <span class="help has-text-left is-danger" *ngIf="emailConfirmErrorMessage != ''">{{emailConfirmErrorMessage}}</span>
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faEnvelope"></fa-icon>
                                 </span>
@@ -92,11 +95,11 @@
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left mb-3">
                                 <input class="input" type="password" placeholder="Confirm Passphrase" name="confirmNewPassword" [(ngModel)]="confirmNewPassword" [ngClass]="{'is-danger' : newPasswordConfirmErrorMessage.length >1}" (change)="checkNewPassword()">
-                                <span class="help has-text-left is-danger" *ngIf="newPasswordConfirmErrorMessage.length >1">
+                               <span class="help has-text-left is-danger" *ngIf="newPasswordConfirmErrorMessage.length >1">
                                     <span *ngFor="let error of newPasswordConfirmErrorMessage" >
                                         <span *ngIf="error!=''">{{error}}<br></span>
                                     </span>
-                                </span>
+                                </span> 
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faLock"></fa-icon>
                                 </span>
