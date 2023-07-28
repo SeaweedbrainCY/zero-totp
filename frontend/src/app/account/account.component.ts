@@ -52,12 +52,6 @@ export class AccountComponent implements OnInit {
   this.usernameErrorMessage = "";
   if(this.username != this.utils.sanitize(this.username)){
     this.usernameErrorMessage = "&, <, >, \" and ' are forbidden";
-    superToast({
-      message: "Special characters are forbidden",
-      type: "is-danger",
-      dismissible: true,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-    });
       return;
     }
   }
