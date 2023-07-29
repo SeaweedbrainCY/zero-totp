@@ -47,7 +47,7 @@ export class SignupComponent implements OnInit {
 
   checkPassword(){
     this.passwordErrorMessage=[""];
-    const special = /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/;
+    const special = /[!@#$%^&*()_+\-=[\]{};:\\|,./?~]/;
     const upper = /[A-Z]/;
     const number = /[0-9]/;
     if(this.password.length < 8){
@@ -77,16 +77,12 @@ export class SignupComponent implements OnInit {
       this.emailErrorMessage = "Your email is not valid";
       return;
     }
-    if(this.email != this.utils.sanitize(this.email)){
-      this.emailErrorMessage = "&, <, >, \" and ' are forbidden";
-      return;
-    }
   }
 
   checkUsername(){
     this.usernameErrorMessage = "";
-    if(this.username != this.utils.sanitize(this.username)){
-      this.usernameErrorMessage = "&, <, >, \" and ' are forbidden";
+    if(this.username == "" ){
+      this.usernameErrorMessage = "Your username cannot be empty";
       return;
     }
   }
