@@ -47,9 +47,10 @@ export class SignupComponent implements OnInit {
 
   checkPassword(){
     this.passwordErrorMessage=[""];
-    const special = /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/;
+    const special = /[!@#$%^&*()_+\-=[\]{};:\\|,./?~]/;
     const upper = /[A-Z]/;
     const number = /[0-9]/;
+    const forbidden = /["\'<>]/
     if(this.password.length < 8){
       this.passwordErrorMessage.push("Your password must be at least 8 characters long");
     }
@@ -65,28 +66,38 @@ export class SignupComponent implements OnInit {
     if(!number.test(this.password)){
       this.passwordErrorMessage.push("Your password must contain at least one number");
     }
+    if(forbidden.test(this.password)){
+      this.passwordErrorMessage.push("' \" < > characters are forbidden in passwords");
+    }
     if(this.password != this.confirmPassword){
       this.passwordErrorMessage.push("Your passwords do not match");
     }
+
   }
 
   checkEmail(){
+    const forbidden = /["\'<>]/
     this.emailErrorMessage = "";
     const emailRegex = /\S+@\S+\.\S+/;
     if(!emailRegex.test(this.email)){
       this.emailErrorMessage = "Your email is not valid";
       return;
     }
-    if(this.email != this.utils.sanitize(this.email)){
-      this.emailErrorMessage = "&, <, >, \" and ' are forbidden";
+    if(forbidden.test(this.email)){
+      this.emailErrorMessage = "' \" < > characters are forbidden in passwords";
       return;
     }
   }
 
   checkUsername(){
+    const forbidden = /["\'<>]/
     this.usernameErrorMessage = "";
-    if(this.username != this.utils.sanitize(this.username)){
-      this.usernameErrorMessage = "&, <, >, \" and ' are forbidden";
+    if(this.username == "" ){
+      this.usernameErrorMessage = "Your username cannot be empty";
+      return;
+    }
+    if(forbidden.test(this.username)){
+      this.usernameErrorMessage = "' \" < > characters are forbidden in usernames";
       return;
     }
   }
@@ -117,6 +128,7 @@ export class SignupComponent implements OnInit {
     }
     this.checkPassword();
     this.checkEmail();
+    this.checkUsername();
     if(this.emailErrorMessage != '' || this.passwordErrorMessage.length > 1  || this.usernameErrorMessage != ''){return;}
     this.isLoading=true;
     const ZKEkey = this.crypto.generateZKEKey();

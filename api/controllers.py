@@ -10,6 +10,7 @@ import environment as env
 import random
 import string
 import Crypto.jwt_func as jwt_auth
+import Utils.utils as utils
 
 
 
@@ -22,17 +23,19 @@ def signup():
     dataJSON = json.dumps(request.get_json())
     try:
         data = json.loads(dataJSON)
-        data["username"] = data["username"].strip()
+        data["username"] = utils.escape(data["username"].strip())
         data["password"] = data["password"].strip()
-        data["email"] = data["email"].strip()
-        data["salt"] = data["salt"].strip()
-        data["ZKE_key"] = data["ZKE_key"].strip()
+        data["email"] = utils.escape(data["email"].strip())
+        data["salt"] = utils.escape(data["salt"].strip())
+        data["ZKE_key"] = utils.escape(data["ZKE_key"].strip())
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
     if not data["username"] or not data["password"] or not data["email"]:
         return {"message": "Missing parameters"}, 400
+    if(not utils.check_email(data["email"]) or not utils.check_username(data["username"]) or not utils.check_password(data["password"])):
+        return {"message": "Forbidden parameters"}, 403
     
     userDB = UserDB()
     user = userDB.getByEmail(data["email"])
@@ -81,13 +84,15 @@ def login():
     try:
         data = json.loads(dataJSON)
         data["password"] = data["password"].strip()
-        data["email"] = data["email"].strip()
+        data["email"] = utils.escape(data["email"]).strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
     if not data["password"] or not data["email"]:
         return {"message": "Missing parameters"}, 400
+    if(not utils.check_email(data["email"]) or not utils.check_password(data["password"])):
+        return {"message": "Forbidden parameters"}, 403
     userDB = UserDB()
     user = userDB.getByEmail(data["email"])
     logging.info(user)
@@ -139,7 +144,7 @@ def add_encrypted_secret(uuid):
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
-        enc_secret = data["enc_secret"].strip()
+        enc_secret = utils.escape(data["enc_secret"]).strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
@@ -165,7 +170,7 @@ def update_encrypted_secret(uuid):
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
-        enc_secret = data["enc_secret"].strip()
+        enc_secret = utils.escape(data["enc_secret"]).strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
