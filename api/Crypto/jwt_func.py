@@ -8,15 +8,17 @@ from flask import jsonify, request
 import logging
 from werkzeug.exceptions import Forbidden
 
+ALG = 'HS256'
+ISSUER = "https://api.zero-totp.com"
 
 # Verification performed by openAPI
 def verify_jwt(jwt_token): 
    try:
         data = jwt.decode(jwt_token,
                            env.jwt_secret, 
-                           algorithms=["HS256"], 
+                           algorithms=[ALG], 
                            verify=True, 
-                           iss="https://api.zero-totp.com",
+                           issuer = ISSUER,
                            options={
                               "verify_iss": True, 
                               "verify_nbf": True, 
@@ -32,13 +34,13 @@ def verify_jwt(jwt_token):
 def generate_jwt(user_id):
     try:
         payload = {
-            "iss": "https://api.zero-totp.com",
+            "iss": ISSUER,
             "sub": user_id,
             "iat": datetime.datetime.utcnow(),
             "nbf": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
         }
-        return jwt.encode(payload, env.jwt_secret, algorithm="HS256")
+        return jwt.encode(payload, env.jwt_secret, algorithm=ALG)
     except Exception as e:
         logging.warning("Error while generating JWT : " + str(e))
         raise e
