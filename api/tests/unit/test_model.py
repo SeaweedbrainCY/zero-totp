@@ -43,6 +43,3 @@ class TestTOTPSecretConstructor(unittest.TestCase):
         self.assertEqual(self.totp_secret.user_id, 1)
         self.assertEqual(self.totp_secret.secret_enc, "test_secret_enc")
 
-
-if __name__ == '__main__':
-    unittest.main()

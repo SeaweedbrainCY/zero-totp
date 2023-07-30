@@ -27,7 +27,3 @@ class TestBcrypt(unittest.TestCase):
     def test_checkpw_incorrect_type(self):
         falsePassword =  "a" * 73
         self.assertFalse(self.bcrypt.checkpw( falsePassword))
-
-
-if __name__ == '__main__':
-    unittest.main()
