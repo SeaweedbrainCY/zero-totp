@@ -36,9 +36,9 @@ def signup():
         return {"message": "Missing parameters"}, 400
     if(not utils.check_email(data["email"]) or not utils.check_username(data["username"]) or not utils.check_password(data["password"])):
         return {"message": "Forbidden parameters"}, 403
-    
     userDB = UserDB()
     user = userDB.getByEmail(data["email"])
+    print("user = ", user)
     if user:
         return {"message": "User already exists"}, 409
     
@@ -63,13 +63,11 @@ def signup():
             zke_db = ZKE_DB()
             zke_key = zke_db.create(user.id, data["ZKE_key"])
         except Exception as e:
-            userDB.delete(user.id)
-            logging.error("Unknown error while storing user ZKE keys" + str(e))
-            return {"message": "Unknown error while registering user encrypted keys"}, 500
+           zke_key = None
         if zke_key:
             return {"message": "User created"}, 201
         else :
-
+            userDB.delete(user.id)
             logging.error("Unknown error while storing user ZKE keys" + str(data["username"]))
             return {"message": "Unknown error while registering user encrypted keys"}, 500
     else :
