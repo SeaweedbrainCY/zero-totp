@@ -38,7 +38,6 @@ def signup():
         return {"message": "Forbidden parameters"}, 403
     userDB = UserDB()
     user = userDB.getByEmail(data["email"])
-    print("user = ", user)
     if user:
         return {"message": "User already exists"}, 409
     
