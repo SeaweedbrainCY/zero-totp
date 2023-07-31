@@ -33,7 +33,6 @@ run:
 clean:
 	echo "Cleaning up ..."
 	rm -rf api/venv
-	rm -rf database
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name "pycache" -exec rm -rf {} +
