@@ -108,7 +108,7 @@ def login():
     jwt_token = jwt_auth.generate_jwt(user.id)
 
     response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt}))
-    response.set_cookie("api-key", jwt_token, httponly=True, secure=env.isCookieSecure, samesite="Lax", max_age=3600)
+    response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
     
 #GET /encrypted_secret/{uuid}
