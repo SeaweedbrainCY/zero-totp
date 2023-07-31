@@ -5,7 +5,7 @@ from unittest.mock import patch
 from database.model import User
 import environment as env
 
-class TestControllers(unittest.TestCase):
+class TestSignupController(unittest.TestCase):
 
     def setUp(self):
         env.db_uri = "sqlite:///:memory:"
