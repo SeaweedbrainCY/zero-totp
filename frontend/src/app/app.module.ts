@@ -23,6 +23,7 @@ import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { ZXingScannerModule } from '@zxing/ngx-scanner';
 import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { QrCodeTOTP } from './common/qr-code-totp/qr-code-totp.service';
+import { DevComponent } from './dev/dev.component';
 
 
 
@@ -38,7 +39,8 @@ import { QrCodeTOTP } from './common/qr-code-totp/qr-code-totp.service';
     LogoutComponent,
     FooterComponent,
     PagenotfoundComponent,
-    QrcodeReaderComponent
+    QrcodeReaderComponent,
+    DevComponent
   ],
   imports: [
     BrowserModule,

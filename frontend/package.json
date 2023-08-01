@@ -33,7 +33,9 @@
     "bulma": "^0.9.4",
     "bulma-modal-fx": "^1.1.1",
     "bulma-toast": "^2.4.2",
+    "elliptic": "^6.5.4",
     "rxjs": "~7.8.0",
+    "seedrandom": "^3.0.5",
     "totp-generator": "^0.0.14",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
