@@ -1,0 +1,15 @@
+<section style="margin-top: 20vh; padding: 10%;">
+    <label>Passphrase : </label>
+<input  placeholder="Password" name="passphrase" [(ngModel)]="passphrase"/>
+<button (click)="derive()">Derive</button><br>
+<label>Salt : </label>
+<input  placeholder="salt" name="salt" [(ngModel)]="salt"/><button (click)="generateSalt()">Random</button>
+
+<p>Derived key : {{derivedKey}}</p>
+<label>PRNG : </label>
+<input  placeholder="prng" name="prng" [(ngModel)]="prng"/><button (click)="generatePRNG()">Generate</button><br>
+<button (click)="generateEcdsaKeyPair()">Generate keys</button><br>
+<p>Public key : {{publicKey}}</p>
+<p>Private key : {{privateKey}}</p>
+<p>Time : {{time}}s</p>
+</section>
