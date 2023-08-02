@@ -27,8 +27,8 @@ jobs:
       run: python -m pytest --cov=. --cov-report=html
 
     - name: Upload coverage report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: coverage-report
-        path: ./htmlcov
+        path: ./api/htmlcov
 
