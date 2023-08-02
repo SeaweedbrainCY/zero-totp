@@ -1,4 +1,4 @@
-name: Test and Coverage
+name: "Test and Coverage"
 
 on: [push, pull_request]
 
@@ -7,7 +7,6 @@ jobs:
     name: Python Test and Coverage
     runs-on: ubuntu-latest
     steps:
-    env:
     - name: Checkout code
       uses: actions/checkout@v3
 
