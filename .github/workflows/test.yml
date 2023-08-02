@@ -1,4 +1,4 @@
-name: Test and Coverage
+name: "Test and Coverage"
 
 on: [push, pull_request]
 
@@ -21,14 +21,12 @@ jobs:
 
     - name: Run tests with pytest
       working-directory: ./api
-      run: python -m pytest
-
-    - name: Generate coverage report
-      run: pytest --cov=. --cov-report=html
+      env:
+        DATABASE_URI: "sqlite:///:memory:"
+        JWT_SECRET : "secret"
+      run: python -m pytest --cov=. --cov-report=lcov --cov-report=term
 
     - name: Upload coverage report
-      uses: actions/upload-artifact@v2
-      with:
-        name: coverage-report
-        path: ./htmlcov
+      uses: coverallsapp/github-action@v2
+        
 
