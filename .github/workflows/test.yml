@@ -23,8 +23,8 @@ jobs:
     - name: Run tests with pytest
       working-directory: ./api
       env:
-        - DATABASE_URI: "sqlite:///:memory:"
-        - JWT_SECRET : "secret"
+        DATABASE_URI: "sqlite:///:memory:"
+        JWT_SECRET : "secret"
       run: python -m pytest
 
     - name: Generate coverage report
