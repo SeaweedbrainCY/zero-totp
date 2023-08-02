@@ -1,0 +1,32 @@
+name: "Test and Coverage"
+
+on: [push, pull_request]
+
+jobs:
+  python_test_and_coverage:
+    name: Python Test and Coverage
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.x
+
+    - name: Install dependencies
+      working-directory: ./api
+      run: pip install -r requirements.txt && pip install -r test-requirements.txt
+
+    - name: Run tests with pytest
+      working-directory: ./api
+      env:
+        DATABASE_URI: "sqlite:///:memory:"
+        JWT_SECRET : "secret"
+      run: python -m pytest --cov=. --cov-report=lcov --cov-report=term
+
+    - name: Upload coverage report
+      uses: coverallsapp/github-action@v2
+        
+

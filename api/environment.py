@@ -11,11 +11,9 @@ if environment == "development":
     logging.debug("Environment set to development")
     frontend_domain = 'zero-totp.local'
     frontend_URI = 'http://localhost:4200'
-    isCookieSecure = False
 else:
     frontend_domain="zero-totp.com"
     frontend_URI = "https://zero-totp.com"
-    isCookieSecure = True
 
 
 
