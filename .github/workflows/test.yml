@@ -24,11 +24,11 @@ jobs:
       env:
         DATABASE_URI: "sqlite:///:memory:"
         JWT_SECRET : "secret"
-      run: python -m pytest --cov=. --cov-report=html
+      run: python -m pytest --cov=. --cov-report=json --cov-report=term
 
     - name: Upload coverage report
       uses: actions/upload-artifact@v3
       with:
         name: coverage-report
-        path: ./api/htmlcov
+        path: ./api/coverage.json
 
