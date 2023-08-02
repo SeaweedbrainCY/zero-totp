@@ -67,7 +67,31 @@ paths:
           description: Missing required parameters
         "403":
           description: Authentication failed
-
+  /update:
+    post:
+      operationId: controllers.update
+      tags:
+        - User
+      summary: Update a user attribute
+      security: []
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+      responses:
+        "201": # status code
+          description: Update successful
+        "400":
+          description: Missing required parameters
+        "409":
+          description: User already exists
   /zke_encrypted_key:
     get:
       operationId: controllers.get_ZKE_encrypted_key
