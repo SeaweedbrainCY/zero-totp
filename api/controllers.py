@@ -242,15 +242,11 @@ def get_ZKE_encrypted_key():
     try:
         user_id = connexion.context.get("user")
         zke_db = ZKE_DB()
-        try:
-            zke_key = zke_db.getByUserId(user_id)
-            if zke_key:
-                    return {"zke_encrypted_key": zke_key.ZKE_key}, 200
-            else:
-                return {"message": "No ZKE key found for this user"}, 404
-        except Exception as e:
-            logging.warning("Unknown error while fetching ZKE key of user" + str(user_id) + " : " + str(e))
-            return {"message": "Unknown error while fetching ZKE key"}, 500
+        zke_key = zke_db.getByUserId(user_id)
+        if zke_key:
+                return {"zke_encrypted_key": zke_key.ZKE_key}, 200
+        else:
+            return {"message": "No ZKE key found for this user"}, 404
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
