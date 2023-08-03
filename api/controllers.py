@@ -151,12 +151,11 @@ def add_encrypted_secret(uuid):
     if totp_secretDB.get_enc_secret_by_uuid(user_id, uuid):
         return {"message": "Forbidden"}, 403
     else:
-        try:
-            totp_secretDB.add(user_id, enc_secret, uuid)
-        except Exception as e:
-            logging.warning("Unknown error while adding encrypted secret for user " + str(user_id) + " : " + str(e))
+        if totp_secretDB.add(user_id, enc_secret, uuid):
+            return {"message": "Encrypted secret added"}, 201
+        else :
+            logging.warning("Unknown error while adding encrypted secret for user " + str(user_id))
             return {"message": "Unknown error while adding encrypted secret"}, 500
-        return {"message": "Encrypted secret added"}, 201
 
 #PUT /encrypted_secret/{uuid}
 def update_encrypted_secret(uuid):
@@ -175,22 +174,18 @@ def update_encrypted_secret(uuid):
     totp_secretDB =  TOTP_secretDB()
     totp = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
     if not totp:
-        logging.debug("User " + str(user_id) + " tried to update secret " + str(uuid) + " which does not exist")
+        logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " which does not exist")
         return {"message": "Forbidden"}, 403
     else:
         if totp.user_id != user_id:
             logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
-        try:
-            totp = totp_secretDB.update_secret(uuid, enc_secret)
-            if totp == None:
-                logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " which does not exist")
+        totp = totp_secretDB.update_secret(uuid, enc_secret)
+        if totp == None:
+                logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " but an error occurred server side while storing your encrypted secret")
                 return {"message": "An error occurred server side while storing your encrypted secret"}, 500
-            else:
+        else:
                 return {"message": "Encrypted secret updated"}, 201
-        except Exception as e:
-            logging.warning("Unknown error while updating encrypted secret for user " + str(user_id) + " : " + str(e))
-            return {"message": "Unknown error while updating encrypted secret"}, 500
 
 #DELETE /encrypted_secret/{uuid}
 def delete_encrypted_secret(uuid):
@@ -213,12 +208,12 @@ def delete_encrypted_secret(uuid):
         if totp.user_id != user_id:
             logging.warning("User " + str(user_id) + " tried to delete secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
-        try:
-            totp_secretDB.delete(uuid)
-        except Exception as e:
-            logging.warning("Unknown error while deleting encrypted secret for user " + str(user_id) + " : " + str(e))
+        if totp_secretDB.delete(uuid):
+            return {"message": "Encrypted secret deleted"}, 201
+        else:
+            logging.warning("Unknown error while deleting encrypted secret for user " + str(user_id) )
             return {"message": "Unknown error while deleting encrypted secret"}, 500
-        return {"message": "Encrypted secret deleted"}, 201
+        
 
 #GET /all_secrets
 def get_all_secrets():
