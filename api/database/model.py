@@ -6,6 +6,7 @@ class User(db.Model):
     password = db.Column(db.String(256), nullable=False)
     username = db.Column(db.String(256), nullable=False)
     derivedKeySalt = db.Column(db.String(256), nullable=False)
+    authentication_version = db.Column(db.Integer, nullable=False)
 
 
 class ZKE_encryption_key(db.Model):
