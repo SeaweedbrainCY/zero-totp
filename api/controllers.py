@@ -164,42 +164,6 @@ def update(option):
 #     return 
     
     
-# POST /update{username/email}
-def update(option):
-    try:
-        user_id = connexion.context.get("user")
-        logging.info(connexion.context)
-        if user_id == None:
-            return {"message": "Unauthorized"}, 401
-    except Exception as e:
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
-    dataJSON = json.dumps(request.get_json())
-    if(option == "username"):
-        return
-    if(option == "email"):
-        try:
-            data = json.loads(dataJSON)
-            data["email"] = data["email"].strip()
-        except Exception as e:
-            logging.info(e)
-            return {"message": "Invalid request"}, 400
-        
-        if not data["email"]:
-            return {"message": "Missing parameters"}, 400 
-        userDB = UserDB()
-        user = userDB.getByEmail(data["email"])
-        if user:
-            return {"message": "User already exists or the email address is the same"}, 409
-        user.email = data["email"]
-        userDB.update_email(user, user.email)
-        return {"message": "Username updated"}, 200
-    
-# #GET /get_user/{username/email}
-# def get_user(option):
-#     if(option == "username"):
-#     if(option == "email"):
-#     return 
     
 #GET /encrypted_secret/{uuid}
 def get_encrypted_secret(uuid):
@@ -340,4 +304,27 @@ def get_ZKE_encrypted_key():
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
+
+
+#PUT /email
+def update_email():
+    user_id = connexion.context.get("user")
+    if user_id == None:
+        return {"message": "Unauthorized"}, 401
+    dataJSON = json.dumps(request.get_json())
+    data = json.loads(dataJSON)
+    email = utils.escape(data["email"]).strip()
+    if not utils.check_email(email):
+        return {"message": "Bad email format"}, 400
+         
+    userDb = UserDB()
+    if userDb.getByEmail(email):
+        return {"message": "email already used"}, 403
+
+    if userDb.update_email(user_id=user_id, email=email):
+        return {"message":"email updated"},201
+    else :
+        logging.warning("An error occured while updating email of user " + str(user_id))
+        return {"message": "Unknown error while updating email"}, 500
+
    

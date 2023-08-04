@@ -241,6 +241,31 @@ paths:
           description: Unauthorized
         "404":
           description: No secrets found
+  /update/email:
+    put:
+      operationId: controllers.update_email
+      tags:
+        - User
+      summary: Update the user's email
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        "201": # status code
+          description: email updated
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+
     
 
 
