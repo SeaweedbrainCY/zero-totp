@@ -1,5 +1,6 @@
 from database.db import db 
 from database.model import User as UserModel
+import logging
 
 class User:
 
@@ -17,10 +18,10 @@ class User:
         db.session.commit()
         return True
     
-    def update_username(self, user_id, username):
-        db.session.query(UserModel).filter_by(id=user_id).update({UserModel.username: username})
-        return username
-
     def update_email(self, user_id, email):
-        db.session.query(UserModel).filter_by(id=user_id).update({UserModel.mail: email})
-        return email
+        user = db.session.query(UserModel).filter_by(id=user_id).first()
+        if user == None:
+            return None
+        user.mail = email
+        db.session.commit()
+        return user
