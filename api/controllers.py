@@ -268,9 +268,9 @@ def update_email():
     userDb = UserDB()
     if userDb.getByEmail(email):
         return {"message": "email already used"}, 403
-
-    if userDb.update_email(user_id=user_id, email=email):
-        return {"message":"email updated"},201
+    user = userDb.update_email(user_id=user_id, email=email)
+    if user:
+        return {"message":user.mail},201
     else :
         logging.warning("An error occured while updating email of user " + str(user_id))
         return {"message": "Unknown error while updating email"}, 500
