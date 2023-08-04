@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Utils } from '../common/Utils/utils';
 import { ActivatedRoute, Router } from '@angular/router';
+import { error } from 'console';
 
 @Component({
   selector: 'app-account',
@@ -19,7 +20,7 @@ export class AccountComponent implements OnInit {
   faCheck=faCheck;
   isDestroying=false;
   isModalActive=false;
-  isLoading=false;
+  buttonLoading = {"email":0, "username":0, "passphrase":0, "deletion":0}
   username:string="";
   usernameErrorMessage="";
   email:string="";
@@ -32,7 +33,7 @@ export class AccountComponent implements OnInit {
   newPasswordConfirmErrorMessage : [string]=[""];
   constructor(
     private http: HttpClient,
-    private userService: UserService,
+    public userService: UserService,
     private utils: Utils,
     private router: Router,
     private route: ActivatedRoute,
@@ -40,10 +41,12 @@ export class AccountComponent implements OnInit {
 
   
   ngOnInit(): void {
-    // if(this.userService.getId() == null){
-    //   this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
-    // } else {
-    // }
+     if(this.userService.getId() == null){
+       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+       if("email" in this.buttonLoading){
+
+       }
+    } 
   }
 
 
@@ -78,7 +81,7 @@ export class AccountComponent implements OnInit {
     }
   }
 
-  changeEmail(){
+  updateEmail(){
     if(this.email == ""){
       superToast({
         message: "Did you forget to fill something ?",
@@ -91,18 +94,30 @@ export class AccountComponent implements OnInit {
     if(!this.checkEmail()){
       return;
     }
-    this.isLoading = true;
+    this.buttonLoading["email"] = 1
     const data = {
       email: this.email
     }
-    this.http.post(ApiService.API_URL+"/?",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.put(ApiService.API_URL+"/update/email",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      this.buttonLoading["email"] = 0
       superToast({
-        message: "Welcome back",
+        message: "Email updated with success",
         type: "is-success",
         dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
-      //TO FINISH
+      this.userService.setEmail(JSON.parse(JSON.stringify(response.body))["message"])
+    }, error =>{
+      this.buttonLoading["email"] = 0
+      if(error.error.message == undefined){
+        error.error.message = "Something went wrong. Please try again later";
+      }
+      superToast({
+        message: "Error : "+ error.error.message,
+        type: "is-danger",
+        dismissible: true,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
     });
   }
 
