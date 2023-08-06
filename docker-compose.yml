@@ -5,7 +5,7 @@ services:
     container_name: frontend
     image: seaweedbrain/zero-totp-frontend:latest
     ports: 
-      - "4200:80"
+      - "127.0.0.1:4200:80"
     env_file:
       - .env
 
@@ -13,7 +13,7 @@ services:
     container_name: api
     image: seaweedbrain/zero-totp-api:latest
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     env_file:
       - .env
   
@@ -23,6 +23,6 @@ services:
     image: mysql:latest
     container_name: database
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     volumes:
       - ./database/dbdata:/var/lib/mysql
