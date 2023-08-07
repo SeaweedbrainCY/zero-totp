@@ -32,6 +32,9 @@ export class SignupComponent implements OnInit {
   passwordErrorMessage : [string]=[""];
   isModalActive=false;
   input="";
+  encryptedZKEkey=""
+  derivedKeySalt=""
+  passphraseSalt=""
 
   constructor(
     private http: HttpClient,
@@ -135,18 +138,39 @@ export class SignupComponent implements OnInit {
     const randomSalt = this.crypto.generateRandomSalt();
     this.crypto.deriveKey(randomSalt, this.password).then((key) => {
       this.crypto.encrypt(ZKEkey, key, randomSalt).then((encryptedZKEkey) => {
-        this.signupRequest(encryptedZKEkey, randomSalt);
+        this.encryptedZKEkey = encryptedZKEkey
+        this.derivedKeySalt = randomSalt
+        this.hashPassword()
       });
     });   
   }
 
-  signupRequest(encryptedZKEkey:string, randomSalt:string){
+  hashPassword(){
+    this.passphraseSalt = this.crypto.generateRandomSalt();
+        this.crypto.hashPassphrase(this.password, this.passphraseSalt).then(hashed => {
+          if(hashed != null){
+            this.password = hashed;
+            this.signupRequest();
+          } else {
+            superToast({
+              message: "An error occured while hashing your password. Please, try again",
+              type: "is-danger",
+              dismissible: false,
+              duration: 20000,
+              animate: { in: 'fadeIn', out: 'fadeOut' }
+            });
+          }
+        });
+  }
+
+  signupRequest(){
     const data = {
       username: this.username,
       email: this.email,
       password: this.password,
-      ZKE_key: encryptedZKEkey,
-      salt: randomSalt
+      ZKE_key: this.encryptedZKEkey,
+      derivedKeySalt: this.derivedKeySalt,
+      passphraseSalt: this.passphraseSalt
     };
 
     this.http.post(ApiService.API_URL+"/signup", data, {observe: 'response'}).subscribe((response) => {
