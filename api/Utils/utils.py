@@ -7,10 +7,7 @@ def check_email(email):
 
 def check_password(password):
    forbidden = '["\'<>]'
-   special = '[!@#$%^&*()_+\-=[\]{};:\\|,./?~]'
-   upper = '[A-Z]'
-   number = '[0-9]'
-   return len(password) > 8 and len(password) <70 and re.search(special, password) and re.search(upper, password) and re.search(number, password) and not re.search(forbidden, password) 
+   return  not re.search(forbidden, password) 
 
 def check_username(username):
     forbidden = '["\'<>]'
