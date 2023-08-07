@@ -11,6 +11,8 @@ import random
 import string
 import Crypto.jwt_func as jwt_auth
 import Utils.utils as utils
+import os
+import base64
 
 
 
@@ -110,6 +112,17 @@ def login():
     response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt}))
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
+
+#GET /login/specs
+def get_login_specs(username):
+    userDB = UserDB()
+    user = userDB.getByEmail(username)
+    if user :
+        return {"passphrase_salt": user.passphraseSalt}, 200
+    else :
+        fake_salt = base64.b64encode(os.urandom(16)).decode("utf-8")
+        return {"passphrase_salt": fake_salt}, 200
+
     
 #GET /encrypted_secret/{uuid}
 def get_encrypted_secret(uuid):
