@@ -50,29 +50,17 @@ class TestSignupController(unittest.TestCase):
     
 
     def test_signup_missing_parrameters(self):
-        json_payload = {"password": "Abcdefghij1#", "email": "test@test.py", "derivedKeySalt": "randomSalt", "ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
-        response = self.client.post("/signup", json=json_payload)
-        self.assertEqual(response.status_code, 400)
-
-        json_payload = {"username" : "username", "email": "test@test.py", "derivedKeySalt": "randomSalt", "ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
-        response = self.client.post("/signup", json=json_payload)
-        self.assertEqual(response.status_code, 400)
-
-        json_payload = {"username" : "username", "password": "Abcdefghij1#", "derivedKeySalt": "randomSalt", "ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
-        response = self.client.post("/signup", json=json_payload)
-        self.assertEqual(response.status_code, 400)
-
-        json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py","ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
-        response = self.client.post("/signup", json=json_payload)
-        self.assertEqual(response.status_code, 400)
-
-        json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py", "derivedKeySalt": "randomSalt", "passphraseSalt" :"randomSalt"}
-        response = self.client.post("/signup", json=json_payload)
-        self.assertEqual(response.status_code, 400)
-
-        json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py", "derivedKeySalt": "randomSalt"}
-        response = self.client.post("/signup", json=json_payload)
-        self.assertEqual(response.status_code, 400)
+        for key in self.json_payload.keys():
+            json_payload = self.json_payload.copy()
+            del json_payload[key]
+            response = self.client.post("/signup", json=json_payload)
+            self.assertEqual(response.status_code, 400)
+        
+        for key in self.json_payload.keys():
+            json_payload = self.json_payload.copy()
+            json_payload[key]=""
+            response = self.client.post("/signup", json=json_payload)
+            self.assertEqual(response.status_code, 400)
     
     def test_signup_forbidden_email(self):
         self.check_email.return_value = False 
