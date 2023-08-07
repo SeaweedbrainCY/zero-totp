@@ -14,10 +14,9 @@ export class DevComponent {
   time=0
   prng=0
   seedrandom = require('seedrandom')
-  EC = require('elliptic').ec
-  ec = new this.EC('secp256k1');
   privateKey=""
   publicKey=""
+  hashed=""
 
   constructor(private crypto:Crypto) {
      
@@ -34,6 +33,13 @@ export class DevComponent {
         
     });
   });
+  this.crypto.hashPassphrase(this.passphrase, this.salt).then((hash)=>{
+    if(hash == null){
+      this.hashed = "error"
+    } else {
+      this.hashed = hash
+    }
+  });
 }
 
 generateSalt(){
@@ -44,11 +50,6 @@ generatePRNG(){
   this.prng = this.seedrandom(this.derivedKey).double()
 }
 
-generateEcdsaKeyPair(){
-  const keyPair = this.ec.genKeyPair({ entropy: this.derivedKey });
-  this.publicKey = keyPair.getPublic('hex')
-  this.privateKey = keyPair.getPrivate('hex');
 
-}
 
 }
