@@ -66,7 +66,7 @@ export class Crypto {
     async hashPassphrase(password: string, salt:string): Promise<string | null>{
         const passwordBytes = Buffer.from(password, 'utf-8');
         const saltBytes = Buffer.from(salt, 'base64');
-        const hash = await window.crypto.subtle.digest("SHA-512", Buffer.concat([passwordBytes, saltBytes]));
+        const hash = await window.crypto.subtle.digest("SHA-256", Buffer.concat([passwordBytes, saltBytes]));
         return Buffer.from(hash).toString('base64');
     }
 }
