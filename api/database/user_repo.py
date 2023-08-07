@@ -6,8 +6,8 @@ class User:
     def getByEmail(self, email):
         return db.session.query(UserModel).filter_by(mail=email).first()
     
-    def create(self, username, email, password, randomSalt):
-        user = UserModel(username=username, mail=email, password=password, derivedKeySalt=randomSalt)
+    def create(self, username, email, password, randomSalt, isVerified, passphraseSalt):
+        user = UserModel(username=username, mail=email, password=password, derivedKeySalt=randomSalt, isVerified = isVerified, passphraseSalt = passphraseSalt)
         db.session.add(user)
         db.session.commit()
         return user
