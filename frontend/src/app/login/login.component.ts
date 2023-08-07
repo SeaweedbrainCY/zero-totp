@@ -7,6 +7,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import {Crypto} from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
+import { error } from 'console';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -20,6 +21,7 @@ export class LoginComponent {
   faFlagCheckered=faFlagCheckered;
   email:string = "";
   password:string = "";
+  hashedPassword:string = "";
   isLoading = false;
   warning_message="";
   error_param: string|null=null;
@@ -136,6 +138,7 @@ export class LoginComponent {
     }
   }
 
+  
   login(){
     if(this.email == "" || this.password == ""){
       superToast({
@@ -150,11 +153,56 @@ export class LoginComponent {
       return;
     }
     this.isLoading = true;
+    this.hashPassword()
+    
+  }
+
+  hashPassword(){
+    this.http.get(ApiService.API_URL+"/login/specs?username="+this.email,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      
+      try{
+        const data = JSON.parse(JSON.stringify(response.body))
+        const salt = data.passphrase_salt
+        this.crypto.hashPassphrase(this.password, salt).then(hashed => {
+          if(hashed != null){
+            this.hashedPassword = hashed;
+            this.postLoginRequest();
+          } else {
+            superToast({
+              message: "An error occured while hashing your password. Please, try again",
+              type: "is-danger",
+              dismissible: false,
+              duration: 20000,
+              animate: { in: 'fadeIn', out: 'fadeOut' }
+            });
+          }
+        });
+      } catch {
+        superToast({
+          message: "An error occured while hashing your password. Please, try again",
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+    }, error => {
+      superToast({
+        message: "Impossible to chat with the server ! \nCheck your internet connection or status.zero-totp.com",
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
+  }
+
+
+  postLoginRequest(){
     const data = {
       email: this.email,
-      password: this.password
+      password: this.hashedPassword
     }
-
     this.http.post(ApiService.API_URL+"/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
       superToast({
         message: "Welcome back",
