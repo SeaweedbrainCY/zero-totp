@@ -37,7 +37,7 @@ class TestSignupController(unittest.TestCase):
         self.check_username = patch("Utils.utils.check_username").start()
         self.check_username.return_value = True
 
-        self.json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py", "salt": "randomSalt", "ZKE_key": "encrypted_key"}
+        self.json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py", "derivedKeySalt": "randomSalt", "ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
 
     def tearDown(self):
         patch.stopall()
@@ -50,23 +50,27 @@ class TestSignupController(unittest.TestCase):
     
 
     def test_signup_missing_parrameters(self):
-        json_payload = {"password": "Abcdefghij1#", "email": "test@test.py", "salt": "randomSalt", "ZKE_key": "encrypted_key"}
+        json_payload = {"password": "Abcdefghij1#", "email": "test@test.py", "derivedKeySalt": "randomSalt", "ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
         response = self.client.post("/signup", json=json_payload)
         self.assertEqual(response.status_code, 400)
 
-        json_payload = {"username" : "username", "email": "test@test.py", "salt": "randomSalt", "ZKE_key": "encrypted_key"}
+        json_payload = {"username" : "username", "email": "test@test.py", "derivedKeySalt": "randomSalt", "ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
         response = self.client.post("/signup", json=json_payload)
         self.assertEqual(response.status_code, 400)
 
-        json_payload = {"username" : "username", "password": "Abcdefghij1#", "salt": "randomSalt", "ZKE_key": "encrypted_key"}
+        json_payload = {"username" : "username", "password": "Abcdefghij1#", "derivedKeySalt": "randomSalt", "ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
         response = self.client.post("/signup", json=json_payload)
         self.assertEqual(response.status_code, 400)
 
-        json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py","ZKE_key": "encrypted_key"}
+        json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py","ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
         response = self.client.post("/signup", json=json_payload)
         self.assertEqual(response.status_code, 400)
 
-        json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py", "salt": "randomSalt"}
+        json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py", "derivedKeySalt": "randomSalt", "passphraseSalt" :"randomSalt"}
+        response = self.client.post("/signup", json=json_payload)
+        self.assertEqual(response.status_code, 400)
+
+        json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py", "derivedKeySalt": "randomSalt"}
         response = self.client.post("/signup", json=json_payload)
         self.assertEqual(response.status_code, 400)
     
