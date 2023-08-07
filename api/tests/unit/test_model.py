@@ -7,7 +7,9 @@ class TestUserConstructor(unittest.TestCase):
             mail="test@example.com",
             password="password",
             username="testuser",
-            derivedKeySalt="salt"
+            derivedKeySalt="salt",
+            passphraseSalt="salt",
+            isVerified = 1
         )
 
     def test_user_attributes(self):
@@ -15,6 +17,8 @@ class TestUserConstructor(unittest.TestCase):
         self.assertEqual(self.user.password, "password")
         self.assertEqual(self.user.username, "testuser")
         self.assertEqual(self.user.derivedKeySalt, "salt")
+        self.assertEqual(self.user.passphraseSalt, "salt")
+        self.assertEqual(self.user.isVerified, 1)
 
 
 class Testzke_encryption_keyConstructor(unittest.TestCase):

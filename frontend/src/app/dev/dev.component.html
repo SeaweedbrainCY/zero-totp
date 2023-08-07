@@ -1,0 +1,10 @@
+<section style="margin-top: 20vh; padding: 10%;">
+    <label>Passphrase : </label>
+<input  placeholder="Password" name="passphrase" [(ngModel)]="passphrase"/>
+<button (click)="derive()">Derive</button><br>
+<label>Salt : </label>
+<input  placeholder="salt" name="salt" [(ngModel)]="salt"/><button (click)="generateSalt()">Random</button>
+<p>Hash password : {{hashed}}</p>
+<p>Derived key : {{derivedKey}}</p>
+<p>Time : {{time}}s</p>
+</section>

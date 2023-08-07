@@ -30,11 +30,13 @@ paths:
                   type: string
                 password:
                   type: string
-                salt:
+                derivedKeySalt:
                   type: string
                 ZKE_key:
                   type: string
                   description: The user's ZKE key ENCRYPTED by the user
+                passphraseSalt:
+                  type: string
       responses:
         "201": # status code
           description: Sign up successful
@@ -67,6 +69,23 @@ paths:
           description: Missing required parameters
         "403":
           description: Authentication failed
+  /login/specs:
+    get:
+      operationId: controllers.get_login_specs
+      tags:
+        - User
+      summary: Return the login specs for this user
+      security: []
+      parameters:
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: true
+          description: The user's email
+      responses:
+        "200": # status code
+          description: Return the login specs
 
   /zke_encrypted_key:
     get:
