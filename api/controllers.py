@@ -25,25 +25,26 @@ def signup():
     dataJSON = json.dumps(request.get_json())
     try:
         data = json.loads(dataJSON)
-        data["username"] = utils.escape(data["username"].strip())
-        data["password"] = data["password"].strip()
-        data["email"] = utils.escape(data["email"].strip())
-        data["salt"] = utils.escape(data["salt"].strip())
-        data["ZKE_key"] = utils.escape(data["ZKE_key"].strip())
+        username = utils.escape(data["username"].strip())
+        passphrase = data["password"].strip()
+        email = utils.escape(data["email"].strip())
+        derivedKeySalt = utils.escape(data["derivedKeySalt"].strip())
+        zke_key = utils.escape(data["ZKE_key"].strip())
+        passphraseSalt = utils.escape(data["passphraseSalt"].strip())
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
-    if not data["username"] or not data["password"] or not data["email"]:
+    if not username or not passphrase or not email or not derivedKeySalt or not zke_key or not passphraseSalt:
         return {"message": "Missing parameters"}, 400
-    if(not utils.check_email(data["email"]) or not utils.check_username(data["username"]) or not utils.check_password(data["password"])):
+    if(not utils.check_email(email) or not utils.check_username(username) or not utils.check_password(passphrase)):
         return {"message": "Forbidden parameters"}, 403
     userDB = UserDB()
-    user = userDB.getByEmail(data["email"])
+    user = userDB.getByEmail(email)
     if user:
         return {"message": "User already exists"}, 409
     
-    bcrypt = Bcrypt(data["password"])
+    bcrypt = Bcrypt(passphrase)
     try : 
         hashedpw = bcrypt.hashpw()
     except ValueError as e:
@@ -52,27 +53,25 @@ def signup():
     except Exception as e:
         logging.warning("Uknown error occured while hashing password" + str(e))
         return {"message": "Unknown error while hashing your password"}, 500
-    
-    randomSalt = data["salt"]
     try:
-        user = userDB.create(data["username"], data["email"], hashedpw, randomSalt)
+        user = userDB.create(username, email, hashedpw, derivedKeySalt, 0, passphraseSalt)
     except Exception as e:
         logging.error("Unknown error while creating user" + str(e))
         return {"message": "Unknown error while creating user"}, 500
     if user :
         try:
             zke_db = ZKE_DB()
-            zke_key = zke_db.create(user.id, data["ZKE_key"])
+            zke_key = zke_db.create(user.id, zke_key)
         except Exception as e:
            zke_key = None
         if zke_key:
             return {"message": "User created"}, 201
         else :
             userDB.delete(user.id)
-            logging.error("Unknown error while storing user ZKE keys" + str(data["username"]))
+            logging.error("Unknown error while storing user ZKE keys" + str(username))
             return {"message": "Unknown error while registering user encrypted keys"}, 500
     else :
-        logging.error("Unknown error while creating user" + str(data["username"]))
+        logging.error("Unknown error while creating user" + str(username))
         return {"message": "Unknown error while creating user"}, 500
 
 
@@ -82,20 +81,20 @@ def login():
     dataJSON = json.dumps(request.get_json())
     try:
         data = json.loads(dataJSON)
-        data["password"] = data["password"].strip()
-        data["email"] = utils.escape(data["email"]).strip()
+        passphrase = data["password"].strip()
+        email = utils.escape(data["email"]).strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
-    if not data["password"] or not data["email"]:
+    if not passphrase or not email:
         return {"message": "Missing parameters"}, 400
-    if(not utils.check_email(data["email"]) or not utils.check_password(data["password"])):
+    if(not utils.check_email(email) or not utils.check_password(passphrase)):
         return {"message": "Forbidden parameters"}, 403
     userDB = UserDB()
-    user = userDB.getByEmail(data["email"])
+    user = userDB.getByEmail(email)
     logging.info(user)
-    bcrypt = Bcrypt(data["password"])
+    bcrypt = Bcrypt(passphrase)
     if not user:
         #we hash for security reasons
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
@@ -115,6 +114,8 @@ def login():
 
 #GET /login/specs
 def get_login_specs(username):
+    if(not utils.check_email(username)):
+        return {"message": "Bad request"}, 400
     userDB = UserDB()
     user = userDB.getByEmail(username)
     if user :
