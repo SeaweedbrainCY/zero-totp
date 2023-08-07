@@ -11,10 +11,12 @@ class TestLoginController(unittest.TestCase):
         env.db_uri = "sqlite:///:memory:"
         self.app = create_app()
         self.client = self.app.test_client()
+        self.loginEndpoint = "/login"
+        self.specsEndpoint = "/login/specs?username=test@test.fr"
 
 
         self.getByEmailMocked = patch("database.user_repo.User.getByEmail").start()
-        self.getByEmailMocked.return_value = User(id=1, username="username", derivedKeySalt="randomSalt", password="hashed")
+        self.getByEmailMocked.return_value = User(id=1, username="username", derivedKeySalt="randomSalt", password="hashed", isVerified=1, passphraseSalt="salt")
 
         self.checkpw = patch("Crypto.hash_func.Bcrypt.checkpw").start()
         self.checkpw.return_value = True
@@ -32,8 +34,7 @@ class TestLoginController(unittest.TestCase):
     
 
     def test_login(self):
-        response = self.client.post("/login", json=self.json_payload)
-        print(response.headers)
+        response = self.client.post(self.loginEndpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 200)
         self.assertIn("username", response.json)
         self.assertIn("id", response.json)
@@ -45,83 +46,59 @@ class TestLoginController(unittest.TestCase):
         self.assertIn("SameSite=Lax", response.headers["Set-Cookie"])
         self.assertIn("Expires", response.headers["Set-Cookie"])
 
-
-
+    def test_login_missing_parameters(self):
+        for key in self.json_payload.keys():
+            json_payload = self.json_payload.copy()
+            del json_payload[key]
+            response = self.client.post(self.loginEndpoint, json=json_payload)
+            self.assertEqual(response.status_code, 400)
+        
+        for key in self.json_payload.keys():
+            json_payload = self.json_payload.copy()
+            json_payload[key]=""
+            response = self.client.post(self.loginEndpoint, json=json_payload)
+            self.assertEqual(response.status_code, 400)
     
-"""
-    def test_signup_missing_parrameters(self):
-        json_payload = {"password": "Abcdefghij1#", "email": "test@test.py", "salt": "randomSalt", "ZKE_key": "encrypted_key"}
-        response = self.client.post("/signup", json=json_payload)
-        self.assertEqual(response.status_code, 400)
-
-        json_payload = {"username" : "username", "email": "test@test.py", "salt": "randomSalt", "ZKE_key": "encrypted_key"}
-        response = self.client.post("/signup", json=json_payload)
-        self.assertEqual(response.status_code, 400)
-
-        json_payload = {"username" : "username", "password": "Abcdefghij1#", "salt": "randomSalt", "ZKE_key": "encrypted_key"}
-        response = self.client.post("/signup", json=json_payload)
-        self.assertEqual(response.status_code, 400)
-
-        json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py","ZKE_key": "encrypted_key"}
-        response = self.client.post("/signup", json=json_payload)
-        self.assertEqual(response.status_code, 400)
-
-        json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py", "salt": "randomSalt"}
-        response = self.client.post("/signup", json=json_payload)
-        self.assertEqual(response.status_code, 400)
-    
-    def test_signup_forbidden_email(self):
-        self.check_email.return_value = False 
-        response = self.client.post("/signup", json=self.json_payload)
+    def test_login_forbidden_email(self):
+        self.check_email.return_value = False
+        response = self.client.post(self.loginEndpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
     
-    def test_signup_forbidden_username(self):
-        self.check_username.return_value = False 
-        response = self.client.post("/signup", json=self.json_payload)
+    def test_login_forbidden_passphrase(self):
+        self.check_password.return_value = False
+        response = self.client.post(self.loginEndpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
     
-    def test_signup_forbidden_password(self):
-        self.check_password.return_value = False 
-        response = self.client.post("/signup", json=self.json_payload)
+    def test_login_no_user(self):
+        self.getByEmailMocked.return_value = None 
+        response = self.client.post(self.loginEndpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
+        self.checkpw.assert_called_once()
     
-    def test_signup_user_already_exists(self):
-        self.getByEmailMocked.return_value = True 
-        response = self.client.post("/signup", json=self.json_payload)
-        self.assertEqual(response.status_code, 409)
+
+    def test_login_bad_passphrase(self):
+        self.checkpw.return_value = False
+        response = self.client.post(self.loginEndpoint, json=self.json_payload)
+        self.assertEqual(response.status_code, 403)
+
+
+
+    def test_login_specs(self):
+        response = self.client.get(self.specsEndpoint)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("passphrase_salt", response.json)
     
-    def test_signup_password_too_long(self):
-        self.hashpw.side_effect = ValueError("Pass word too long")
-        response = self.client.post("/signup", json=self.json_payload)
+    def test_login_specs_bad_email(self):
+        self.check_email.return_value = False
+        response = self.client.get(self.specsEndpoint)
+        self.assertEqual(response.status_code, 400)
+        
+        response = self.client.get("/login/specs")
         self.assertEqual(response.status_code, 400)
 
-    def test_signup_error_while_hashing(self):
-        self.hashpw.side_effect = Exception("Unknown error")
-        response = self.client.post("/signup", json=self.json_payload)
-        self.assertEqual(response.status_code, 500)
     
-    def test_signup_error_while_creating_user_1(self):
-        self.create_userMocked.side_effect = Exception("error")
-        response = self.client.post("/signup", json=self.json_payload)
-        self.assertEqual(response.status_code, 500)
-    
-    def test_signup_error_while_creating_user_2(self):
-        self.create_userMocked.return_value = False
-        response = self.client.post("/signup", json=self.json_payload)
-        self.assertEqual(response.status_code, 500)
-    
-    def test_signup_error_while_storing_zke(self):
-        self.create_zkeMocked.side_effect = Exception("error")
-        response = self.client.post("/signup", json=self.json_payload)
-        self.assertEqual(response.status_code, 500)
-        self.delete_user.assert_called()
-    
-
-   
-    
-    
-
-
-    
-    
-"""
+    def test_login_specs_no_user(self):
+        self.getByEmailMocked = None 
+        response = self.client.get(self.specsEndpoint)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("passphrase_salt", response.json)
