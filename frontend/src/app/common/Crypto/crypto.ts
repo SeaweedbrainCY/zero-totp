@@ -1,8 +1,10 @@
 import {Buffer} from 'buffer';
-import { timeLog } from 'console';
 
 
 export class Crypto {
+
+    pbkdf2_iterations = 700000;
+    
 
     generateKeyMaterial(password: string) {
         const enc = new TextEncoder();
@@ -26,7 +28,7 @@ export class Crypto {
             {
                 name: "PBKDF2",
                 salt: saltBytes,
-                iterations: 650000,
+                iterations: this.pbkdf2_iterations,
                 hash: "SHA-256",
             },
             key_material,
@@ -61,9 +63,10 @@ export class Crypto {
         }
     }
 
-
-
-
-
-
+    async hashPassphrase(password: string, salt:string): Promise<string | null>{
+        const passwordBytes = Buffer.from(password, 'utf-8');
+        const saltBytes = Buffer.from(salt, 'base64');
+        const hash = await window.crypto.subtle.digest("SHA-512", Buffer.concat([passwordBytes, saltBytes]));
+        return Buffer.from(hash).toString('base64');
+    }
 }
