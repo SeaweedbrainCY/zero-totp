@@ -49,8 +49,6 @@ export class AccountComponent implements OnInit {
     } 
   }
 
-
-
   checkUsername(){
   this.usernameErrorMessage = "";
   if(this.username != this.utils.sanitize(this.username)){
@@ -120,7 +118,6 @@ export class AccountComponent implements OnInit {
       });
     });
   }
-
 
   checkNewPassword(){
     this.newPasswordErrorMessage=[""];
