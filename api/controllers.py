@@ -96,7 +96,7 @@ def login():
     logging.info(user)
     bcrypt = Bcrypt(passphrase)
     if not user:
-        #we hash for security reasons
+        logging.info("User " + str(email) + " tried to login but does not exist. A fake password is checked to avoid timing attacks")
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fakePassword)
         return {"message": "Invalid credentials"}, 403
