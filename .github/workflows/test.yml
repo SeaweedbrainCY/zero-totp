@@ -1,6 +1,17 @@
 name: "Test and Coverage"
 
-on: [push, pull_request]
+on: 
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '**'
+  pull_request:
+    branches:
+      - '*'
+    
+  
+  
 
 jobs:
   python_test_and_coverage:
