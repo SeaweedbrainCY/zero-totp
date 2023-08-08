@@ -18,8 +18,8 @@ export class AccountComponent implements OnInit {
   faEnvelope=faEnvelope;
   faLock=faLock;
   faCheck=faCheck;
-  isDestroying=false;
-  isModalActive=false;
+  isDeletionModalActive=false;
+  isPassphraseModalActive=false;
   buttonLoading = {"email":0, "username":0, "passphrase":0, "deletion":0}
   username:string="";
   usernameErrorMessage="";
@@ -147,12 +147,22 @@ export class AccountComponent implements OnInit {
 
 
   deleteAccount(){
-    this.isDestroying = true;
+    this.buttonLoading['deletion'] =1
   }
 
-  modal(){
-    if(!this.isDestroying){
-      this.isModalActive = !this.isModalActive;
+  updatePassphrase(){
+    this.buttonLoading["passphrase"] = 1
+  }
+
+  deletionModal(){
+    if(!this.buttonLoading["deletion"]){
+      this.isDeletionModalActive = !this.isDeletionModalActive;
+    }
+  }
+
+  passphraseModal(){
+    if(!this.buttonLoading["passphrase"]){
+      this.isPassphraseModalActive = !this.isPassphraseModalActive;
     }
   }
 
