@@ -4,6 +4,7 @@
     <img src="https://img.shields.io/uptimerobot/status/m794828362-be618abc0d9ba7230401e6af?label=api.zero-totp.com&link=zero-totp.com"/>
     <br>
     <img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/main.yml/badge.svg"/>
+     <a href="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml"><img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml/badge.svg" alt="Test and Coverage"/></a>
     <a href='https://coveralls.io/github/SeaweedbrainCY/zero-totp'><img src='https://coveralls.io/repos/github/SeaweedbrainCY/zero-totp/badge.svg' alt='Coverage Status' /></a>
     <img src="https://img.shields.io/github/license/seaweedbraincy/zero-totp"/>
 </p>
