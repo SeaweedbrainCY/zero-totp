@@ -2,17 +2,15 @@ name: "zero-totp.com deployment"
 
 on:
   push:
-    branches:
-      - main
     tags:
       - '**'
-  workflow_run:
-    workflows: ["Test Workflow"]
-    types:
-      - completed
 
 jobs:
+    tests:
+      name: Code tests
+      uses: ./.github/workflows/tests.yml  # use the callable tests job to run tests
     docker-frontend:
+      needs: [tests]
       name: Publish Frontend Docker image
       runs-on: ubuntu-latest
       env:
@@ -30,6 +28,7 @@ jobs:
         - name: Publish Docker Image
           run: docker push $REPO
     docker-api:
+      needs: [tests]
       name: Publish API Docker image
       runs-on: ubuntu-latest
       env:
