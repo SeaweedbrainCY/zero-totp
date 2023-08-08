@@ -2,8 +2,14 @@ name: "zero-totp.com deployment"
 
 on:
   push:
-    tags:        
+    branches:
+      - main
+    tags:
       - '**'
+  workflow_run:
+    workflows: ["Test Workflow"]
+    types:
+      - completed
 
 jobs:
     docker-frontend:
