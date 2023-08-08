@@ -7,7 +7,6 @@ on:
 
 jobs:
     tests:
-      name: Code tests
       uses: ./.github/workflows/test.yml  # use the callable tests job to run tests
     docker-frontend:
       needs: [tests]
