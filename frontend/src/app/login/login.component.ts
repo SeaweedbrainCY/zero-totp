@@ -166,6 +166,7 @@ export class LoginComponent {
         this.crypto.hashPassphrase(this.password, salt).then(hashed => {
           if(hashed != null){
             this.hashedPassword = hashed;
+            this.userService.setPassphraseSalt(salt);
             this.postLoginRequest();
           } else {
             superToast({

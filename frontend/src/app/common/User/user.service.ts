@@ -11,6 +11,7 @@ export class UserService {
   private zke_key:CryptoKey| null =null;;
   private derivedKeySalt: string| null =null;;
   private vault:Map<string, Map<string,string>> | null =null;
+  private passphraseSalt: string| null =null;;
 
   constructor(private utils: Utils) {
    }
@@ -61,12 +62,21 @@ export class UserService {
     this.vault = vault;
    }
 
+    getPassphraseSalt(): string | null {
+    return this.passphraseSalt;
+    }
+
+    setPassphraseSalt(salt:string){
+    this.passphraseSalt = salt;
+    }
+
    clear(){
     this.id = null;
     this.email = null;
     this.zke_key = null;
     this.derivedKeySalt = null;
     this.vault = null;
+    this.passphraseSalt = null;
     localStorage.clear();
    }
 
