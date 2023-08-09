@@ -39,13 +39,12 @@ export class Crypto {
         return key;
     }
 
-    async encrypt(plaintext: string, key: CryptoKey, salt: string): Promise<string> {
+    async encrypt(plaintext: string, key: CryptoKey, ZKESalt: string): Promise<string> {
         const enc = new TextEncoder();
         const plaintextBytes = enc.encode(plaintext);
         const ivBytes = window.crypto.getRandomValues(new Uint8Array(12))
-        const saltBytes = Buffer.from(salt, 'base64');
         const encoded_encrypted = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv: ivBytes }, key, plaintextBytes);
-        return Buffer.from(encoded_encrypted).toString('base64') + "," + Buffer.from(ivBytes).toString('base64') + "," + Buffer.from(saltBytes).toString('base64');
+        return Buffer.from(encoded_encrypted).toString('base64') + "," + Buffer.from(ivBytes).toString('base64') + "," + ZKESalt;
     }
 
     async decrypt(encrypted: string, key: CryptoKey): Promise<string | null> {
