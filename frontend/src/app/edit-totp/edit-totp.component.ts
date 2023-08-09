@@ -211,7 +211,7 @@ export class EditTOTPComponent implements OnInit{
     property.set("name", this.name);
     const jsonProperty = this.utils.mapToJson(property);
     try{
-      this.crypto.encrypt(jsonProperty, this.userService.get_zke_key()!, this. userService.getDerivedKeySalt()!).then  ((enc_jsonProperty)=>{
+      this.crypto.encrypt(jsonProperty, this.userService.get_zke_key()!, this.userService.getDerivedKeySalt()!).then  ((enc_jsonProperty)=>{
         if(this.secret_uuid != null){
           this.updateSecret(enc_jsonProperty, property);
         } else { 
