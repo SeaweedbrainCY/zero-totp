@@ -66,13 +66,13 @@
 
                     <div class="mt-6">
                         <h1 class="has-text-info has-text-weight-bold is-size-3">
-                            Change passphrase
+                            Update passphrase
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
                         <label class="label mt-3">Your current passphrase</label>
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left">
-                                <input class="input" type="password" placeholder="Passphrase" name="password">
+                                <input class="input" type="password" placeholder="Passphrase" name="password" [(ngModel)]="password">
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faLock"></fa-icon>
                                 </span>
@@ -105,7 +105,7 @@
                                 </span>
                             </div>
                             <div class="has-text-centered">
-                                <button class="button is-info is-outlined ml-3" (click)="passphraseModal()">Update</button>
+                                <button class="button is-info is-outlined ml-3" (click)="updatePassphrase()">Update</button>
                             </div>
                         </div>
                     </div>
@@ -152,7 +152,7 @@
     <div class="modal-background" (click)="passphraseModal()"></div>
     <div class="modal-content">
         <section class="modal-card-body">
-            <h1 class="is-size-1 has-text-info">Be careful </h1><br><br>
+            <h1 class="is-size-1 has-text-info">Be careful </h1>
             <div class="content">
             <strong>Changing your passphrase will :</strong> 
             <ul>
@@ -161,13 +161,53 @@
                 <li>Your Google Drive backup will be updated. If you have old backup, they will still be encrypted with your former passphrase</li>
                 <li>If you lose this new passphrase, it is impossible to recover it</li>
                 <li>If you change your passphrase for security reasons, securely delete your backup as soon as possible </li>
-            </ul><br><br>
+            </ul>
         </div>
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
             <button class="button" (click)="passphraseModal()" [disabled]="buttonLoading['passphrase']">Cancel</button>
-            <button class="button is-info" (click)="updatePassphrase()" [ngClass]="{'is-loading': buttonLoading['passphrase']}">Change my passphrase and re-encrypt my vault</button>
+            <button class="button is-info" (click)="updatePassphraseConfirm()" [ngClass]="{'is-loading': buttonLoading['passphrase']}">Change my passphrase and re-encrypt my vault</button>
         </footer>
     </div>
     <button class="modal-close is-large" aria-label="close" (click)="passphraseModal()" *ngIf="!buttonLoading['passphrase']"></button>
+</div>
+<div id="passphraseUpdate" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': buttonLoading['passphrase']}">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <section class="modal-card-body">
+            <h1 class="is-size-1 has-text-danger">Do not close this page</h1>
+            <strong>We are re encrypting all your data. Closing this tab might definitively corrupt them</strong> <br><br>
+            <progress class="progress is-small is-success" max="100"></progress>
+            <p class="">
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>0" class="has-text-success"></fa-icon > 
+                <fa-icon [icon]="faCog" [spin]="true" *ngIf="step<=0"></fa-icon > 
+                <span [ngClass]="{'has-text-success': step>0}"> Derivation of your former passphrase</span><br>
+
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>1"></fa-icon > 
+                <fa-icon *ngIf="step<=1" [icon]="faCog" [spin]="true" ></fa-icon> 
+                <span [ngClass]="{'has-text-success': step>1}"> Download of your encrypted vault</span><br>
+
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>2"></fa-icon > 
+                <fa-icon *ngIf="step<=2" [icon]="faCog" [spin]="true"></fa-icon > 
+                    <span [ngClass]="{'has-text-success': step>2}"> Decryption of your vault</span><br>
+
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>3"></fa-icon > 
+                <fa-icon *ngIf="step<=3" [icon]="faCog" [spin]="true"></fa-icon > 
+                <span [ngClass]="{'has-text-success': step>3}"> Derivation of your new passphrase</span><br>
+
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>4"></fa-icon > 
+                <fa-icon *ngIf="step<=4" [icon]="faCog" [spin]="true"></fa-icon > 
+                <span [ngClass]="{'has-text-success': step>4}"> Encryption of your vault with your new passphrase</span><br>
+
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>5"></fa-icon > 
+                <fa-icon [icon]="faCog" [spin]="true"  *ngIf="step<=5"></fa-icon> 
+                <span [ngClass]="{'has-text-success': step>5}"> Upload of your encrypted vault</span><br>
+
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>6"></fa-icon > 
+                <fa-icon [icon]="faCog" [spin]="true" *ngIf="step<=6"></fa-icon > 
+                <span [ngClass]="{'has-text-success': step>6}"> Update of your authentication method</span><br>
+            </p>
+
+        </section>
+    </div>
 </div>
