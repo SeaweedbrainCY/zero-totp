@@ -6,11 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Utils } from '../common/Utils/utils';
 import { ActivatedRoute, Router } from '@angular/router';
-import { error } from 'console';
 import { Crypto } from '../common/Crypto/crypto';
-import { resolve } from 'path';
-import { rejects } from 'assert';
-import { promises } from 'dns';
+import { Buffer } from 'buffer';
 
 @Component({
   selector: 'app-account',
@@ -193,18 +190,49 @@ export class AccountComponent implements OnInit {
 
   updatePassphraseConfirm(){
     this.buttonLoading["passphrase"] = 1
+    this.step = 0;
     this.hashPassword().then(hashed => {
       this.verifyPassword(hashed).then(_ => {
           this.step++;
           this.get_all_secret().then(vault => {
             this.step++;
+            this.deriveNewPassphrase().then(derivedKey => {
+              const derivedKeySalt = this.crypto.generateRandomSalt();
+              const zke_key_str = this.crypto.generateZKEKey();
+              console.log("zke_key_str", zke_key_str)
+                this.step++;
+                this.encryptVault(vault, zke_key_str, derivedKeySalt).then(enc_vault => {
+                  console.log("enc_vault", enc_vault)
+                  this.crypto.encrypt(zke_key_str , derivedKey, derivedKeySalt).then((enc_zke_key) => {
+                    this.step++;
+                    console.log("enc_zke_key", enc_zke_key)
+                  }, error =>{
+                    console.log(error)
+                    this.updateAborted('#5')
+                  });
+                }, error =>{
+                  this.updateAborted('#4')
+                });
+            }, error =>{
+              this.updateAborted('#3')
+            });
           }, error =>{
-            this.buttonLoading["passphrase"] = 0;
+            this.updateAborted('#2')
           });
         });
       }, error => {
-        this.buttonLoading["passphrase"] = 0;
+        this.updateAborted('#1')
       });
+  }
+
+  updateAborted(errorCode: string){
+    superToast({
+      message: "An error occured. No update has been made. Update aborted. Report the error code " + errorCode,
+      type: "is-danger",
+      dismissible: false,
+      duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+    });
   }
 
 
@@ -345,6 +373,63 @@ export class AccountComponent implements OnInit {
       });
   });
 }
+
+deriveNewPassphrase():Promise<CryptoKey>{
+  return new Promise<CryptoKey>((resolve, reject) => {
+    this.crypto.deriveKey(this.newPassword, this.userService.getPassphraseSalt()!).then((derivedKey) => {
+      resolve(derivedKey);
+    }, error => {
+      superToast({
+        message: "Error : Impossible to derive your new passphrase",
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+      reject(error)
+    });
+  });
+}
+
+  encryptVault(vault:Map<string, Map<string,string>>, zkeKey_str: string, zkeSalt:string):Promise<Map<string, string>>{
+    return new Promise<Map<string, string>>((resolve, reject) => {
+      try{
+      const zke_key_raw = Buffer.from(zkeKey_str, "base64");
+      window.crypto.subtle.importKey(
+        "raw",
+        zke_key_raw,
+        "AES-GCM",
+        true,
+        ["encrypt", "decrypt"]
+      ).then((zke_key)=>{
+      const enc_vault = new Map<string, string>();
+      for(let [uuid, property] of vault){
+        try{
+          this.crypto.encrypt(this.utils.mapToJson(property), zke_key, zkeSalt).then(enc_property => {
+            enc_vault.set(uuid, enc_property);
+          });
+        } catch(e) {
+          superToast({
+            message: "Error : Impossible to encrypt your vault",
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+          reject(e)
+        }
+      }
+      resolve(enc_vault);
+    });
+  } catch(e){
+    console.log(e)
+  }
+  });
+  }
+
+  
+
+
 
 
 
