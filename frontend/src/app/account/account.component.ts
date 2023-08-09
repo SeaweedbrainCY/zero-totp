@@ -10,6 +10,7 @@ import { error } from 'console';
 import { Crypto } from '../common/Crypto/crypto';
 import { resolve } from 'path';
 import { rejects } from 'assert';
+import { promises } from 'dns';
 
 @Component({
   selector: 'app-account',
@@ -193,10 +194,17 @@ export class AccountComponent implements OnInit {
   updatePassphraseConfirm(){
     this.buttonLoading["passphrase"] = 1
     this.hashPassword().then(hashed => {
-      
-    }, error => {
-      this.buttonLoading["passphrase"] = 0;
-    });
+      this.verifyPassword(hashed).then(_ => {
+          this.step++;
+          this.get_all_secret().then(vault => {
+            this.step++;
+          }, error =>{
+            this.buttonLoading["passphrase"] = 0;
+          });
+        });
+      }, error => {
+        this.buttonLoading["passphrase"] = 0;
+      });
   }
 
 
@@ -225,8 +233,120 @@ export class AccountComponent implements OnInit {
     });
   }
 
-  verifyPassword():Promise<string>{
+  verifyPassword(hashedPassword:string):Promise<string>{
+    return new Promise<string>((resolve, reject) => {
+      const data = {
+      email: this.userService.getEmail()!,
+      password: hashedPassword
+    }
+      this.http.post(ApiService.API_URL+"/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      resolve("ok");
+      },
+     (error) => {
+       superToast({
+         message: "Your passphrase is incorrect",
+         type: "is-danger",
+         dismissible: true,
+       animate: { in: 'fadeIn', out: 'fadeOut' }
+       });
+       reject(error)
+     });
+    });
   }
+
+
+  get_all_secret():Promise<Map<string, Map<string,string>>>{
+    return new Promise<Map<string, Map<string,string>>>((resolve, reject) => {
+      let vault = new Map<string, Map<string,string>>();
+      this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+        this.step++;
+        try{
+          const data = JSON.parse(JSON.stringify(response.body))
+          console.log(data)
+         if(this.userService.get_zke_key() != null){
+          try{
+            for (let secret of data.enc_secrets){
+              this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
+                if(dec_secret == null){
+                  superToast({
+                    message: "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
+                    type: "is-danger",
+                    dismissible: false,
+                    duration: 20000,
+                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                  });
+                  reject("dec_secret is null");
+                } else {
+                    try{
+                      vault.set(secret.uuid, this.utils.mapFromJson(dec_secret));
+                    } catch(e) {
+                      superToast({
+                        message: "Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.   ",
+                        type: "is-danger",
+                        dismissible: false,
+                        duration: 20000,
+                      animate: { in: 'fadeIn', out: 'fadeOut' }
+                      });
+                      reject(e)
+                    }
+                  }
+              })
+            }
+            resolve(vault)
+          } catch(e) {
+            superToast({
+              message: "Wrong key. You cannot decrypt this vault.",
+              type: "is-danger",
+              dismissible: false,
+              duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+            });
+            reject(e)
+          }
+        } else {
+          superToast({
+            message: "Impossible to decrypt your vault, you're decryption key has expired. Please log out and log in again.",
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+          reject("zke_key is null");
+        }
+        } catch(e){
+          superToast({
+            message: "Error : Impossible to retrieve your vault from the server",
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+          reject(e)
+        }
+      }, (error) => {
+        if(error.status == 404){
+          this.userService.setVault(new Map<string, Map<string,string>>());
+        } else {
+          let errorMessage = "";
+          if(error.error.message != null){
+            errorMessage = error.error.message;
+          } else if(error.error.detail != null){
+            errorMessage = error.error.detail;
+          }
+          superToast({
+            message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+          reject(error)
+        }
+      });
+  });
+}
+
+
 
   deletionModal(){
     if(!this.buttonLoading["deletion"]){
