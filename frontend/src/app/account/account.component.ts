@@ -204,8 +204,12 @@ export class AccountComponent implements OnInit {
                 this.encryptVault(vault, zke_key_str, derivedKeySalt).then(enc_vault => {
                   console.log("enc_vault", enc_vault)
                   this.crypto.encrypt(zke_key_str , derivedKey, derivedKeySalt).then((enc_zke_key) => {
-                    this.step++;
                     console.log("enc_zke_key", enc_zke_key)
+                    this.verifyEncryption(derivedKey, enc_zke_key, enc_vault, vault).then(_ => {
+                      this.step++;
+                    }, error =>{
+                      this.updateAborted('#6. Reason : '+error)
+                    });
                   }, error =>{
                     console.log(error)
                     this.updateAborted('#5')
@@ -425,6 +429,45 @@ deriveNewPassphrase():Promise<CryptoKey>{
     console.log(e)
   }
   });
+  }
+
+
+  verifyEncryption(derivedKey:CryptoKey, zke_enc:string, enc_vault: Map<string, string>, vault:Map<string, Map<string,string>>):Promise<string>{
+    return new Promise<string>((resolve, reject) => {
+     this.crypto.decrypt(zke_enc, derivedKey).then((zke_key_str) => {
+      if(zke_key_str != null){
+        try {
+          for (let uuid of enc_vault.keys()){
+            if(enc_vault.get(uuid) != undefined){
+            this.crypto.decrypt(enc_vault.get(uuid)!, this.userService.get_zke_key()!).then((dec_secret)=>{
+              if(dec_secret == null){
+                reject("dec_secret is null");
+              } else {
+                try{
+                  const secret = this.utils.mapFromJson(dec_secret).get("secret");
+                  if(secret != vault.get("uuid")!.get("secret")){
+                    reject("secret is different")
+                  }
+                } catch(e) {
+                  reject(e)
+                }
+                }
+            })
+          }else {
+            reject("enc_vault.get(uuid) is undefined")
+          }
+        } 
+        resolve("ok")
+        } catch(e){
+          reject(e)
+        }
+
+      } else {
+        reject("zke_key_str is null")
+      }
+     });
+    });
+
   }
 
   
