@@ -35,6 +35,7 @@ export class AccountComponent implements OnInit {
   newPasswordConfirmErrorMessage : [string]=[""];
   step =0;
   password="";
+  hashedOldPassword="";
   constructor(
     private http: HttpClient,
     public userService: UserService,
@@ -193,6 +194,7 @@ export class AccountComponent implements OnInit {
     this.step = 0;
     this.hashPassword().then(hashed => {
       this.verifyPassword(hashed).then(_ => {
+        this.hashedOldPassword = hashed;
           this.step++;
           this.get_all_secret().then(vault => {
             this.step++;
@@ -207,6 +209,28 @@ export class AccountComponent implements OnInit {
                     console.log("enc_zke_key", enc_zke_key)
                     this.verifyEncryption(derivedKey, enc_zke_key, enc_vault, vault).then(_ => {
                       this.step++;
+                      this.uploadNewVault(enc_vault).then(_ => {
+                        this.upload_zke_enc(enc_zke_key).then(_ => {
+                          this.step++;
+                          this.uploadNewPassphrase().then(_ => {
+                            this.step++;
+                            superToast({
+                              message: "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
+                              type: "is-success",
+                              dismissible: true,
+                              duration: 10000,
+                              animate: { in: 'fadeIn', out: 'fadeOut' }
+                            });
+                            this.router.navigate(["/login"], {relativeTo:this.route.root});
+                          }, error =>{
+                            this.updateAborted('#8. Reason : '+error+ " Please contact the support team ASAP")
+                          });
+                        }, error =>{
+                          this.updateAborted('#8. Reason : '+error+ " Please contact the support team ASAP")
+                        });
+                      }, error =>{
+                        this.updateAborted('#7. Reason : '+error)
+                      });
                     }, error =>{
                       this.updateAborted('#6. Reason : '+error)
                     });
@@ -470,7 +494,59 @@ deriveNewPassphrase():Promise<CryptoKey>{
 
   }
 
-  
+  uploadNewVault(enc_vault: Map<string, string>):Promise<string>{
+    return new Promise<string>((resolve, reject) => {
+      const data = {
+        enc_vault: enc_vault,
+        old_password : this.hashedOldPassword
+      }
+      this.http.put(ApiService.API_URL+"/all_secrets",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+        resolve("ok");
+      }, error =>{
+        if(error.status == 500){
+          superToast({
+            message: "Error : An error might have occured while updating one of your totp. Please, try to update it again.",
+            type: "is-warning",
+            dismissible: false,
+            duration: 20000,
+          });
+          resolve("ok");
+        }
+        reject(error.error.message)
+      });
+    });
+  }
+
+  uploadNewPassphrase():Promise<string>{
+    return new Promise<string>((resolve, reject) => {
+      const salt = this.crypto.generateRandomSalt();
+      this.crypto.hashPassphrase(this.newPassword, salt).then  (hashed => {
+      const data = {
+        new_passphrase: hashed,
+        old_passphrase : this.hashedOldPassword
+      }
+      this.http.put(ApiService.API_URL+"/passphrase",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+        resolve("ok");
+      }, error =>{
+        reject(error.error.message)
+      });
+    });
+  });
+  }
+
+   upload_zke_enc(zke_enc:string):Promise<string>{
+    return new Promise<string>((resolve, reject) => {
+      const data = {
+        enc_zke_key: zke_enc,
+        old_password : this.hashedOldPassword
+      }
+      this.http.put(ApiService.API_URL+"/zke_encrypted_key",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+        resolve("ok");
+      }, error =>{
+        reject(error.error.message)
+      });
+    });
+  }
 
 
 
