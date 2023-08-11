@@ -29,7 +29,7 @@ class User:
         db.session.commit()
         return user
     
-    def update_passphrase(self, user_id, passphrase, passphrase_salt, derivedKeySalt):
+    def update(self, user_id, passphrase, passphrase_salt, derivedKeySalt):
         user = db.session.query(UserModel).filter_by(id=user_id).first()
         if user == None:
             return None
