@@ -29,10 +29,12 @@ class User:
         db.session.commit()
         return user
     
-    def update_passphrase(self, user_id, passphrase):
+    def update_passphrase(self, user_id, passphrase, passphrase_salt, derivedKeySalt):
         user = db.session.query(UserModel).filter_by(id=user_id).first()
         if user == None:
             return None
         user.password = passphrase
+        user.passphraseSalt = passphrase_salt
+        user.derivedKeySalt = derivedKeySalt
         db.session.commit()
         return user
