@@ -8,7 +8,7 @@ from Crypto import jwt_func
 import jwt
 import datetime
 
-class TestAllSecret(unittest.TestCase):
+class TestUpdateEmail(unittest.TestCase):
 
     def setUp(self):
         env.db_uri = "sqlite:///:memory:"
