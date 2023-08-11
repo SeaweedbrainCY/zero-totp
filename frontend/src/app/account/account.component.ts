@@ -198,21 +198,20 @@ export class AccountComponent implements OnInit {
           this.step++;
           this.get_all_secret().then(vault => {
             this.step++;
-            this.deriveNewPassphrase().then(derivedKey => {
-              const derivedKeySalt = this.crypto.generateRandomSalt();
+            const derivedKeySalt = this.crypto.generateRandomSalt();
+            this.deriveNewPassphrase(derivedKeySalt).then(derivedKey => {
               const zke_key_str = this.crypto.generateZKEKey();
               console.log("zke_key_str", zke_key_str)
                 this.step++;
                 this.encryptVault(vault, zke_key_str, derivedKeySalt).then(enc_vault => {
                   console.log("enc_vault", enc_vault)
                   this.crypto.encrypt(zke_key_str , derivedKey, derivedKeySalt).then((enc_zke_key) => {
+                    this.step++;
                     console.log("enc_zke_key", enc_zke_key)
                     this.verifyEncryption(derivedKey, enc_zke_key, enc_vault, vault).then(_ => {
                       this.step++;
-                      this.uploadNewVault(enc_vault).then(_ => {
-                        this.upload_zke_enc(enc_zke_key).then(_ => {
+                      this.uploadNewVault(enc_vault, enc_zke_key, derivedKeySalt).then(_ => {
                           this.step++;
-                          this.uploadNewPassphrase().then(_ => {
                             this.step++;
                             superToast({
                               message: "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
@@ -222,14 +221,8 @@ export class AccountComponent implements OnInit {
                               animate: { in: 'fadeIn', out: 'fadeOut' }
                             });
                             this.router.navigate(["/login"], {relativeTo:this.route.root});
-                          }, error =>{
-                            this.updateAborted('#8. Reason : '+error+ " Please contact the support team ASAP")
-                          });
-                        }, error =>{
-                          this.updateAborted('#8. Reason : '+error+ " Please contact the support team ASAP")
-                        });
                       }, error =>{
-                        this.updateAborted('#7. Reason : '+error)
+                        this.buttonLoading["passphrase"] = 0
                       });
                     }, error =>{
                       this.updateAborted('#6. Reason : '+error)
@@ -254,6 +247,7 @@ export class AccountComponent implements OnInit {
   }
 
   updateAborted(errorCode: string){
+    this.buttonLoading["passphrase"] = 0
     superToast({
       message: "An error occured. No update has been made. Update aborted. Report the error code " + errorCode,
       type: "is-danger",
@@ -402,9 +396,9 @@ export class AccountComponent implements OnInit {
   });
 }
 
-deriveNewPassphrase():Promise<CryptoKey>{
+deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
   return new Promise<CryptoKey>((resolve, reject) => {
-    this.crypto.deriveKey(this.newPassword, this.userService.getPassphraseSalt()!).then((derivedKey) => {
+    this.crypto.deriveKey(newDerivedKeySalt, this.newPassword).then((derivedKey) => {
       resolve(derivedKey);
     }, error => {
       superToast({
@@ -419,7 +413,7 @@ deriveNewPassphrase():Promise<CryptoKey>{
   });
 }
 
-  encryptVault(vault:Map<string, Map<string,string>>, zkeKey_str: string, zkeSalt:string):Promise<Map<string, string>>{
+  encryptVault(vault:Map<string, Map<string,string>>, zkeKey_str: string, derivedKeySalt:string):Promise<Map<string, string>>{
     return new Promise<Map<string, string>>((resolve, reject) => {
       try{
       const zke_key_raw = Buffer.from(zkeKey_str, "base64");
@@ -433,7 +427,7 @@ deriveNewPassphrase():Promise<CryptoKey>{
       const enc_vault = new Map<string, string>();
       for(let [uuid, property] of vault){
         try{
-          this.crypto.encrypt(this.utils.mapToJson(property), zke_key, zkeSalt).then(enc_property => {
+          this.crypto.encrypt(this.utils.mapToJson(property), zke_key, derivedKeySalt).then(enc_property => {
             enc_vault.set(uuid, enc_property);
           });
         } catch(e) {
@@ -460,31 +454,44 @@ deriveNewPassphrase():Promise<CryptoKey>{
     return new Promise<string>((resolve, reject) => {
      this.crypto.decrypt(zke_enc, derivedKey).then((zke_key_str) => {
       if(zke_key_str != null){
-        try {
-          for (let uuid of enc_vault.keys()){
-            if(enc_vault.get(uuid) != undefined){
-            this.crypto.decrypt(enc_vault.get(uuid)!, this.userService.get_zke_key()!).then((dec_secret)=>{
-              if(dec_secret == null){
-                reject("dec_secret is null");
-              } else {
-                try{
-                  const secret = this.utils.mapFromJson(dec_secret).get("secret");
-                  if(secret != vault.get("uuid")!.get("secret")){
-                    reject("secret is different")
+        const zke_key_raw = Buffer.from(zke_key_str!, 'base64');
+          try{
+          window.crypto.subtle.importKey(
+            "raw",
+            zke_key_raw,
+            "AES-GCM",
+            true,
+            ["encrypt", "decrypt"]
+          ).then((zke_key)=>{
+          try {
+            for (let uuid of enc_vault.keys()){
+              if(enc_vault.get(uuid) != undefined){
+              this.crypto.decrypt(enc_vault.get(uuid)!, zke_key).then((dec_secret)=>{
+                if(dec_secret == null){
+                  reject("dec_secret is null");
+                } else {
+                  try{
+                    const secret = this.utils.mapFromJson(dec_secret).get("secret");
+                    if(secret != vault.get("uuid")!.get("secret")){
+                      reject("secret is different")
+                    }
+                  } catch(e) {
+                    reject(e)
                   }
-                } catch(e) {
-                  reject(e)
-                }
-                }
-            })
-          }else {
-            reject("enc_vault.get(uuid) is undefined")
+                  }
+              })
+            }else {
+              reject("enc_vault.get(uuid) is undefined")
+            }
+          } 
+          resolve("ok")
+          } catch(e){
+            reject(e)
           }
-        } 
-        resolve("ok")
-        } catch(e){
-          reject(e)
-        }
+        });
+      } catch(e){
+        reject(e)
+      }
 
       } else {
         reject("zke_key_str is null")
@@ -494,59 +501,54 @@ deriveNewPassphrase():Promise<CryptoKey>{
 
   }
 
-  uploadNewVault(enc_vault: Map<string, string>):Promise<string>{
-    return new Promise<string>((resolve, reject) => {
-      const data = {
-        enc_vault: enc_vault,
-        old_password : this.hashedOldPassword
-      }
-      this.http.put(ApiService.API_URL+"/all_secrets",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
-        resolve("ok");
-      }, error =>{
-        if(error.status == 500){
-          superToast({
-            message: "Error : An error might have occured while updating one of your totp. Please, try to update it again.",
-            type: "is-warning",
-            dismissible: false,
-            duration: 20000,
-          });
-          resolve("ok");
-        }
-        reject(error.error.message)
-      });
-    });
-  }
-
-  uploadNewPassphrase():Promise<string>{
+  uploadNewVault(enc_vault: Map<string, string>, zke_enc:string, derivedKeySalt:string):Promise<string>{
     return new Promise<string>((resolve, reject) => {
       const salt = this.crypto.generateRandomSalt();
       this.crypto.hashPassphrase(this.newPassword, salt).then  (hashed => {
       const data = {
-        new_passphrase: hashed,
-        old_passphrase : this.hashedOldPassword
+        enc_vault: this.utils.mapToJson(enc_vault),
+        old_passphrase: this.hashedOldPassword,
+        new_passphrase : hashed,
+        zke_enc: zke_enc,
+        passphrase_salt: salt,
+        derived_key_salt: derivedKeySalt
       }
-      this.http.put(ApiService.API_URL+"/passphrase",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      this.http.put(ApiService.API_URL+"/update/vault",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
         resolve("ok");
       }, error =>{
-        reject(error.error.message)
+        if(error.status == 500){
+          if (error.error.hashing == 1){
+            superToast({
+              message: "An error occured while hashing your new passphrase. The vault and your passphrase have not been updated. Please, try again.",
+              type: "is-danger",
+              dismissible: false,
+              duration: 20000,
+            });
+            reject(error)
+          } else {
+            superToast({
+              message: "An error occured while updating your vault. Some information may not be updated\n Contact the support ASAP with the following error code : #9"+error.error.totp +" "+ error.error.zke + error.error.user ,
+              type: "is-danger",
+              dismissible: false,
+              duration: 2000000,
+            });
+            reject(error)
+          }
+          resolve("ok");
+        } else {
+          superToast({
+            message: "Operation aborted. Nothing have been updated. "+ error.status +" "+ error.error.message,
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+          });
+          reject(error)
+        }
       });
     });
   });
   }
 
-   upload_zke_enc(zke_enc:string):Promise<string>{
-    return new Promise<string>((resolve, reject) => {
-      const data = {
-        enc_zke_key: zke_enc,
-        old_password : this.hashedOldPassword
-      }
-      this.http.put(ApiService.API_URL+"/zke_encrypted_key",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
-        resolve("ok");
-      }, error =>{
-        reject(error.error.message)
-      });
-    });
-  }
 
 
 
