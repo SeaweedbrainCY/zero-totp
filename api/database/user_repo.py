@@ -7,6 +7,9 @@ class User:
     def getByEmail(self, email):
         return db.session.query(UserModel).filter_by(mail=email).first()
     
+    def getById(self, user_id):
+        return db.session.query(UserModel).filter_by(id=user_id).first()
+    
     def create(self, username, email, password, randomSalt, isVerified, passphraseSalt):
         user = UserModel(username=username, mail=email, password=password, derivedKeySalt=randomSalt, isVerified = isVerified, passphraseSalt = passphraseSalt)
         db.session.add(user)
@@ -23,5 +26,13 @@ class User:
         if user == None:
             return None
         user.mail = email
+        db.session.commit()
+        return user
+    
+    def update_passphrase(self, user_id, passphrase):
+        user = db.session.query(UserModel).filter_by(id=user_id).first()
+        if user == None:
+            return None
+        user.password = passphrase
         db.session.commit()
         return user
