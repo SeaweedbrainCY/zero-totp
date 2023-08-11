@@ -252,7 +252,50 @@ def get_all_secrets():
            secret = {"uuid": enc_secret.uuid, "enc_secret": enc_secret.secret_enc}
            secrets.append(secret)
         return {"enc_secrets": secrets}, 200
+
+
+#PUT /all_secrets
+def update_all_vault():
+    try:
+        user_id = connexion.context.get("user")
+        totp_secretDB = TOTP_secretDB()
+        user_db = UserDB()
+        dataJSON = json.dumps(request.get_json())
+        data = json.loads(dataJSON)
+        enc_vault = data["enc_vault"]
+        password = data["old_password"]
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
     
+    if not enc_vault or not password:
+        return {"message": "No vault given"}, 400
+    user = user_db.getById(user_id)
+    bcrypt = Bcrypt(password)
+    if bcrypt.checkpw(user.password):
+        return {"message": "Invalid password"}, 403
+    errors = 0
+    for secret in enc_vault.keys():
+        totp = totp_secretDB.get_enc_secret_by_uuid(user_id, secret)
+        if not totp:
+            totp = totp_secretDB.add(user_id, enc_vault[secret], secret)
+            if not totp:
+                logging.warning("Unknown error while adding encrypted secret for user " + str(user_id))
+                errors = 1
+        else:
+            if totp.user_id != user_id:
+                logging.warning("User " + str(user_id) + " tried to update secret " + str(secret) + " which is not his")
+                errors = 1
+            else :
+                totp = totp_secretDB.update_secret(secret, enc_vault[secret])
+                if totp == None:
+                    logging.warning("User " + str(user_id) + " tried to update secret " + str(secret) + " but an error occurred server side while storing your  encrypted secret")
+                    errors = 1
+    if errors:
+        return {"message": "An error occurred server side while storing your encrypted vault"}, 500
+    
+    return {"message": "Encrypted vault updated"}, 201
+
 
 #GET /zke_encrypted_key
 def get_ZKE_encrypted_key():
@@ -268,6 +311,31 @@ def get_ZKE_encrypted_key():
         logging.info(e)
         return {"message": "Invalid request"}, 400
 
+#PUT /zke_encrypted_key
+def update_zke_enc():
+    try:
+        user_id = connexion.context.get("user")
+        zke_db = ZKE_DB()
+        user_db = UserDB()
+        dataJSON = json.dumps(request.get_json())
+        data = json.loads(dataJSON)
+        zke_key = data["enc_zke_key"]
+        password = data["old_password"]
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    if not zke_key or not password:
+        return {"message": "No vault given"}, 400
+    user = user_db.getById(user_id)
+    bcrypt = Bcrypt(password)
+    if bcrypt.checkpw(user.password):
+        return {"message": "Invalid password"}, 403
+    zke_key = zke_db.update(user_id, zke_key)
+    if zke_key:
+        return {"message": "ZKE key updated"}, 201
+    else:
+        logging.warning("Unknown error while updating ZKE key for user " + str(user_id))
+        return {"message": "Unknown error while updating ZKE key"}, 500
 
 #PUT /email
 def update_email():
@@ -291,3 +359,31 @@ def update_email():
         return {"message": "Unknown error while updating email"}, 500
 
    
+#PUT /passphrase 
+def update_passphrase():
+    user_id = connexion.context.get("user")
+    if user_id == None:
+        return {"message": "Unauthorized"}, 401
+    dataJSON = json.dumps(request.get_json())
+    data = json.loads(dataJSON)
+    newPassphrase = data["new_passphrase"].strip()
+    old_passphrase = data["old_pasphrase"].strip()
+    if not newPassphrase or not old_passphrase:
+        return {"message": "Missing parameters"}, 400
+    if not utils.check_password(newPassphrase):
+        return {"message": "Bad password format"}, 400
+    userDb = UserDB()
+    user = userDb.getById(user_id)
+    bcrypt = Bcrypt(old_passphrase)
+    if bcrypt.checkpw(user.password):
+        return {"message": "Invalid password"}, 403
+    bcrypt = Bcrypt(newPassphrase)
+    try :
+        hashedpw = bcrypt.hashpw()
+        userDb.update_passphrase(user_id=user_id, passphrase=hashedpw)
+    except ValueError as e:
+        logging.debug(e)
+        return {"message": "Password is too long"}, 400
+    except Exception as e:
+        logging.warning("Uknown error occured while hashing password" + str(e))
+        return {"message": "Unknown error while hashing your password"}, 500
