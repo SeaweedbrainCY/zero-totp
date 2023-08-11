@@ -295,17 +295,21 @@ def update_email():
 #PUT /update/vault 
 def update_vault():
     returnJson = {"message": "Internal server error", "hashing":-1, "totp":-1, "user":-1, "zke":-1}
-    user_id = connexion.context.get("user")
-    if user_id == None:
-        return {"message": "Unauthorized"}, 401
-    dataJSON = json.dumps(request.get_json())
-    data = json.loads(dataJSON)
-    newPassphrase = data["new_passphrase"].strip()
-    old_passphrase = data["old_passphrase"].strip()
-    enc_vault = data["enc_vault"].strip()
-    zke_key = data["zke_enc"].strip()
-    passphrase_salt = data["passphrase_salt"].strip()
-    derivedKeySalt = data["derived_key_salt"].strip()
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+        dataJSON = json.dumps(request.get_json())
+        data = json.loads(dataJSON)
+        newPassphrase = data["new_passphrase"].strip()
+        old_passphrase = data["old_passphrase"].strip()
+        enc_vault = data["enc_vault"].strip()
+        enc_vault = json.loads(enc_vault)
+        zke_key = data["zke_enc"].strip()
+        passphrase_salt = data["passphrase_salt"].strip()
+        derivedKeySalt = data["derived_key_salt"].strip()
+    except:
+        return '{"message": "Invalid request"}', 400
 
     if not newPassphrase or not old_passphrase or not enc_vault or not zke_key or not passphrase_salt or not derivedKeySalt:
         return {"message": "Missing parameters"}, 400
@@ -335,11 +339,10 @@ def update_vault():
     
     returnJson["hashing"]=1
     errors = 0
-    enc_vault = json.loads(enc_vault)
     for secret in enc_vault.keys():
         totp = totp_secretDB.get_enc_secret_by_uuid(user_id, secret)
         if not totp:
-            totp = totp_secretDB.add(user_id, enc_vault[secret], secret)
+            totp = totp_secretDB.add(user_id=user_id, enc_secret=enc_vault[secret], uuid=secret)
             if not totp:
                 logging.warning("Unknown error while adding encrypted secret for user " + str(user_id))
                 errors = 1
@@ -348,12 +351,12 @@ def update_vault():
                 logging.warning("User " + str(user_id) + " tried to update secret " + str(secret) + " which is not his")
                 errors = 1
             else :
-                totp = totp_secretDB.update_secret(secret, enc_vault[secret])
+                totp = totp_secretDB.update_secret(uuid=secret, enc_secret=enc_vault[secret])
                 if totp == None:
                     logging.warning("User " + str(user_id) + " tried to update secret " + str(secret) + " but an error occurred server side while storing your  encrypted secret")
                     errors = 1
     zke = zke_db.update(user_id, zke_key)
-    userUpdated = userDb.update_passphrase(user_id=user_id, passphrase=hashedpw, passphrase_salt=passphrase_salt, derivedKeySalt=derivedKeySalt)
+    userUpdated = userDb.update(user_id=user_id, passphrase=hashedpw, passphrase_salt=passphrase_salt, derivedKeySalt=derivedKeySalt)
     returnJson["totp"]=1 if errors == 0 else 0
     returnJson["user"]=1 if userUpdated else 0
     returnJson["zke"]=1 if zke else 0
