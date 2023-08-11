@@ -101,7 +101,7 @@ export class VaultComponent implements OnInit {
           }
         } else {
           superToast({
-            message: "Impossible to decrypt your vault, you're decryption key has expired. Please log out and log in again.",
+            message: "Impossible to decrypt your vault. Please log out and log in again.",
             type: "is-danger",
             dismissible: false,
             duration: 20000,

@@ -11,3 +11,9 @@ class ZKE:
     
     def getByUserId(self, user_id):
         return db.session.query(ZKEModel).filter_by(user_id=user_id).first()
+    
+    def update(self, user_id, encrypted_key):
+        zke_key = self.getByUserId(user_id)
+        zke_key.ZKE_key = encrypted_key
+        db.session.commit()
+        return zke_key

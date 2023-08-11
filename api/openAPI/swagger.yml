@@ -86,7 +86,6 @@ paths:
       responses:
         "200": # status code
           description: Return the login specs
-
   /zke_encrypted_key:
     get:
       operationId: controllers.get_ZKE_encrypted_key
@@ -216,8 +215,67 @@ paths:
           description: Unauthorized
         "404":
           description: No secrets found
-    
+  /update/email:
+    put:
+      operationId: controllers.update_email
+      tags:
+        - User
+      summary: Update the user's email
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        "201": # status code
+          description: email updated
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
 
+  /update/vault:
+    put:
+      operationId: controllers.update_vault
+      tags:
+        - User
+      summary: Update the user's passphrase, encrypted vault and zke ecrypted key
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_passphrase:
+                  type: string
+                new_passphrase:
+                  type: string
+                enc_vault:
+                  type: string
+                zke_enc:
+                  type: string
+                passphrase_salt:
+                  type: string
+                derived_key_salt:
+                  type: string
+      responses:
+        "201": # status code
+          description: passphrase, vault and zke key updated
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+        "500":
+          description: Internal server error
 
 components:
   securitySchemes:
