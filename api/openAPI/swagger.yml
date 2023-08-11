@@ -86,32 +86,6 @@ paths:
       responses:
         "200": # status code
           description: Return the login specs
-  /passphrase:
-    put:
-      operationId: controllers.update_passphrase
-      tags:
-        - User
-      summary: Update the user's passphrase
-      requestBody:
-        required: true
-        content: 
-          application/json:
-            schema:
-              type: object
-              properties:
-                old_passphrase:
-                  type: string
-                new_passphrase:
-                  type: string
-      responses:
-        "201": # status code
-          description: passphrase updated
-        "400":
-          description: Missing required parameters
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access denied
   /zke_encrypted_key:
     get:
       operationId: controllers.get_ZKE_encrypted_key
@@ -125,34 +99,6 @@ paths:
           description: Unauthorized
         "403":
           description: Access denied
-    put: 
-      operationId: controllers.update_zke_enc
-      tags:
-        - Vault
-      summary: Update a user's encrypted zke key
-      requestBody:
-        required: true
-        content: 
-          application/json:
-            schema:
-              type: object
-              properties:
-                enc_zke_key:
-                  type: string
-                old_password:
-                  type: string
-      responses:
-        "201": # status code
-          description: ZKE key updated
-        "400":
-          description: Missing required parameters
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access denied
-        "500":
-          description: Internal server error
-
   /encrypted_secret/{uuid}:
     get:
       operationId: controllers.get_encrypted_secret
@@ -269,34 +215,6 @@ paths:
           description: Unauthorized
         "404":
           description: No secrets found
-    put:
-      operationId: controllers.update_all_vault
-      tags:
-        - Vault
-      summary: Update a user's entire vault
-      requestBody:
-        required: true
-        content: 
-          application/json:
-            schema:
-              type: object
-              properties:
-                new_password:
-                  type: string
-                old_password:
-                  type: string
-      responses:
-        "201": # status code
-          description: Vault updated
-        "400":
-          description: Missing required parameters
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access denied
-        "500":
-          description: Internal server error
-
   /update/email:
     put:
       operationId: controllers.update_email
@@ -322,8 +240,42 @@ paths:
         "403":
           description: Access denied
 
-    
-
+  /update/vault:
+    put:
+      operationId: controllers.update_vault
+      tags:
+        - User
+      summary: Update the user's passphrase, encrypted vault and zke ecrypted key
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_passphrase:
+                  type: string
+                new_passphrase:
+                  type: string
+                enc_vault:
+                  type: string
+                zke_enc:
+                  type: string
+                passphrase_salt:
+                  type: string
+                derived_key_salt:
+                  type: string
+      responses:
+        "201": # status code
+          description: passphrase, vault and zke key updated
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+        "500":
+          description: Internal server error
 
 components:
   securitySchemes:
