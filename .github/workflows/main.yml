@@ -20,7 +20,7 @@ jobs:
           run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
         - name: Create environment file
           working-directory: ./frontend
-          run: bash generate-env.sh $("${GITHUB_REF#refs/heads/}" | cut -d '/' -f 3)
+          run: bash generate-env.sh ${{ github.ref_name }}
         - name: Build Docker image
           working-directory: ./frontend
           run: docker build -t $REPO:latest -t $REPO:${GITHUB_SHA::8} .
