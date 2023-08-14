@@ -203,9 +203,9 @@ export class AccountComponent implements OnInit {
               const zke_key_str = this.crypto.generateZKEKey();
               console.log("zke_key_str", zke_key_str)
                 this.step++;
-                this.encryptVault(vault, zke_key_str, derivedKeySalt).then(enc_vault => {
+                this.encryptVault(vault, zke_key_str).then(enc_vault => {
                   console.log("enc_vault", enc_vault)
-                  this.crypto.encrypt(zke_key_str , derivedKey, derivedKeySalt).then((enc_zke_key) => {
+                  this.crypto.encrypt(zke_key_str , derivedKey).then((enc_zke_key) => {
                     this.step++;
                     console.log("enc_zke_key", enc_zke_key)
                     this.verifyEncryption(derivedKey, enc_zke_key, enc_vault, vault).then(_ => {
@@ -414,7 +414,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
   });
 }
 
-  encryptVault(vault:Map<string, Map<string,string>>, zkeKey_str: string, derivedKeySalt:string):Promise<Map<string, string>>{
+  encryptVault(vault:Map<string, Map<string,string>>, zkeKey_str: string):Promise<Map<string, string>>{
     return new Promise<Map<string, string>>((resolve, reject) => {
       try{
       const zke_key_raw = Buffer.from(zkeKey_str, "base64");
@@ -428,7 +428,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
       const enc_vault = new Map<string, string>();
       for(let [uuid, property] of vault){
         try{
-          this.crypto.encrypt(this.utils.mapToJson(property), zke_key, derivedKeySalt).then(enc_property => {
+          this.crypto.encrypt(this.utils.mapToJson(property), zke_key).then(enc_property => {
             enc_vault.set(uuid, enc_property);
           });
         } catch(e) {

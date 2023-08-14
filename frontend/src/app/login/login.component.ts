@@ -44,11 +44,13 @@ export class LoginComponent {
         case 'sessionKilled':{
           this.warning_message = "For your safety, you have been disconnected because you have reloaded or closed the tab";
           this.email = this.userService.getEmail() || "";
+          this.userService.clear();
           break;
         }
         case 'sessionTimeout':{
           this.warning_message = "For your safety, you have been disconnected after 10min of inactivity"
           this.email = this.userService.getEmail() || "";
+          this.userService.clear();
         }
       }
       

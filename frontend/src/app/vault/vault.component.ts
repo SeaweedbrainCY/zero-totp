@@ -70,6 +70,12 @@ export class VaultComponent implements OnInit {
                     duration: 20000,
                   animate: { in: 'fadeIn', out: 'fadeOut' }
                   });
+                  let fakeProperty = new Map<string, string>();
+                  fakeProperty.set("color","info");
+                  fakeProperty.set("name", "🔒")
+                  fakeProperty.set("secret", "");
+
+                  this.vault?.set(secret.uuid, fakeProperty);
                 } else {
                     try{
                       this.vault?.set(secret.uuid, this.utils.mapFromJson(dec_secret));

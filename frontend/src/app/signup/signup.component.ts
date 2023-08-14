@@ -138,7 +138,7 @@ export class SignupComponent implements OnInit {
     const ZKEkey = this.crypto.generateZKEKey();
     const randomSalt = this.crypto.generateRandomSalt();
     this.crypto.deriveKey(randomSalt, this.password).then((key) => {
-      this.crypto.encrypt(ZKEkey, key, randomSalt).then((encryptedZKEkey) => {
+      this.crypto.encrypt(ZKEkey, key).then((encryptedZKEkey) => {
         this.encryptedZKEkey = encryptedZKEkey
         this.derivedKeySalt = randomSalt
         this.hashPassword()

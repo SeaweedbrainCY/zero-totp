@@ -66,7 +66,7 @@ export class HomeComponent implements OnInit {
     const salt = crypto.generateRandomSalt();
     console.log(Buffer.from(salt).toString('base64'))
     crypto.deriveKey(salt, this.password).then(key=>{
-      crypto.encrypt(this.plaintext, key, salt).then(encrypted=>{
+      crypto.encrypt(this.plaintext, key).then(encrypted=>{
         this.encrypted = encrypted;
         crypto.decrypt(this.encrypted, key).then(decrypted=>{
           if(decrypted == null){
