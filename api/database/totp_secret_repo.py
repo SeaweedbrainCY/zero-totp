@@ -14,16 +14,16 @@ class TOTP_secret:
         db.session.commit()
         return enc_secret
     
-    def update_secret(self, uuid, enc_secret):
-        enc_totp_secret = db.session.query(TOTP_secret_model).filter_by(uuid=uuid).first()
+    def update_secret(self, uuid, enc_secret, user_id):
+        enc_totp_secret = db.session.query(TOTP_secret_model).filter_by(uuid=uuid,user_id=user_id ).first()
         if enc_totp_secret == None:
             return None
         enc_totp_secret.secret_enc = enc_secret
         db.session.commit()
         return enc_totp_secret
 
-    def delete(self, uuid):
-        enc_totp_secret = db.session.query(TOTP_secret_model).filter_by(uuid=uuid).first()
+    def delete(self, user_id, uuid):
+        enc_totp_secret = db.session.query(TOTP_secret_model).filter_by(uuid=uuid, user_id=user_id).first()
         if enc_totp_secret == None:
             return None
         db.session.delete(enc_totp_secret)
