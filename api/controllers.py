@@ -225,7 +225,7 @@ def delete_encrypted_secret(uuid):
         if totp.user_id != user_id:
             logging.warning("User " + str(user_id) + " tried to delete secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
-        if totp_secretDB.delete(uuid, user_id= user_id):
+        if totp_secretDB.delete(uuid=uuid, user_id= user_id):
             return {"message": "Encrypted secret deleted"}, 201
         else:
             logging.warning("Unknown error while deleting encrypted secret for user " + str(user_id) )
