@@ -35,6 +35,7 @@ export class SignupComponent implements OnInit {
   encryptedZKEkey=""
   derivedKeySalt=""
   passphraseSalt=""
+  modalDisabled=true;
 
   constructor(
     private http: HttpClient,
@@ -202,5 +203,13 @@ export class SignupComponent implements OnInit {
 
   modal(){
     this.isModalActive = !this.isModalActive;
+  }
+
+  confirmSentence(){
+    console.log(this.input.replace(/[^a-zA-Z]/g, ''));
+    console.log(this.input)
+    if(this.input.replace(/[^a-zA-Z]/g, '') == 'MypassphraseisstrongandIwontforgetit'){
+      this.modalDisabled = false
+    }
   }
 }
