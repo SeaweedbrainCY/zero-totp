@@ -299,6 +299,7 @@ export class AccountComponent implements OnInit {
          dismissible: true,
        animate: { in: 'fadeIn', out: 'fadeOut' }
        });
+       this.buttonLoading["passphrase"] = 0
        reject(error)
      });
     });

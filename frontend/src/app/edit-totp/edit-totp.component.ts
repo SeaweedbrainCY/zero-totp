@@ -84,7 +84,7 @@ export class EditTOTPComponent implements OnInit{
       return;
     }
     if(this.utils.sanitize(this.name) != this.name){
-      this.nameError = "&, <, >, \" and ' are forbidden";
+      this.nameError = "<, >, \" and ' are forbidden";
       return;
     }
   }
@@ -107,7 +107,7 @@ export class EditTOTPComponent implements OnInit{
     }
 
     if(this.secret != this.utils.sanitize(this.secret)){
-      this.secretError = "&, <, >, \" and ' are forbidden";
+      this.secretError = "<, >, \" and ' are forbidden";
       return;
     }
     this.generateCode();
