@@ -46,7 +46,7 @@
 <article class="is-flex is-justify-content-center is-grouped m-4" *ngIf="scannerStarted">
     <div class="box block">
     <div class="select is-info m-2">
-    <select class="block" #deviceSelected (change)="changeDevice(deviceSelected.value)">
+    <select class="block" #deviceSelected (keyup)="changeDevice(deviceSelected.value)">
         <option value="" [selected]="!currentDevice">No Device Selected</option>
         <option *ngFor="let device of availableDevices" [value]="device.deviceId"
           [selected]="currentDevice && device.deviceId === currentDevice.deviceId">{{device.label}}</option>

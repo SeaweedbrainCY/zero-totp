@@ -27,7 +27,7 @@
         is-one-quarter-fullhd">
             <label class="label">Domain or name</label>
             <div class="control has-icons-left has-icons-right">
-              <input class="input" type="text" placeholder="github.com" name="name" [(ngModel)]="name" (change)="checkName()" [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }">
+              <input class="input" type="text" placeholder="github.com" name="name" [(ngModel)]="name" (keyup)="checkName()" [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }">
               <span class="icon is-small is-left">
                 <fa-icon [icon]="faGlobe"></fa-icon>
               </span>
@@ -41,7 +41,7 @@
           is-one-quarter-fullhd">
             <label class="label">TOTP secret</label>
             <div class="control has-icons-left has-icons-right">
-              <input class="input" type="test" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret" (change)="checkSecret()" [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }">
+              <input class="input" type="test" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret" (keyup)="checkSecret()" [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }">
               <span class="icon is-small is-left">
                 <fa-icon [icon]="faKey"></fa-icon>
               </span>
@@ -50,7 +50,7 @@
           </div></div>
           <div class="field p-5 is-flex is-justify-content-center">
           <div class=" select is-{{color}}">
-            <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color" (change)="changeColor(colorSelected.value)">
+            <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color" (keyup)="changeColor(colorSelected.value)">
               <option default>Blue</option>
               <option>Green</option>
               <option>Orange</option>
