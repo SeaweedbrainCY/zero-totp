@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
@@ -18,11 +19,21 @@ export class VaultComponent implements OnInit {
   faPen = faPen;
   faSquarePlus = faSquarePlus;
   faCopy = faCopy;
+  faGoogleDrive=faGoogleDrive;
+  faCircleXmark= faCircleXmark;
+  faCheckCircle = faCheckCircle;
+  faRotateRight = faRotateRight;
+  faDesktop=faDesktop;
+  faDownload=faDownload;
+  faChevronUp=faChevronUp;
+  faChevronDown=faChevronDown;
   vault: Map<string, Map<string,string>> | undefined;
   vaultDomain : string[] = [];
   remainingTime = 0;
   totp = require('totp-generator');
   isModalActive = false
+  reloadSpin = false
+  storageOptionOpen = false
 
   constructor(
     private userService: UserService,
@@ -50,8 +61,9 @@ export class VaultComponent implements OnInit {
 
   ngOnInit() {
     if(this.userService.getId() == null){
-      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } else {
+      this.reloadSpin = true
       this.vault = new Map<string, Map<string,string>>();
       this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         try{
@@ -95,7 +107,7 @@ export class VaultComponent implements OnInit {
                   }
               })
             }
-            
+            this.reloadSpin = false
           } catch {
             superToast({
               message: "Wrong key. You cannot decrypt this vault.",
@@ -188,6 +200,10 @@ export class VaultComponent implements OnInit {
       dismissible: true,
     animate: { in: 'fadeIn', out: 'fadeOut' }
     });
+  }
+
+  reload(){
+    this.ngOnInit();
   }
 
   
