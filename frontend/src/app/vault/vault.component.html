@@ -4,7 +4,47 @@
         <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">Here is your TOTP vault</h1>
         <p class="has-text-centered has-text-grey pb-6">You and only you can access to this data. All the magic is done
             on your computer.</p>
+            <div class="message is-success">
+                <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen" style="cursor: pointer;">
+                    <p>Your storage options <span class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" class="mt-3" *ngIf="!storageOptionOpen"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" class="pl-1" *ngIf="storageOptionOpen"></fa-icon>
+                    </div>
+                  </div>
+                  <div class="message-body" [hidden]="!storageOptionOpen">
+                <div class="is-flex is-justify-content-space-around is-flex-wrap-wrap">
+                    <div>
+                    <div class="dropdown-trigger">
+                    <div class="tags has-addons" style="align-items: normal;" aria-haspopup="true" aria-controls="dropdown-menu4">
+                        <span class="tag is-medium is-dark has-text-weight-bold " id="totp-tag">🇪🇺 Zero-TOTP servers </span>
+                        <span class="tag is-success is-medium" id="totp-status-tag">Sync <fa-icon [icon]="faCheckCircle" class="pl-1"></fa-icon></span>
+                        <div class="dropdown is-hoverable">
+                        </div>
+  <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+    <div class="dropdown-content">
+      <div class="dropdown-item">
+        <p>You can insert <strong>any type of content</strong> within the dropdown menu.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+                      </div>
+                      <div class="tags has-addons" style="align-items: normal;">
+                        <span class="tag is-medium is-dark" id="google-tag"> <fa-icon [icon]="faGoogleDrive" class="pr-1"></fa-icon> <span class=" has-text-weight-bold">Google Drive </span> (recommended) </span>
+                        <span class="tag is-danger is-medium " id="google-status-tag" >Not sync <fa-icon [icon]="faCircleXmark" class="pl-1"></fa-icon ></span>
+                      </div>
+                      <div class="tags has-addons alig" style="align-items: normal;">
+                        <span class="tag is-medium is-dark has-text-weight-bold" id="download-tag"> <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>Backup on your machine </span>
+                        <span class="tag is-info is-medium" id="download-status-tag"> <fa-icon [icon]="faDownload"></fa-icon></span>
+                      </div>
+                </div>
+            </div>
+            </div>
+            <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault">Reload my vault <fa-icon [icon]="faRotateRight" class="pl-1" [spin]=reloadSpin></fa-icon></span>
         <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
+           
             <div class="column is-full-mobile
             is-one-third-tablet
             is-one-third-desktop
