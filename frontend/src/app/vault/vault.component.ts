@@ -46,26 +46,11 @@ export class VaultComponent implements OnInit {
     private http: HttpClient,
     private crypto: Crypto,
     private utils: Utils,
-    ) { let property = new Map<string, string>();
-      /*property.set("color","info");
-      property.set("name", "fake@google.com")
-      let vault = this.userService.getVault();
-      if(vault == null){
-        vault = new Map<string, Map<string,string>>();
-      }
-      vault.set('bb2ff042-8422-41b0-bd2e-72a949d6bccc', property);
-      property = new Map<string, string>();
-      property.set("name", "fake@github.com")
-      property.set("secret", "GEZDGNBSGEZDGMZS");
-      property.set("color","primary");
-      vault.set('2ebb9281-f89f-410a-920a-8ea38e7e65c1', property);
-      this.userService.setVault(vault); 
-      this.userService.setId(1);*/
-    }
+    ) {  }
 
   ngOnInit() {
     if(this.userService.getId() == null){
-      //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } else {
       this.reloadSpin = true
       this.vault = new Map<string, Map<string,string>>();
