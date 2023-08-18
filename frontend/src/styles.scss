@@ -30,6 +30,37 @@ video {
   width:auto !important;
 }
 
+#reloadVault:hover{
+  font-weight: bold;
+}
+
+#reloadVault{
+  cursor: pointer;
+}
+
+#totp-tag:hover,
+#totp-status-tag:hover,
+#google-tag:hover,
+#google-status-tag:hover,
+#download-tag:hover,
+#download-status-tag:hover{
+  box-shadow: black 0px 0px 4px;
+}
+
+#totp-tag:hover ~ #totp-status-tag,
+#totp-status-tag:hover ~ #totp-tag,
+#google-tag:hover ~ #google-status-tag,
+#google-status-tag:hover ~ #google-tag,
+#download-tag:hover ~ #download-status-tag,
+#download-status-tag:hover ~ #download-tag {
+  box-shadow: black 0px 0px 4px;
+}
+
+.tags {
+  cursor: pointer;
+}
+
+
 
 /*@import "../node_modules/bulma/css/bulma.css";*/
 @import "../node_modules/bulma/bulma.sass";

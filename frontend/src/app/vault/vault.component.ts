@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
@@ -18,11 +19,25 @@ export class VaultComponent implements OnInit {
   faPen = faPen;
   faSquarePlus = faSquarePlus;
   faCopy = faCopy;
+  faGoogleDrive=faGoogleDrive;
+  faCircleXmark= faCircleXmark;
+  faCheckCircle = faCheckCircle;
+  faRotateRight = faRotateRight;
+  faDesktop=faDesktop;
+  faDownload=faDownload;
+  faChevronUp=faChevronUp;
+  faChevronDown=faChevronDown;
+  faChevronRight=faChevronRight;
+  faLink=faLink;
+  faCircleInfo=faCircleInfo;
+  faUpload=faUpload;
   vault: Map<string, Map<string,string>> | undefined;
   vaultDomain : string[] = [];
   remainingTime = 0;
   totp = require('totp-generator');
   isModalActive = false
+  reloadSpin = false
+  storageOptionOpen = false
 
   constructor(
     private userService: UserService,
@@ -31,27 +46,13 @@ export class VaultComponent implements OnInit {
     private http: HttpClient,
     private crypto: Crypto,
     private utils: Utils,
-    ) { let property = new Map<string, string>();
-      /*property.set("color","info");
-      property.set("name", "fake@google.com")
-      let vault = this.userService.getVault();
-      if(vault == null){
-        vault = new Map<string, Map<string,string>>();
-      }
-      vault.set('bb2ff042-8422-41b0-bd2e-72a949d6bccc', property);
-      property = new Map<string, string>();
-      property.set("name", "fake@github.com")
-      property.set("secret", "GEZDGNBSGEZDGMZS");
-      property.set("color","primary");
-      vault.set('2ebb9281-f89f-410a-920a-8ea38e7e65c1', property);
-      this.userService.setVault(vault); 
-      this.userService.setId(1);*/
-    }
+    ) {  }
 
   ngOnInit() {
     if(this.userService.getId() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } else {
+      this.reloadSpin = true
       this.vault = new Map<string, Map<string,string>>();
       this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         try{
@@ -95,7 +96,7 @@ export class VaultComponent implements OnInit {
                   }
               })
             }
-            
+            this.reloadSpin = false
           } catch {
             superToast({
               message: "Wrong key. You cannot decrypt this vault.",
@@ -188,6 +189,10 @@ export class VaultComponent implements OnInit {
       dismissible: true,
     animate: { in: 'fadeIn', out: 'fadeOut' }
     });
+  }
+
+  reload(){
+    this.ngOnInit();
   }
 
   
