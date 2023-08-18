@@ -1,115 +1,170 @@
 <section class="hero  is-halfheight mt-6 " style="min-height: 70vh;">
     <div class="container  is-fluid ">
-    <div>
-        <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">Here is your TOTP vault</h1>
-        <p class="has-text-centered has-text-grey pb-6">You and only you can access to this data. All the magic is done
-            on your computer.</p>
+        <div>
+            <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">Here is your TOTP vault</h1>
+            <p class="has-text-centered has-text-grey pb-6">You and only you can access to this data. All the magic is
+                done
+                on your computer.</p>
             <div class="message is-success">
                 <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen" style="cursor: pointer;">
                     <p>Your storage options <span class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
-                    <div>
-                        <fa-icon [icon]="faChevronDown" class="mt-3" *ngIf="!storageOptionOpen"></fa-icon>
+                    <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">Less</span>
+                        <span *ngIf="!storageOptionOpen">More</span>
+                        <fa-icon [icon]="faChevronDown" class="pl-1" *ngIf="!storageOptionOpen"></fa-icon>
                         <fa-icon [icon]="faChevronUp" class="pl-1" *ngIf="storageOptionOpen"></fa-icon>
                     </div>
-                  </div>
-                  <div class="message-body" [hidden]="!storageOptionOpen">
-                <div class="is-flex is-justify-content-space-around is-flex-wrap-wrap">
-                    <div>
-                    <div class="dropdown-trigger">
-                    <div class="tags has-addons" style="align-items: normal;" aria-haspopup="true" aria-controls="dropdown-menu4">
-                        <span class="tag is-medium is-dark has-text-weight-bold " id="totp-tag">🇪🇺 Zero-TOTP servers </span>
-                        <span class="tag is-success is-medium" id="totp-status-tag">Sync <fa-icon [icon]="faCheckCircle" class="pl-1"></fa-icon></span>
-                        <div class="dropdown is-hoverable">
-                        </div>
-  <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-    <div class="dropdown-content">
-      <div class="dropdown-item">
-        <p>You can insert <strong>any type of content</strong> within the dropdown menu.</p>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-                      </div>
-                      <div class="tags has-addons" style="align-items: normal;">
-                        <span class="tag is-medium is-dark" id="google-tag"> <fa-icon [icon]="faGoogleDrive" class="pr-1"></fa-icon> <span class=" has-text-weight-bold">Google Drive </span> (recommended) </span>
-                        <span class="tag is-danger is-medium " id="google-status-tag" >Not sync <fa-icon [icon]="faCircleXmark" class="pl-1"></fa-icon ></span>
-                      </div>
-                      <div class="tags has-addons alig" style="align-items: normal;">
-                        <span class="tag is-medium is-dark has-text-weight-bold" id="download-tag"> <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>Backup on your machine </span>
-                        <span class="tag is-info is-medium" id="download-status-tag"> <fa-icon [icon]="faDownload"></fa-icon></span>
-                      </div>
                 </div>
-            </div>
-            </div>
-            <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault">Reload my vault <fa-icon [icon]="faRotateRight" class="pl-1" [spin]=reloadSpin></fa-icon></span>
-        <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
-           
-            <div class="column is-full-mobile
+                <div class="message-body">
+                    <div class="is-flex is-justify-content-space-around is-flex-wrap-wrap columns">
+                        <div class="column is-full-mobile
+                    is-four-fifths-tablet
+                    is-one-third-desktop
+                    is-one-third-widescreen
+                    is-one-quarter-fullhd">
+                            <div class="is-flex is-justify-content-center">
+                                <div class="tags has-addons mb-0" style="align-items: normal;" aria-haspopup="true"
+                                    aria-controls="dropdown-menu4">
+                                    <span class="tag is-medium is-dark has-text-weight-bold " id="totp-tag">🇪🇺
+                                        Zero-TOTP servers </span>
+                                    <span class="tag is-success is-medium" id="totp-status-tag"> <fa-icon
+                                            [icon]="faCheckCircle"></fa-icon></span>
+                                </div>
+                            </div>
+                            <div [hidden]="!storageOptionOpen" class="mb-3">
+                                <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
+                                    <button class="button is-outlined is-dark"><fa-icon [icon]="faRotateRight"
+                                            class="mr-3"></fa-icon> Reload the vault </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class=" column is-full-mobile
+                      is-four-fifths-tablet
+                      is-one-third-desktop
+                      is-one-third-widescreen
+                      is-one-quarter-fullhd">
+                            <div class="is-flex is-justify-content-center">
+                                <div class="tags has-addons mb-0" style="align-items: normal;">
+                                    <span class="tag is-medium is-dark" id="google-tag"> <fa-icon [icon]="faGoogleDrive"
+                                            class="pr-1"></fa-icon> <span class=" has-text-weight-bold">Google Drive
+                                        </span></span>
+                                    <span class="tag is-danger is-medium " id="google-status-tag"><fa-icon
+                                            [icon]="faCircleXmark"></fa-icon></span>
+                                </div>
+                            </div>
+                            <div [hidden]="!storageOptionOpen" class="mb-3">
+                                <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
+                                    [hidden]="!storageOptionOpen">
+                                    <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"><fa-icon [icon]="faLink"
+                                            class="mr-3"></fa-icon> Sync now </button>
+                                    <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"><fa-icon
+                                            [icon]="faCircleInfo" class="mr-3"></fa-icon> More info</button>
+                                </div>
+                            </div>
+                            </div>
+                            
+                            <div class=" column is-full-mobile
+                    is-four-fifths-tablet
+                    is-one-third-desktop
+                    is-one-third-widescreen
+                    is-one-quarter-fullhd">
+                                <div class="is-flex is-justify-content-center">
+                                    <div class="tags has-addons mb-0" style="align-items: normal;">
+                                        <span class="tag is-medium is-dark has-text-weight-bold" id="download-tag">
+                                            <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>Backup locally
+                                        </span>
+                                        <span class="tag is-info is-medium" id="download-status-tag"> <fa-icon
+                                                [icon]="faDownload"></fa-icon></span>
+                                    </div>
+                                </div>
+                                <div [hidden]="!storageOptionOpen" class="mb-3">
+                                <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
+                                    [hidden]="!storageOptionOpen">
+                                    <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"><fa-icon
+                                            [icon]="faDownload" class="mr-3 "></fa-icon> Save a backup</button>
+                                    <button class="button  is-outlined is-dark mr-2 ml-2 "><fa-icon [icon]="faUpload"
+                                            class="mr-3 "></fa-icon> Open a local Vault</button>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault">Reload my vault <fa-icon
+                        [icon]="faRotateRight" class="pl-1" [spin]=reloadSpin></fa-icon></span>
+                <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
+
+                    <div class="column is-full-mobile
             is-one-third-tablet
             is-one-third-desktop
             is-one-third-widescreen
             is-one-quarter-fullhd">
-                <a (click)="isModalActive = !isModalActive"><div class="card  " >
-                    <header class="card-header">
-                        <p class="card-header-title">Add a new TOTP code</p>
-                    </header>
-                    <div class="card-content">
-                        <div class="content has-text-centered">
-                            <p class="is-size-2"><fa-icon [icon]="faSquarePlus" style='color: #dbdbdb; height:20px;' ></fa-icon></p>
-                        </div>
+                        <a (click)="isModalActive = !isModalActive">
+                            <div class="card  ">
+                                <header class="card-header">
+                                    <p class="card-header-title">Add a new TOTP code</p>
+                                </header>
+                                <div class="card-content">
+                                    <div class="content has-text-centered">
+                                        <p class="is-size-2"><fa-icon [icon]="faSquarePlus"
+                                                style='color: #dbdbdb; height:20px;'></fa-icon></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                </div></a>
-            </div>
-            <div class="column  is-full-mobile
+                    <div class="column  is-full-mobile
             is-one-third-tablet
             is-one-third-desktop
             is-one-third-widescreen
             is-one-quarter-fullhd" *ngFor="let uuid of vaultDomain">
-                <div class="card has-background-{{vault!.get(uuid)?.get('color')}} has-text-white">
-                    <header class="card-header">
-                        <p class="card-header-title  has-text-white">{{vault!.get(uuid)?.get('name')}}</p>
-                        <button class="card-header-icon" aria-label="edit" (click)="edit(uuid)">
-                            <span class="icon">
-                                <fa-icon [icon]="faPen"></fa-icon>
-                            </span>
-                        </button>
-                        <button class="card-header-icon" aria-label="copy" (click)="copy()" [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!">
-                            <span class="icon">
-                                <fa-icon [icon]="faCopy"></fa-icon>
-                            </span>
-                        </button>
-                    </header>
-                    <a class="noHover" (click)="copy()" [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!"><div class="card-content has-text-white" style="text-decoration: none;">
-                        <div class="content has-text-centered">
-                            <p class="is-size-2 has-text-weight-bold">{{vault!.get(uuid)?.get('code')}}
-                                <br>
-                                <progress class="progress is-small" value="{{remainingTime}}" max="100" style="height: 10px;">{{remainingTime}}%</progress>
-                            </p>
-                           
+                        <div class="card has-background-{{vault!.get(uuid)?.get('color')}} has-text-white">
+                            <header class="card-header">
+                                <p class="card-header-title  has-text-white">{{vault!.get(uuid)?.get('name')}}</p>
+                                <button class="card-header-icon" aria-label="edit" (click)="edit(uuid)">
+                                    <span class="icon">
+                                        <fa-icon [icon]="faPen"></fa-icon>
+                                    </span>
+                                </button>
+                                <button class="card-header-icon" aria-label="copy" (click)="copy()"
+                                    [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!">
+                                    <span class="icon">
+                                        <fa-icon [icon]="faCopy"></fa-icon>
+                                    </span>
+                                </button>
+                            </header>
+                            <a class="noHover" (click)="copy()" [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!">
+                                <div class="card-content has-text-white" style="text-decoration: none;">
+                                    <div class="content has-text-centered">
+                                        <p class="is-size-2 has-text-weight-bold">{{vault!.get(uuid)?.get('code')}}
+                                            <br>
+                                            <progress class="progress is-small" value="{{remainingTime}}" max="100"
+                                                style="height: 10px;">{{remainingTime}}%</progress>
+                                        </p>
+
+                                    </div>
+                                </div>
+                            </a>
                         </div>
-                    </div></a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 </section>
 <div id="addTOTPModal" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
     <div class="modal-background" (click)="isModalActive = !isModalActive"></div>
     <div class="modal-content">
-      <section class="modal-card-body">
-        <h1 class="is-size-3">Choose a method to add a new TOTP code </h1>
-      <div class="is-flex is-justify-content-center m-4">
-      <button class="button is-info" (click)="navigate('/qrcode')">Scan a QRCode</button>
-    </div>
-      <div class="is-flex is-justify-content-center m-4">
-      <button class="button" (click)="navigate('/vault/add')">Enter it manually</button>
-    </div>
-    </section>
-      <footer class="modal-card-foot is-flex is-justify-content-right">
-        <button class="button" (click)="isModalActive = !isModalActive">Cancel</button>
+        <section class="modal-card-body">
+            <h1 class="is-size-3">Choose a method to add a new TOTP code </h1>
+            <div class="is-flex is-justify-content-center m-4">
+                <button class="button is-info" (click)="navigate('/qrcode')">Scan a QRCode</button>
+            </div>
+            <div class="is-flex is-justify-content-center m-4">
+                <button class="button" (click)="navigate('/vault/add')">Enter it manually</button>
+            </div>
+        </section>
+        <footer class="modal-card-foot is-flex is-justify-content-right">
+            <button class="button" (click)="isModalActive = !isModalActive">Cancel</button>
         </footer>
-    <button class="modal-close is-large" aria-label="close" (click)="isModalActive = !isModalActive" ></button>
-  </div>
-  </div>
+        <button class="modal-close is-large" aria-label="close" (click)="isModalActive = !isModalActive"></button>
+    </div>
+</div>
