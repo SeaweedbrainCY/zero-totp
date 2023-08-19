@@ -277,6 +277,31 @@ paths:
         "500":
           description: Internal server error
 
+  /oauth/authorization_flow:
+    get:
+      operationId: controllers.get_authorization_flow
+      tags:
+        - OAuth
+      summary: Get the OAuth authorization flow URI
+      responses:
+        "200": 
+          description: Return the authorization URI
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+  
+  /oauth/callback:
+    get:
+      operationId: controllers.oauth_callback
+      tags:
+        - OAuth
+      summary: OAuth callback endpoint for the authorization flow
+      security: []
+      responses:
+        "200": 
+          description: Callback successful
+
 components:
   securitySchemes:
     JWTAuth:
