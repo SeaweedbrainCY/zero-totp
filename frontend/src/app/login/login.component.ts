@@ -24,6 +24,7 @@ export class LoginComponent {
   hashedPassword:string = "";
   isLoading = false;
   warning_message="";
+  warning_message_color="is-warning";
   error_param: string|null=null;
 
   constructor(
@@ -51,6 +52,14 @@ export class LoginComponent {
           this.warning_message = "For your safety, you have been disconnected after 10min of inactivity"
           this.email = this.userService.getEmail() || "";
           this.userService.clear();
+          break;
+        }
+        case 'confirmPassphrase':{
+          this.warning_message = "To continue, please confirm your passphrase"
+          this.email = this.userService.getEmail() || "";
+          this.warning_message_color="is-success";
+          this.userService.clear();
+          break;
         }
       }
       

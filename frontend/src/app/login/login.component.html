@@ -9,7 +9,7 @@
         </p>
       </div>
       <div class="has-text-centered columns p-5" *ngIf="warning_message != ''">
-        <div class="notification is-warning column is-6 is-offset-3 ">
+        <div class="notification {{warning_message_color}} column is-6 is-offset-3 ">
           <strong class="block">{{warning_message}}</strong>
         </div>
       </div>
