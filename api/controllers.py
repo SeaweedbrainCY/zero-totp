@@ -455,7 +455,9 @@ def admin_login(*args, **kwargs):
 def get_authorization_flow():
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
-    return {"authorization_url": authorization_url}, 200
+    logging.info(authorization_url)
+    logging.info(flask.session["state"])
+    return {"authorization_url": authorization_url, "state":state}, 200
 
 # GET /oauth/callback
 def oauth_callback():
@@ -463,7 +465,7 @@ def oauth_callback():
     #TODO get expiration date
     #TODO handle errors
     credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
-    response = make_response(redirect(env.frontend_URI + "/callback", code=302))
+    response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=success&state="+flask.session["state"], code=302))
     response.set_cookie("google_drive_token_id", credentials["token"], httponly=False, secure=True, samesite="Strict")
     response.set_cookie("google_drive_refresh_token", credentials["refresh_token"], httponly=False, secure=True, samesite="Strict")
     return response
