@@ -3,7 +3,7 @@ import google_auth_oauthlib.flow
 import environment as env
 
 
-SCOPES = ['https://www.googleapis.com/auth/drive.files']
+SCOPES = ['https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.appdata'] 
 
 
 def get_authorization_url():
@@ -34,7 +34,7 @@ def get_authorization_url():
 def get_credentials(request_url, state):
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         env.oauth_client_secret_file,
-        scopes=['https://www.googleapis.com/auth/drive.metadata.readonly'],
+        scopes=SCOPES,
         state=state)
     flow.redirect_uri = env.callback_URI
 
