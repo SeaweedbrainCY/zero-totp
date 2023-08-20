@@ -26,6 +26,7 @@ export class LoginComponent {
   warning_message="";
   warning_message_color="is-warning";
   error_param: string|null=null;
+  is_oauth_flow=false;
 
   constructor(
     private http: HttpClient,
@@ -54,11 +55,12 @@ export class LoginComponent {
           this.userService.clear();
           break;
         }
-        case 'confirmPassphrase':{
-          this.warning_message = "To continue, please confirm your passphrase"
+        case 'oauth':{
+          this.warning_message = "One last step, please confirm your password to complete the synchronization"
           this.email = this.userService.getEmail() || "";
           this.warning_message_color="is-success";
           this.userService.clear();
+          this.is_oauth_flow=true;
           break;
         }
       }
@@ -81,7 +83,17 @@ export class LoginComponent {
             ["encrypt", "decrypt"]
           ).then((zke_key)=>{
             this.userService.set_zke_key(zke_key!);
-          this.router.navigate(["/vault"], {relativeTo:this.route.root});
+            if(this.is_oauth_flow){
+              this.router.navigate(["/oauth/synchronize"], {relativeTo:this.route.root});
+            } else {
+              superToast({
+                message: "Welcome back",
+                type: "is-success",
+                dismissible: true,
+                animate: { in: 'fadeIn', out: 'fadeOut' }
+              });
+              this.router.navigate(["/vault"], {relativeTo:this.route.root});
+            }
           });
         } catch(e) {
           superToast({
@@ -216,12 +228,6 @@ export class LoginComponent {
       password: this.hashedPassword
     }
     this.http.post(ApiService.API_URL+"/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
-      superToast({
-        message: "Welcome back",
-        type: "is-success",
-        dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
       try{
         const data = JSON.parse(JSON.stringify(response.body))
         this.userService.setId(data.id);
