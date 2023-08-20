@@ -38,6 +38,7 @@ export class VaultComponent implements OnInit {
   isModalActive = false
   reloadSpin = false
   storageOptionOpen = false
+  isGoogleDriveSync = false
 
   constructor(
     private userService: UserService,
@@ -53,6 +54,7 @@ export class VaultComponent implements OnInit {
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } else {
       this.reloadSpin = true
+      this.isGoogleDriveSync = this.userService.getGoogleDriveSync() || false;
       this.vault = new Map<string, Map<string,string>>();
       this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         try{
