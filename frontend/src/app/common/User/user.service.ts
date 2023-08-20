@@ -12,6 +12,7 @@ export class UserService {
   private derivedKeySalt: string| null =null;;
   private vault:Map<string, Map<string,string>> | null =null;
   private passphraseSalt: string| null =null;;
+  private googleDriveSync:boolean | null = null;;
 
   constructor(private utils: Utils) {
    }
@@ -68,6 +69,14 @@ export class UserService {
 
     setPassphraseSalt(salt:string){
     this.passphraseSalt = salt;
+    }
+
+    getGoogleDriveSync(): boolean | null {
+    return this.googleDriveSync;
+    }
+
+    setGoogleDriveSync(sync:boolean){
+    this.googleDriveSync = sync;
     }
 
    clear(){
