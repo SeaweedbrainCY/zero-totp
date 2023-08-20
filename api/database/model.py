@@ -8,6 +8,7 @@ class User(db.Model):
     derivedKeySalt = db.Column(db.String(256), nullable=False)
     isVerified = db.Column(db.Boolean, nullable=False)
     passphraseSalt = db.Column(db.String(256), nullable=False)
+    googleDriveSync = db.Column(db.Boolean, nullable=True)
 
 
 class ZKE_encryption_key(db.Model):
