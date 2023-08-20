@@ -36,6 +36,8 @@ jobs:
       env:
         DATABASE_URI: "sqlite:///:memory:"
         JWT_SECRET : "secret"
+        OAUTH_CLIENT_SECRET_FILE: "fake_client_secret.json"
+        FLASK_SECRET_KEY: "secret"
       run: python -m pytest --cov=. --cov-report=lcov --cov-report=term
 
     - name: Upload coverage report
