@@ -196,7 +196,7 @@ export class VaultComponent implements OnInit {
   }
 
   get_oauth_authorization_url(){
-    this.http.get(ApiService.API_URL+"/oauth/authorization_flow",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
+    this.http.get(ApiService.API_URL+"/google-drive/oauth/authorization-flow",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
       const data = JSON.parse(JSON.stringify(response.body))
       sessionStorage.setItem("oauth_state", data.state);
       window.location.href = data.authorization_url;
