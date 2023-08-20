@@ -14,6 +14,7 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = env.db_uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
+    app.secret_key = env.flask_secret_key
 
     db.init_app(app)
 
