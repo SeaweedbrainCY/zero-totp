@@ -53,6 +53,5 @@ def get_credentials(request_url, state):
         'token_uri': credentials.token_uri,
         'client_id': credentials.client_id,
         'client_secret': credentials.client_secret,
-        'expire_in':credentials.expires_in,
         'scopes': credentials.scopes}
     return credentials
