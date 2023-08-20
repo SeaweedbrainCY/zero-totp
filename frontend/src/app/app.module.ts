@@ -25,6 +25,8 @@ import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { QrCodeTOTP } from './common/qr-code-totp/qr-code-totp.service';
 import { DevComponent } from './dev/dev.component';
 import { AccountComponent } from './account/account.component';
+import { CallbackComponent } from './callback/callback.component';
+import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 
 
 @NgModule({
@@ -41,7 +43,9 @@ import { AccountComponent } from './account/account.component';
     PagenotfoundComponent,
     QrcodeReaderComponent,
     DevComponent,
-    AccountComponent
+    AccountComponent,
+    CallbackComponent,
+    OauthSyncComponent
   ],
   imports: [
     BrowserModule,
