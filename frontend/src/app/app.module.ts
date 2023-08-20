@@ -27,6 +27,7 @@ import { DevComponent } from './dev/dev.component';
 import { AccountComponent } from './account/account.component';
 import { CallbackComponent } from './callback/callback.component';
 import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
+import { CookieModule, CookieService } from 'ngx-cookie';
 
 
 @NgModule({
@@ -54,9 +55,10 @@ import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
     FontAwesomeModule,
     HttpClientModule, 
     ClipboardModule,
-    ZXingScannerModule
+    ZXingScannerModule,
+    CookieModule.withOptions()
   ],
-  providers: [UserService, Utils, Crypto, QrCodeTOTP],
+  providers: [UserService, Utils, Crypto, QrCodeTOTP, CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
