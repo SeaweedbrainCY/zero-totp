@@ -112,7 +112,7 @@ def login():
 
     jwt_token = jwt_auth.generate_jwt(user.id)
 
-    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt}))
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": user.googleDriveSync}))
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
 
@@ -421,6 +421,8 @@ def set_encrypted_tokens():
     else:
         tokens = token_db.add(user_id=user_id, access_token_enc=enc_token, refresh_token_enc=enc_refresh_token, expires_at=expires_at, token_uri=flask.session["token_uri"])
     if tokens:
+        userDB = UserDB()
+        userDB.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
         return {"message": "Encrypted tokens stored"}, 201
     else:
         logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
