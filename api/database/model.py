@@ -22,3 +22,12 @@ class TOTP_secret(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     secret_enc = db.Column(db.Text, nullable=False)
 
+
+class Oauth_tokens(db.Model):
+    __tablename__ = "oauth_tokens"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
+    access_token_enc = db.Column(db.String(256), nullable=False)
+    refresh_token_enc = db.Column(db.String(256), nullable=False)
+    expires_at = db.Column(db.Integer, nullable=False)
+    token_uri = db.Column(db.String(256), nullable=False)
