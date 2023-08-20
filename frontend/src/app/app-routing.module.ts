@@ -25,8 +25,8 @@ const routes: Routes = [
   {path:"logout", component: LogoutComponent},
   {path:'dev', component: DevComponent},
   {path:"account", component: AccountComponent},
-  {path:"/oauth/callback", component: CallbackComponent},
-  {path:"/oauth/synchronize", component: OauthSyncComponent},
+  {path:"oauth/callback", component: CallbackComponent},
+  {path:"oauth/synchronize", component: OauthSyncComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 
