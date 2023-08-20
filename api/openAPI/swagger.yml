@@ -332,7 +332,7 @@ paths:
         "200": 
           description: Callback successful
   
-  /google-drive/oauth/enc_tokens:
+  /google-drive/oauth/enc-tokens:
     post:
       operationId: controllers.set_encrypted_tokens
       tags:
