@@ -277,6 +277,20 @@ paths:
         "500":
           description: Internal server error
 
+  /vault/export:
+    get:
+      operationId: controllers.export_vault
+      tags:
+        - Vault
+      summary: Return all the user's encrypted vault ready for download
+      responses:
+        "200": # status code
+          description: Return all the user's encrypted secrets
+        "401":
+          description: Unauthorized
+        "404":
+          description: No secrets found
+
 components:
   securitySchemes:
     JWTAuth:
