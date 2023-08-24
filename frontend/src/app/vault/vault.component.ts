@@ -8,6 +8,7 @@ import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
 import { toast as superToast } from 'bulma-toast'
 import { Utils } from '../common/Utils/utils';
+import { error } from 'console';
 
 
 @Component({
@@ -193,6 +194,32 @@ export class VaultComponent implements OnInit {
 
   reload(){
     this.ngOnInit();
+  }
+  
+  downloadVault(){
+    this.http.get(ApiService.API_URL+"/vault/export",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      superToast({
+        message: "Encrypted vault downloaded ! 🧳\nKeep it in a safe place 🔒",
+        type: "is-success",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    }, error => {
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+      superToast({
+        message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
   }
 
   

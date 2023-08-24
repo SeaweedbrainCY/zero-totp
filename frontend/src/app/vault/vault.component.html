@@ -79,7 +79,7 @@
                                 <div [hidden]="!storageOptionOpen" class="mb-3">
                                 <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
                                     [hidden]="!storageOptionOpen">
-                                    <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"><fa-icon
+                                    <button class="button  is-outlined is-dark mb-3 mr-2 ml-2" (click)="downloadVault()"><fa-icon
                                             [icon]="faDownload" class="mr-3 "></fa-icon> Save a backup</button>
                                     <button class="button  is-outlined is-dark mr-2 ml-2 "><fa-icon [icon]="faUpload"
                                             class="mr-3 "></fa-icon> Open a local Vault</button>
