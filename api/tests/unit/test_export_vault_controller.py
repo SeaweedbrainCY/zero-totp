@@ -49,11 +49,14 @@ class TestAllSecret(unittest.TestCase):
         self.get_zke_key.assert_called_once()
         self.get_all_secret.assert_called_once()
         self.assertTrue(response.json["version"])
-        self.assertTrue(response.json["date"])
-        self.assertTrue(response.json["signature"])
-        self.assertTrue(response.json["secrets"])
-        self.assertTrue(response.json["derived_key_salt"])
-        self.assertTrue(response.json["zke_key_enc"])
+        if response.json["version"] == 1:
+            self.assertTrue(response.json["date"])
+            self.assertTrue(response.json["signature"])
+            self.assertTrue(response.json["secrets"])
+            self.assertTrue(response.json["derived_key_salt"])
+            self.assertTrue(response.json["zke_key_enc"])
+        else :
+            raise Exception("Unknown vault version")
 
     def test_export_vault_no_cookie(self):
         response = self.client.get(self.endpoint)
