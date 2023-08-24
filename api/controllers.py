@@ -376,9 +376,9 @@ def export_vault():
         return {"message": "Invalid request"}, 400
     
     vault = {"version":1, "date": datetime.datetime.utcnow()}
-    user = UserDB.getById(user_id=user_id)
-    zkeKey = ZKE_DB.getByUserId(user_id=user_id)
-    totp_secrets_list = TOTP_secretDB.get_all_enc_secret_by_user_id(user_id=user_id)
+    user = UserDB().getById(user_id=user_id)
+    zkeKey = ZKE_DB().getByUserId(user_id=user_id)
+    totp_secrets_list = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user_id)
     if not user or not zkeKey:
         return {"message" : "User not found"}, 404
     
