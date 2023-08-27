@@ -375,7 +375,7 @@ def export_vault():
     except:
         return {"message": "Invalid request"}, 400
     
-    vault = {"version":1, "date": datetime.datetime.utcnow()}
+    vault = {"version":1, "date": str(datetime.datetime.utcnow())}
     user = UserDB().getById(user_id=user_id)
     zkeKey = ZKE_DB().getByUserId(user_id=user_id)
     totp_secrets_list = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user_id)
@@ -388,7 +388,6 @@ def export_vault():
     for secret in totp_secrets_list:
         secrets[secret.uuid] = secret.secret_enc
     #TODO sign 
-
     vault["secrets"] = secrets
     return vault, 200
 
