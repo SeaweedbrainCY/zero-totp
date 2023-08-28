@@ -25,7 +25,7 @@ class TestSignupController(unittest.TestCase):
         self.delete_user = patch("database.user_repo.User.delete").start()
         self.delete_user.return_value = True
 
-        self.hashpw = patch("Crypto.hash_func.Bcrypt.hashpw").start()
+        self.hashpw = patch("CryptoClasses.hash_func.Bcrypt.hashpw").start()
         self.hashpw.return_value = "hashed"
 
         self.check_email = patch("Utils.utils.check_email").start()

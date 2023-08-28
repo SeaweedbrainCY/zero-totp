@@ -1,6 +1,6 @@
 import jwt 
 import unittest
-from Crypto.jwt_func import verify_jwt, generate_jwt
+from CryptoClasses.jwt_func import verify_jwt, generate_jwt
 import datetime
 import environment as env
 from werkzeug.exceptions import Forbidden

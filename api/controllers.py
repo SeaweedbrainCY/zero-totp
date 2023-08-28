@@ -4,12 +4,12 @@ import json
 from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
-from Crypto.hash_func import Bcrypt
+from CryptoClasses.hash_func import Bcrypt
 import logging
 import environment as env
 import random
 import string
-import Crypto.jwt_func as jwt_auth
+import CryptoClasses.jwt_func as jwt_auth
 import Utils.utils as utils
 import os
 import base64

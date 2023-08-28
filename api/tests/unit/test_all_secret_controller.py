@@ -4,7 +4,7 @@ from app import create_app
 from unittest.mock import patch
 from database.model import User, TOTP_secret
 import environment as env
-from Crypto import jwt_func
+from CryptoClasses import jwt_func
 import jwt
 import datetime
 

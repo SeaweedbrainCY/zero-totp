@@ -1,5 +1,5 @@
 import unittest
-from Crypto.hash_func import Bcrypt
+from CryptoClasses.hash_func import Bcrypt
 import bcrypt
 
 class TestBcrypt(unittest.TestCase):

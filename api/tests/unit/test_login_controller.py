@@ -18,7 +18,7 @@ class TestLoginController(unittest.TestCase):
         self.getByEmailMocked = patch("database.user_repo.User.getByEmail").start()
         self.getByEmailMocked.return_value = User(id=1, username="username", derivedKeySalt="randomSalt", password="hashed", isVerified=1, passphraseSalt="salt")
 
-        self.checkpw = patch("Crypto.hash_func.Bcrypt.checkpw").start()
+        self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
         self.checkpw.return_value = True
 
         self.check_email = patch("Utils.utils.check_email").start()

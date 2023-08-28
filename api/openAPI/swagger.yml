@@ -297,5 +297,5 @@ components:
       type: apiKey
       in: cookie
       name: api-key
-      x-apikeyInfoFunc: Crypto.jwt_func.verify_jwt
+      x-apikeyInfoFunc: CryptoClasses.jwt_func.verify_jwt
 
