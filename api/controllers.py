@@ -10,6 +10,7 @@ import environment as env
 import random
 import string
 import CryptoClasses.jwt_func as jwt_auth
+import CryptoClasses.sign_func as api_signature
 import Utils.utils as utils
 import os
 import base64
@@ -387,8 +388,9 @@ def export_vault():
     secrets = {}
     for secret in totp_secrets_list:
         secrets[secret.uuid] = secret.secret_enc
-    #TODO sign 
     vault["secrets"] = secrets
+    signature = api_signature.sign(json.dumps(secrets))
+    vault["signature"] = signature
     return vault, 200
 
     
