@@ -36,6 +36,8 @@ jobs:
       env:
         DATABASE_URI: "sqlite:///:memory:"
         JWT_SECRET : "secret"
+        PRIVATE_KEY_PATH: "./tests/ressources/test_private.pem"
+        PUBLIC_KEY_PATH: "./tests/ressources/test_public.pem"
       run: python -m pytest --cov=. --cov-report=lcov --cov-report=term
 
     - name: Upload coverage report
