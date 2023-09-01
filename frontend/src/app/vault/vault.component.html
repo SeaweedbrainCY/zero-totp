@@ -22,7 +22,7 @@
                     is-one-third-widescreen
                     is-one-quarter-fullhd">
                             <div class="is-flex is-justify-content-center">
-                                <div class="tags has-addons mb-0" style="align-items: normal;" aria-haspopup="true"
+                                <div class="tags has-addons mb-0" (click)="storageOptionOpen = true" style="align-items: normal;" aria-haspopup="true"
                                     aria-controls="dropdown-menu4">
                                     <span class="tag is-medium is-dark has-text-weight-bold " id="totp-tag">🇪🇺
                                         Zero-TOTP servers </span>
@@ -43,7 +43,7 @@
                       is-one-third-widescreen
                       is-one-quarter-fullhd">
                             <div class="is-flex is-justify-content-center">
-                                <div class="tags has-addons mb-0" style="align-items: normal;">
+                                <div class="tags has-addons mb-0" style="align-items: normal;" (click)="storageOptionOpen = true">
                                     <span class="tag is-medium is-dark" id="google-tag"> <fa-icon [icon]="faGoogleDrive"
                                             class="pr-1"></fa-icon> <span class=" has-text-weight-bold">Google Drive
                                         </span></span>
@@ -68,7 +68,7 @@
                     is-one-third-widescreen
                     is-one-quarter-fullhd">
                                 <div class="is-flex is-justify-content-center">
-                                    <div class="tags has-addons mb-0" style="align-items: normal;">
+                                    <div class="tags has-addons mb-0" style="align-items: normal;" (click)="storageOptionOpen = true">
                                         <span class="tag is-medium is-dark has-text-weight-bold" id="download-tag">
                                             <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>Backup locally
                                         </span>
