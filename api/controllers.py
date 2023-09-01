@@ -4,15 +4,17 @@ import json
 from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
-from Crypto.hash_func import Bcrypt
+from CryptoClasses.hash_func import Bcrypt
 import logging
 import environment as env
 import random
 import string
-import Crypto.jwt_func as jwt_auth
+import CryptoClasses.jwt_func as jwt_auth
+import CryptoClasses.sign_func as api_signature
 import Utils.utils as utils
 import os
 import base64
+import datetime
 
 
 
@@ -365,3 +367,30 @@ def update_vault():
     else:
         logging.warning("An error occured while updating passphrase of user " + str(user_id))
         return returnJson, 500
+
+
+
+def export_vault():
+    try:
+        user_id = connexion.context.get("user")
+    except:
+        return {"message": "Invalid request"}, 400
+    
+    vault = {"version":1, "date": str(datetime.datetime.utcnow())}
+    user = UserDB().getById(user_id=user_id)
+    zkeKey = ZKE_DB().getByUserId(user_id=user_id)
+    totp_secrets_list = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user_id)
+    if not user or not zkeKey:
+        return {"message" : "User not found"}, 404
+    
+    vault["derived_key_salt"] = user.derivedKeySalt
+    vault["zke_key_enc"] = zkeKey.ZKE_key
+    secrets = {}
+    for secret in totp_secrets_list:
+        secrets[secret.uuid] = secret.secret_enc
+    vault["secrets"] = secrets
+    signature = api_signature.sign(json.dumps(secrets))
+    vault["signature"] = signature
+    return vault, 200
+
+    

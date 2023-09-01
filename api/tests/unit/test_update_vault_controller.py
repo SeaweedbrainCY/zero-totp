@@ -4,7 +4,7 @@ from app import create_app
 from unittest.mock import patch
 from database.model import User, TOTP_secret, ZKE_encryption_key
 import environment as env
-from Crypto import jwt_func,hash_func
+from CryptoClasses import jwt_func,hash_func
 
 import jwt
 import datetime
@@ -22,10 +22,10 @@ class TestUpdateVault(unittest.TestCase):
         self.getById = patch("database.user_repo.User.getById").start()
         self.getById.return_value = User(id=1)
 
-        self.checkpw = patch("Crypto.hash_func.Bcrypt.checkpw").start()
+        self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
         self.checkpw.return_value = True
 
-        self.hashpw = patch("Crypto.hash_func.Bcrypt.hashpw").start()
+        self.hashpw = patch("CryptoClasses.hash_func.Bcrypt.hashpw").start()
         self.hashpw.return_value = "new_passphrase"
 
         self.getSecretByUUID = patch("database.totp_secret_repo.TOTP_secret.get_enc_secret_by_uuid").start()
