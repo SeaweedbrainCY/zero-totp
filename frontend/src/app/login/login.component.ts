@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { toast as superToast } from 'bulma-toast'
-import { faEnvelope, faLock,  faCheck, faXmark, faFlagCheckered } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock,  faCheck, faXmark, faFlagCheckered, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import {Crypto} from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
-import { error } from 'console';
+import { UploadVaultService } from '../common/upload-vault/upload-vault.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -19,19 +19,22 @@ export class LoginComponent {
   faCheck=faCheck;
   faXmark=faXmark;
   faFlagCheckered=faFlagCheckered;
+  faCloudArrowUp=faCloudArrowUp;
   email:string = "";
   password:string = "";
   hashedPassword:string = "";
   isLoading = false;
   warning_message="";
   error_param: string|null=null;
+  uploaded_vault:Map<string, Map<string,string>> | null =null;
 
   constructor(
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
     private userService: UserService,
-    private crypto:Crypto
+    private crypto:Crypto,
+    private uploadVaultService: UploadVaultService
     ) {
     }
 
@@ -158,6 +161,29 @@ export class LoginComponent {
     this.hashPassword()
     
   }
+
+  openFile(event: any): void {
+    const input = event.target;
+    const reader = new FileReader();
+    reader.onload = (() => {
+      if (reader.result) {
+        try{
+          const unsecure_context = reader.result.toString();
+          this.uploaded_vault = this.uploadVaultService.parseVault(unsecure_context);
+        }
+        catch(e){
+          superToast({
+            message: "Error : Impossible to parse your file",
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        }
+      }
+    });
+    reader.readAsText(input.files[0], 'utf-8');
+    }
 
   hashPassword(){
     this.http.get(ApiService.API_URL+"/login/specs?username="+this.email,  {withCredentials:true, observe: 'response'}).subscribe((response) => {

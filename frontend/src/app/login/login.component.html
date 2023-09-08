@@ -48,4 +48,37 @@
         </div>
       </div>
     </div>
+    <div class="is-flex is-justify-content-center" >
+      <div class="m-6" style="border-top: 1px lightgray solid; width: 50vw;"></div>
+    </div>
+  
+    <div class="is-flex is-flex-direction-column">
+      <div class="is-flex is-justify-content-center has-text-centered">
+        <p class="block"><span class="title is-1 is-full  has-text-info has-text-weight-bold">
+          Open a backup</span><br />
+  
+        <span class="has-text-weight-bold has-text-grey">You can open a Zero-TOTP vault saved on your laptop 💻</span>
+      </p>
+      </div>
+      <div class="is-flex is-justify-content-center">
+        <div class="mt-6">
+          <div class="file is-boxed">
+            <label class="file-label">
+              <input class="file-input" type="file" name="resume" accept=".zero-totp" (change)="openFile($event)">
+              <span class="file-cta">
+                <span class="file-icon">
+                  <fa-icon [icon]="faCloudArrowUp"></fa-icon>
+                </span>
+                <span class="file-label">
+                  Vault backup
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    
   </section>
