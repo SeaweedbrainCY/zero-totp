@@ -12,6 +12,7 @@ export class UserService {
   private derivedKeySalt: string| null =null;;
   private vault:Map<string, Map<string,string>> | null =null;
   private passphraseSalt: string| null =null;;
+  private isVaultLocal:boolean = false;
 
   constructor(private utils: Utils) {
    }
@@ -68,6 +69,14 @@ export class UserService {
 
     setPassphraseSalt(salt:string){
     this.passphraseSalt = salt;
+    }
+
+    getIsVaultLocal(): boolean {
+      return this.isVaultLocal;
+    }
+
+    setVaultLocal(isLocal:boolean){
+      this.isVaultLocal = isLocal;
     }
 
    clear(){
