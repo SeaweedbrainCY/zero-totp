@@ -313,7 +313,6 @@ export class AccountComponent implements OnInit {
         this.step++;
         try{
           const data = JSON.parse(JSON.stringify(response.body))
-          console.log(data)
          if(this.userService.get_zke_key() != null){
           try{
             for (let secret of data.enc_secrets){
