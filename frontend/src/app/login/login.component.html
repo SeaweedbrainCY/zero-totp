@@ -82,3 +82,20 @@
 
     
   </section>
+
+  <div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isUnsecureVaultModaleActive}">
+    <div class="modal-background" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive"></div>
+    <div class="modal-content">
+        <section class="modal-card-body">
+            <h1 class="is-size-2 has-text-danger">You backup may be not secure</h1>
+            <strong>The verification of the authenticity of your vault failed</strong>. Your vault may have been modified by someone else or it does not come from Zero-TOTP.<br>
+            <strong>Importing an unsecure backup may lead to security issues and should not be trusted</strong>
+            <br><br>
+        </section>
+        <footer class="modal-card-foot is-flex is-justify-content-right">
+            <button class="button is-success" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive">Return to safety</button>
+            <button class="button is-danger" (click)="isVaultTrusted = true && isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive" >I trust this backup</button>
+        </footer>
+    </div>
+    <button class="modal-close is-large" aria-label="close" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive" ></button>
+</div>

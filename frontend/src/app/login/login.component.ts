@@ -7,7 +7,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import {Crypto} from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
-import { UploadVaultService } from '../common/upload-vault/upload-vault.service';
+import { UploadVaultService, UploadVaultStatus } from '../common/upload-vault/upload-vault.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -26,7 +26,10 @@ export class LoginComponent {
   isLoading = false;
   warning_message="";
   error_param: string|null=null;
-  uploaded_vault:Map<string, Map<string,string>> | null =null;
+  uploaded_vault:Map<string,string> | null =null;
+  isVaultTrusted = false;
+  isUnsecureVaultModaleActive = true;
+
 
   constructor(
     private http: HttpClient,
@@ -165,13 +168,90 @@ export class LoginComponent {
   openFile(event: any): void {
     const input = event.target;
     const reader = new FileReader();
+    reader.readAsText(input.files[0], 'utf-8');
     reader.onload = (() => {
       if (reader.result) {
         try{
           const unsecure_context = reader.result.toString();
-          this.uploaded_vault = this.uploadVaultService.parseVault(unsecure_context);
+          const uploaded_vault_parsed = this.uploadVaultService.parseUploadedVault(unsecure_context);
+          const uploaded_vault = uploaded_vault_parsed[0];
+          const status = uploaded_vault_parsed[1];
+          switch (status) {
+            case UploadVaultStatus.INVALID_JSON: {
+              superToast({
+                message: "Error : Invalid file type",
+                type: "is-danger",
+                dismissible: false,
+                duration: 20000,
+                animate: { in: 'fadeIn', out: 'fadeOut' }
+              });
+              break;
+            }
+
+            case UploadVaultStatus.INVALID_VERSION: {
+              superToast({
+                message: "Error : Impossible to import your vault. Unsupported version",
+                type: "is-danger",
+                dismissible: false,
+                duration: 20000,
+                animate: { in: 'fadeIn', out: 'fadeOut' }
+              });
+              break;
+            }
+            case UploadVaultStatus.NO_SIGNATURE: {
+              superToast({
+                message: "Error : Impossible to import your vault. No signature found",
+                type: "is-danger",
+                dismissible: false,
+                duration: 20000,
+                animate: { in: 'fadeIn', out: 'fadeOut' }
+              });
+              break;
+            }
+            case UploadVaultStatus.INVALID_SIGNATURE: {
+              this.isUnsecureVaultModaleActive = true;
+              this.uploaded_vault = uploaded_vault;
+              break;
+            }
+            case UploadVaultStatus.MISSING_ARGUMENT: {
+              superToast({
+                message: "Error : Impossible to import your vault. It seems to not be complete",
+                type: "is-danger",
+                dismissible: false,
+                duration: 20000,
+                animate: { in: 'fadeIn', out: 'fadeOut' }
+              });
+              break;
+            }
+            case UploadVaultStatus.INVALID_ARGUMENT: {
+              superToast({
+                message: "Error : Impossible to import your vault. It seems to be corrupted",
+                type: "is-danger",
+                dismissible: false,
+                duration: 20000,
+                animate: { in: 'fadeIn', out: 'fadeOut' }
+              });
+              break;
+            }
+
+              case UploadVaultStatus.UNKNOWN: {
+                superToast({
+                  message: "Error : Impossible to import your vault. Unknown error",
+                  type: "is-danger",
+                  dismissible: false,
+                  duration: 20000,
+                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                });
+                break;
+              }
+
+            default: {
+              this.isVaultTrusted = true;
+              this.uploaded_vault = uploaded_vault;
+
+          }
         }
-        catch(e){
+      } catch(e){
           superToast({
             message: "Error : Impossible to parse your file",
             type: "is-danger",
@@ -180,9 +260,16 @@ export class LoginComponent {
             animate: { in: 'fadeIn', out: 'fadeOut' }
           });
         }
+      } else {
+        superToast({
+          message: "Error : Impossible to parse your file",
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
       }
     });
-    reader.readAsText(input.files[0], 'utf-8');
     }
 
   hashPassword(){
