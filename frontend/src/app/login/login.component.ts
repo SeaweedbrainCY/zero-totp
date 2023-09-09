@@ -28,7 +28,7 @@ export class LoginComponent {
   error_param: string|null=null;
   uploaded_vault:Map<string,string> | null =null;
   isVaultTrusted = false;
-  isUnsecureVaultModaleActive = true;
+  isUnsecureVaultModaleActive = false;
 
 
   constructor(
@@ -173,9 +173,11 @@ export class LoginComponent {
       if (reader.result) {
         try{
           const unsecure_context = reader.result.toString();
-          const uploaded_vault_parsed = this.uploadVaultService.parseUploadedVault(unsecure_context);
+          this.uploadVaultService.parseUploadedVault(unsecure_context).then((uploaded_vault_parsed) => {
+            
           const uploaded_vault = uploaded_vault_parsed[0];
           const status = uploaded_vault_parsed[1];
+          console.log("status: " + status)
           switch (status) {
             case UploadVaultStatus.INVALID_JSON: {
               superToast({
@@ -251,6 +253,7 @@ export class LoginComponent {
 
           }
         }
+      });
       } catch(e){
           superToast({
             message: "Error : Impossible to parse your file",
