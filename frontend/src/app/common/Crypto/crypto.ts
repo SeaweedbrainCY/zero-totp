@@ -1,4 +1,5 @@
 import {Buffer} from 'buffer';
+import { environment } from 'src/environments/environment';
 
 
 export class Crypto {
@@ -68,4 +69,44 @@ export class Crypto {
         const hash = await window.crypto.subtle.digest("SHA-256", Buffer.concat([passwordBytes, saltBytes]));
         return Buffer.from(hash).toString('base64');
     }
+
+    async verifySignature(vault_b64:string, signature_bd64:string):Promise<boolean>{
+        const signatureValue = document.querySelector(
+          ".rsassa-pkcs1 .signature-value",
+        );
+        if(signatureValue != null){
+          signatureValue.classList.remove("valid", "invalid");
+          let encoded_vault = Buffer.from(vault_b64, "base64");
+          let encoded_signature = Buffer.from(signature_bd64, "base64");
+          const publicKey = await this.importPublicKey(environment.API_public_key);
+          let result = await window.crypto.subtle.verify(
+              "RSASSA-PKCS1-v1_5",
+              publicKey,
+              encoded_signature,
+              encoded_vault,
+          )
+            return result;
+        } else {
+          return false;
+        }
+      }
+
+      async importPublicKey(publicKeyPEM: string): Promise<CryptoKey> {
+        const publicKeyDER = atob(publicKeyPEM.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----/g, ''));
+      
+        const publicKeyBuffer = Buffer.from(publicKeyDER, 'base64');
+      
+        const publicKey = await crypto.subtle.importKey(
+          'spki',
+          publicKeyBuffer,
+          {
+            name: 'RSASSA-PKCS1-v1_5',
+            hash: 'SHA-256',
+          },
+          true,
+          ['verify']
+        );
+      
+        return publicKey;
+      }
 }
