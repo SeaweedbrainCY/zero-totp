@@ -4,9 +4,11 @@ from app import create_app
 from unittest.mock import patch
 from database.model import User, TOTP_secret, ZKE_encryption_key
 import environment as env
-from CryptoClasses import jwt_func
+from CryptoClasses import jwt_func, sign_func
 import jwt
 import datetime
+import base64
+import json
 
 class TestAllSecret(unittest.TestCase):
 
@@ -48,13 +50,18 @@ class TestAllSecret(unittest.TestCase):
         self.get_user.assert_called_once()
         self.get_zke_key.assert_called_once()
         self.get_all_secret.assert_called_once()
-        self.assertTrue(response.json["version"])
-        if response.json["version"] == 1:
-            self.assertTrue(response.json["date"])
-            self.assertTrue(response.json["signature"])
-            self.assertTrue(response.json["secrets"])
-            self.assertTrue(response.json["derived_key_salt"])
-            self.assertTrue(response.json["zke_key_enc"])
+        export_data = response.json
+        self.assertEqual(len(export_data.split(',')), 2);
+        vault_json_string = base64.b64decode(export_data.split(',')[0]).decode("utf-8")
+        signature = export_data.split(',')[1]
+        self.assertTrue(sign_func.verify(signature, export_data.split(',')[0]))
+        vault = json.loads(vault_json_string)
+        self.assertTrue(vault["version"])
+        if vault["version"] == 1:
+            self.assertTrue(vault["date"])
+            self.assertTrue(vault["secrets"])
+            self.assertTrue(vault["derived_key_salt"])
+            self.assertTrue(vault["zke_key_enc"])
         else :
             raise Exception("Unknown vault version")
 
