@@ -1,5 +1,7 @@
-import { SecurityContext, Sanitizer,Injectable } from '@angular/core';
+import { SecurityContext,Injectable } from '@angular/core';
 import { Crypto } from '../Crypto/crypto';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 
 
@@ -21,58 +23,65 @@ export enum UploadVaultStatus {
 export class UploadVaultService {
 
   constructor(
-    private sanitizer: Sanitizer,
+    private sanitizer: DomSanitizer,
     private crypto: Crypto
   ) { }
 
-  parseUploadedVault(unsecure_context_b64:string): [(Map<string, string> | null), UploadVaultStatus] {
+  parseUploadedVault(unsecure_context_b64:string): Promise<[(Map<string, string> | null), UploadVaultStatus]> {
+    return new Promise<[(Map<string, string> | null), UploadVaultStatus]>((resolve) => {
     let vault = new Map<string, string>();
     try{
       if(unsecure_context_b64.split(",").length != 2){
-        return [null, UploadVaultStatus.NO_SIGNATURE];
+        resolve([null, UploadVaultStatus.NO_SIGNATURE]);
       }
+      unsecure_context_b64 = unsecure_context_b64.replace('"', '')
       const unsecure_vault_b64 = unsecure_context_b64.split(",")[0];
       const signature = unsecure_context_b64.split(",")[1];
+      console.log(unsecure_vault_b64)
       let unsecure_vault = atob(unsecure_vault_b64);
       let context = JSON.parse(unsecure_vault);
       if(context == null){
-        return [null, UploadVaultStatus.INVALID_JSON];
+        resolve([null, UploadVaultStatus.INVALID_JSON]);
       }
       if(context.hasOwnProperty("version")){
         if(context.version == 1){
           const required_keys = ["version", "date", "derived_key_salt", "zke_key_enc", "secrets"]
           for(let key of required_keys){
             if(context.hasOwnProperty(key)){
+              console.log("key: " + key + " value: " + context[key])
               const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, context[key])
+              console.log("sanitized: " + sanitized)
               if(sanitized != null){
-                this.crypto.verifySignature(unsecure_vault_b64, signature).then((result) => {
-                  if(result){
                       vault.set(key, sanitized);
-                      return vault;
-                  } else {
-                    return [null,UploadVaultStatus.INVALID_SIGNATURE];
-                  }
-                });
               }else {
-                return [null,UploadVaultStatus.INVALID_ARGUMENT];
+                resolve([null,UploadVaultStatus.INVALID_ARGUMENT]);
               }
             } else {
-              return [null,UploadVaultStatus.MISSING_ARGUMENT];
+              resolve([null,UploadVaultStatus.MISSING_ARGUMENT]);
             }
           }
-          return [vault, UploadVaultStatus.SUCCESS];
+          this.crypto.verifySignature(unsecure_vault_b64, signature).then((result) => {
+            console.log(" signature result: " + result)
+            if(result){
+              console.log("signature valid")
+             resolve([vault, UploadVaultStatus.SUCCESS]);
+             } else {
+                resolve([null,UploadVaultStatus.INVALID_SIGNATURE]);
+              }
+           });
         } else {
-          return [null,UploadVaultStatus.INVALID_VERSION];
+          resolve([null,UploadVaultStatus.INVALID_VERSION]);
         }
       } else {
-        return [null,UploadVaultStatus.INVALID_VERSION];
+        resolve([null,UploadVaultStatus.INVALID_VERSION]);
       }
     } 
     catch(e){
-      return [null,UploadVaultStatus.INVALID_JSON];
+      console.log(e)
+      resolve([null,UploadVaultStatus.INVALID_JSON]);
     }
-  }
-  
+  });
+}
 }
 
 
