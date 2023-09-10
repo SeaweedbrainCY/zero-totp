@@ -13,6 +13,7 @@ export class UserService {
   private vault:Map<string, Map<string,string>> | null =null;
   private passphraseSalt: string| null =null;;
   private isVaultLocal:boolean = false;
+  private vaultDate : string | null = null;
 
   constructor(private utils: Utils) {
    }
@@ -78,6 +79,16 @@ export class UserService {
     setVaultLocal(isLocal:boolean){
       this.isVaultLocal = isLocal;
     }
+
+    getVaultDate(): string | null {
+      return this.vaultDate;
+    }
+
+    setVaultDate(date:string){
+      this.vaultDate = date;
+    }
+
+
 
    clear(){
     this.id = null;
