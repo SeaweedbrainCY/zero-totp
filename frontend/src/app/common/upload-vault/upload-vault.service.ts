@@ -37,7 +37,6 @@ export class UploadVaultService {
       unsecure_context_b64 = unsecure_context_b64.replace('"', '')
       const unsecure_vault_b64 = unsecure_context_b64.split(",")[0];
       const signature = unsecure_context_b64.split(",")[1];
-      console.log(unsecure_vault_b64)
       let unsecure_vault = atob(unsecure_vault_b64);
       let context = JSON.parse(unsecure_vault);
       if(context == null){
@@ -48,9 +47,8 @@ export class UploadVaultService {
           const required_keys = ["version", "date", "derived_key_salt", "zke_key_enc", "secrets"]
           for(let key of required_keys){
             if(context.hasOwnProperty(key)){
-              console.log("key: " + key + " value: " + context[key])
+
               const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, context[key])
-              console.log("sanitized: " + sanitized)
               if(sanitized != null){
                       vault.set(key, sanitized);
               }else {
@@ -60,15 +58,13 @@ export class UploadVaultService {
               resolve([null,UploadVaultStatus.MISSING_ARGUMENT]);
             }
           }
-          this.crypto.verifySignature(unsecure_vault_b64, signature).then((result) => {
-            console.log(" signature result: " + result)
+           this.crypto.verifySignature(unsecure_vault_b64, signature).then(result => {
             if(result){
-              console.log("signature valid")
              resolve([vault, UploadVaultStatus.SUCCESS]);
              } else {
                 resolve([null,UploadVaultStatus.INVALID_SIGNATURE]);
               }
-           });
+            });
         } else {
           resolve([null,UploadVaultStatus.INVALID_VERSION]);
         }
