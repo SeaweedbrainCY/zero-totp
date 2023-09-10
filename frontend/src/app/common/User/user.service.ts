@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Utils }  from '../Utils/utils';
+import { LocalVaultV1Service } from '../upload-vault/LocalVaultv1Service.service';
 @Injectable({providedIn: 'root'}) //Note that you will need to declare it as `@Injectable`. 
 
 @Injectable({
@@ -13,7 +14,7 @@ export class UserService {
   private vault:Map<string, Map<string,string>> | null =null;
   private passphraseSalt: string| null =null;;
   private isVaultLocal:boolean = false;
-  private vaultDate : string | null = null;
+  private local_vault_service:LocalVaultV1Service | null = null;
 
   constructor(private utils: Utils) {
    }
@@ -80,12 +81,12 @@ export class UserService {
       this.isVaultLocal = isLocal;
     }
 
-    getVaultDate(): string | null {
-      return this.vaultDate;
+    getLocalVaultService(): LocalVaultV1Service | null {
+      return this.local_vault_service;
     }
 
-    setVaultDate(date:string){
-      this.vaultDate = date;
+    setLocalVaultService(service:LocalVaultV1Service){
+      this.local_vault_service = service;
     }
 
 
