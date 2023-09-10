@@ -1,3 +1,4 @@
+import { faColonSign } from '@fortawesome/free-solid-svg-icons';
 import {Buffer} from 'buffer';
 import { environment } from 'src/environments/environment';
 
@@ -71,30 +72,34 @@ export class Crypto {
     }
 
     async verifySignature(vault_b64:string, signature_bd64:string):Promise<boolean>{
-        const signatureValue = document.querySelector(
-          ".rsassa-pkcs1 .signature-value",
-        );
-        if(signatureValue != null){
-          signatureValue.classList.remove("valid", "invalid");
+        console.log("vault: " + vault_b64)
+        
           let encoded_vault = Buffer.from(vault_b64, "base64");
+          console.log("encoded_vault: " + encoded_vault)
           let encoded_signature = Buffer.from(signature_bd64, "base64");
-          const publicKey = await this.importPublicKey(environment.API_public_key);
-          let result = await window.crypto.subtle.verify(
+            console.log("encoded_signature: " + encoded_signature)
+            console.log("environment.API_public_key: " + environment.API_public_key)
+          this.importPublicKey(environment.API_public_key).then((publicKey) => {
+            console.log("publicKey: " + publicKey)
+          window.crypto.subtle.verify(
               "RSASSA-PKCS1-v1_5",
               publicKey,
               encoded_signature,
               encoded_vault,
-          )
-            return result;
-        } else {
-          return false;
-        }
+          ).then((result) => {
+
+          console.log("result: " + result)
+            return result});
+        });
+        return false;
+        
       }
 
       async importPublicKey(publicKeyPEM: string): Promise<CryptoKey> {
         const publicKeyDER = atob(publicKeyPEM.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----/g, ''));
       
-        const publicKeyBuffer = Buffer.from(publicKeyDER, 'base64');
+        const publicKeyBuffer = this.str2ab(publicKeyDER);
+        console.log("publicKeyBuffer: " + publicKeyBuffer)
       
         const publicKey = await crypto.subtle.importKey(
           'spki',
@@ -106,7 +111,16 @@ export class Crypto {
           true,
           ['verify']
         );
-      
+        console.log("publicKey: " + publicKey)
         return publicKey;
+      }
+
+    str2ab(str:string) {
+        const buf = new ArrayBuffer(str.length);
+        const bufView = new Uint8Array(buf);
+        for (let i = 0, strLen = str.length; i < strLen; i++) {
+          bufView[i] = str.charCodeAt(i);
+        }
+        return buf;
       }
 }
