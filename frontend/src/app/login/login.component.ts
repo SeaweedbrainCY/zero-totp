@@ -7,7 +7,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import {Crypto} from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
-import { UploadVaultService, UploadVaultStatus } from '../common/upload-vault/upload-vault.service';
+import { LocalVaultV1Service, UploadVaultStatus } from '../common/upload-vault/LocalVaultv1Service.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -26,9 +26,8 @@ export class LoginComponent {
   isLoading = false;
   warning_message="";
   error_param: string|null=null;
-  uploaded_vault:Map<string,string> | null =null;
-  isVaultTrusted = false;
   isUnsecureVaultModaleActive = false;
+  local_vault_service: LocalVaultV1Service | null = null;
 
 
   constructor(
@@ -37,7 +36,7 @@ export class LoginComponent {
     private route: ActivatedRoute,
     private userService: UserService,
     private crypto:Crypto,
-    private uploadVaultService: UploadVaultService
+    private localVaultv1: LocalVaultV1Service
     ) {
     }
 
@@ -173,12 +172,24 @@ export class LoginComponent {
       if (reader.result) {
         try{
           const unsecure_context = reader.result.toString();
-          this.uploadVaultService.parseUploadedVault(unsecure_context).then((uploaded_vault_parsed) => {
-            
-          const uploaded_vault = uploaded_vault_parsed[0];
-          const status = uploaded_vault_parsed[1];
-          console.log("status: " + status)
-          switch (status) {
+          const version = this.localVaultv1.extract_version_from_vault(unsecure_context);
+          if(version == null){
+            superToast({
+              message: "Error : Impossible to import your vault. Impossible to read it",
+              type: "is-danger",
+              dismissible: false,
+              duration: 20000,
+              animate: { in: 'fadeIn', out: 'fadeOut' }
+            });
+          } else if (version == 1){
+            this.local_vault_service = this.localVaultv1
+          this.local_vault_service.parseUploadedVault(unsecure_context).then((vault_parsing_status) => {
+            console.log("vault_parsing_status = "+ vault_parsing_status)
+          switch (vault_parsing_status) {
+            case UploadVaultStatus.SUCCESS:{
+              this.openLocalVault();
+              break
+            }
             case UploadVaultStatus.INVALID_JSON: {
               superToast({
                 message: "Error : Invalid file type",
@@ -212,7 +223,6 @@ export class LoginComponent {
             }
             case UploadVaultStatus.INVALID_SIGNATURE: {
               this.isUnsecureVaultModaleActive = true;
-              this.uploaded_vault = uploaded_vault;
               break;
             }
             case UploadVaultStatus.MISSING_ARGUMENT: {
@@ -248,12 +258,27 @@ export class LoginComponent {
               }
 
             default: {
-              this.isVaultTrusted = true;
-              this.uploaded_vault = uploaded_vault;
-
+              superToast({
+                message: "Error : Impossible to import your vault. Unknown error",
+                type: "is-danger",
+                dismissible: false,
+                duration: 20000,
+                animate: { in: 'fadeIn', out: 'fadeOut' }
+              });
+              break;
           }
         }
       });
+    }
+    else {
+      superToast({
+        message: "Error : Impossible to import your vault. Unsupported version",
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    }
       } catch(e){
           superToast({
             message: "Error : Impossible to parse your file",
@@ -273,6 +298,13 @@ export class LoginComponent {
         });
       }
     });
+    }
+
+    openLocalVault(){
+      this.userService.clear();
+      this.userService.setVaultLocal(true);
+      console.log("Import success ... Switching to vault page")
+      this.router.navigate(["/vault"], {relativeTo:this.route.root});
     }
 
   hashPassword(){
