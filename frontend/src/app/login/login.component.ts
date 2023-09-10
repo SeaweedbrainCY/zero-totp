@@ -27,8 +27,11 @@ export class LoginComponent {
   warning_message="";
   error_param: string|null=null;
   isUnsecureVaultModaleActive = false;
+  isPassphraseModalActive = true;
   local_vault_service: LocalVaultV1Service | null = null;
 
+
+  // TODO : réécrire les fonctions "andNavigate" sous la forme de fonction async pour pouvoir les utiliser plus simplement avec un vault local. Découpler les call API des fonctions de crypto 
 
   constructor(
     private http: HttpClient,
@@ -65,40 +68,7 @@ export class LoginComponent {
     this.http.get(ApiService.API_URL+"/zke_encrypted_key",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       const data = JSON.parse(JSON.stringify(response.body))
       const zke_key_encrypted = data.zke_encrypted_key
-      this.crypto.decrypt(zke_key_encrypted, derivedKey).then(zke_key_b64=>{
-        if (zke_key_b64 != null) {
-          const zke_key_raw = Buffer.from(zke_key_b64!, 'base64');
-          try{
-          window.crypto.subtle.importKey(
-            "raw",
-            zke_key_raw,
-            "AES-GCM",
-            true,
-            ["encrypt", "decrypt"]
-          ).then((zke_key)=>{
-            this.userService.set_zke_key(zke_key!);
-          this.router.navigate(["/vault"], {relativeTo:this.route.root});
-          });
-        } catch(e) {
-          superToast({
-            message: "Error : Impossible to import your key." + e,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
-        }
-        } else {
-          superToast({
-            message: "Impossible to decrypt your key",
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
-        }
-      
-      });
+      this.decryptZKEKeyAndNavigate(zke_key_encrypted, derivedKey);
     }, (error)=> {
       superToast({
         message: "Impossible to retrieve your encryption key. Please try again later",
@@ -109,6 +79,43 @@ export class LoginComponent {
       });
     });
     
+  }
+
+  decryptZKEKeyAndNavigate(zke_key_encrypted: string, derivedKey: CryptoKey){
+    this.crypto.decrypt(zke_key_encrypted, derivedKey).then(zke_key_b64=>{
+      if (zke_key_b64 != null) {
+        const zke_key_raw = Buffer.from(zke_key_b64!, 'base64');
+        try{
+        window.crypto.subtle.importKey(
+          "raw",
+          zke_key_raw,
+          "AES-GCM",
+          true,
+          ["encrypt", "decrypt"]
+        ).then((zke_key)=>{
+          this.userService.set_zke_key(zke_key!);
+        this.router.navigate(["/vault"], {relativeTo:this.route.root});
+        });
+      } catch(e) {
+        superToast({
+          message: "Error : Impossible to import your key." + e,
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+      } else {
+        superToast({
+          message: "Impossible to decrypt your key",
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+    
+    });
   }
 
 
@@ -187,7 +194,7 @@ export class LoginComponent {
             console.log("vault_parsing_status = "+ vault_parsing_status)
           switch (vault_parsing_status) {
             case UploadVaultStatus.SUCCESS:{
-              this.openLocalVault();
+              this.isPassphraseModalActive = true;
               break
             }
             case UploadVaultStatus.INVALID_JSON: {
@@ -300,10 +307,15 @@ export class LoginComponent {
     });
     }
 
+    
+      
+
+
     openLocalVault(){
       this.userService.clear();
       this.userService.setVaultLocal(true);
-      console.log("Import success ... Switching to vault page")
+      this.userService.setLocalVaultService(this.local_vault_service!);
+      this.userService.setDerivedKeySalt(this.local_vault_service!.get_derived_key_salt()!);
       this.router.navigate(["/vault"], {relativeTo:this.route.root});
     }
 
