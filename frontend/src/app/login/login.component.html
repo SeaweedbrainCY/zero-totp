@@ -94,7 +94,7 @@
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
             <button class="button is-success" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive">Return to safety</button>
-            <button class="button is-danger" (click)="isVaultTrusted = true && isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive" >I trust this backup</button>
+            <button class="button is-danger" (click)="local_vault_service!.set_is_signature_valid(true); isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive; openLocalVault();" >I trust this backup</button>
         </footer>
     </div>
     <button class="modal-close is-large" aria-label="close" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive" ></button>
