@@ -10,7 +10,7 @@ import { toast as superToast } from 'bulma-toast'
 import { Utils } from '../common/Utils/utils';
 import { error } from 'console';
 import { formatDate } from '@angular/common';
-
+import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
 
 
 @Component({
@@ -41,6 +41,7 @@ export class VaultComponent implements OnInit {
   isModalActive = false
   reloadSpin = false
   storageOptionOpen = false
+  local_vault_service :LocalVaultV1Service | null  = null;
 
   constructor(
     private userService: UserService,
@@ -52,81 +53,15 @@ export class VaultComponent implements OnInit {
     ) {  }
 
   ngOnInit() {
-    if(this.userService.getId() == null){
+    if(this.userService.getId() == null && !this.userService.getIsVaultLocal()){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+    } else if(this.userService.getIsVaultLocal()){
+      this.local_vault_service = this.userService.getLocalVaultService();
+      this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
-      this.reloadSpin = true
-      this.vault = new Map<string, Map<string,string>>();
       this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
-        try{
-          const data = JSON.parse(JSON.stringify(response.body))
-          console.log(data)
-         if(this.userService.get_zke_key() != null){
-          try{
-            this.startDisplayingCode()
-            for (let secret of data.enc_secrets){
-              this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
-                if(dec_secret == null){
-                  superToast({
-                    message: "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
-                    type: "is-danger",
-                    dismissible: false,
-                    duration: 20000,
-                  animate: { in: 'fadeIn', out: 'fadeOut' }
-                  });
-                  let fakeProperty = new Map<string, string>();
-                  fakeProperty.set("color","info");
-                  fakeProperty.set("name", "🔒")
-                  fakeProperty.set("secret", "");
-
-                  this.vault?.set(secret.uuid, fakeProperty);
-                } else {
-                    try{
-                      this.vault?.set(secret.uuid, this.utils.mapFromJson(dec_secret));
-                      console.log(this.vault)
-                      this.userService.setVault(this.vault!);
-                      this.vaultDomain = Array.from(this.vault!.keys()) as string[];
-                      console.log("vault set")
-                    } catch {
-                      superToast({
-                        message: "Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.   ",
-                        type: "is-danger",
-                        dismissible: false,
-                        duration: 20000,
-                      animate: { in: 'fadeIn', out: 'fadeOut' }
-                      });
-                    }
-                  }
-              })
-            }
-            this.reloadSpin = false
-          } catch {
-            superToast({
-              message: "Wrong key. You cannot decrypt this vault.",
-              type: "is-danger",
-              dismissible: false,
-              duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-            });
-          }
-        } else {
-          superToast({
-            message: "Impossible to decrypt your vault. Please log out and log in again.",
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
-        }
-        } catch(e){
-          superToast({
-            message: "Error : Impossible to retrieve your vault from the server",
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
-        }
+        const data = JSON.parse(JSON.stringify(response.body))
+        this.decrypt_and_display_vault(data.enc_secrets);
       }, (error) => {
         if(error.status == 404){
           this.userService.setVault(new Map<string, Map<string,string>>());
@@ -153,6 +88,78 @@ export class VaultComponent implements OnInit {
         console.log("vault = ", this.vaultDomain)
         setInterval(()=> { this.generateTime() }, 20);
         setInterval(()=> { this.generateCode() }, 100);
+  }
+
+  decrypt_and_display_vault(encrypted_vault:any){
+    this.reloadSpin = true
+      this.vault = new Map<string, Map<string,string>>();
+    try{
+     if(this.userService.get_zke_key() != null){
+      try{
+        this.startDisplayingCode()
+        for (let secret of encrypted_vault){
+          this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
+            if(dec_secret == null){
+              superToast({
+                message: "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
+                type: "is-danger",
+                dismissible: false,
+                duration: 20000,
+              animate: { in: 'fadeIn', out: 'fadeOut' }
+              });
+              let fakeProperty = new Map<string, string>();
+              fakeProperty.set("color","info");
+              fakeProperty.set("name", "🔒")
+              fakeProperty.set("secret", "");
+
+              this.vault?.set(secret.uuid, fakeProperty);
+            } else {
+                try{
+                  this.vault?.set(secret.uuid, this.utils.mapFromJson(dec_secret));
+                  console.log(this.vault)
+                  this.userService.setVault(this.vault!);
+                  this.vaultDomain = Array.from(this.vault!.keys()) as string[];
+                  console.log("vault set")
+                } catch {
+                  superToast({
+                    message: "Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.   ",
+                    type: "is-danger",
+                    dismissible: false,
+                    duration: 20000,
+                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                  });
+                }
+              }
+          })
+        }
+        this.reloadSpin = false
+      } catch {
+        superToast({
+          message: "Wrong key. You cannot decrypt this vault.",
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+    } else {
+      superToast({
+        message: "Impossible to decrypt your vault. Please log out and log in again.",
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    }
+    } catch(e){
+      superToast({
+        message: "Error : Impossible to retrieve your vault from the server",
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    }
   }
 
   navigate(route:string){
