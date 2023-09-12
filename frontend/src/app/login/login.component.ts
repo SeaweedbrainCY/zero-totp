@@ -407,6 +407,7 @@ export class LoginComponent {
         this.userService.setId(data.id);
         this.userService.setEmail(this.email);
         this.userService.setDerivedKeySalt(data.derivedKeySalt);
+        this.userService.setGoogleDriveSync(data.isGoogleDriveSync);
         this.final_zke_flow();
       } catch(e){
         this.isLoading=false;

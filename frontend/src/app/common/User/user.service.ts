@@ -74,7 +74,6 @@ export class UserService {
     this.passphraseSalt = salt;
     }
 
-<<<<<<< HEAD
     getIsVaultLocal(): boolean {
       return this.isVaultLocal;
     }
@@ -93,7 +92,6 @@ export class UserService {
 
 
 
-=======
     getGoogleDriveSync(): boolean | null {
     return this.googleDriveSync;
     }
@@ -102,7 +100,6 @@ export class UserService {
     this.googleDriveSync = sync;
     }
 
->>>>>>> 1929557 (Add google sync property to userService)
    clear(){
     this.id = null;
     this.email = null;
