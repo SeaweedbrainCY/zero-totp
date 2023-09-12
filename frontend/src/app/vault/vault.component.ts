@@ -41,10 +41,14 @@ export class VaultComponent implements OnInit {
   isModalActive = false
   reloadSpin = false
   storageOptionOpen = false
+<<<<<<< HEAD
   local_vault_service :LocalVaultV1Service | null  = null;
   page_title="Here is your TOTP vault";
   isRestoreBackupModaleActive=false;
 
+=======
+  isGoogleDriveSync = false
+>>>>>>> 78f553f (Frontend storage option handle google sync property)
 
   constructor(
     public userService: UserService,
@@ -64,6 +68,12 @@ export class VaultComponent implements OnInit {
       this.page_title = "Backup from " + this.local_vault_service!.get_date()!.split(".")[0];
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
+<<<<<<< HEAD
+=======
+      this.reloadSpin = true
+      this.isGoogleDriveSync = this.userService.getGoogleDriveSync() || false;
+      this.vault = new Map<string, Map<string,string>>();
+>>>>>>> 78f553f (Frontend storage option handle google sync property)
       this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
           if(isTimedOut){
