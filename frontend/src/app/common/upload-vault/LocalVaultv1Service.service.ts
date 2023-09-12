@@ -59,31 +59,59 @@ export class LocalVaultV1Service {
       const unsecure_vault_b64 = unsecure_context_b64.split(",")[0];
       const signature = unsecure_context_b64.split(",")[1];
       let unsecure_vault = atob(unsecure_vault_b64);
+      console.log(unsecure_vault)
       let context = JSON.parse(unsecure_vault);
+      console.log(context)
       if(context == null){
         resolve( UploadVaultStatus.INVALID_JSON);
       }
       if(context.hasOwnProperty("version")){
         if(context.version == 1){
           const required_keys = ["version", "date", "derived_key_salt", "zke_key_enc", "secrets"]
+          let enc_secrets = Array();
           for(let key of required_keys){
             if(context.hasOwnProperty(key)){
-
+              if(key == "secrets"){
+                for(let secret of context[key]){
+                  console.log("secret = " + secret)
+                  if(secret.hasOwnProperty("uuid") && secret.hasOwnProperty("enc_secret")){
+                    const sanitized_uuid = this.sanitizer.sanitize(SecurityContext.HTML, secret.uuid)
+                    const sanitized_enc_secret = this.sanitizer.sanitize(SecurityContext.HTML, secret.enc_secret)
+                    if(sanitized_uuid != null && sanitized_enc_secret != null){
+                      secret.uuid = sanitized_uuid;
+                      secret.enc_secret = sanitized_enc_secret;
+                      enc_secrets.push(secret)
+                  } else {
+                    resolve(UploadVaultStatus.INVALID_ARGUMENT);
+                  }
+                }
+              }
+            } else {
               const sanitized = this.sanitizer.sanitize(SecurityContext.HTML, context[key])
               if(sanitized != null){
                  context[key]= sanitized;
               }else {
                 resolve(UploadVaultStatus.INVALID_ARGUMENT);
               }
+            }
             } else {
               resolve(UploadVaultStatus.MISSING_ARGUMENT);
-            }
+          }
           }
           this.version = context.version;
           this.date = context.date;
           this.derived_key_salt = context.derived_key_salt;
           this.zke_key_enc = context.zke_key_enc;
           this.enc_secrets = context.secrets;
+          console.log("enc_secrets = " + enc_secrets)
+          /*for (let enc_secret of context.secrets){
+            console.log(enc_secret)
+            if(enc_secret.hasOwnProperty("uuid"), enc_secret.hasOwnProperty("enc_secret")){
+              this.enc_secrets.set(enc_secret.uuid, enc_secret.enc_secret);
+            } else {
+              resolve(UploadVaultStatus.INVALID_ARGUMENT);
+            }
+          }*/
            this.crypto.verifySignature(unsecure_vault_b64, signature).then(result => {
             if(result){
               this.is_signature_valid = true;
