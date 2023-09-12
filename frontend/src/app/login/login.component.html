@@ -48,4 +48,70 @@
         </div>
       </div>
     </div>
+    <div class="is-flex is-justify-content-center" >
+      <div class="m-6" style="border-top: 1px lightgray solid; width: 50vw;"></div>
+    </div>
+  
+    <div class="is-flex is-flex-direction-column">
+      <div class="is-flex is-justify-content-center has-text-centered">
+        <p class="block"><span class="title is-1 is-full  has-text-info has-text-weight-bold" id="openVault">
+          Open a backup</span><br />
+  
+        <span class="has-text-weight-bold has-text-grey">You can open a Zero-TOTP vault saved on your laptop 💻</span>
+      </p>
+      </div>
+      <div class="is-flex is-justify-content-center">
+        <div class="mt-6">
+          <div class="file is-boxed">
+            <label class="file-label">
+              <input class="file-input" type="file" name="resume" accept=".zero-totp" (change)="openFile($event)">
+              <span class="file-cta">
+                <span class="file-icon">
+                  <fa-icon [icon]="faCloudArrowUp"></fa-icon>
+                </span>
+                <span class="file-label">
+                  Vault backup
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    
   </section>
+
+  <div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isUnsecureVaultModaleActive}">
+    <div class="modal-background" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive"></div>
+    <div class="modal-content">
+        <section class="modal-card-body">
+            <h1 class="is-size-2 has-text-danger">You backup may be not secure</h1>
+            <strong>The verification of the authenticity of your vault failed</strong>. Your vault may have been modified by someone else or it does not come from Zero-TOTP.<br>
+            <strong>Importing an unsecure backup may lead to security issues and should not be trusted</strong>
+            <br><br>
+        </section>
+        <footer class="modal-card-foot is-flex is-justify-content-right">
+            <button class="button is-success" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive">Return to safety</button>
+            <button class="button is-danger" (click)="local_vault_service!.set_is_signature_valid(true); isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive; this.isPassphraseModalActive = true;" >I trust this backup</button>
+        </footer>
+    </div>
+    <button class="modal-close is-large" aria-label="close" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive" ></button>
+</div>
+
+
+<div id="local_vault_passphrase" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isPassphraseModalActive}">
+  <div class="modal-background" (click)="isUnsecureVaultModaleActive = !isPassphraseModalActive"></div>
+  <div class="modal-content">
+      <section class="modal-card-body">
+          <h1 class="is-size-2 has-text-info">Unlock your vault</h1>
+          <input class="input block" type="password" placeholder="Passphrase" name="password" [(ngModel)]="password" (keyup.enter)="openLocalVault()">
+      </section>
+      <footer class="modal-card-foot is-flex is-justify-content-right">
+          <button class="button" (click)="isPassphraseModalActive = !isPassphraseModalActive">Cancel</button>
+          <button class="button is-info" (click)="local_vault_service!.set_is_signature_valid(true); isPassphraseModalActive = !isUnsecureVaultModaleActive; openLocalVault();" >Unlock</button>
+      </footer>
+  </div>
+  <button class="modal-close is-large" aria-label="close" (click)="isPassphraseModalActive = !isPassphraseModalActive" ></button>
+</div>

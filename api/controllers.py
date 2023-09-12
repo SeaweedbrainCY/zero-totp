@@ -385,12 +385,13 @@ def export_vault():
     
     vault["derived_key_salt"] = user.derivedKeySalt
     vault["zke_key_enc"] = zkeKey.ZKE_key
-    secrets = {}
+    secrets = []
     for secret in totp_secrets_list:
-        secrets[secret.uuid] = secret.secret_enc
+        secrets.append({"uuid": secret.uuid, "enc_secret": secret.secret_enc})
     vault["secrets"] = secrets
-    signature = api_signature.sign(json.dumps(secrets))
-    vault["signature"] = signature
+    vault_b64 = base64.b64encode(json.dumps(vault).encode("utf-8")).decode("utf-8")
+    signature = api_signature.sign(vault_b64)
+    vault = vault_b64 + "," + signature
     return vault, 200
 
     

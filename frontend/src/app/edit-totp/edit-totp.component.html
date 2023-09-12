@@ -27,7 +27,7 @@
         is-one-quarter-fullhd">
             <label class="label">Domain or name</label>
             <div class="control has-icons-left has-icons-right">
-              <input class="input" type="text" placeholder="github.com" name="name" [(ngModel)]="name" (keyup)="checkName()" [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }">
+              <input class="input" type="text" placeholder="github.com" name="name" [(ngModel)]="name" (keyup)="checkName()" [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }" [disabled]="this.userService.getIsVaultLocal()!">
               <span class="icon is-small is-left">
                 <fa-icon [icon]="faGlobe"></fa-icon>
               </span>
@@ -41,7 +41,7 @@
           is-one-quarter-fullhd">
             <label class="label">TOTP secret</label>
             <div class="control has-icons-left has-icons-right">
-              <input class="input" type="test" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret" (keyup)="checkSecret()" [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }">
+              <input class="input" type="test" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret" (keyup)="checkSecret()" [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }" [disabled]="this.userService.getIsVaultLocal()!">
               <span class="icon is-small is-left">
                 <fa-icon [icon]="faKey"></fa-icon>
               </span>
@@ -49,8 +49,11 @@
             <p class="help is-danger" *ngIf="secretError != ''">{{secretError}}</p>
           </div></div>
           <div class="field p-5 is-flex is-justify-content-center">
+            <div class="notification is-warning" *ngIf="this.userService.getIsVaultLocal()!">
+              Your are in read-only mode. You can't modify anything in a local vault.
+             </div>
           <div class=" select is-{{color}}">
-            <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color" (keyup)="changeColor(colorSelected.value)">
+            <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color" (keyup)="changeColor(colorSelected.value)" *ngIf="!this.userService.getIsVaultLocal()!">
               <option default>Blue</option>
               <option>Green</option>
               <option>Orange</option>
@@ -63,10 +66,10 @@
             <button class="button is-info is-light block" (click)="cancel()">Cancel</button>
           </div>
           <div class="control" *ngIf="secret_uuid != '' && secret_uuid != null ">
-            <button class="button is-danger block" (click)="modal()" data-target="confirmation">Delete</button>
+            <button class="button is-danger block" (click)="modal()" data-target="confirmation" [disabled]="this.userService.getIsVaultLocal()!">Delete</button>
           </div>
           <div class="control">
-            <button class="button is-info block" (click)="save()">Save</button>
+            <button class="button is-info block" (click)="save()" [disabled]="this.userService.getIsVaultLocal()!">Save</button>
           </div>
         </div>
         </div>

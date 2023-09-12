@@ -1,4 +1,6 @@
+import { faColonSign } from '@fortawesome/free-solid-svg-icons';
 import {Buffer} from 'buffer';
+import { environment } from 'src/environments/environment';
 
 
 export class Crypto {
@@ -68,4 +70,47 @@ export class Crypto {
         const hash = await window.crypto.subtle.digest("SHA-256", Buffer.concat([passwordBytes, saltBytes]));
         return Buffer.from(hash).toString('base64');
     }
+
+    async verifySignature(vault_b64:string, signature_bd64:string):Promise<boolean>{
+          const textEncoder = new TextEncoder();
+          let encoded_vault = textEncoder.encode(vault_b64);
+          let encoded_signature = Buffer.from(signature_bd64, "base64");
+          const publicKey = await this.importPublicKey(environment.API_public_key)
+          const result = await window.crypto.subtle.verify(
+              "RSASSA-PKCS1-v1_5",
+              publicKey,
+              encoded_signature,
+              encoded_vault,
+          );
+          return result
+      }
+
+      async importPublicKey(publicKeyPEM: string): Promise<CryptoKey> {
+        const publicKeyDER = atob(publicKeyPEM.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----/g, ''));
+      
+        const publicKeyBuffer = this.str2ab(publicKeyDER);
+        console.log("publicKeyBuffer: " + publicKeyBuffer)
+      
+        const publicKey = await crypto.subtle.importKey(
+          'spki',
+          publicKeyBuffer,
+          {
+            name: 'RSASSA-PKCS1-v1_5',
+            hash: 'SHA-256',
+          },
+          true,
+          ['verify']
+        );
+        console.log("publicKey: " + publicKey)
+        return publicKey;
+      }
+
+    str2ab(str:string) {
+        const buf = new ArrayBuffer(str.length);
+        const bufView = new Uint8Array(buf);
+        for (let i = 0, strLen = str.length; i < strLen; i++) {
+          bufView[i] = str.charCodeAt(i);
+        }
+        return buf;
+      }
 }

@@ -3,6 +3,8 @@ from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 import environment as env
 import logging
+import base64
+
 
 
 def sign(message):
@@ -10,15 +12,14 @@ def sign(message):
         private_key = RSA.import_key(key_file.read())
         h = SHA256.new(message.encode())
         signature = pkcs1_15.new(private_key).sign(h)
-        return signature.hex()
-
+        return base64.b64encode(signature).decode("utf-8")
 
 def verify(signature, message):
     with open(env.public_key_path, "r") as key_file:
         public_key = RSA.import_key(key_file.read())
         h = SHA256.new(message.encode("utf-8"))
         try:
-            signature = bytes.fromhex(signature)
+            signature = base64.b64decode(signature)
             pkcs1_15.new(public_key).verify(h, signature)
             return True  
         except (ValueError, TypeError) as e:

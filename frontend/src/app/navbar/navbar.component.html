@@ -27,7 +27,7 @@
           Account
         </a>
       </div>
-      <div class="navbar-start"  *ngIf="userService.getId()==null">
+      <div class="navbar-start"  *ngIf="userService.getId()==null && !this.userService.getIsVaultLocal()">
         <a class="navbar-item" (click)="changeLocation('#how-it-works')" >
           How it works
         </a>
@@ -44,6 +44,11 @@
           About the project
         </a>
       </div>
+      <div class="navbar-start"  *ngIf="this.userService.getIsVaultLocal()">
+        <a class="navbar-item"  (click)="navigateToRoute('vault')">
+          Vault backup
+        </a>
+      </div>
   
       <div class="navbar-end">
         <div class="navbar-item">
@@ -57,6 +62,9 @@
 
             <a class="button is-light" *ngIf="userService.getId() != null" href="/logout">
                 <span>Logout</span>
+            </a>
+            <a class="button is-light" *ngIf="this.userService.getIsVaultLocal()" href="/login">
+              <span>Close</span>
             </a>
           </div>
         </div>

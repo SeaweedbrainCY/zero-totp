@@ -25,6 +25,7 @@ import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { QrCodeTOTP } from './common/qr-code-totp/qr-code-totp.service';
 import { DevComponent } from './dev/dev.component';
 import { AccountComponent } from './account/account.component';
+import { LocalVaultV1Service } from './common/upload-vault/LocalVaultv1Service.service';
 
 
 @NgModule({
@@ -52,7 +53,7 @@ import { AccountComponent } from './account/account.component';
     ClipboardModule,
     ZXingScannerModule
   ],
-  providers: [UserService, Utils, Crypto, QrCodeTOTP],
+  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,11 +1,17 @@
 <section class="hero  is-halfheight mt-6 " style="min-height: 70vh;">
     <div class="container  is-fluid ">
         <div>
-            <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">Here is your TOTP vault</h1>
+            <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">{{page_title}}</h1>
             <p class="has-text-centered has-text-grey pb-6">You and only you can access to this data. All the magic is
                 done
                 on your computer.</p>
-            <div class="message is-success">
+                <article class="message is-info" *ngIf="this.userService.getIsVaultLocal()">
+                    <div class="message-body">
+                      This is a vault stored locally on your computer. You can't sync it with other devices, nor with zero-totp servers. You don't need internet to open it.<br>
+                      <b>To restore this backup and sync it on all your devices, log in and then choose <code>restore a backup</code> in the storage options</b>.
+                    </div>
+                  </article>
+            <div class="message is-success" *ngIf="!this.userService.getIsVaultLocal()">
                 <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen" style="cursor: pointer;">
                     <p>Your storage options <span class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
                     <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">Less</span>
@@ -81,15 +87,29 @@
                                     [hidden]="!storageOptionOpen">
                                     <button class="button  is-outlined is-dark mb-3 mr-2 ml-2" (click)="downloadVault()"><fa-icon
                                             [icon]="faDownload" class="mr-3 "></fa-icon> Save a backup</button>
-                                    <button class="button  is-outlined is-dark mr-2 ml-2 "><fa-icon [icon]="faUpload"
-                                            class="mr-3 "></fa-icon> Open a local Vault</button>
+                                            <div class="dropdown" [ngClass]="{'is-active': isRestoreBackupModaleActive}">
+                                                <div class="dropdown-trigger">
+                                                    <button class="button  is-outlined is-dark mr-2 ml-2 " (click)="isRestoreBackupModaleActive = !isRestoreBackupModaleActive" ria-haspopup="true" aria-controls="dropdown-menu"><fa-icon [icon]="faUpload"
+                                                        class="mr-3 " ></fa-icon> Open a local Vault</button>
+                                                </div>
+                                                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                                  <div class="dropdown-content">
+                                                    <a  class="dropdown-item">
+                                                      Restore a backup
+                                                    </a>
+                                                    <a href="/login/#openVault" class="dropdown-item">
+                                                        Open a backup locally (read-only)
+                                                    </a>
+                                                  </div>
+                                                </div>
+                                              </div>
                                 </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault">Reload my vault <fa-icon
+                <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault" *ngIf="!this.userService.getIsVaultLocal()">Reload my vault <fa-icon
                         [icon]="faRotateRight" class="pl-1" [spin]=reloadSpin></fa-icon></span>
                 <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
 
@@ -97,7 +117,7 @@
             is-one-third-tablet
             is-one-third-desktop
             is-one-third-widescreen
-            is-one-quarter-fullhd">
+            is-one-quarter-fullhd" *ngIf="!this.userService.getIsVaultLocal()">
                         <a (click)="isModalActive = !isModalActive">
                             <div class="card  ">
                                 <header class="card-header">
