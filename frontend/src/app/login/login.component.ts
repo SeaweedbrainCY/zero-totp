@@ -122,6 +122,7 @@ export class LoginComponent {
               duration: 20000,
               animate: { in: 'fadeIn', out: 'fadeOut' }
             });
+            
           } else if (version == 1){
             this.local_vault_service = this.localVaultv1
           this.local_vault_service.parseUploadedVault(unsecure_context).then((vault_parsing_status) => {
@@ -129,6 +130,7 @@ export class LoginComponent {
           switch (vault_parsing_status) {
             case UploadVaultStatus.SUCCESS:{
               this.isPassphraseModalActive = true;
+              
               break
             }
             case UploadVaultStatus.INVALID_JSON: {
@@ -139,6 +141,7 @@ export class LoginComponent {
                 duration: 20000,
                 animate: { in: 'fadeIn', out: 'fadeOut' }
               });
+              
               break;
             }
 
@@ -150,6 +153,7 @@ export class LoginComponent {
                 duration: 20000,
                 animate: { in: 'fadeIn', out: 'fadeOut' }
               });
+              
               break;
             }
             case UploadVaultStatus.NO_SIGNATURE: {
@@ -160,10 +164,12 @@ export class LoginComponent {
                 duration: 20000,
                 animate: { in: 'fadeIn', out: 'fadeOut' }
               });
+              
               break;
             }
             case UploadVaultStatus.INVALID_SIGNATURE: {
               this.isUnsecureVaultModaleActive = true;
+              
               break;
             }
             case UploadVaultStatus.MISSING_ARGUMENT: {
@@ -174,6 +180,7 @@ export class LoginComponent {
                 duration: 20000,
                 animate: { in: 'fadeIn', out: 'fadeOut' }
               });
+              
               break;
             }
             case UploadVaultStatus.INVALID_ARGUMENT: {
@@ -184,6 +191,7 @@ export class LoginComponent {
                 duration: 20000,
                 animate: { in: 'fadeIn', out: 'fadeOut' }
               });
+              
               break;
             }
 
@@ -195,6 +203,7 @@ export class LoginComponent {
                   duration: 20000,
                   animate: { in: 'fadeIn', out: 'fadeOut' }
                 });
+                
                 break;
               }
 
@@ -206,6 +215,7 @@ export class LoginComponent {
                 duration: 20000,
                 animate: { in: 'fadeIn', out: 'fadeOut' }
               });
+              
               break;
           }
         }
@@ -219,6 +229,7 @@ export class LoginComponent {
         duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+      
     }
       } catch(e){
           superToast({
@@ -228,6 +239,7 @@ export class LoginComponent {
             duration: 20000,
             animate: { in: 'fadeIn', out: 'fadeOut' }
           });
+          
         }
       } else {
         superToast({
@@ -237,8 +249,10 @@ export class LoginComponent {
           duration: 20000,
           animate: { in: 'fadeIn', out: 'fadeOut' }
         });
+        
       }
     });
+
     }
 
     
@@ -250,7 +264,30 @@ export class LoginComponent {
       this.userService.setVaultLocal(true);
       this.userService.setLocalVaultService(this.local_vault_service!);
       this.userService.setDerivedKeySalt(this.local_vault_service!.get_derived_key_salt()!);
-      this.router.navigate(["/vault"], {relativeTo:this.route.root});
+        this.deriveKey().then((derivedKey)=>{
+            this.decryptZKEKey(this.local_vault_service!.get_zke_key_enc()!, derivedKey).then((zke_key)=>{
+              this.userService.set_zke_key(zke_key!);
+              this.router.navigate(["/vault"], {relativeTo:this.route.root});
+            }, (error)=>{
+              superToast({
+                message: error,
+                type: "is-danger",
+                dismissible: false,
+                duration: 20000,
+                animate: { in: 'fadeIn', out: 'fadeOut' }
+              });
+              this.isLoading=false;
+            });
+        },(error)=>{
+          superToast({
+            message: error,
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+              this.isLoading=false;
+        });
     }
 
   hashPassword(){
@@ -421,7 +458,12 @@ export class LoginComponent {
             reject("Impossible to decrypt your key. "+ error);
           });;
         } else {
-          reject("Impossible to decrypt your key");
+          if(this.userService.getIsVaultLocal()!){
+            reject("Wrong passphrase");
+          } else {
+            reject("Impossible to decrypt your key");
+          }
+          
         }
         
       });
