@@ -27,7 +27,7 @@ export class LoginComponent {
   warning_message="";
   error_param: string|null=null;
   isUnsecureVaultModaleActive = false;
-  isPassphraseModalActive = true;
+  isPassphraseModalActive = false;
   local_vault_service: LocalVaultV1Service | null = null;
 
 
@@ -64,78 +64,12 @@ export class LoginComponent {
       
     }
 
-  getZKEKeyAndNavigate(derivedKey: CryptoKey){
-    this.http.get(ApiService.API_URL+"/zke_encrypted_key",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
-      const data = JSON.parse(JSON.stringify(response.body))
-      const zke_key_encrypted = data.zke_encrypted_key
-      this.decryptZKEKeyAndNavigate(zke_key_encrypted, derivedKey);
-    }, (error)=> {
-      superToast({
-        message: "Impossible to retrieve your encryption key. Please try again later",
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
-    });
-    
-  }
+  
 
-  decryptZKEKeyAndNavigate(zke_key_encrypted: string, derivedKey: CryptoKey){
-    this.crypto.decrypt(zke_key_encrypted, derivedKey).then(zke_key_b64=>{
-      if (zke_key_b64 != null) {
-        const zke_key_raw = Buffer.from(zke_key_b64!, 'base64');
-        try{
-        window.crypto.subtle.importKey(
-          "raw",
-          zke_key_raw,
-          "AES-GCM",
-          true,
-          ["encrypt", "decrypt"]
-        ).then((zke_key)=>{
-          this.userService.set_zke_key(zke_key!);
-        this.router.navigate(["/vault"], {relativeTo:this.route.root});
-        });
-      } catch(e) {
-        superToast({
-          message: "Error : Impossible to import your key." + e,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
-      }
-      } else {
-        superToast({
-          message: "Impossible to decrypt your key",
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
-      }
-    
-    });
-  }
+  
 
 
-  deriveKeyAndNavigate(){
-    const derivedKeySalt = this.userService.getDerivedKeySalt();
-    if(derivedKeySalt != null){
-      this.crypto.deriveKey(derivedKeySalt, this.password).then(key=>{
-       this.getZKEKeyAndNavigate(key)
-      });
-    } else {
-      this.isLoading=false;
-      superToast({
-        message: "Impossible to retrieve enough data to decrypt your vault",
-        type: "is-success",
-        dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
-    }
-    
-  }
+  
 
   checkEmail() : boolean{
     const emailRegex = /\S+@\S+\.\S+/;
@@ -378,7 +312,7 @@ export class LoginComponent {
         this.userService.setId(data.id);
         this.userService.setEmail(this.email);
         this.userService.setDerivedKeySalt(data.derivedKeySalt);
-        this.deriveKeyAndNavigate();
+        this.final_zke_flow();
       } catch(e){
         this.isLoading=false;
         console.log(e);
@@ -400,5 +334,97 @@ export class LoginComponent {
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
     });
+  }
+
+  final_zke_flow(){
+    this.deriveKey().then((derivedKey)=>{
+      this.getZKEKey().then((zke_key_encrypted)=>{
+        this.decryptZKEKey(zke_key_encrypted, derivedKey).then((zke_key)=>{
+          this.userService.set_zke_key(zke_key!);
+          this.router.navigate(["/vault"], {relativeTo:this.route.root});
+        }, (error)=>{
+          superToast({
+            message: error,
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+          this.isLoading=false;
+        });
+      }, (error)=>{
+        superToast({
+          message: error,
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+        this.isLoading=false;
+      });
+    },(error)=>{
+      superToast({
+        message: error,
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+          this.isLoading=false;
+    });
+  }
+
+
+  deriveKey() : Promise<CryptoKey>{
+    return new Promise((resolve, reject) => {
+      const derivedKeySalt = this.userService.getDerivedKeySalt();
+      if(derivedKeySalt != null){
+        this.crypto.deriveKey(derivedKeySalt, this.password).then(key=>{
+          resolve(key);
+        });
+      } else {
+        this.isLoading=false;
+        reject("Impossible to retrieve enough data to decrypt your vault");
+      }
+    });
+  }
+
+  getZKEKey(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.http.get(ApiService.API_URL+"/zke_encrypted_key",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+        const data = JSON.parse(JSON.stringify(response.body))
+        const zke_key_encrypted = data.zke_encrypted_key
+        resolve(zke_key_encrypted);
+      }, (error)=> {
+        reject("Impossible to retrieve your encryption key. Please try again later. " + error);
+      });
+    });
+    
+  }
+
+
+  decryptZKEKey(zke_key_encrypted: string, derivedKey: CryptoKey): Promise<CryptoKey> {
+    return new Promise((resolve, reject) => {
+      this.crypto.decrypt(zke_key_encrypted, derivedKey).then(zke_key_b64=>{
+        if (zke_key_b64 != null) {
+          const zke_key_raw = Buffer.from(zke_key_b64!, 'base64');
+
+          window.crypto.subtle.importKey(
+            "raw",
+            zke_key_raw,
+            "AES-GCM",
+            true,
+            ["encrypt", "decrypt"]
+          ).then((zke_key)=>{
+            resolve(zke_key);
+          }, (error)=>{
+            reject("Impossible to decrypt your key. "+ error);
+          });;
+        } else {
+          reject("Impossible to decrypt your key");
+        }
+        
+      });
+  });
   }
 }
