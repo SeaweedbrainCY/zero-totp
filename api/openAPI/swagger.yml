@@ -307,10 +307,11 @@ paths:
         "404":
           description: No secrets found
   /oauth/authorization_flow:
+  /google-drive/oauth/authorization-flow:
     get:
       operationId: controllers.get_authorization_flow
       tags:
-        - OAuth
+        - Google Drive
       summary: Get the OAuth authorization flow URI
       responses:
         "200": 
@@ -320,16 +321,45 @@ paths:
         "403":
           description: Access denied
   
-  /oauth/callback:
+  /google-drive/oauth/callback:
     get:
       operationId: controllers.oauth_callback
       tags:
-        - OAuth
+        - Google Drive
       summary: OAuth callback endpoint for the authorization flow
       security: []
       responses:
         "200": 
           description: Callback successful
+  
+  /google-drive/oauth/enc_tokens:
+    post:
+      operationId: controllers.set_encrypted_tokens
+      tags:
+        - Google Drive
+      summary: Set the user's encrypted Google Drive tokens
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                enc_access_token:
+                  type: string
+                enc_refresh_token:
+                  type: string
+      responses:
+        "201": # status code
+          description: Encrypted tokens set
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+        "500":
+          description: Internal server error
 
   /role:
     get:
