@@ -9,6 +9,8 @@ private_key_path = os.environ.get('PRIVATE_KEY_PATH')
 public_key_path = os.environ.get('PUBLIC_KEY_PATH')
 
 oauth_client_secret_file = os.environ.get('OAUTH_CLIENT_SECRET_FILE')
+flask_secret_key = os.environ.get('FLASK_SECRET_KEY')
+
 
 
 if environment == "development":
@@ -63,3 +65,7 @@ if private_key_path == None or public_key_path == None:
 if oauth_client_secret_file == None:
     logging.error("OAUTH_CLIENT_SECRET_FILE environment variable not set. Please set it to a valid path to the client_secret.json file. Aborting...")
     raise Exception("OAUTH_CLIENT_SECRET_FILE environment variable not set. Please set it to a valid path to the client_secret.json file.")
+
+if flask_secret_key == None:
+    logging.error("FLASK_SECRET_KEY environment variable not set. Please set it to a valid secret key. Aborting...")
+    raise Exception("FLASK_SECRET_KEY environment variable not set. Please set it to a valid secret key.")
