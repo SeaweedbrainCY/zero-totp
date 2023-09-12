@@ -10,6 +10,8 @@ import { AccountComponent } from './account/account.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { DevComponent } from './dev/dev.component';
+import { CallbackComponent } from './callback/callback.component';
+import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 
 const routes: Routes = [
   {path:'', component: HomeComponent},
@@ -23,6 +25,8 @@ const routes: Routes = [
   {path:"logout", component: LogoutComponent},
   {path:'dev', component: DevComponent},
   {path:"account", component: AccountComponent},
+  {path:"/oauth/callback", component: CallbackComponent},
+  {path:"/oauth/synchronize", component: OauthSyncComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 
