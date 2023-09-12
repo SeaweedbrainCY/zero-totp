@@ -8,6 +8,7 @@ import { toast as superToast } from 'bulma-toast'
 import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
+import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
 
 @Component({
   selector: 'app-edit-totp',
@@ -37,7 +38,7 @@ export class EditTOTPComponent implements OnInit{
   constructor(
     private router: Router,
     private route : ActivatedRoute,
-    private userService : UserService,
+    public userService : UserService,
     private QRCodeService : QrCodeTOTP,
     private http: HttpClient,
     private utils: Utils,
@@ -51,9 +52,9 @@ export class EditTOTPComponent implements OnInit{
   }
 
   ngOnInit(){
-    if(this.userService.getId() == null){
+    if(this.userService.getId() == null  && !this.userService.getIsVaultLocal()){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
-    }
+    } 
     this.secret_uuid = this.route.snapshot.paramMap.get('id');
     console.log(this.secret_uuid)
     if(this.secret_uuid == null){
@@ -66,7 +67,16 @@ export class EditTOTPComponent implements OnInit{
           this.secret = this.QRCodeService.getSecret()!
         }
     } else {
-      this.getSecretTOTP()
+      if(!this.userService.getIsVaultLocal()){
+        this.getSecretTOTP()
+      } else {
+        const vault = this.userService.getVault()!;
+        const property = vault.get(this.secret_uuid);
+        this.uuid = this.secret_uuid!;
+        this.name = property!.get("name")!;
+        this.secret = property!.get("secret")!;
+        this.color = property!.get("color")!;
+      }
     }
 
     setInterval(()=> { this.generateCode() }, 100);
