@@ -290,7 +290,7 @@ paths:
           description: Unauthorized
         "404":
           description: No secrets found
-  /oauth/authorization_flow:
+
   /google-drive/oauth/authorization-flow:
     get:
       operationId: controllers.get_authorization_flow

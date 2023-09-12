@@ -36,8 +36,13 @@ jobs:
       env:
         DATABASE_URI: "sqlite:///:memory:"
         JWT_SECRET : "secret"
+<<<<<<< HEAD
         PRIVATE_KEY_PATH: "./tests/ressources/test_private.pem"
         PUBLIC_KEY_PATH: "./tests/ressources/test_public.pem"
+=======
+        OAUTH_CLIENT_SECRET_FILE: "fake_client_secret.json"
+        FLASK_SECRET_KEY: "secret"
+>>>>>>> 7d47be5 (Fix actions with new env variables)
       run: python -m pytest --cov=. --cov-report=lcov --cov-report=term
 
     - name: Upload coverage report
