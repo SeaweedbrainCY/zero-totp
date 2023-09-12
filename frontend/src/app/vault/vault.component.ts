@@ -42,7 +42,8 @@ export class VaultComponent implements OnInit {
   reloadSpin = false
   storageOptionOpen = false
   local_vault_service :LocalVaultV1Service | null  = null;
-  page_title="Here is your TOTP vault"
+  page_title="Here is your TOTP vault";
+  isRestoreBackupModaleActive=false;
 
 
   constructor(

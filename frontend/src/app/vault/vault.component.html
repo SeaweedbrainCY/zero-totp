@@ -87,8 +87,22 @@
                                     [hidden]="!storageOptionOpen">
                                     <button class="button  is-outlined is-dark mb-3 mr-2 ml-2" (click)="downloadVault()"><fa-icon
                                             [icon]="faDownload" class="mr-3 "></fa-icon> Save a backup</button>
-                                    <button class="button  is-outlined is-dark mr-2 ml-2 "><fa-icon [icon]="faUpload"
-                                            class="mr-3 "></fa-icon> Open a local Vault</button>
+                                            <div class="dropdown" [ngClass]="{'is-active': isRestoreBackupModaleActive}">
+                                                <div class="dropdown-trigger">
+                                                    <button class="button  is-outlined is-dark mr-2 ml-2 " (click)="isRestoreBackupModaleActive = !isRestoreBackupModaleActive" ria-haspopup="true" aria-controls="dropdown-menu"><fa-icon [icon]="faUpload"
+                                                        class="mr-3 " ></fa-icon> Open a local Vault</button>
+                                                </div>
+                                                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                                                  <div class="dropdown-content">
+                                                    <a  class="dropdown-item">
+                                                      Restore a backup
+                                                    </a>
+                                                    <a href="/login/#openVault" class="dropdown-item">
+                                                        Open a backup locally (read-only)
+                                                    </a>
+                                                  </div>
+                                                </div>
+                                              </div>
                                 </div>
                                 </div>
                             </div>
