@@ -15,6 +15,7 @@ export class UserService {
   private passphraseSalt: string| null =null;;
   private isVaultLocal:boolean = false;
   private local_vault_service:LocalVaultV1Service | null = null;
+  private googleDriveSync:boolean | null = null;;
 
   constructor(private utils: Utils) {
    }
@@ -73,6 +74,7 @@ export class UserService {
     this.passphraseSalt = salt;
     }
 
+<<<<<<< HEAD
     getIsVaultLocal(): boolean {
       return this.isVaultLocal;
     }
@@ -91,6 +93,16 @@ export class UserService {
 
 
 
+=======
+    getGoogleDriveSync(): boolean | null {
+    return this.googleDriveSync;
+    }
+
+    setGoogleDriveSync(sync:boolean){
+    this.googleDriveSync = sync;
+    }
+
+>>>>>>> 1929557 (Add google sync property to userService)
    clear(){
     this.id = null;
     this.email = null;
