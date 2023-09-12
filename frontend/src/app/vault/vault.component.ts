@@ -42,9 +42,11 @@ export class VaultComponent implements OnInit {
   reloadSpin = false
   storageOptionOpen = false
   local_vault_service :LocalVaultV1Service | null  = null;
+  page_title="Here is your TOTP vault"
+
 
   constructor(
-    private userService: UserService,
+    public userService: UserService,
     private router: Router,
     private route: ActivatedRoute,
     private http: HttpClient,
@@ -57,6 +59,8 @@ export class VaultComponent implements OnInit {
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } else if(this.userService.getIsVaultLocal()){
       this.local_vault_service = this.userService.getLocalVaultService();
+      this.page_title = "Backup from " + this.local_vault_service!.get_date()!.split(".")[0];
+      console.log(this.local_vault_service!.get_enc_secrets()!)
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
       this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
@@ -98,6 +102,7 @@ export class VaultComponent implements OnInit {
       try{
         this.startDisplayingCode()
         for (let secret of encrypted_vault){
+          console.log("secret = ", secret)
           this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
             if(dec_secret == null){
               superToast({
@@ -130,7 +135,15 @@ export class VaultComponent implements OnInit {
                   });
                 }
               }
-          })
+          }).catch((error)=>{
+            superToast({
+              message: "An error occurred while decrypting your secrets." + error,
+              type: "is-danger",
+              dismissible: false,
+              duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+            });
+          });
         }
         this.reloadSpin = false
       } catch {
