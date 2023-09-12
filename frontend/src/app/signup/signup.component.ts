@@ -36,6 +36,7 @@ export class SignupComponent implements OnInit {
   derivedKeySalt=""
   passphraseSalt=""
   modalDisabled=true;
+  beta=false;
 
   constructor(
     private http: HttpClient,
@@ -115,6 +116,15 @@ export class SignupComponent implements OnInit {
     if(!this.terms){
       superToast({
         message: "Dont forget to accept terms & conditions !",
+        type: "is-link",
+        dismissible: true,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+      return;
+    }
+    if(!this.beta){
+      superToast({
+        message: "Dont forget to accept the beta conditions !",
         type: "is-link",
         dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
