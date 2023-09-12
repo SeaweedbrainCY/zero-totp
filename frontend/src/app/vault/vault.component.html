@@ -5,7 +5,6 @@
             <p class="has-text-centered has-text-grey pb-6">You and only you can access to this data. All the magic is
                 done
                 on your computer.</p>
-<<<<<<< HEAD
                 <article class="message is-info" *ngIf="this.userService.getIsVaultLocal()">
                     <div class="message-body">
                       This is a vault stored locally on your computer. You can't sync it with other devices, nor with zero-totp servers. You don't need internet to open it.<br>
@@ -15,11 +14,9 @@
             <div class="message is-success" *ngIf="!this.userService.getIsVaultLocal()">
                 <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen" style="cursor: pointer;">
                     <p>Your storage options <span class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
-=======
             <div class="message" [ngClass]="{'is-success': isGoogleDriveSync, 'is-warning': !isGoogleDriveSync}">
                 <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen" style="cursor: pointer;" >
                     <p>Your storage options <span *ngIf="!isGoogleDriveSync" class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
->>>>>>> 78f553f (Frontend storage option handle google sync property)
                     <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">Less</span>
                         <span *ngIf="!storageOptionOpen">More</span>
                         <fa-icon [icon]="faChevronDown" class="pl-1" *ngIf="!storageOptionOpen"></fa-icon>
