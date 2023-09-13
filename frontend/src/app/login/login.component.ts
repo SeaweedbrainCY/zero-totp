@@ -309,6 +309,7 @@ export class LoginComponent {
               duration: 20000,
               animate: { in: 'fadeIn', out: 'fadeOut' }
             });
+            this.isLoading=false;
           }
         });
       } catch {
@@ -319,6 +320,7 @@ export class LoginComponent {
           duration: 20000,
           animate: { in: 'fadeIn', out: 'fadeOut' }
         });
+        this.isLoading=false;
       }
     }, error => {
       superToast({
@@ -328,6 +330,7 @@ export class LoginComponent {
         duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+      this.isLoading=false;
     });
   }
 
