@@ -41,13 +41,10 @@ export class VaultComponent implements OnInit {
   isModalActive = false
   reloadSpin = false
   storageOptionOpen = false
-<<<<<<< HEAD
   local_vault_service :LocalVaultV1Service | null  = null;
   page_title="Here is your TOTP vault";
   isRestoreBackupModaleActive=false;
 
-=======
->>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
   isGoogleDriveSync = false
 
   constructor(

@@ -13,11 +13,8 @@ export class UserService {
   private derivedKeySalt: string| null =null;;
   private vault:Map<string, Map<string,string>> | null =null;
   private passphraseSalt: string| null =null;;
-<<<<<<< HEAD
   private isVaultLocal:boolean = false;
   private local_vault_service:LocalVaultV1Service | null = null;
-=======
->>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
   private googleDriveSync:boolean | null = null;;
 
   constructor(private utils: Utils) {
@@ -77,7 +74,6 @@ export class UserService {
     this.passphraseSalt = salt;
     }
 
-<<<<<<< HEAD
     getIsVaultLocal(): boolean {
       return this.isVaultLocal;
     }
@@ -96,8 +92,6 @@ export class UserService {
 
 
 
-=======
->>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
     getGoogleDriveSync(): boolean | null {
     return this.googleDriveSync;
     }

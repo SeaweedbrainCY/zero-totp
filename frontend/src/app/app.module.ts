@@ -25,10 +25,7 @@ import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { QrCodeTOTP } from './common/qr-code-totp/qr-code-totp.service';
 import { DevComponent } from './dev/dev.component';
 import { AccountComponent } from './account/account.component';
-<<<<<<< HEAD
 import { LocalVaultV1Service } from './common/upload-vault/LocalVaultv1Service.service';
-=======
->>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
 import { CallbackComponent } from './callback/callback.component';
 import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 import { CookieModule, CookieService } from 'ngx-cookie';
@@ -62,11 +59,7 @@ import { CookieModule, CookieService } from 'ngx-cookie';
     ZXingScannerModule,
     CookieModule.withOptions()
   ],
-<<<<<<< HEAD
   providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service,CookieService],
-=======
-  providers: [UserService, Utils, Crypto, QrCodeTOTP, CookieService],
->>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
   bootstrap: [AppComponent]
 })
 export class AppModule { }
