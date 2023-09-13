@@ -277,6 +277,7 @@ paths:
         "500":
           description: Internal server error
 
+<<<<<<< HEAD
   /vault/export:
     get:
       operationId: controllers.export_vault
@@ -291,6 +292,8 @@ paths:
         "404":
           description: No secrets found
 
+=======
+>>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
   /google-drive/oauth/authorization-flow:
     get:
       operationId: controllers.get_authorization_flow

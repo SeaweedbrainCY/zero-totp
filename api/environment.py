@@ -5,9 +5,12 @@ port = int(os.environ.get('PORT')) if os.environ.get('PORT') != None else None
 db_uri = os.environ.get('DATABASE_URI')
 environment = "production" if os.environ.get('ENVIRONMENT') == "production" else "development"
 jwt_secret = os.environ.get('JWT_SECRET')
+<<<<<<< HEAD
 private_key_path = os.environ.get('PRIVATE_KEY_PATH')
 public_key_path = os.environ.get('PUBLIC_KEY_PATH')
 
+=======
+>>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
 oauth_client_secret_file = os.environ.get('OAUTH_CLIENT_SECRET_FILE')
 flask_secret_key = os.environ.get('FLASK_SECRET_KEY')
 
@@ -45,9 +48,12 @@ if jwt_secret == None:
     raise Exception("JWT_SECRET environment variable not set. Please set it to a valid secret key.")
 
 
+<<<<<<< HEAD
 if private_key_path == None or public_key_path == None:
     logging.error("PRIVATE_KEY_PATH or PUBLIC_KEY_PATH environment variable not set. Please set it to a valid key path. Aborting...")
     raise Exception("PRIVATE_KEY_PATH or PUBLIC_KEY_PATH environment variable not set. Please set it to a valid key path.")
+=======
+>>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
 
 
 
@@ -58,4 +64,8 @@ if oauth_client_secret_file == None:
 
 if flask_secret_key == None:
     logging.error("FLASK_SECRET_KEY environment variable not set. Please set it to a valid secret key. Aborting...")
+<<<<<<< HEAD
     raise Exception("FLASK_SECRET_KEY environment variable not set. Please set it to a valid secret key.")
+=======
+    raise Exception("FLASK_SECRET_KEY environment variable not set. Please set it to a valid secret key.")
+>>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f

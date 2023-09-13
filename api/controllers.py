@@ -5,7 +5,10 @@ import json
 from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
+<<<<<<< HEAD
 from CryptoClasses.hash_func import Bcrypt
+=======
+>>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
 from Crypto.hash_func import Bcrypt
 import logging
@@ -19,7 +22,11 @@ import Oauth.oauth_flow as oauth_flow
 import Utils.utils as utils
 import os
 import base64
+<<<<<<< HEAD
 import datetime
+=======
+from datetime import datetime, timedelta
+>>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
 
 
 
@@ -374,6 +381,7 @@ def update_vault():
         return returnJson, 500
 
 
+<<<<<<< HEAD
 
 def export_vault():
     try:
@@ -401,6 +409,8 @@ def export_vault():
 
     
 # GET /oauth/authorization_flow
+=======
+>>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
 # GET /google-drive/oauth/authorization_flow
 def get_authorization_flow():
     authorization_url, state = oauth_flow.get_authorization_url()
@@ -445,7 +455,11 @@ def set_encrypted_tokens():
         return {"message": "Unknown context"}, 401
     token_db = Oauth_tokens_db()
     tokens = token_db.get_by_user_id(user_id)
+<<<<<<< HEAD
     expires_at = (datetime.datetime.utcnow() + datetime.timedelta(hours=1)).timestamp()
+=======
+    expires_at = (datetime.utcnow() + timedelta(hours=1)).timestamp()
+>>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
     if tokens:
         tokens = token_db.update(user_id=user_id, access_token_enc=enc_token, refresh_token_enc=enc_refresh_token, expires_at=expires_at, token_uri=flask.session["token_uri"])
     else:

@@ -27,9 +27,12 @@ export class LoginComponent {
   warning_message="";
   warning_message_color="is-warning";
   error_param: string|null=null;
+<<<<<<< HEAD
   isUnsecureVaultModaleActive = false;
   isPassphraseModalActive = false;
   local_vault_service: LocalVaultV1Service | null = null;
+=======
+>>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
   is_oauth_flow=false;
 
   constructor(
@@ -408,7 +411,11 @@ export class LoginComponent {
         this.userService.setEmail(this.email);
         this.userService.setDerivedKeySalt(data.derivedKeySalt);
         this.userService.setGoogleDriveSync(data.isGoogleDriveSync);
+<<<<<<< HEAD
         this.final_zke_flow();
+=======
+        this.deriveKeyAndNavigate();
+>>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
       } catch(e){
         this.isLoading=false;
         console.log(e);

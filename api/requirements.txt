@@ -31,10 +31,16 @@ itsdangerous==2.1.2
 Jinja2==3.1.2
 jsonschema==4.17.3
 MarkupSafe==2.1.3
+<<<<<<< HEAD
 mysqlclient==2.1.1
 packaging==21.3
 pluggy==1.2.0
 oauthlib==3.2.2
+=======
+mysqlclient==2.2.0
+oauthlib==3.2.2
+packaging==21.3
+>>>>>>> 78f553f023155a4bfb6c29e2a781091694a9dc0f
 protobuf==4.24.1
 pyasn1==0.5.0
 pyasn1-modules==0.3.0
