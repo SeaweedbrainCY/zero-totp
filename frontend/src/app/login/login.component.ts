@@ -31,6 +31,7 @@ export class LoginComponent {
   isPassphraseModalActive = false;
   local_vault_service: LocalVaultV1Service | null = null;
   is_oauth_flow=false;
+  login_button="Open my vault"
 
   constructor(
     private http: HttpClient,
@@ -66,6 +67,7 @@ export class LoginComponent {
           this.warning_message_color="is-success";
           this.userService.clear();
           this.is_oauth_flow=true;
+          this.login_button="Authorize"
           break;
         }
       }

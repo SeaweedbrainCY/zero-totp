@@ -313,7 +313,7 @@ paths:
       summary: OAuth callback endpoint for the authorization flow
       security: []
       responses:
-        "200": 
+        "302": 
           description: Callback successful
   
   /google-drive/oauth/enc-tokens:
