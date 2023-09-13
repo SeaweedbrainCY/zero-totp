@@ -166,7 +166,7 @@
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
             <button class="button" (click)="passphraseModal()" [disabled]="buttonLoading['passphrase']">Cancel</button>
-            <button class="button is-info" (click)="updatePassphraseConfirm()" [ngClass]="{'is-loading': buttonLoading['passphrase']}">Change my passphrase and re-encrypt my vault</button>
+            <button class="button is-info" (click)="updatePassphraseConfirm()" [ngClass]="{'is-loading': buttonLoading['passphrase']}">I'm sure</button>
         </footer>
     </div>
     <button class="modal-close is-large" aria-label="close" (click)="passphraseModal()" *ngIf="!buttonLoading['passphrase']"></button>
