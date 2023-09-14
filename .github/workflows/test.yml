@@ -34,6 +34,7 @@ jobs:
       run: semgrep --config=auto
 
   python_test_and_coverage:
+    needs: security_scan_analysis
     name: Python Test and Coverage
     runs-on: ubuntu-latest
     steps:
