@@ -53,7 +53,7 @@
               Your are in read-only mode. You can't modify anything in a local vault.
              </div>
           <div class=" select is-{{color}}">
-            <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color" (keyup)="changeColor(colorSelected.value)" *ngIf="!this.userService.getIsVaultLocal()!">
+            <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color" (keyup)="changeColor(colorSelected.value)" (change)="changeColor(colorSelected.value)" *ngIf="!this.userService.getIsVaultLocal()!">
               <option default>Blue</option>
               <option>Green</option>
               <option>Orange</option>
