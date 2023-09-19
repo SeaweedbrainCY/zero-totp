@@ -15,10 +15,10 @@
             </article>
             <div class="message is-success" *ngIf="!this.userService.getIsVaultLocal()">
                     <div class="message"
-                        [ngClass]="{'is-success': isGoogleDriveSync, 'is-warning': !isGoogleDriveSync}">
+                        [ngClass]="{'is-success': isGoogleDriveSync == 'true' ||  isGoogleDriveSync == 'loading', 'is-warning': isGoogleDriveSync == 'warning'}">
                         <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen"
                             style="cursor: pointer;">
-                            <p>Your storage options <span *ngIf="!isGoogleDriveSync"
+                            <p>Your storage options <span *ngIf="isGoogleDriveSync == 'false'"
                                     class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
                             <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">Less</span>
                                 <span *ngIf="!storageOptionOpen">More</span>
@@ -64,25 +64,27 @@
                                                     class=" has-text-weight-bold">Google Drive
                                                 </span></span>
                                             <span class="tag is-danger is-medium "
-                                                [ngClass]="{'is-danger':!isGoogleDriveSync, 'is-success':isGoogleDriveSync}"
+                                                [ngClass]="{'is-danger':isGoogleDriveSync == 'false', 'is-success':isGoogleDriveSync == 'true', 'is-warning':isGoogleDriveSync == 'loading'}"
                                                 id="google-status-tag">
-                                                <fa-icon *ngIf="!isGoogleDriveSync" [icon]="faCircleXmark"></fa-icon>
-                                                <fa-icon *ngIf="isGoogleDriveSync"
-                                                    [icon]="faCheckCircle"></fa-icon></span>
+                                                <fa-icon *ngIf="isGoogleDriveSync == 'false'" [icon]="faCircleXmark"></fa-icon>
+                                                <fa-icon *ngIf="isGoogleDriveSync == 'true'"
+                                                    [icon]="faCheckCircle"></fa-icon>
+                                                    <fa-icon *ngIf="isGoogleDriveSync== 'loading'" [spin]="true" 
+                                                    [icon]="faCircleNotch"></fa-icon></span>
                                         </div>
                                     </div>
                                     <div [hidden]="!storageOptionOpen" class="mb-3">
                                         <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
                                             [hidden]="!storageOptionOpen">
-                                            <button *ngIf="!isGoogleDriveSync"
+                                            <button *ngIf="isGoogleDriveSync == 'false'"
                                                 class="button  is-outlined is-dark mb-3 mr-2 ml-2"
                                                 (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
                                                     class="mr-3"></fa-icon> Sync now </button>
-                                            <button *ngIf="!isGoogleDriveSync"
+                                            <button *ngIf="isGoogleDriveSync == 'false'"
                                                 class="button  is-outlined is-dark mb-3 mr-2 ml-2"><fa-icon
                                                     [icon]="faCircleInfo" class="mr-3"></fa-icon> More info</button>
 
-                                            <button *ngIf="isGoogleDriveSync"
+                                            <button *ngIf="isGoogleDriveSync == 'true'"
                                                 class="button  is-outlined is-dark mb-3 mr-2 ml-2"
                                                 (click)="get_oauth_authorization_url()"><fa-icon [icon]="faCircleXmark"
                                                     class="mr-3"></fa-icon> Stop sync </button>

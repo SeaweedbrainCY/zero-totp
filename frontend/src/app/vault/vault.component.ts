@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -26,6 +26,7 @@ export class VaultComponent implements OnInit {
   faCircleXmark= faCircleXmark;
   faCheckCircle = faCheckCircle;
   faRotateRight = faRotateRight;
+  faCircleNotch = faCircleNotch;
   faDesktop=faDesktop;
   faDownload=faDownload;
   faChevronUp=faChevronUp;
@@ -44,8 +45,8 @@ export class VaultComponent implements OnInit {
   local_vault_service :LocalVaultV1Service | null  = null;
   page_title="Here is your TOTP vault";
   isRestoreBackupModaleActive=false;
-
-  isGoogleDriveSync = false
+  isGoogleDriveEnabled = true;
+  isGoogleDriveSync = "loading";
 
   constructor(
     public userService: UserService,
@@ -66,11 +67,11 @@ export class VaultComponent implements OnInit {
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
       this.reloadSpin = true
-      this.isGoogleDriveSync = this.userService.getGoogleDriveSync() || false;
       this.vault = new Map<string, Map<string,string>>();
       this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         this.decrypt_and_display_vault(data.enc_secrets);
+        this.get_google_drive_option();
       }, (error) => {
         if(error.status == 404){
           this.userService.setVault(new Map<string, Map<string,string>>());
@@ -279,7 +280,30 @@ export class VaultComponent implements OnInit {
     });
   }
 
-  
 
-
+  get_google_drive_option(){
+    this.http.get(ApiService.API_URL+"/google-drive/oauth/option",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
+      const data = JSON.parse(JSON.stringify(response.body))
+      if(data.status == "enabled"){
+        this.isGoogleDriveEnabled = true;
+      } else {
+        this.isGoogleDriveEnabled = false;
+        this.isGoogleDriveSync = "false";
+      }
+    }, (error) => {
+        let errorMessage = "";
+        if(error.error.message != null){
+          errorMessage = error.error.message;
+        } else if(error.error.detail != null){
+          errorMessage = error.error.detail;
+        }
+        superToast({
+          message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+    });
+  }
 }
