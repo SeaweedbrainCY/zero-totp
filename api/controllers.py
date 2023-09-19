@@ -421,6 +421,7 @@ def oauth_callback():
     response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=success&state="+flask.session["state"], code=302))
     flask.session.pop("state")
     logging.info(credentials["token_uri"])
+    flask.session["token_uri"] = credentials["token_uri"]
     response.set_cookie("google_drive_token_id", credentials["token"], httponly=False, secure=True, samesite="Strict", max_age=3600)
     response.set_cookie("google_drive_refresh_token", credentials["refresh_token"], httponly=False, secure=True, samesite="Strict", max_age=3600)
     return response
@@ -436,13 +437,14 @@ def set_encrypted_tokens():
         data = json.loads(dataJSON)
         enc_token = utils.escape(data["enc_access_token"]).strip()
         enc_refresh_token = utils.escape(data["enc_refresh_token"]).strip()
+        if not flask.session["token_uri"] :
+            return {"message": "Unknown context"}, 401
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
     if not enc_token or not enc_refresh_token:
         return {"message": "Missing parameters"}, 400
-    if not flask.session["token_uri"] :
-        return {"message": "Unknown context"}, 401
+   
     token_db = Oauth_tokens_db()
     tokens = token_db.get_by_user_id(user_id)
     expires_at = (datetime.datetime.utcnow() + datetime.timedelta(hours=1)).timestamp()
