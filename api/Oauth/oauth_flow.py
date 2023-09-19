@@ -1,7 +1,7 @@
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
 import environment as env
-
+import logging
 
 SCOPES = ['https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.appdata'] 
 
@@ -39,19 +39,20 @@ def get_credentials(request_url, state):
     flow.redirect_uri = env.callback_URI
 
     authorization_response = request_url
-    flow.fetch_token(authorization_response=authorization_response) 
+    try:
+        flow.fetch_token(authorization_response=authorization_response) 
+        credentials = flow.credentials
+        credentials = {
+            'token': credentials.token,
+            'refresh_token': credentials.refresh_token,
+            'token_uri': credentials.token_uri,
+            'client_id': credentials.client_id,
+            'client_secret': credentials.client_secret,
+            'scopes': credentials.scopes}
+        return credentials
+    except Exception as e:
+        logging.error("Error while exchanging the authorization code " + str(e))
+        return None
 
-    # Store the credentials in the session.
-    # ACTION ITEM for developers:
-    #     Store user's access and refresh tokens in your data store if
-    #     incorporating this code into your real app.
-    credentials = flow.credentials
-    print(credentials)
-    credentials = {
-        'token': credentials.token,
-        'refresh_token': credentials.refresh_token,
-        'token_uri': credentials.token_uri,
-        'client_id': credentials.client_id,
-        'client_secret': credentials.client_secret,
-        'scopes': credentials.scopes}
-    return credentials
+
+    
