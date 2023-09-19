@@ -28,8 +28,6 @@ import { AccountComponent } from './account/account.component';
 import { LocalVaultV1Service } from './common/upload-vault/LocalVaultv1Service.service';
 import { CallbackComponent } from './callback/callback.component';
 import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
-import { CookieModule, CookieService } from 'ngx-cookie';
-
 
 @NgModule({
   declarations: [
@@ -57,9 +55,8 @@ import { CookieModule, CookieService } from 'ngx-cookie';
     HttpClientModule, 
     ClipboardModule,
     ZXingScannerModule,
-    CookieModule.withOptions()
   ],
-  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service,CookieService],
+  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
