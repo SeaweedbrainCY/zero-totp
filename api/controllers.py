@@ -400,7 +400,6 @@ def export_vault():
     return vault, 200
 
     
-# GET /oauth/authorization_flow
 # GET /google-drive/oauth/authorization_flow
 def get_authorization_flow():
     authorization_url, state = oauth_flow.get_authorization_url()
@@ -459,3 +458,19 @@ def set_encrypted_tokens():
     else:
         logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
         return {"message": "Unknown error while storing encrypted tokens"}, 500
+    
+#GET /google-drive/oauth/status
+def get_google_drive_option():
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    token_db = Oauth_tokens_db()
+    tokens = token_db.get_by_user_id(user_id)
+    if tokens:
+        return {"status": "enabled"}, 200
+    else:
+        return {"status": "disabled"}, 200

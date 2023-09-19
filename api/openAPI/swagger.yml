@@ -344,7 +344,28 @@ paths:
           description: Access denied
         "500":
           description: Internal server error
-
+  /google-drive/oauth/option:
+    get:
+      operationId: controllers.get_google_drive_option
+      tags:
+        - Google Drive
+      summary: Check if the google drive option as a backup is enabled
+      responses:
+        "200": 
+          description: Return the sync status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: The option status
+                    example: "enabled"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access disabled
 components:
   securitySchemes:
     JWTAuth:
