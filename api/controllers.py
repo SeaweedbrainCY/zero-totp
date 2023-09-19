@@ -411,18 +411,18 @@ def get_authorization_flow():
 
 # GET /google-drive/oauth/callback
 def oauth_callback():
-    #TODO store token URI
-    #TODO get expiration date
-    #TODO handle errors
     credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
+    
+    if credentials == None:
+        response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=error&state="+flask.session["state"], code=302))
+        flask.session.pop("state")
+        return response
+
     response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=success&state="+flask.session["state"], code=302))
     flask.session.pop("state")
-    flask.session["expires_in"] = 0 #credentials["expires_in"]
-    #logging.info(credentials["expires_in"])
-    flask.session["token_uri"] = credentials["token_uri"]
     logging.info(credentials["token_uri"])
-    response.set_cookie("google_drive_token_id", credentials["token"], httponly=False, secure=True, samesite="Strict")
-    response.set_cookie("google_drive_refresh_token", credentials["refresh_token"], httponly=False, secure=True, samesite="Strict")
+    response.set_cookie("google_drive_token_id", credentials["token"], httponly=False, secure=True, samesite="Strict", max_age=3600)
+    response.set_cookie("google_drive_refresh_token", credentials["refresh_token"], httponly=False, secure=True, samesite="Strict", max_age=3600)
     return response
 
 
