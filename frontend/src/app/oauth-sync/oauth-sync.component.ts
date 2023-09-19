@@ -1,31 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injectable, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-import { CookieService } from 'ngx-cookie';
 import { Crypto } from '../common/Crypto/crypto';
-
+import { Utils } from '../common/Utils/utils';
 @Component({
   selector: 'app-oauth-sync',
   templateUrl: './oauth-sync.component.html',
-  styleUrls: ['./oauth-sync.component.css']
+  styleUrls: ['./oauth-sync.component.css'],
+
 })
+@Injectable({providedIn: 'root'})
 export class OauthSyncComponent implements OnInit {
   errorMessage = '';
   faCircleNotch = faCircleNotch;
   encrypted_access_token = '';
   encrypted_refresh_token = '';
+  access_token:string;
+  refresh_token:string;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private userService: UserService,
     private http: HttpClient,
-    private cookieService: CookieService,
     private crypto: Crypto,
-  ) { }
+    private utils: Utils,
+  ) { 
+    this.access_token = this.utils.getCookie('google_drive_token_id');
+    this.refresh_token = this.utils.getCookie('google_drive_refresh_token');
+  }
 
   ngOnInit(): void {
     if(this.userService.getId() == null){
@@ -41,9 +47,7 @@ export class OauthSyncComponent implements OnInit {
 
   encryptTokens(): Promise<Boolean>{
     return new Promise((resolve, reject) => {
-      const access_token = this.cookieService.get('google_drive_token_id');
-      const refresh_token = this.cookieService.get('google_drive_refresh_token');
-      if(access_token == '' || refresh_token == '' || access_token == undefined || refresh_token == undefined){
+      if(this.access_token == '' || this.refresh_token == '' || this.access_token == undefined || this.refresh_token == undefined){
         this.errorMessage = 'Authentication with Google Drive impossible. Verify that you have allowed Zero-TOTP to access your Google Drive account.';
         reject(false);
       } else {
@@ -52,8 +56,8 @@ export class OauthSyncComponent implements OnInit {
           this.errorMessage = 'Encryption key not found. Please log out and log in again.';
           reject(false);
         } else {
-          this.crypto.encrypt(access_token, zke_key).then((encrypted_access_token) => {
-            this.crypto.encrypt(refresh_token, zke_key).then((encrypted_refresh_token) => {
+          this.crypto.encrypt(this.access_token, zke_key).then((encrypted_access_token) => {
+            this.crypto.encrypt(this.refresh_token, zke_key).then((encrypted_refresh_token) => {
               this.encrypted_access_token = encrypted_access_token;
               this.encrypted_refresh_token = encrypted_refresh_token;
               resolve(true);
