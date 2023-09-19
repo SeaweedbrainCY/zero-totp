@@ -74,67 +74,7 @@ export class LoginComponent {
       
     }
 
-  getZKEKeyAndNavigate(derivedKey: CryptoKey){
-    this.http.get(ApiService.API_URL+"/zke_encrypted_key",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
-      const data = JSON.parse(JSON.stringify(response.body))
-      const zke_key_encrypted = data.zke_encrypted_key
-      this.crypto.decrypt(zke_key_encrypted, derivedKey).then(zke_key_b64=>{
-        if (zke_key_b64 != null) {
-          const zke_key_raw = Buffer.from(zke_key_b64!, 'base64');
-          try{
-          window.crypto.subtle.importKey(
-            "raw",
-            zke_key_raw,
-            "AES-GCM",
-            true,
-            ["encrypt", "decrypt"]
-          ).then((zke_key)=>{
-            this.userService.set_zke_key(zke_key!);
-            if(this.is_oauth_flow){
-              this.router.navigate(["/oauth/synchronize"], {relativeTo:this.route.root});
-            } else {
-              superToast({
-                message: "Welcome back",
-                type: "is-success",
-                dismissible: true,
-                animate: { in: 'fadeIn', out: 'fadeOut' }
-              });
-              this.router.navigate(["/vault"], {relativeTo:this.route.root});
-            }
-          });
-        } catch(e) {
-          superToast({
-            message: "Error : Impossible to import your key." + e,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
-        }
-        } else {
-          superToast({
-            message: "Impossible to decrypt your key",
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
-        }
-      
-      });
-    }, (error)=> {
-      superToast({
-        message: "Impossible to retrieve your encryption key. Please try again later",
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
-    });
-    
-  }
-
-
+  
   
 
   checkEmail() : boolean{
@@ -439,7 +379,11 @@ export class LoginComponent {
       this.getZKEKey().then((zke_key_encrypted)=>{
         this.decryptZKEKey(zke_key_encrypted, derivedKey).then((zke_key)=>{
           this.userService.set_zke_key(zke_key!);
-          this.router.navigate(["/vault"], {relativeTo:this.route.root});
+          if(this.is_oauth_flow){
+            this.router.navigate(["/oauth/synchronize"], {relativeTo:this.route.root});
+          } else {
+            this.router.navigate(["/vault"], {relativeTo:this.route.root});
+          }
         }, (error)=>{
           superToast({
             message: error,
