@@ -311,6 +311,7 @@ export class VaultComponent implements OnInit {
       console.log("data = " + data.status)
       if(data.status == "enabled"){
         this.isGoogleDriveEnabled = true;
+        this.backup_vault_to_google_drive();
       } else {
         this.isGoogleDriveEnabled = false;
         this.isGoogleDriveSync = "false";
@@ -329,6 +330,57 @@ export class VaultComponent implements OnInit {
           duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
+    });
+  }
+
+  backup_vault_to_google_drive(){
+    this.http.get(ApiService.API_URL+"/google-drive/oauth/enc-credentials",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+      const data = JSON.parse(JSON.stringify(response.body))
+      const encrypted_credentials = data.enc_credentials;
+
+      console.log(encrypted_credentials)
+      this.crypto.decrypt(encrypted_credentials, this.userService.get_zke_key()!).then((credentials) => {
+        try{
+          console.log(credentials)
+
+        } catch{
+          this.isGoogleDriveSync = 'false';
+          superToast({
+            message: "Error : Impossible to decrypt your credentials.",
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        }
+
+      }, (error) => {
+        console.log(error)
+        this.isGoogleDriveSync = 'false';
+        superToast({
+          message: "Error : Impossible to decrypt your credentials. ",
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      });
+
+    }, error => {
+      this.isGoogleDriveSync = 'false';
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+      superToast({
+        message: "Error : Impossible to backup your vault. "+ errorMessage,
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
     });
   }
 }
