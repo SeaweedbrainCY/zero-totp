@@ -16,10 +16,8 @@ import { Utils } from '../common/Utils/utils';
 export class OauthSyncComponent implements OnInit {
   errorMessage = '';
   faCircleNotch = faCircleNotch;
-  encrypted_access_token = '';
-  encrypted_refresh_token = '';
-  access_token:string;
-  refresh_token:string;
+  credentials:string|null;
+  encrypted_credentials:string|null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,15 +27,19 @@ export class OauthSyncComponent implements OnInit {
     private crypto: Crypto,
     private utils: Utils,
   ) { 
-    this.access_token = this.utils.getCookie('google_drive_token_id');
-    this.refresh_token = this.utils.getCookie('google_drive_refresh_token');
+   const creds_b64 = this.utils.getCookie('credentials');
+    if(creds_b64 != null){
+      this.credentials = atob(creds_b64);
+    } else {
+      this.credentials = null;
+    }
   }
 
   ngOnInit(): void {
     if(this.userService.getId() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
   } else {
-      this.encryptTokens().then(() => {
+      this.encryptCredentials().then(() => {
         this.uploadEncryptedTokens();
       }, (_) => {
        return;
@@ -45,9 +47,9 @@ export class OauthSyncComponent implements OnInit {
   }
   }
 
-  encryptTokens(): Promise<Boolean>{
+  encryptCredentials(): Promise<Boolean>{
     return new Promise((resolve, reject) => {
-      if(this.access_token == '' || this.refresh_token == '' || this.access_token == undefined || this.refresh_token == undefined){
+      if(this.credentials == '' || this.credentials == undefined){
         this.errorMessage = 'Authentication with Google Drive impossible. Verify that you have allowed Zero-TOTP to access your Google Drive account.';
         reject(false);
       } else {
@@ -56,15 +58,9 @@ export class OauthSyncComponent implements OnInit {
           this.errorMessage = 'Encryption key not found. Please log out and log in again.';
           reject(false);
         } else {
-          this.crypto.encrypt(this.access_token, zke_key).then((encrypted_access_token) => {
-            this.crypto.encrypt(this.refresh_token, zke_key).then((encrypted_refresh_token) => {
-              this.encrypted_access_token = encrypted_access_token;
-              this.encrypted_refresh_token = encrypted_refresh_token;
+          this.crypto.encrypt(this.credentials, zke_key).then((encrypted_credentials) => {
+              this.encrypted_credentials = encrypted_credentials;
               resolve(true);
-            }, (error) => {
-              this.errorMessage = "An error occured while encrypted token." +error;
-              reject(false);
-            });
           }, (error) => {
             this.errorMessage = "An error occured while encrypted token." + error;
             reject(false);
@@ -77,12 +73,12 @@ export class OauthSyncComponent implements OnInit {
   uploadEncryptedTokens(){
     this.errorMessage = '';
     const data = {
-      "enc_access_token" : this.encrypted_access_token,
-      "enc_refresh_token" : this.encrypted_refresh_token
+      "enc_credentials" : this.encrypted_credentials,
     }
-    this.http.post(ApiService.API_URL+"/google-drive/oauth/enc-tokens",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.post(ApiService.API_URL+"/google-drive/oauth/enc-credentials",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
         this.userService.setGoogleDriveSync(true);
         this.router.navigate(["/vault"], {relativeTo:this.route.root});
+        sessionStorage.removeItem('credentials');
       }, (error) => {
         this.errorMessage = "An error occured while storing your encrypted access tokens." + error.error.message;
       });
