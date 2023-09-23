@@ -282,8 +282,9 @@ export class VaultComponent implements OnInit {
 
 
   get_google_drive_option(){
-    this.http.get(ApiService.API_URL+"/google-drive/oauth/option",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
+    this.http.get(ApiService.API_URL+"/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
       const data = JSON.parse(JSON.stringify(response.body))
+      console.log("data = " + data.status)
       if(data.status == "enabled"){
         this.isGoogleDriveEnabled = true;
       } else {
