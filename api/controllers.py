@@ -428,6 +428,23 @@ def oauth_callback():
         flask.session.pop("state")
         return response
 
+# GET  /google-drive/oauth/enc-credentials:
+def get_encrypted_creds():
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    oauth_db = Oauth_tokens_db()
+    oauth = oauth_db.get_by_user_id(user_id)
+    if oauth:
+        return {"enc_credentials": oauth.enc_credentials}, 200
+    else:
+        return {"message": "No encrypted credentials found"}, 404
+
+
 
 # POST  /google-drive/oauth/enc-credentials:
 def set_encrypted_credentials():
