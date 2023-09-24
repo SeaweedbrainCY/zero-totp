@@ -61,11 +61,6 @@ jobs:
 
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2
-      
-    - uses: actions/checkout@v2
-      with:
-        projectBaseDir: ./
-        fetch-depth: 0  
     - name: Sonar scan
       uses: sonarsource/sonarqube-scan-action@master
       env:
