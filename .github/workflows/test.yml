@@ -51,13 +51,12 @@ jobs:
       run: pip install -r requirements.txt && pip install -r test-requirements.txt
 
     - name: Run tests with pytest
-      working-directory: ./api
       env:
         DATABASE_URI: "sqlite:///:memory:"
         JWT_SECRET : "secret"
-        PRIVATE_KEY_PATH: "./tests/ressources/test_private.pem"
-        PUBLIC_KEY_PATH: "./tests/ressources/test_public.pem"
-      run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml
+        PRIVATE_KEY_PATH: "./api/tests/ressources/test_private.pem"
+        PUBLIC_KEY_PATH: "./api/tests/ressources/test_public.pem"
+      run: python -m pytest --cov=./api --cov-report=lcov --cov-report=term --cov-report=xml api/
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2
     - name : Debug
