@@ -400,11 +400,23 @@ paths:
             schema:
               type: object
               properties:
-                access_token:
+                token:
                   type: string
                 refresh_token:
                   type: string
-                
+                token_uri:
+                  type: string
+                client_id:
+                  type: string
+                client_secret:
+                  type: string
+                scopes:
+                  type: array
+                  items:
+                    type: string
+                expiry:
+                  type: string
+
 
       responses:
         "200": 
