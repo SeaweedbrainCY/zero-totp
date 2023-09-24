@@ -15,7 +15,7 @@ class Oauth_tokens:
         oauth_tokens = db.session.query(Oauth_tokens_model).filter_by(user_id=user_id).first()
         if oauth_tokens == None:
             return None
-        oauth_tokens.enc_credentails = enc_credentials
+        oauth_tokens.enc_credentials = enc_credentials
         oauth_tokens.expires_at = expires_at
         db.session.commit()
         return oauth_tokens
