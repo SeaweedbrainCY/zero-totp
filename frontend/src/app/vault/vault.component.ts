@@ -337,16 +337,44 @@ export class VaultComponent implements OnInit {
     this.http.get(ApiService.API_URL+"/google-drive/oauth/enc-credentials",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
       const data = JSON.parse(JSON.stringify(response.body))
       const encrypted_credentials = data.enc_credentials;
-
       console.log(encrypted_credentials)
       this.crypto.decrypt(encrypted_credentials, this.userService.get_zke_key()!).then((credentials) => {
+        if(credentials == null){
+          this.isGoogleDriveSync = 'false'; 
+          superToast({
+            message: "Error : Impossible to decrypt your credentials. Please, try to re-sync your Google Drive account.",
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+          return;
+        }
         try{
-          console.log(credentials)
-
-        } catch{
+          const creds_object = JSON.parse(atob(credentials!));
+          this.http.put(ApiService.API_URL+"/google-drive/backup", creds_object, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+            this.isGoogleDriveSync = "true";
+          }, (error) => {
+            this.isGoogleDriveSync = 'false';
+            let errorMessage = "";
+            if(error.error.message != null){
+              errorMessage = error.error.message;
+            } else if(error.error.detail != null){
+              errorMessage = error.error.title;
+            }
+            superToast({
+              message: "Error : Impossible to backup your vault. "+ errorMessage + ". Please, try to re-sync your Google Drive account.",
+              type: "is-danger",
+              dismissible: false,
+              duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+            });
+          });
+        } catch (error){
+          console.log(error)
           this.isGoogleDriveSync = 'false';
           superToast({
-            message: "Error : Impossible to decrypt your credentials.",
+            message: "Error : Impossible to decrypt your credentials. " + error + ". Please, try to re-sync your Google Drive account.",
             type: "is-danger",
             dismissible: false,
             duration: 20000,
