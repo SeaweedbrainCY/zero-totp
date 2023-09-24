@@ -26,6 +26,7 @@ import { QrCodeTOTP } from './common/qr-code-totp/qr-code-totp.service';
 import { DevComponent } from './dev/dev.component';
 import { AccountComponent } from './account/account.component';
 import { LocalVaultV1Service } from './common/upload-vault/LocalVaultv1Service.service';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 
 
 @NgModule({
@@ -42,7 +43,8 @@ import { LocalVaultV1Service } from './common/upload-vault/LocalVaultv1Service.s
     PagenotfoundComponent,
     QrcodeReaderComponent,
     DevComponent,
-    AccountComponent
+    AccountComponent,
+    PrivacyPolicyComponent
   ],
   imports: [
     BrowserModule,

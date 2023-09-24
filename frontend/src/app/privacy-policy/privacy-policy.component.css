@@ -1,0 +1,21 @@
+ul {
+    list-style-type: circle;
+    list-style-position: inside;
+}
+
+.indent { 
+    text-indent: 30px;
+ }
+ section {
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+
+
+ @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+    section {
+        padding-left: 0;
+        padding-right: 0;
+    }
+ }
