@@ -15,20 +15,6 @@ on:
   
 
 jobs:
-  SonarQube:
-    name: Sonar Scan
-    runs-on: ubuntu-latest
-    permissions: read-all
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          projectBaseDir: ./
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - uses: sonarsource/sonarqube-scan-action@master
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
   security_scan_analysis:
     name: Security Scan Analysis
     runs-on: ubuntu-latest
@@ -48,8 +34,9 @@ jobs:
       run: semgrep --config=auto
 
   python_test_and_coverage:
-    name: Python Test and Coverage
+    name: Units test and SonarQube scan
     runs-on: ubuntu-latest
+    permissions: read-all
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -74,6 +61,14 @@ jobs:
 
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2
+    - uses: actions/checkout@v2
+      with:
+        projectBaseDir: ./
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+    - uses: sonarsource/sonarqube-scan-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
   
         
 
