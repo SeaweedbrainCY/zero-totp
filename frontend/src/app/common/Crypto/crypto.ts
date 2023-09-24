@@ -59,7 +59,8 @@ export class Crypto {
             const iv = Buffer.from(part[1], 'base64');
             const encoded_decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, cipher);
             return Buffer.from(encoded_decrypted).toString("utf-8");
-        } catch {
+        } catch(error) {
+            console.log(error)
             return null
         }
     }
