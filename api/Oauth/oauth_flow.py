@@ -3,6 +3,8 @@ import google_auth_oauthlib.flow
 import environment as env
 import logging
 
+
+
 SCOPES = ['https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.appdata'] 
 
 
@@ -48,7 +50,8 @@ def get_credentials(request_url, state):
             'token_uri': credentials.token_uri,
             'client_id': credentials.client_id,
             'client_secret': credentials.client_secret,
-            'scopes': credentials.scopes}
+            'scopes': credentials.scopes,
+            'expiry': str(credentials.expiry)}
         return credentials
     except Exception as e:
         logging.error("Error while exchanging the authorization code " + str(e))
