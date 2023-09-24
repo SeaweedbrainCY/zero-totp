@@ -29,7 +29,7 @@ export class OauthSyncComponent implements OnInit {
   ) { 
    const creds_b64 = this.utils.getCookie('credentials');
     if(creds_b64 != null){
-      this.credentials = atob(creds_b64);
+      this.credentials = creds_b64;
     } else {
       this.credentials = null;
     }
@@ -50,7 +50,7 @@ export class OauthSyncComponent implements OnInit {
   encryptCredentials(): Promise<Boolean>{
     return new Promise((resolve, reject) => {
       if(this.credentials == '' || this.credentials == undefined){
-        this.errorMessage = 'Authentication with Google Drive impossible. Verify that you have allowed Zero-TOTP to access your Google Drive account.';
+        this.errorMessage = 'Authentication with Google Drive impossible. Verify that you have allowed Zero-TOTP to access your Google Drive account. Please, try again';
         reject(false);
       } else {
         const zke_key = this.userService.get_zke_key();
@@ -62,7 +62,7 @@ export class OauthSyncComponent implements OnInit {
               this.encrypted_credentials = encrypted_credentials;
               resolve(true);
           }, (error) => {
-            this.errorMessage = "An error occured while encrypted token." + error;
+            this.errorMessage = "An error occured while encrypted token. " + error + ". Please, try again.";
             reject(false);
           });
         }
