@@ -10,6 +10,7 @@ import { AccountComponent } from './account/account.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { DevComponent } from './dev/dev.component';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 
 const routes: Routes = [
   {path:'', component: HomeComponent},
@@ -23,6 +24,7 @@ const routes: Routes = [
   {path:"logout", component: LogoutComponent},
   {path:'dev', component: DevComponent},
   {path:"account", component: AccountComponent},
+  {path:"privacy", component: PrivacyPolicyComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 
