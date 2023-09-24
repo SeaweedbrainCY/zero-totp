@@ -61,14 +61,25 @@ jobs:
 
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2
+      
     - uses: actions/checkout@v2
       with:
         projectBaseDir: ./
-        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-    - uses: sonarsource/sonarqube-scan-action@master
+        fetch-depth: 0  
+    - name: Sonar scan
+      uses: sonarsource/sonarqube-scan-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+    - name: SonarQube Quality Gate check
+      id: sonarqube-quality-gate-check
+      uses: sonarsource/sonarqube-quality-gate-action@master
+      timeout-minutes: 5
+      env:
+         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} #OPTIONAL
   
+    - name: "Example show SonarQube Quality Gate Status value"
+      run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" && pwd && cat sonar-project.properties && ls -la && ls -la api
         
 
