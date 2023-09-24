@@ -60,7 +60,7 @@ jobs:
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2
     - name : Debug
-      run: pwd && ls -la && ls -la api && cat sonar-project.properties && cat api/coverage.xml
+      run: pwd && ls -la && ls -la api && cat sonar-project.properties && cat coverage.xml
     - name: Sonar scan
       uses: sonarsource/sonarqube-scan-action@master
       env:
