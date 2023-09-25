@@ -34,7 +34,7 @@ jobs:
       run: semgrep --config=auto
 
   python_test_and_coverage:
-    name: Units test and SonarQube scan
+    name: Units tests and coverage
     runs-on: ubuntu-latest
     permissions: read-all
     steps:
@@ -51,30 +51,38 @@ jobs:
       run: pip install -r requirements.txt && pip install -r test-requirements.txt
 
     - name: Run tests with pytest
+      working-directory: ./api
       env:
         DATABASE_URI: "sqlite:///:memory:"
         JWT_SECRET : "secret"
         PRIVATE_KEY_PATH: "./api/tests/ressources/test_private.pem"
         PUBLIC_KEY_PATH: "./api/tests/ressources/test_public.pem"
-      run: python -m pytest --cov=./api --cov-report=lcov --cov-report=term --cov-report=xml api/
+      run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2
-    - name : Debug
-      run: pwd && ls -la && ls -la api && cat sonar-project.properties && cat coverage.xml
+  sonarqube:
+    name: SonarQube scan
+    runs-on: ubuntu-latest
+    permissions: read-all
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with: 
+        fetch-depth: 0
     - name: Sonar scan
       uses: sonarsource/sonarqube-scan-action@master
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-    #- name: SonarQube Quality Gate check
-    #  id: sonarqube-quality-gate-check
-    #  uses: sonarsource/sonarqube-quality-gate-action@master
-    #  timeout-minutes: 5
-    #  env:
-    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} #OPTIONAL
-  
-    #- name: "Example show SonarQube Quality Gate Status value"
-    #  run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" && pwd && cat# sonar-project.properties && ls -la && ls -la api
+    - name: SonarQube Quality Gate check
+      id: sonarqube-quality-gate-check
+      uses: sonarsource/sonarqube-quality-gate-action@master
+      timeout-minutes: 5
+      env:
+         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} 
+
+    - name: "Example show SonarQube Quality Gate Status value"
+      run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}" && pwd && cat# sonar-project.properties && ls -la && ls -la api
         
 
