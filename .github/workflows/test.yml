@@ -36,7 +36,6 @@ jobs:
   python_test_and_coverage:
     name: Units tests and coverage
     runs-on: ubuntu-latest
-    permissions: read-all
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -63,7 +62,6 @@ jobs:
   sonarqube:
     name: SonarQube scan
     runs-on: ubuntu-latest
-    permissions: read-all
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
