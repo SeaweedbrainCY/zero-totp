@@ -34,8 +34,9 @@ jobs:
       run: semgrep --config=auto
 
   python_test_and_coverage:
-    name: Python Test and Coverage
+    name: Units tests and coverage
     runs-on: ubuntu-latest
+    permissions: read-all
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -56,10 +57,22 @@ jobs:
         JWT_SECRET : "secret"
         PRIVATE_KEY_PATH: "./tests/ressources/test_private.pem"
         PUBLIC_KEY_PATH: "./tests/ressources/test_public.pem"
-      run: python -m pytest --cov=. --cov-report=lcov --cov-report=term
-
+      run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2
-  
+  sonarqube:
+    name: SonarQube scan
+    runs-on: ubuntu-latest
+    permissions: read-all
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with: 
+        fetch-depth: 0
+    - name: Sonar scan
+      uses: sonarsource/sonarqube-scan-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         
 
