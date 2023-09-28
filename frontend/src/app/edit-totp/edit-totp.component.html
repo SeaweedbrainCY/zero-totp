@@ -69,7 +69,7 @@
             <button class="button is-danger block" (click)="modal()" data-target="confirmation" [disabled]="this.userService.getIsVaultLocal()!">Delete</button>
           </div>
           <div class="control">
-            <button class="button is-info block" (click)="save()" [disabled]="this.userService.getIsVaultLocal()!">Save</button>
+            <button class="button is-info block" (click)="save()" [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != ''">Save</button>
           </div>
         </div>
         </div>
