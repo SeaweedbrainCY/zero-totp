@@ -89,10 +89,6 @@ export class EditTOTPComponent implements OnInit{
       this.nameError = "Domain cannot be empty";
       return;
     }
-    if(this.name.length > 30){
-      this.nameError = "Domain cannot be longer than 30 characters";
-      return;
-    }
     if(this.utils.sanitize(this.name) != this.name){
       this.nameError = "<, >, \" and ' are forbidden";
       return;
