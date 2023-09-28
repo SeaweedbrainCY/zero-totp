@@ -139,7 +139,7 @@
             is-one-quarter-fullhd" *ngFor="let uuid of vaultDomain">
                         <div class="card has-background-{{vault!.get(uuid)?.get('color')}} has-text-white">
                             <header class="card-header">
-                                <p class="card-header-title  has-text-white">{{vault!.get(uuid)?.get('name')}}</p>
+                                <p class="card-header-title  has-text-white" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; max-width: 80%;">{{vault!.get(uuid)?.get('name')}}</p>
                                 <button class="card-header-icon" aria-label="edit" (click)="edit(uuid)">
                                     <span class="icon">
                                         <fa-icon [icon]="faPen"></fa-icon>
