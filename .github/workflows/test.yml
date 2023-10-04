@@ -6,15 +6,6 @@ on:
       - '*'
     tags-ignore:
       - '**'
-  pull_request:
-    branches:
-      - '*'
-  workflow_call:
-    secrets:
-      SONAR_TOKEN:
-        required: true
-      SONAR_HOST_URL:
-        required: true
   
   
 
@@ -63,18 +54,5 @@ jobs:
       run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2
-  sonarqube:
-    name: SonarQube scan
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      with: 
-        fetch-depth: 0
-    - name: Sonar scan
-      uses: sonarsource/sonarqube-scan-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         
 
