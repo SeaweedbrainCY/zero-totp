@@ -11,7 +11,7 @@ on:
 
 jobs:
   security_scan_analysis:
-    name: Security Scan Analysis
+    name: Smegrep Scan Analysis
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
