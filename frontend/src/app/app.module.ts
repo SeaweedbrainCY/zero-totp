@@ -27,6 +27,7 @@ import { DevComponent } from './dev/dev.component';
 import { AccountComponent } from './account/account.component';
 import { LocalVaultV1Service } from './common/upload-vault/LocalVaultv1Service.service';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { BnNgIdleService } from 'bn-ng-idle'; 
 
 
 @NgModule({
@@ -55,7 +56,7 @@ import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.componen
     ClipboardModule,
     ZXingScannerModule
   ],
-  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service],
+  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, BnNgIdleService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
