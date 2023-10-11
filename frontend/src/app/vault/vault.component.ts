@@ -11,7 +11,7 @@ import { Utils } from '../common/Utils/utils';
 import { error } from 'console';
 import { formatDate } from '@angular/common';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
-
+import { BnNgIdleService } from 'bn-ng-idle';
 
 @Component({
   selector: 'app-vault',
@@ -53,6 +53,7 @@ export class VaultComponent implements OnInit {
     private http: HttpClient,
     private crypto: Crypto,
     private utils: Utils,
+    private bnIdle: BnNgIdleService,
     ) {  }
 
   ngOnInit() {
@@ -61,10 +62,15 @@ export class VaultComponent implements OnInit {
     } else if(this.userService.getIsVaultLocal()){
       this.local_vault_service = this.userService.getLocalVaultService();
       this.page_title = "Backup from " + this.local_vault_service!.get_date()!.split(".")[0];
-      console.log(this.local_vault_service!.get_enc_secrets()!)
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
       this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+        this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
+          if(isTimedOut){
+            this.bnIdle.stopTimer();
+            this.router.navigate(['/login/sessionTimeout']);
+          }
+        });
         const data = JSON.parse(JSON.stringify(response.body))
         this.decrypt_and_display_vault(data.enc_secrets);
       }, (error) => {

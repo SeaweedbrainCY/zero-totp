@@ -9,7 +9,7 @@ import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
-
+import { BnNgIdleService } from 'bn-ng-idle';
 @Component({
   selector: 'app-edit-totp',
   templateUrl: './edit-totp.component.html',
@@ -43,6 +43,7 @@ export class EditTOTPComponent implements OnInit{
     private http: HttpClient,
     private utils: Utils,
     private crypto: Crypto,
+    private bnIdle: BnNgIdleService,
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
@@ -78,6 +79,11 @@ export class EditTOTPComponent implements OnInit{
         this.color = property!.get("color")!;
       }
     }
+    this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
+      if(isTimedOut){
+        this.router.navigate(['/login/sessionTimeout']);
+      }
+    });
 
     setInterval(()=> { this.generateCode() }, 100);
     setInterval(()=> { this.generateTime() }, 20);
