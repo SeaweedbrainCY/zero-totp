@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { toast as superToast } from 'bulma-toast'
 import { faEnvelope, faLock,  faCheck, faXmark, faFlagCheckered, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import {Crypto} from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
@@ -31,7 +31,6 @@ export class LoginComponent {
   local_vault_service: LocalVaultV1Service | null = null;
 
 
-  // TODO : réécrire les fonctions "andNavigate" sous la forme de fonction async pour pouvoir les utiliser plus simplement avec un vault local. Découpler les call API des fonctions de crypto 
 
   constructor(
     private http: HttpClient,
@@ -39,7 +38,7 @@ export class LoginComponent {
     private route: ActivatedRoute,
     private userService: UserService,
     private crypto:Crypto,
-    private localVaultv1: LocalVaultV1Service
+    private localVaultv1: LocalVaultV1Service,
     ) {
     }
 

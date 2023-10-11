@@ -4,6 +4,7 @@ import { toast as superToast } from 'bulma-toast'
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
+import { BnNgIdleService } from 'bn-ng-idle';
 
 @Component({
   selector: 'app-qrcode-reader',
@@ -26,7 +27,8 @@ export class QrcodeReaderComponent implements OnInit {
     private router: Router,
     private route : ActivatedRoute,
     private userService : UserService,
-    private qrCode: QrCodeTOTP
+    private qrCode: QrCodeTOTP,
+    private bnIdle: BnNgIdleService,
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
@@ -48,6 +50,13 @@ export class QrcodeReaderComponent implements OnInit {
     this.scanner.askForPermission().then((hasPermission: boolean) => {
       this.hasPermission = hasPermission;
       console.log("hasPermission", hasPermission);
+    });
+    this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
+      if(isTimedOut){
+        this.bnIdle.stopTimer();
+        this.userService.clear();
+        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
+      }
     });
   }
 
