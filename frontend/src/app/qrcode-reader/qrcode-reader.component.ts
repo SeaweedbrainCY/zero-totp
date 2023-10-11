@@ -53,7 +53,9 @@ export class QrcodeReaderComponent implements OnInit {
     });
     this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
       if(isTimedOut){
-        this.router.navigate(['/login/sessionTimeout']);
+        this.bnIdle.stopTimer();
+        this.userService.clear();
+        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
       }
     });
   }

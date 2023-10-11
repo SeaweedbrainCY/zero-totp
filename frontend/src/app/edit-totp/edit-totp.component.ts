@@ -81,7 +81,9 @@ export class EditTOTPComponent implements OnInit{
     }
     this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
       if(isTimedOut){
-        this.router.navigate(['/login/sessionTimeout']);
+        this.userService.clear();
+        this.bnIdle.stopTimer();
+        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
       }
     });
 
