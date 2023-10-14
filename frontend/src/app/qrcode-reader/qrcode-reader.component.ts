@@ -40,16 +40,13 @@ export class QrcodeReaderComponent implements OnInit {
   
   ngOnInit(): void {
     if(this.userService.getId() == null){
-      //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
     this.scanner.camerasFound.subscribe((devices: MediaDeviceInfo[]) => {
       this.hasDevices = true;
-      console.log("devices", devices);
-      //this.desiredDevice = devices[0];
     });
     this.scanner.askForPermission().then((hasPermission: boolean) => {
       this.hasPermission = hasPermission;
-      console.log("hasPermission", hasPermission);
     });
     this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
       if(isTimedOut){
@@ -81,9 +78,14 @@ export class QrcodeReaderComponent implements OnInit {
     animate: { in: 'fadeIn', out: 'fadeOut' }
     });
     this.qrResultString = decodeURIComponent(this.qrResultString);
-    console.log("resultString", resultString);
-    const pattern= /^otpauth:\/\/totp\/[A-zÀ-ž0-9@:.\-_]+\?[a-zA-Z0-9]+=[a-zA-Z0-9]+(&[a-zA-Z0-9]+=[a-zA-Z0-9]+)*$/;
-    if(!pattern.test(this.qrResultString)){
+    const substring = ['otpauth://totp/', '?', 'secret=']
+    let patternOK = true;
+    for (let sub of substring){
+      if(!this.qrResultString.includes(sub)){
+        patternOK = false;
+      }
+    }
+    if(!patternOK){
       superToast({
         message: "This is not a TOTP QR code or it contains error.",
         type: "is-warning",
