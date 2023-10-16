@@ -5,29 +5,26 @@ services:
     container_name: frontend
     image: seaweedbrain/zero-totp-frontend:latest
     ports: 
-      - "127.0.0.1:4200:80"
+      - ${FRONTEND_PORT}
     env_file:
       - .env
+    networks:
+      - internal
     restart: always
 
   api:
     container_name: api
     image: seaweedbrain/zero-totp-api:latest
     ports:
-      - "127.0.0.1:8080:8080"
+      - ${API_PORT}
     env_file:
       - .env
     volumes:
       - ./secret:/api/secret
     restart: always
-  
-  database:
-    env_file:
-      - .env
-    image: mysql:latest
-    container_name: database
-    ports:
-      - "127.0.0.1:3306:3306"
-    volumes:
-      - ./database/dbdata:/var/lib/mysql
-    restart: always
+    networks:
+      - internal
+
+networks:
+  internal:
+    name: "internal_net"
