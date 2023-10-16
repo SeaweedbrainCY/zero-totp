@@ -13,7 +13,7 @@ export class AppComponent implements OnInit{
 
 
   ngOnInit(): void {
-    if(!environment.production){
+    if(environment.production){
       if(location.hostname == "ca.zero-totp.com"){
         ApiService.API_URL = "https://api.ca.zero-totp.com";
       }
