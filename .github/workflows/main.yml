@@ -44,14 +44,23 @@ jobs:
           run: docker build -t $REPO:latest -t $REPO:${GITHUB_SHA::8} .
         - name: Publish Docker Image
           run: docker push $REPO
-    deploy-production:
+    deploy-production-eu:
        needs: [docker-frontend, docker-api] 
-       name: Deploy on production server
+       name: Deploy on production server (EUROPE)
        runs-on: ubuntu-latest
        steps:
-         - name: Deployment
+         - name: EU deployment
            uses: distributhor/workflow-webhook@v3
            env:
-             webhook_url: ${{ secrets.WEBHOOK_URL }}
+             webhook_url: ${{ secrets.WEBHOOK_URL_EU }}
+    deploy-production-ca:
+        needs: [docker-frontend, docker-api] 
+        name: Deploy on production server (CANADA)
+        runs-on: ubuntu-latest
+        steps:
+          - name: CA deployment
+            uses: distributhor/workflow-webhook@v3
+            env:
+              webhook_url: ${{ secrets.WEBHOOK_URL_CA }}
 
         
