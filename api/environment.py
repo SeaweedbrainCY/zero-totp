@@ -13,10 +13,10 @@ if environment == "development":
     logging.basicConfig(level=logging.DEBUG)
     logging.debug("Environment set to development")
     frontend_domain = 'zero-totp.local'
-    frontend_URI = 'http://localhost:4200'
+    frontend_URI = ['http://localhost:4200']
 else:
     frontend_domain="zero-totp.com"
-    frontend_URI = "https://zero-totp.com"
+    frontend_URI = ["https://zero-totp.com", "https://ca.zero-totp.com", "https://eu.zero-totp.com"]
 
 
 

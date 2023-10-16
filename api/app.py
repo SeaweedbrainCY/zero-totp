@@ -9,7 +9,7 @@ def create_app():
 
     app = app_instance.app
 
-    CORS(app, vary_header=True, origins=[env.frontend_URI], supports_credentials=True)
+    CORS(app, vary_header=True, origins=env.frontend_URI, supports_credentials=True)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = env.db_uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
