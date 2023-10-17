@@ -11,6 +11,7 @@ import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { DevComponent } from './dev/dev.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { ChangelogComponent } from './changelog/changelog.component';
 
 const routes: Routes = [
   {path:'', component: HomeComponent},
@@ -25,6 +26,7 @@ const routes: Routes = [
   {path:'dev', component: DevComponent},
   {path:"account", component: AccountComponent},
   {path:"privacy", component: PrivacyPolicyComponent},
+  {path:"changelog", component: ChangelogComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 
