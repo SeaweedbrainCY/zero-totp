@@ -4,7 +4,7 @@ import { ApiService } from '../common/ApiService/api-service';
 import { faCircleNotch, faGear } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { toast as superToast } from 'bulma-toast'
 
 @Component({
   selector: 'app-admin-page',
@@ -23,10 +23,6 @@ export class AdminPageComponent implements OnInit {
       private router: Router,
       private route: ActivatedRoute,
       ) { 
-      this.users = [
-        {"username": "foo", "email": "foo@gmail", "createdAt":"10-10-2023", "isDisabled":false},
-        {"username": "barr", "email": "bar@gmail", "createdAt":"10-10-2023", "isDisabled":true},
-      ]
     }
     
     ngOnInit(): void {
@@ -37,6 +33,35 @@ export class AdminPageComponent implements OnInit {
   } 
 
   getUsers(){
+    this.http.get(ApiService.API_URL+"/admin/users",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      try{
+        const body  = JSON.parse(JSON.stringify(response.body));
+        this.users = body.users;
+
+      } catch (e) {
+        superToast({
+          message: "Impossible to fetch users. "+ e,
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+    }, (error) => {
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+      superToast({
+        message: "Impossible to fetch users. "+ errorMessage,
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
   }
 
   logoutUser(){
