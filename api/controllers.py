@@ -15,6 +15,7 @@ import Utils.utils as utils
 import os
 import base64
 import datetime
+from Utils.security_wrapper import admin_restricted
 
 
 
@@ -56,7 +57,8 @@ def signup():
         logging.warning("Uknown error occured while hashing password" + str(e))
         return {"message": "Unknown error while hashing your password"}, 500
     try:
-        user = userDB.create(username, email, hashedpw, derivedKeySalt, 0, passphraseSalt)
+        today = datetime.datetime.now().strftime("%d/%m/%Y")
+        user = userDB.create(username, email, hashedpw, derivedKeySalt, 0, passphraseSalt, today)
     except Exception as e:
         logging.error("Unknown error while creating user" + str(e))
         return {"message": "Unknown error while creating user"}, 500
@@ -394,4 +396,22 @@ def export_vault():
     vault = vault_b64 + "," + signature
     return vault, 200
 
-    
+def get_role():
+    try:
+        user_id = connexion.context.get("user")
+    except:
+        return {"message": "Invalid request"}, 400
+    user = UserDB().getById(user_id=user_id)
+    if not user:
+        return {"message" : "User not found"}, 404
+    return {"role": user.role}, 200
+
+@admin_restricted
+def get_users_list():
+    users = UserDB().get_all()
+    if not users:
+        return {"message" : "No user found"}, 404
+    users_list = []
+    for user in users:
+        users_list.append({"username": user.username, "email": user.mail, "role": user.role, "createdAt": user.createdAt, "isBlocked": user.isBlocked})
+    return {"users": users_list}, 200
