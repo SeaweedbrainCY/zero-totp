@@ -12,6 +12,7 @@ import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { DevComponent } from './dev/dev.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ChangelogComponent } from './changelog/changelog.component';
+import { AdminPageComponent } from './admin-page/admin-page.component';
 
 const routes: Routes = [
   {path:'', component: HomeComponent},
@@ -27,6 +28,7 @@ const routes: Routes = [
   {path:"account", component: AccountComponent},
   {path:"privacy", component: PrivacyPolicyComponent},
   {path:"changelog", component: ChangelogComponent},
+  {path:"admin", component: AdminPageComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 
