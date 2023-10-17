@@ -18,6 +18,7 @@
                         <th>username</th>
                         <th>email</th>
                         <th>created at</th>
+                        <th>role</th>
                         <th></th>
                     </thead>
                     <tbody>
@@ -25,9 +26,10 @@
                             <td>{{user.username}}</td>
                             <td>{{user.email}}</td>
                             <td>{{user.createdAt}}</td>
+                            <td>{{user.role}}</td>
                             <td class="is-flex is-justify-content-space-around">
                                 
-                                <button class="button is-rounded" [ngClass]="{'is-warning': !user.isDisabled, 'is-success':user.isDisabled}" ><span *ngIf="user.isDisabled">Unblock</span><span *ngIf="!user.isDisabled">Block</span></button>
+                                <button class="button is-rounded" [ngClass]="{'is-warning': !user.isBlocked, 'is-success':user.isBlocked}" ><span *ngIf="user.isDisabled">Unblock</span><span *ngIf="!user.isBlocked">Block</span></button>
                                 <button class="button is-danger is-rounded">Destroy</button></td>
                         </tr>
                         </tbody>
