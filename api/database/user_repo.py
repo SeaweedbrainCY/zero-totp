@@ -47,5 +47,5 @@ class User:
         db.session.commit()
         return user
     
-    def get_all():
+    def get_all(self):
         return db.session.query(UserModel).all()
