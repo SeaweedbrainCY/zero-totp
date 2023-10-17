@@ -1,4 +1,12 @@
-<section class="hero  is-halfheight mt-6 " style="min-height: 70vh;">
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="isAdmin == undefined">
+    <article class="hero-body is-flex is-justify-content-center" >
+        <fa-icon [icon]="faCircleNotch" [spin]="true" style="color:#FE6847;" size="2xl"></fa-icon > 
+    </article>
+</section>
+
+
+
+<section class="hero  is-halfheight mt-6 " style="min-height: 70vh;" *ngIf="isAdmin == true">
     <div class="container  is-fluid ">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-danger pt-6">Admin section</h1>
@@ -28,4 +36,15 @@
             </article>
         </div>
     </div>
+</section>
+
+
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="isAdmin == false">
+    <article class="hero-body is-flex is-justify-content-center" >
+       <div>
+              <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-danger">Forbidden</h1>
+              <h2 class="has-text-centered has-text-weight-bold ">For security reasons you will be disconnected in few seconds ... </h2>
+
+       </div>
+    </article>
 </section>
