@@ -112,7 +112,7 @@ def login():
 
     jwt_token = jwt_auth.generate_jwt(user.id)
 
-    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt}))
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "role":user.role}))
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
 
@@ -396,18 +396,15 @@ def export_vault():
     vault = vault_b64 + "," + signature
     return vault, 200
 
-def get_role():
-    try:
-        user_id = connexion.context.get("user")
-    except:
-        return {"message": "Invalid request"}, 400
+def get_role(token_info, *args, **kwargs):
+    user_id = token_info["sub"]
     user = UserDB().getById(user_id=user_id)
     if not user:
         return {"message" : "User not found"}, 404
     return {"role": user.role}, 200
 
 @admin_restricted
-def get_users_list():
+def get_users_list(*args, **kwargs):
     users = UserDB().get_all()
     if not users:
         return {"message" : "No user found"}, 404
