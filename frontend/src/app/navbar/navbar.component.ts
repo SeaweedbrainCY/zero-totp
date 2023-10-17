@@ -20,9 +20,7 @@ export class NavbarComponent implements OnInit{
       if (url instanceof NavigationEnd){
       this.currentUrl = url.url;
     }
-  }
-     
-      );
+  });
     
   }
 
@@ -40,7 +38,6 @@ export class NavbarComponent implements OnInit{
     window.document.getElementById('navbarBurger')?.click();
     window.location.href = url;
   }
-
 
 
 
