@@ -1,4 +1,3 @@
-
 openapi: 3.0.3
 info:
   title: zero-totp API
@@ -19,7 +18,7 @@ paths:
       security: []
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -53,7 +52,7 @@ paths:
       security: []
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -104,7 +103,7 @@ paths:
       operationId: controllers.get_encrypted_secret
       tags:
         - Vault
-      summary: Return the user's encrypted secret 
+      summary: Return the user's encrypted secret
       parameters:
         - in: path
           name: uuid
@@ -135,7 +134,7 @@ paths:
           description: The uuid of the secret to add
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -165,7 +164,7 @@ paths:
           description: The uuid of the secret to update
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -223,7 +222,7 @@ paths:
       summary: Update the user's email
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -248,7 +247,7 @@ paths:
       summary: Update the user's passphrase, encrypted vault and zke ecrypted key
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -291,6 +290,51 @@ paths:
         "404":
           description: No secrets found
 
+  /role:
+    get:
+      operationId: controllers.get_role
+      tags:
+        - User
+      summary: Return the user's role
+      responses:
+        "200": # status code
+          description: Return the user's role
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  role:
+                    type: string
+                    example: user
+        "401":
+          description: Unauthorized
+        "404":
+          description: No role found
+  /admin/users:
+    get:
+      operationId: controllers.get_users_list
+      tags:
+        - Admin
+      summary: Return all users
+      responses:
+        "200": # status code
+          description: Return all users
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    example: [{"username": "foo", "email":"bar", "role":"user", "createdAt":"01/01/2001", "isBlocked":false}]
+
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+
+
 components:
   securitySchemes:
     JWTAuth:
@@ -298,4 +342,3 @@ components:
       in: cookie
       name: api-key
       x-apikeyInfoFunc: CryptoClasses.jwt_func.verify_jwt
-
