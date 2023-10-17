@@ -64,6 +64,23 @@ paths:
       responses:
         "200": # status code
           description: successful login. The JWT is returned in the response body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: "foo"
+                  id:
+                    type: integer
+                    example: 1
+                  derivedKeySalt:
+                    type: string
+                    example: "AAAAA="
+                  role:
+                    type: string
+                    example: "user"
         "400":
           description: Missing required parameters
         "403":
@@ -342,3 +359,4 @@ components:
       in: cookie
       name: api-key
       x-apikeyInfoFunc: CryptoClasses.jwt_func.verify_jwt
+      
