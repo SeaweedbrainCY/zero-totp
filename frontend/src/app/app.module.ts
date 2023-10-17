@@ -28,6 +28,7 @@ import { AccountComponent } from './account/account.component';
 import { LocalVaultV1Service } from './common/upload-vault/LocalVaultv1Service.service';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { BnNgIdleService } from 'bn-ng-idle'; 
+import { ChangelogComponent } from './changelog/changelog.component';
 
 
 @NgModule({
@@ -45,7 +46,8 @@ import { BnNgIdleService } from 'bn-ng-idle';
     QrcodeReaderComponent,
     DevComponent,
     AccountComponent,
-    PrivacyPolicyComponent
+    PrivacyPolicyComponent,
+    ChangelogComponent
   ],
   imports: [
     BrowserModule,
