@@ -350,6 +350,27 @@ paths:
           description: Unauthorized
         "403":
           description: Access denied
+  /admin/challenge/generate:
+    get:
+      operationId: controllers.generate_challenge 
+      tags:
+        - Admin
+      summary: Return a challenge to be solved by the user
+      responses:
+        "200": # status code
+          description:  Return a challenge to be solved by the user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  challenge:
+                    type: string
+                    example: "AAAAAAAAAA="
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
 
 
 components:
