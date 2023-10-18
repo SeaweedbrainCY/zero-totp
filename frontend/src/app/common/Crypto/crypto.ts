@@ -113,4 +113,13 @@ export class Crypto {
         }
         return buf;
       }
+
+    async sign_ecdsa(str_to_sign:string, privateKeyBase64: string){
+        const privateKey = await window.crypto.subtle.importKey("raw", Buffer.from(privateKeyBase64, 'base64'), { name: 'ECDSA', namedCurve: 'P-256' },true, ['sign']);
+
+        const data_to_sign = new TextEncoder().encode(str_to_sign);
+
+        const signature = await window.crypto.subtle.sign({ name: 'ECDSA', hash: { name: 'SHA-256' } }, privateKey, data_to_sign);
+        return Buffer.from(signature).toString('base64');
+    }
 }
