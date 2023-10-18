@@ -5,6 +5,7 @@ import { faCircleNotch, faGear } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toast as superToast } from 'bulma-toast'
+import { Crypto } from '../common/Crypto/crypto';
 
 @Component({
   selector: 'app-admin-page',
@@ -13,15 +14,20 @@ import { toast as superToast } from 'bulma-toast'
 })
 export class AdminPageComponent implements OnInit {
   users: any = []
-  isAdmin: boolean|undefined = undefined;
+  isAdmin: boolean|undefined = true;
   faCircleNotch = faCircleNotch;
   faGear = faGear;
+  isChallengeSolved: boolean = false;
+  isChallengeLoading = false;
+  string_challenge: undefined | string = undefined;
+  private_key_b64 = "";
   
     constructor(
       private http: HttpClient,
       private userService: UserService,
       private router: Router,
       private route: ActivatedRoute,
+      private crypto: Crypto
       ) { 
     }
     
@@ -29,7 +35,7 @@ export class AdminPageComponent implements OnInit {
       if(this.userService.getId() == null){
         this.router.navigate(['/login'], { relativeTo: this.route });
       }
-      this.fetch_role_and_users();
+      this.fetch_role_and_challenge();
   } 
 
   getUsers(){
@@ -71,13 +77,13 @@ export class AdminPageComponent implements OnInit {
     }, 5000);
   }
 
-  fetch_role_and_users(){
+  fetch_role_and_challenge(){
     this.http.get(ApiService.API_URL+"/role",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       try{
         const user  = JSON.parse(JSON.stringify(response.body));
         if(user.role == "admin"){
           this.isAdmin= true;
-          this.getUsers();
+          this.get_admin_challenge();
         } else {
           this.isAdmin= false;
           this.logoutUser();
@@ -89,6 +95,51 @@ export class AdminPageComponent implements OnInit {
     }, (_) => {
       this.isAdmin= false;
       this.logoutUser();
+    });
+  }
+
+  get_admin_challenge(){
+    this.http.get(ApiService.API_URL+"/admin/challenge/generate",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      try{
+        const body  = JSON.parse(JSON.stringify(response.body));
+        this.string_challenge = body.challenge;
+      } catch (e) {
+        superToast({
+          message: "Impossible to fetch the admin  challenge. "+ e,
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+    }, (error) => {
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+      superToast({
+        message: "Impossible to fetch the admin  challenge. "+ errorMessage,
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
+  }
+
+  solve_challenge(){
+    this.crypto.sign_ecdsa(this.private_key_b64, this.string_challenge!).then((signature) => {
+      console.log("signature: " + signature)
+    }).catch((error) => {
+      superToast({
+        message: "Impossible to sign the challenge. "+ error,
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
     });
   }
 }

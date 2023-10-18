@@ -7,7 +7,20 @@
 
 
 <section class="hero  is-halfheight mt-6 " style="min-height: 70vh;" *ngIf="isAdmin == true">
-    <div class="container  is-fluid ">
+    <article class="hero-body "  *ngIf="!isChallengeSolved">
+        <div class="is-flex is-justify-content-center" style="width:100vw" >
+            <div >
+        <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-danger pt-6">Admin challenge</h1>
+        <h2 class="has-text-centered has-text-weight-bold mb-5">Solve this challenge to gain a 10min admin session</h2>
+
+        <input class="input is-danger" type="text" placeholder="Paste your private key" name="private_key_b64" [(ngModel)]="private_key_b64">
+        <div class="is-flex is-justify-content-center">
+        <button class="button is-danger is-rounded mt-4" [ngClass]="{'is-loading':isChallengeLoading}" (click)="solve_challenge()">Solve</button>
+        </div>
+     </div>
+    </div>
+    </article>
+    <div class="container  is-fluid " *ngIf="isChallengeSolved">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-danger pt-6">Admin section</h1>
             <article>
