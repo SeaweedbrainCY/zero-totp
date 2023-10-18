@@ -4,6 +4,7 @@ import json
 from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
+from database.admin_challenge_repo import Admin_challenge as Admin_challengeDB
 from CryptoClasses.hash_func import Bcrypt
 import logging
 import environment as env
@@ -412,3 +413,21 @@ def get_users_list(*args, **kwargs):
     for user in users:
         users_list.append({"username": user.username, "email": user.mail, "role": user.role, "createdAt": user.createdAt, "isBlocked": user.isBlocked})
     return {"users": users_list}, 200
+
+@admin_restricted
+def generate_challenge(*args, **kwargs):
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    
+    admin_challenge_db = Admin_challengeDB()
+    challenge_str = base64.b64encode(os.urandom(random.randint(50, 70))).decode("utf-8") 
+    expiration = datetime.datetime.now() + datetime.timedelta(minutes=5)
+    challenge_object = admin_challenge_db.update_random_challenge(user_id=user_id, random_challenge=challenge_str, expiration=expiration)
+    if not challenge_object:
+        return {"message": "Unknown error while generating challenge"}, 500
+    return {"challenge": challenge_str}, 200
