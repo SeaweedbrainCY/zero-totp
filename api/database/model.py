@@ -23,5 +23,13 @@ class TOTP_secret(db.Model):
     __tablename__ = "totp_secret_enc"
     uuid = db.Column(db.String(256), primary_key=True, nullable=False, autoincrement=False)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
-    secret_enc = db.Column(db.Text, nullable=False)
+    secret_enc = db.Column(db.Text, nullable=False);
+
+class Admin_challenge(db.Model):
+    __tablename__ = "admin_challenge"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
+    public_key = db.Column(db.Text, nullable=False)
+    challenge = db.Column(db.Text, nullable=True, default=None)
+    challenge_expiration = db.Column(db.String(256), nullable=True, default=None)
 
