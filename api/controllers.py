@@ -4,14 +4,14 @@ import json
 from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
-from database.admin_challenge_repo import Admin_challenge as Admin_challengeDB
+from database.admin_repo import Admin as Admin_db
 from CryptoClasses.hash_func import Bcrypt
 import logging
 import environment as env
 import random
 import string
 import CryptoClasses.jwt_func as jwt_auth
-from CryptoClasses.sign_func import API_signature, AdminSignature
+from CryptoClasses.sign_func import API_signature
 import Utils.utils as utils
 import os
 import base64
@@ -393,7 +393,7 @@ def export_vault():
         secrets.append({"uuid": secret.uuid, "enc_secret": secret.secret_enc})
     vault["secrets"] = secrets
     vault_b64 = base64.b64encode(json.dumps(vault).encode("utf-8")).decode("utf-8")
-    signature = API_signature.sign_rsa(vault_b64)
+    signature = API_signature().sign_rsa(vault_b64)
     vault = vault_b64 + "," + signature
     return vault, 200
 
@@ -414,51 +414,22 @@ def get_users_list(*args, **kwargs):
         users_list.append({"username": user.username, "email": user.mail, "role": user.role, "createdAt": user.createdAt, "isBlocked": user.isBlocked})
     return {"users": users_list}, 200
 
-@admin_restricted
-def generate_challenge(*args, **kwargs):
-    try:
-        user_id = connexion.context.get("user")
-        if user_id == None:
-            return {"message": "Unauthorized"}, 401
-    except Exception as e:
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
-    
-    admin_challenge_db = Admin_challengeDB()
-    challenge_str = base64.b64encode(os.urandom(random.randint(50, 70))).decode("utf-8") 
-    expiration = datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
-    expiration = expiration.timestamp()
-    challenge_object = admin_challenge_db.update_random_challenge(user_id=user_id, random_challenge=challenge_str, expiration=expiration)
-    if not challenge_object:
-        return {"message": "Unknown error while generating challenge"}, 500
-    return {"challenge": challenge_str}, 200
 
 @admin_restricted
-def verify_challenge(*args, **kwargs):
+def admin_login(*args, **kwargs):
     try:
         user_id = connexion.context.get("user")
         if user_id == None:
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
-        challenge = data["challenge"].strip()
+        token = data["token"].strip()
         signature = data["signature"].strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
-    admin_challenge_db = Admin_challengeDB()
-    challenge_object = admin_challenge_db.get_by_user_id(user_id=user_id)
-    if not challenge_object:
-        return {"message": "Challenge not found"}, 404
-    if float(challenge_object.challenge_expiration) < datetime.datetime.utcnow().timestamp():
-        return {"message": "Challenge expired"}, 403
-    if challenge_object.challenge != challenge:
-        return {"message": "Invalid challenge"}, 403
-    verified = AdminSignature().verify_ecdsa_signature(message=challenge_object.challenge, signature_b64=signature, public_key_b64=challenge_object.public_key)
-    if not verified:
-        return {"message": "Invalid signature"}, 403
-    admin_jwt = jwt_auth.generate_jwt(user_id=user_id, admin=True)
+    
 
     response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
     response.set_cookie("admin-api-key", admin_jwt, httponly=True, secure=True, samesite="Lax", max_age=600)
