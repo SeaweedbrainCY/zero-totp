@@ -426,7 +426,8 @@ def generate_challenge(*args, **kwargs):
     
     admin_challenge_db = Admin_challengeDB()
     challenge_str = base64.b64encode(os.urandom(random.randint(50, 70))).decode("utf-8") 
-    expiration = datetime.datetime.now() + datetime.timedelta(minutes=5)
+    expiration = datetime.datetime.utcnow() + datetime.timedelta(minutes=5)
+    expiration = expiration.timestamp()
     challenge_object = admin_challenge_db.update_random_challenge(user_id=user_id, random_challenge=challenge_str, expiration=expiration)
     if not challenge_object:
         return {"message": "Unknown error while generating challenge"}, 500
@@ -450,11 +451,11 @@ def verify_challenge(*args, **kwargs):
     challenge_object = admin_challenge_db.get_by_user_id(user_id=user_id)
     if not challenge_object:
         return {"message": "Challenge not found"}, 404
-    if challenge_object.expiration < datetime.datetime.now():
+    if float(challenge_object.challenge_expiration) < datetime.datetime.utcnow().timestamp():
         return {"message": "Challenge expired"}, 403
-    if challenge_object.random_challenge != challenge:
+    if challenge_object.challenge != challenge:
         return {"message": "Invalid challenge"}, 403
-    verified = AdminSignature.verify_ecdsa_signature(message=challenge_object.random_challenge, signature=signature, public_key_b64=challenge_object.public_key)
+    verified = AdminSignature().verify_ecdsa_signature(message=challenge_object.challenge, signature_b64=signature, public_key_b64=challenge_object.public_key)
     if not verified:
         return {"message": "Invalid signature"}, 403
     admin_jwt = jwt_auth.generate_jwt(user_id=user_id, admin=True)
