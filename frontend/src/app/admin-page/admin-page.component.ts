@@ -14,7 +14,7 @@ import { Crypto } from '../common/Crypto/crypto';
 })
 export class AdminPageComponent implements OnInit {
   users: any = []
-  isAdmin: boolean|undefined = true;
+  isAdmin: boolean|undefined = undefined;
   faCircleNotch = faCircleNotch;
   faGear = faGear;
   isChallengeSolved: boolean = false;
@@ -33,9 +33,9 @@ export class AdminPageComponent implements OnInit {
     
     ngOnInit(): void {
       if(this.userService.getId() == null){
-        //this.router.navigate(['/login'], { relativeTo: this.route });
+        this.router.navigate(['/login'], { relativeTo: this.route });
       }
-      //this.fetch_role_and_challenge();
+      this.fetch_role_and_challenge();
   } 
 
   getUsers(){
@@ -130,8 +130,30 @@ export class AdminPageComponent implements OnInit {
   }
 
   solve_challenge(){
-    this.crypto.sign_ecdsa(this.string_challenge!, this.private_key_b64).then((signature) => {
-      console.log("signature: " + signature)
+    this.crypto.sign_rsa(this.string_challenge!, this.private_key_b64).then((signature) => {
+      const data = {
+        challenge: this.string_challenge,
+        signature: signature
+      }
+        this.http.post(ApiService.API_URL+"/admin/challenge/verify",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+          if (response.status == 200){
+            console.log("ok")
+          }
+        }, (error) => {
+          let errorMessage = "";
+          if(error.error.message != null){
+            errorMessage = error.error.message;
+          } else if(error.error.detail != null){
+            errorMessage = error.error.detail;
+          }
+          superToast({
+            message: "Challenge failed. "+ errorMessage,
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        });
     }).catch((error) => {
       superToast({
         message: "Impossible to sign the challenge. "+ error,
