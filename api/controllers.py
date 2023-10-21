@@ -11,7 +11,7 @@ import environment as env
 import random
 import string
 import CryptoClasses.jwt_func as jwt_auth
-import CryptoClasses.sign_func as api_signature
+from CryptoClasses.sign_func import API_signature, AdminSignature
 import Utils.utils as utils
 import os
 import base64
@@ -393,7 +393,7 @@ def export_vault():
         secrets.append({"uuid": secret.uuid, "enc_secret": secret.secret_enc})
     vault["secrets"] = secrets
     vault_b64 = base64.b64encode(json.dumps(vault).encode("utf-8")).decode("utf-8")
-    signature = api_signature.sign(vault_b64)
+    signature = API_signature.sign_rsa(vault_b64)
     vault = vault_b64 + "," + signature
     return vault, 200
 
@@ -431,3 +431,35 @@ def generate_challenge(*args, **kwargs):
     if not challenge_object:
         return {"message": "Unknown error while generating challenge"}, 500
     return {"challenge": challenge_str}, 200
+
+@admin_restricted
+def verify_challenge(*args, **kwargs):
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+        dataJSON = json.dumps(request.get_json())
+        data = json.loads(dataJSON)
+        challenge = data["challenge"].strip()
+        signature = data["signature"].strip()
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    
+    admin_challenge_db = Admin_challengeDB()
+    challenge_object = admin_challenge_db.get_by_user_id(user_id=user_id)
+    if not challenge_object:
+        return {"message": "Challenge not found"}, 404
+    if challenge_object.expiration < datetime.datetime.now():
+        return {"message": "Challenge expired"}, 403
+    if challenge_object.random_challenge != challenge:
+        return {"message": "Invalid challenge"}, 403
+    verified = AdminSignature.verify_ecdsa_signature(message=challenge_object.random_challenge, signature=signature, public_key_b64=challenge_object.public_key)
+    if not verified:
+        return {"message": "Invalid signature"}, 403
+    admin_jwt = jwt_auth.generate_jwt(user_id=user_id, admin=True)
+
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
+    response.set_cookie("admin-api-key", admin_jwt, httponly=True, secure=True, samesite="Lax", max_age=600)
+    return response
+    
