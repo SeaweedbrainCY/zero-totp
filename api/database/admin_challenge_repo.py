@@ -10,3 +10,6 @@ class Admin_challenge:
         admin_challenge.challenge_expiration = expiration
         db.session.commit()
         return admin_challenge
+   
+   def get_by_user_id(self, user_id):
+        return db.session.query(Admin_challenge_model).filter_by(user_id=user_id).first()
