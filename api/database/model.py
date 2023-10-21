@@ -25,11 +25,10 @@ class TOTP_secret(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     secret_enc = db.Column(db.Text, nullable=False);
 
-class Admin_challenge(db.Model):
-    __tablename__ = "admin_challenge"
+class Admin(db.Model):
+    __tablename__ = "admin_tokens"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
-    public_key = db.Column(db.Text, nullable=False)
-    challenge = db.Column(db.Text, nullable=True, default=None)
+    token_hashed = db.Column(db.Text, nullable=False)
     challenge_expiration = db.Column(db.String(256), nullable=True, default=None)
 
