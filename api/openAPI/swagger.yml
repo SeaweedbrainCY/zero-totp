@@ -372,11 +372,22 @@ paths:
         "403":
           description: Access denied
   /admin/challenge/verify:
-    get:
+    post:
       operationId: controllers.verify_challenge 
       tags:
         - Admin
       summary: Verify the challenge solved by the user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                challenge:
+                  type: string
+                signature:
+                  type: string
       responses:
         "200": # status code
           description:  Return 200 with an admin cookie if the challenge is solved. 403 otherwise
