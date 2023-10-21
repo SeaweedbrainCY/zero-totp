@@ -371,6 +371,19 @@ paths:
           description: Unauthorized
         "403":
           description: Access denied
+  /admin/challenge/verify:
+    get:
+      operationId: controllers.verify_challenge 
+      tags:
+        - Admin
+      summary: Verify the challenge solved by the user
+      responses:
+        "200": # status code
+          description:  Return 200 with an admin cookie if the challenge is solved. 403 otherwise
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
 
 
 components:
