@@ -31,10 +31,14 @@ class API_signature:
 
 # Signature and verifications performed BY an admin on the frontend and verified by the API with the admin's public key
 class AdminSignature:
-    def verify_ecdsa_signature(self,message, signature, public_key_b64):
+    def verify_ecdsa_signature(self,message, signature_b64, public_key_b64):
+        signature = base64.b64decode(signature_b64)
+        print("signature", signature_b64)
         public_key_pem = "-----BEGIN PUBLIC KEY-----\n" + public_key_b64 + "\n-----END PUBLIC KEY-----"
+        print("public key", public_key_pem)
         public_key = ECC.import_key(public_key_pem)
-        h = SHA384.new(message)
+        h = SHA384.new(message.encode('utf-8'))
+        print(h.hexdigest().encode('utf-8'))
         verification = DSS.new(public_key, 'fips-186-3', 'der')
         try:
             verification.verify(h, signature)
@@ -42,4 +46,3 @@ class AdminSignature:
         except (ValueError, TypeError) as e:
             logging.warning("Invalid signature " + str(e))
             return False
-
