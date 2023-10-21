@@ -19,7 +19,7 @@ export class AdminPageComponent implements OnInit {
   faGear = faGear;
   isChallengeSolved: boolean = false;
   isChallengeLoading = false;
-  string_challenge: undefined | string = undefined;
+  string_challenge: undefined | string = "";
   private_key_b64 = "";
   
     constructor(
@@ -33,9 +33,9 @@ export class AdminPageComponent implements OnInit {
     
     ngOnInit(): void {
       if(this.userService.getId() == null){
-        this.router.navigate(['/login'], { relativeTo: this.route });
+        //this.router.navigate(['/login'], { relativeTo: this.route });
       }
-      this.fetch_role_and_challenge();
+      //this.fetch_role_and_challenge();
   } 
 
   getUsers(){
@@ -130,7 +130,7 @@ export class AdminPageComponent implements OnInit {
   }
 
   solve_challenge(){
-    this.crypto.sign_ecdsa(this.private_key_b64, this.string_challenge!).then((signature) => {
+    this.crypto.sign_ecdsa(this.string_challenge!, this.private_key_b64).then((signature) => {
       console.log("signature: " + signature)
     }).catch((error) => {
       superToast({
