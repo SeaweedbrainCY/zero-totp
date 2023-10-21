@@ -1,5 +1,5 @@
 import unittest
-from  CryptoClasses.sign_func import API_signature, AdminSignature
+from  CryptoClasses.sign_func import API_signature
 
 
 class TestBcrypt(unittest.TestCase):
