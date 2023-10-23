@@ -25,7 +25,7 @@ class TestJWT(unittest.TestCase):
         validJWT = jwt.encode(self.validPayload, self.secret, algorithm=self.algorithm)
         data_verified = verify_jwt(validJWT)
         self.assertEqual(data_verified["sub"], 1)
-    
+        self.assertEqual("admin" not in data_verified, True)
 
     def test_verify_jwt_invalid_iss(self):
         self.validPayload["iss"] = "https://evil.com"
@@ -61,6 +61,14 @@ class TestJWT(unittest.TestCase):
         self.assertTrue(jwt)
         self.assertTrue(verify_jwt(jwt))
         self.assertEqual(verify_jwt(jwt)["sub"], 1)
+        self.assertEqual("admin" not in verify_jwt(jwt), True)
+    
+    def test_generate_jwt_admin(self):
+        jwt = generate_jwt(user_id=1, admin=True)
+        self.assertTrue(jwt)
+        self.assertTrue(verify_jwt(jwt))
+        self.assertEqual(verify_jwt(jwt)["sub"], 1)
+        self.assertEqual(verify_jwt(jwt)["admin"], 1)
 
     def test_generate_jwt_invalid_key(self):
         realSecret = env.jwt_secret
