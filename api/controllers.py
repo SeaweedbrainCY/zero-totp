@@ -429,19 +429,24 @@ def admin_login(*args, **kwargs):
         logging.info(e)
         return {"message": "Invalid request"}, 400
     admin_user = Admin_db().get_by_user_id(user_id)
+    
     bcrypt = Bcrypt(token)
     if not admin_user:
-        logging.info("User " + str(user_id) + " tried to login as admin but is not an admin. A fake password is checked to avoid timing attacks")
+        logging.info("User " + str(user_id) + " tried to login as admin but is not an admin. A fake password is checked to avoid timing attacks. It has the admin role but no login token.")
         fake_pass = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fake_pass)
         return {"message": "Invalid credentials"}, 403
     checked = bcrypt.checkpw(admin_user.token_hashed)
+    print("admin_user expiration", admin_user.token_expiration)
     if not checked:
+        logging.info("User " + str(user_id) + " tried to login as admin but provided token is wrong. Connexion rejected.")
         return {"message": "Invalid credentials"}, 403
     if float(admin_user.token_expiration)  < datetime.datetime.utcnow().timestamp():
+        logging.info("User " + str(user_id) + " tried to login as admin but provided token is expired. Connexion rejected.")
         return {"message": "Token expired"}, 403
     admin_jwt = jwt_auth.generate_jwt(user_id, admin=True)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
     response.set_cookie("admin-api-key", admin_jwt, httponly=True, secure=True, samesite="Lax", max_age=600)
+    logging.info("User " + str(user_id) + " logged in as admin")
     return response
     
