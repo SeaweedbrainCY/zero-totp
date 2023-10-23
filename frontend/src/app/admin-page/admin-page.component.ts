@@ -6,6 +6,7 @@ import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toast as superToast } from 'bulma-toast'
 import { Crypto } from '../common/Crypto/crypto';
+ 
 
 @Component({
   selector: 'app-admin-page',
@@ -21,6 +22,9 @@ export class AdminPageComponent implements OnInit {
   isChallengeLoading = false;
   string_challenge: undefined | string = "";
   user_token = "";
+  admin_cookie_expiration_s = 600;
+  timer = this.admin_cookie_expiration_s;
+  interval: any;
   
     constructor(
       private http: HttpClient,
@@ -29,6 +33,7 @@ export class AdminPageComponent implements OnInit {
       private route: ActivatedRoute,
       private crypto: Crypto
       ) { 
+
     }
     
     ngOnInit(): void {
@@ -97,6 +102,17 @@ export class AdminPageComponent implements OnInit {
     });
   }
 
+  start_10m_timer(){
+    this.interval = setInterval(() => {
+      this.timer --;
+      if(this.timer <= 0){
+        this.timer = this.admin_cookie_expiration_s;
+        this.isChallengeSolved = false;
+        clearInterval(this.interval);
+      }
+    }, 1000);
+  }
+
 
   solve_challenge(){
       const data = {
@@ -104,7 +120,9 @@ export class AdminPageComponent implements OnInit {
       }
         this.http.post(ApiService.API_URL+"/admin/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
           if (response.status == 200){
-            console.log("ok")
+            this.isChallengeSolved = true;
+            this.start_10m_timer();
+            this.getUsers();
           }
         }, (error) => {
           let errorMessage = "";
