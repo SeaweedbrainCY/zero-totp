@@ -1,11 +1,10 @@
 import unittest
-from Utils.security_wrapper import require_admin_role, require_admin_token
 from app import create_app
 from database.db import db 
 import environment as env
-from database.model import User as UserModel, Admin as AdminModel
+from database.model import User as UserModel
 from unittest.mock import patch
-from CryptoClasses.jwt_func import generate_jwt, verify_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
+from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
 import jwt
 
