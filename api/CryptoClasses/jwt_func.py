@@ -31,7 +31,7 @@ def verify_jwt(jwt_token):
 
 
 
-def generate_jwt(user_id):
+def generate_jwt(user_id, admin=False):
     try:
         payload = {
             "iss": ISSUER,
@@ -40,6 +40,9 @@ def generate_jwt(user_id):
             "nbf": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
         }
+        if admin:
+            payload["admin"] = True
+            payload["exp"] = datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
         return jwt.encode(payload, env.jwt_secret, algorithm=ALG)
     except Exception as e:
         logging.warning("Error while generating JWT : " + str(e))

@@ -4,17 +4,19 @@ import json
 from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
+from database.admin_repo import Admin as Admin_db
 from CryptoClasses.hash_func import Bcrypt
 import logging
 import environment as env
 import random
 import string
 import CryptoClasses.jwt_func as jwt_auth
-import CryptoClasses.sign_func as api_signature
+from CryptoClasses.sign_func import API_signature
 import Utils.utils as utils
 import os
 import base64
 import datetime
+from Utils.security_wrapper import require_admin_token, require_admin_role
 
 
 
@@ -56,7 +58,8 @@ def signup():
         logging.warning("Uknown error occured while hashing password" + str(e))
         return {"message": "Unknown error while hashing your password"}, 500
     try:
-        user = userDB.create(username, email, hashedpw, derivedKeySalt, 0, passphraseSalt)
+        today = datetime.datetime.now().strftime("%d/%m/%Y")
+        user = userDB.create(username, email, hashedpw, derivedKeySalt, 0, passphraseSalt, today)
     except Exception as e:
         logging.error("Unknown error while creating user" + str(e))
         return {"message": "Unknown error while creating user"}, 500
@@ -110,7 +113,7 @@ def login():
 
     jwt_token = jwt_auth.generate_jwt(user.id)
 
-    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt}))
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "role":user.role}))
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
 
@@ -390,8 +393,60 @@ def export_vault():
         secrets.append({"uuid": secret.uuid, "enc_secret": secret.secret_enc})
     vault["secrets"] = secrets
     vault_b64 = base64.b64encode(json.dumps(vault).encode("utf-8")).decode("utf-8")
-    signature = api_signature.sign(vault_b64)
+    signature = API_signature().sign_rsa(vault_b64)
     vault = vault_b64 + "," + signature
     return vault, 200
 
+def get_role(token_info, *args, **kwargs):
+    user_id = token_info["sub"]
+    user = UserDB().getById(user_id=user_id)
+    if not user:
+        return {"message" : "User not found"}, 404
+    return {"role": user.role}, 200
+
+
+@require_admin_token
+def get_users_list(*args, **kwargs):
+    users = UserDB().get_all()
+    if not users:
+        return {"message" : "No user found"}, 404
+    users_list = []
+    for user in users:
+        users_list.append({"username": user.username, "email": user.mail, "role": user.role, "createdAt": user.createdAt, "isBlocked": user.isBlocked})
+    return {"users": users_list}, 200
+
+
+@require_admin_role
+def admin_login(*args, **kwargs):
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+        dataJSON = json.dumps(request.get_json())
+        data = json.loads(dataJSON)
+        token = data["token"].strip()
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    admin_user = Admin_db().get_by_user_id(user_id)
+    
+    bcrypt = Bcrypt(token)
+    if not admin_user:
+        logging.info("User " + str(user_id) + " tried to login as admin but is not an admin. A fake password is checked to avoid timing attacks. It has the admin role but no login token.")
+        fake_pass = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
+        bcrypt.checkpw(fake_pass)
+        return {"message": "Invalid credentials"}, 403
+    checked = bcrypt.checkpw(admin_user.token_hashed)
+    print("admin_user expiration", admin_user.token_expiration)
+    if not checked:
+        logging.info("User " + str(user_id) + " tried to login as admin but provided token is wrong. Connexion rejected.")
+        return {"message": "Invalid credentials"}, 403
+    if float(admin_user.token_expiration)  < datetime.datetime.utcnow().timestamp():
+        logging.info("User " + str(user_id) + " tried to login as admin but provided token is expired. Connexion rejected.")
+        return {"message": "Token expired"}, 403
+    admin_jwt = jwt_auth.generate_jwt(user_id, admin=True)
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
+    response.set_cookie("admin-api-key", admin_jwt, httponly=True, secure=True, samesite="Lax", max_age=600)
+    logging.info("User " + str(user_id) + " logged in as admin")
+    return response
     

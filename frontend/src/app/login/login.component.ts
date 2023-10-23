@@ -290,7 +290,7 @@ export class LoginComponent {
     }
 
   hashPassword(){
-    this.http.get(ApiService.API_URL+"/login/specs?username="+this.email,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get(ApiService.API_URL+"/login/specs?username="+encodeURIComponent(this.email),  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       
       try{
         const data = JSON.parse(JSON.stringify(response.body))
@@ -351,6 +351,9 @@ export class LoginComponent {
         this.userService.setId(data.id);
         this.userService.setEmail(this.email);
         this.userService.setDerivedKeySalt(data.derivedKeySalt);
+        if(data.role == "admin"){
+          this.userService.setIsAdmin(true);
+        }
         this.final_zke_flow();
       } catch(e){
         this.isLoading=false;

@@ -26,6 +26,9 @@
         <a class="navbar-item" (click)="navigateToRoute('account')" [ngClass]="{'has-text-weight-bold':currentUrl == '/account'}">
           Account
         </a>
+        <a class="navbar-item" (click)="navigateToRoute('admin')" [ngClass]="{'has-text-weight-bold':currentUrl == '/admin'}" *ngIf="userService.getIsAdmin()! == true">
+          Admin
+        </a>
       </div>
       <div class="navbar-start"  *ngIf="userService.getId()==null && !this.userService.getIsVaultLocal()">
         <a class="navbar-item" (click)="changeLocation('#how-it-works')" >

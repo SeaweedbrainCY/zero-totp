@@ -15,6 +15,7 @@ export class UserService {
   private passphraseSalt: string| null =null;;
   private isVaultLocal:boolean = false;
   private local_vault_service:LocalVaultV1Service | null = null;
+  private isAdmin: boolean = false;
 
   constructor(private utils: Utils) {
    }
@@ -89,6 +90,14 @@ export class UserService {
       this.local_vault_service = service;
     }
 
+    getIsAdmin(): boolean {
+      return this.isAdmin;
+    }
+
+    setIsAdmin(isAdmin:boolean){
+      this.isAdmin = isAdmin;
+    }
+
 
 
    clear(){
@@ -98,6 +107,9 @@ export class UserService {
     this.derivedKeySalt = null;
     this.vault = null;
     this.passphraseSalt = null;
+    this.isVaultLocal = false;
+    this.local_vault_service = null;
+    this.isAdmin = false;
     localStorage.clear();
    }
 

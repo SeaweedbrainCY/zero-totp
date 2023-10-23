@@ -101,7 +101,6 @@ export class Crypto {
           true,
           ['verify']
         );
-        console.log("publicKey: " + publicKey)
         return publicKey;
       }
 
@@ -113,4 +112,56 @@ export class Crypto {
         }
         return buf;
       }
+        
+      ab2str(buf: ArrayBuffer) {
+            return String.fromCharCode.apply(null, Array.from(new Uint8Array(buf)));
+        }
+
+
+    async sign_rsa(str_to_sign:string, privateKeyBase64: string): Promise<String>{
+        //const keyPair = await window.crypto.subtle.generateKey({
+        //    name: 'RSASSA-PKCS1-v1_5',
+        //    modulusLength: 4096, // Longueur de la clé en bits
+        //    publicExponent: new Uint8Array([0x01, 0x00, 0x01]), // Exposant public
+        //    hash: 'SHA-512', // Fonction de hachage
+        //},
+        //true,
+        //['sign', 'verify']
+        //)
+        //let exported = await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
+        //let exportedAsString = this.ab2str(exported);
+        //let exportedAsBase64 = window.btoa(exportedAsString);
+        //let pemExported = `-----BEGIN PRIVATE KEY-----\n${exportedAsBase64}\n-----END PRIVATE KEY-----`
+        //console.log(pemExported)
+////
+        //exported = await window.crypto.subtle.exportKey("spki", keyPair.publicKey);
+        //exportedAsString = this.ab2str(exported);
+        //exportedAsBase64 = window.btoa(exportedAsString);
+        //pemExported = `-----BEGIN PUBLIC KEY-----\n${exportedAsBase64}\n-----BEGIN PUBLIC KEY-----`
+        //console.log(pemExported)
+
+        try{
+        console.log(privateKeyBase64.replace(/-----BEGIN RSA PRIVATE KEY-----|-----END RSA PRIVATE KEY-----|\n/g, ''))
+        const buf = atob(privateKeyBase64.replace(/-----BEGIN RSA PRIVATE KEY-----|-----END RSA PRIVATE KEY-----|\n/g, ''));
+        
+        const privateKeyPem = this.str2ab(buf)
+        const privateKey =await crypto.subtle.importKey(
+            'pkcs8',
+            privateKeyPem,
+            {
+              name: 'RSASSA-PKCS1-v1_5',
+              hash: 'SHA-256',
+            },
+            true,
+            ['sign']
+          );
+        const data_to_sign = new TextEncoder().encode(str_to_sign);
+
+        const signature = await window.crypto.subtle.sign('RSASSA-PKCS1-v1_5', privateKey, data_to_sign);
+        return Buffer.from(signature).toString('base64');
+        } catch (error){
+            console.log(error)
+            return ""
+        }
+    }
 }

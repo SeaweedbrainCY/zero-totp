@@ -1,0 +1,67 @@
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="isAdmin == undefined">
+    <article class="hero-body is-flex is-justify-content-center" >
+        <fa-icon [icon]="faCircleNotch" [spin]="true" style="color:#FE6847;" size="2xl"></fa-icon > 
+    </article>
+</section>
+
+
+
+<section class="hero  is-halfheight mt-6 " style="min-height: 70vh;" *ngIf="isAdmin == true">
+    <article class="hero-body "  *ngIf="!isChallengeSolved">
+        <div class="is-flex is-justify-content-center" style="width:100vw" >
+            <div >
+        <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-danger pt-6">Admin challenge</h1>
+        <h2 class="has-text-centered has-text-weight-bold mb-5">Paste your admin token</h2>
+
+        <input class="input is-danger" type="password" placeholder="Paste your admin token" name="user_token" [(ngModel)]="user_token"/>
+        <div class="is-flex is-justify-content-center">
+        <button class="button is-danger is-rounded mt-4" [ngClass]="{'is-loading':isChallengeLoading}" (click)="solve_challenge()">Solve</button>
+        </div>
+     </div>
+    </div>
+    </article>
+    <div class="container  is-fluid " *ngIf="isChallengeSolved">
+        <div>
+            <p class="is-family-monospace	has-text-danger has-text-right	pt-6">Session will expire in {{timer/60-((timer%60)/60)}}m{{timer%60}}s</p>
+            <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-danger">Admin section</h1>
+            
+            <article>
+                <div class="is-flex is-justify-content-center">
+                <table class="table is-striped mt-6" style="width:80vw">
+                    <caption class="is-size-3 has-text-weight-bold">Users</caption>
+                    <thead>
+                        <th>username</th>
+                        <th>email</th>
+                        <th>created at</th>
+                        <th>role</th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let user of users">
+                            <td>{{user.username}}</td>
+                            <td>{{user.email}}</td>
+                            <td>{{user.createdAt}}</td>
+                            <td>{{user.role}}</td>
+                            <td class="is-flex is-justify-content-space-around">
+                                
+                                <button class="button is-rounded" [ngClass]="{'is-warning': !user.isBlocked, 'is-success':user.isBlocked}" ><span *ngIf="user.isDisabled">Unblock</span><span *ngIf="!user.isBlocked">Block</span></button>
+                                <button class="button is-danger is-rounded">Destroy</button></td>
+                        </tr>
+                        </tbody>
+                </table>
+            </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="isAdmin == false">
+    <article class="hero-body is-flex is-justify-content-center" >
+       <div>
+              <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-danger">Forbidden</h1>
+              <h2 class="has-text-centered has-text-weight-bold ">For security reasons you will be disconnected in few seconds ... </h2>
+
+       </div>
+    </article>
+</section>

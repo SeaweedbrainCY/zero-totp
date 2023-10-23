@@ -29,6 +29,7 @@ import { LocalVaultV1Service } from './common/upload-vault/LocalVaultv1Service.s
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { BnNgIdleService } from 'bn-ng-idle'; 
 import { ChangelogComponent } from './changelog/changelog.component';
+import { AdminPageComponent } from './admin-page/admin-page.component';
 
 
 @NgModule({
@@ -47,7 +48,8 @@ import { ChangelogComponent } from './changelog/changelog.component';
     DevComponent,
     AccountComponent,
     PrivacyPolicyComponent,
-    ChangelogComponent
+    ChangelogComponent,
+    AdminPageComponent
   ],
   imports: [
     BrowserModule,

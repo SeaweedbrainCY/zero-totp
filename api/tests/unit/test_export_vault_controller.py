@@ -4,7 +4,8 @@ from app import create_app
 from unittest.mock import patch
 from database.model import User, TOTP_secret, ZKE_encryption_key
 import environment as env
-from CryptoClasses import jwt_func, sign_func
+from CryptoClasses import jwt_func
+from CryptoClasses.sign_func import API_signature
 import jwt
 import datetime
 import base64
@@ -54,7 +55,7 @@ class TestAllSecret(unittest.TestCase):
         self.assertEqual(len(export_data.split(',')), 2);
         vault_json_string = base64.b64decode(export_data.split(',')[0]).decode("utf-8")
         signature = export_data.split(',')[1]
-        self.assertTrue(sign_func.verify(signature, export_data.split(',')[0]))
+        self.assertTrue(API_signature().verify_rsa_signature(signature, export_data.split(',')[0]))
         vault = json.loads(vault_json_string)
         self.assertTrue(vault["version"])
         if vault["version"] == 1:

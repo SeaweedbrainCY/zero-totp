@@ -162,5 +162,5 @@ cython_debug/
 
 secret/
 
-database/
+database-stack/
 .DS_Store
