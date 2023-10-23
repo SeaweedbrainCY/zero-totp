@@ -20,7 +20,7 @@ export class AdminPageComponent implements OnInit {
   isChallengeSolved: boolean = false;
   isChallengeLoading = false;
   string_challenge: undefined | string = "";
-  private_key_b64 = "";
+  user_token = "";
   
     constructor(
       private http: HttpClient,
@@ -83,7 +83,6 @@ export class AdminPageComponent implements OnInit {
         const user  = JSON.parse(JSON.stringify(response.body));
         if(user.role == "admin"){
           this.isAdmin= true;
-          this.get_admin_challenge();
         } else {
           this.isAdmin= false;
           this.logoutUser();
@@ -98,44 +97,12 @@ export class AdminPageComponent implements OnInit {
     });
   }
 
-  get_admin_challenge(){
-    this.http.get(ApiService.API_URL+"/admin/challenge/generate",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
-      try{
-        const body  = JSON.parse(JSON.stringify(response.body));
-        this.string_challenge = body.challenge;
-      } catch (e) {
-        superToast({
-          message: "Impossible to fetch the admin  challenge. "+ e,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
-      }
-    }, (error) => {
-      let errorMessage = "";
-      if(error.error.message != null){
-        errorMessage = error.error.message;
-      } else if(error.error.detail != null){
-        errorMessage = error.error.detail;
-      }
-      superToast({
-        message: "Impossible to fetch the admin  challenge. "+ errorMessage,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
-    });
-  }
 
   solve_challenge(){
-    this.crypto.sign_rsa(this.string_challenge!, this.private_key_b64).then((signature) => {
       const data = {
-        challenge: this.string_challenge,
-        signature: signature
+        token: this.user_token,
       }
-        this.http.post(ApiService.API_URL+"/admin/challenge/verify",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+        this.http.post(ApiService.API_URL+"/admin/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
           if (response.status == 200){
             console.log("ok")
           }
@@ -154,14 +121,5 @@ export class AdminPageComponent implements OnInit {
           animate: { in: 'fadeIn', out: 'fadeOut' }
           });
         });
-    }).catch((error) => {
-      superToast({
-        message: "Impossible to sign the challenge. "+ error,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
-    });
   }
 }
