@@ -404,7 +404,7 @@ def get_role(token_info, *args, **kwargs):
         return {"message" : "User not found"}, 404
     return {"role": user.role}, 200
 
-@require_admin_token
+
 @require_admin_token
 def get_users_list(*args, **kwargs):
     users = UserDB().get_all()
