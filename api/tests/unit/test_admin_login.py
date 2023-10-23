@@ -1,5 +1,4 @@
 import unittest
-from Utils.security_wrapper import require_admin_role, require_admin_token
 from app import create_app
 from database.db import db 
 import environment as env
@@ -114,7 +113,7 @@ class TestJWT(unittest.TestCase):
     def test_admin_login_but_no_user(self):
         with self.app.app_context():
             self.checkpw.return_value = True
-            self.client.set_cookie("localhost", "api-key",self.generate_expired_cookie(-1)) 
+            self.client.set_cookie("localhost", "api-key",generate_jwt(-1)) 
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)
     
