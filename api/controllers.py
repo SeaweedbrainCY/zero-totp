@@ -16,7 +16,7 @@ import Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import admin_restricted
+from Utils.security_wrapper import require_admin_token, require_admin_role
 
 
 
@@ -404,7 +404,8 @@ def get_role(token_info, *args, **kwargs):
         return {"message" : "User not found"}, 404
     return {"role": user.role}, 200
 
-@admin_restricted
+@require_admin_token
+@require_admin_token
 def get_users_list(*args, **kwargs):
     users = UserDB().get_all()
     if not users:
@@ -415,7 +416,7 @@ def get_users_list(*args, **kwargs):
     return {"users": users_list}, 200
 
 
-@admin_restricted
+@require_admin_role
 def admin_login(*args, **kwargs):
     try:
         user_id = connexion.context.get("user")
