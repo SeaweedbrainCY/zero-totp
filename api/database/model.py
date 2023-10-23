@@ -30,5 +30,5 @@ class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     token_hashed = db.Column(db.Text, nullable=False)
-    challenge_expiration = db.Column(db.String(256), nullable=True, default=None)
+    token_expiration = db.Column(db.String(256), nullable=True, default=None)
 
