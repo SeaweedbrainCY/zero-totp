@@ -52,7 +52,7 @@ jobs:
         JWT_SECRET : "secret"
         PRIVATE_KEY_PATH: "./tests/ressources/test_private.pem"
         PUBLIC_KEY_PATH: "./tests/ressources/test_public.pem"
-      run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml
+      run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml  --cov-fail-under=90
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2
         
