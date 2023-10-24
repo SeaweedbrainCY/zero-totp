@@ -29,20 +29,20 @@ def signup():
     dataJSON = json.dumps(request.get_json())
     try:
         data = json.loads(dataJSON)
-        username = utils.escape(data["username"].strip())
+        username = utils.sanitize_input(data["username"].strip())
         passphrase = data["password"].strip()
-        email = utils.escape(data["email"].strip())
-        derivedKeySalt = utils.escape(data["derivedKeySalt"].strip())
-        zke_key = utils.escape(data["ZKE_key"].strip())
-        passphraseSalt = utils.escape(data["passphraseSalt"].strip())
+        email = utils.sanitize_input(data["email"].strip())
+        derivedKeySalt = utils.sanitize_input(data["derivedKeySalt"].strip())
+        zke_key = utils.sanitize_input(data["ZKE_key"].strip())
+        passphraseSalt = utils.sanitize_input(data["passphraseSalt"].strip())
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
     if not username or not passphrase or not email or not derivedKeySalt or not zke_key or not passphraseSalt:
         return {"message": "Missing parameters"}, 400
-    if(not utils.check_email(email) or not utils.check_username(username) or not utils.check_password(passphrase)):
-        return {"message": "Forbidden parameters"}, 403
+    if not utils.check_email(email) :
+        return {"message": "Bad email format"}, 401
     userDB = UserDB()
     user = userDB.getByEmail(email)
     if user:
@@ -87,15 +87,15 @@ def login():
     try:
         data = json.loads(dataJSON)
         passphrase = data["password"].strip()
-        email = utils.escape(data["email"]).strip()
+        email = utils.sanitize_input(data["email"]).strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
     if not passphrase or not email:
         return {"message": "Missing parameters"}, 400
-    if(not utils.check_email(email) or not utils.check_password(passphrase)):
-        return {"message": "Forbidden parameters"}, 403
+    if(not utils.check_email(email) ):
+        return {"message": "Bad email format"}, 403
     userDB = UserDB()
     user = userDB.getByEmail(email)
     logging.info(user)
@@ -163,7 +163,7 @@ def add_encrypted_secret(uuid):
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
-        enc_secret = utils.escape(data["enc_secret"]).strip()
+        enc_secret = utils.sanitize_input(data["enc_secret"]).strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
@@ -188,7 +188,7 @@ def update_encrypted_secret(uuid):
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
-        enc_secret = utils.escape(data["enc_secret"]).strip()
+        enc_secret = data["enc_secret"]
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
@@ -282,7 +282,7 @@ def update_email():
         return {"message": "Unauthorized"}, 401
     dataJSON = json.dumps(request.get_json())
     data = json.loads(dataJSON)
-    email = utils.escape(data["email"]).strip()
+    email = utils.sanitize_input(data["email"]).strip()
     if not utils.check_email(email):
         return {"message": "Bad email format"}, 400
          
@@ -318,9 +318,6 @@ def update_vault():
 
     if not newPassphrase or not old_passphrase or not enc_vault or not zke_key or not passphrase_salt or not derivedKeySalt:
         return {"message": "Missing parameters"}, 400
-    
-    if not utils.check_password(newPassphrase):
-        return {"message": "Bad passphrase format"}, 400
     
     userDb = UserDB()
     zke_db = ZKE_DB()
