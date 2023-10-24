@@ -92,11 +92,11 @@
       
       <div class="field">
         <div class="control">
-          <button class="button is-info is-medium mt-6" (click)="modal()" data-target="confirmation"  [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading || emailErrorMessage != '' || passwordErrorMessage.length > 1 || usernameErrorMessage != '' || !terms || !beta">Start my zero-trip 
+          <button class="button is-info is-medium mt-6" (click)="signup()" data-target="confirmation"  [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading || emailErrorMessage != '' || passwordErrorMessage.length > 1 || usernameErrorMessage != '' || !terms || !beta">Start my zero-trip 
             </button>
 
 <div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
-    <div class="modal-background" (click)="modal()"></div>
+    <div class="modal-background" (click)="closeModal()"></div>
     <div class="modal-content">
       <section class="modal-card-body">
         <h1 class="is-size-1 has-text-danger">Are you sure ?</h1>
@@ -109,11 +109,11 @@
       </section>
       
       <footer class="modal-card-foot is-flex is-justify-content-right">
-        <button class="button" (click)="modal()">Cancel</button>
-        <button class="button is-success" [disabled]="modalDisabled" (click)="signup()">Create my vault</button>
+        <button class="button" (click)="closeModal()">Cancel</button>
+        <button class="button is-success" [disabled]="modal_confim_button_diabled" (click)="signup()">Create my vault</button>
       </footer>
     </div>
-    <button class="modal-close is-large" aria-label="close" (click)="modal()"></button>
+    <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>
 </div>
 
         </div>
