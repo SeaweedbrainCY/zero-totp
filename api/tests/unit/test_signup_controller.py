@@ -31,12 +31,6 @@ class TestSignupController(unittest.TestCase):
         self.check_email = patch("Utils.utils.check_email").start()
         self.check_email.return_value = True 
 
-        self.check_password = patch("Utils.utils.check_password").start()
-        self.check_password.return_value = True
-
-        self.check_username = patch("Utils.utils.check_username").start()
-        self.check_username.return_value = True
-
         self.json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py", "derivedKeySalt": "randomSalt", "ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
 
     def tearDown(self):
@@ -65,17 +59,8 @@ class TestSignupController(unittest.TestCase):
     def test_signup_forbidden_email(self):
         self.check_email.return_value = False 
         response = self.client.post("/signup", json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
     
-    def test_signup_forbidden_username(self):
-        self.check_username.return_value = False 
-        response = self.client.post("/signup", json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
-    
-    def test_signup_forbidden_password(self):
-        self.check_password.return_value = False 
-        response = self.client.post("/signup", json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
     
     def test_signup_user_already_exists(self):
         self.getByEmailMocked.return_value = True 

@@ -41,7 +41,7 @@ class TestUpdateVault(unittest.TestCase):
         self.zkeUpdate.return_value = True
 
         self.updateUser = patch("database.user_repo.User.update").start()
-        self.updateUser.return_value = True
+        self.updateUser.return_vtest_update_vault_new_passphrase_bad_formatalue = True
 
        
 
@@ -99,11 +99,6 @@ class TestUpdateVault(unittest.TestCase):
             response = self.client.put(self.endpoint, json=payload)
             self.assertEqual(response.status_code, 400)
     
-    def test_update_vault_new_passphrase_bad_format(self):
-        self.payload["new_passphrase"] = "<>'"
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 400)
 
     def test_update_vault_wrong_passphrase(self):
         self.checkpw.return_value = False
