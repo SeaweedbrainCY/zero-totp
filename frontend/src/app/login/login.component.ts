@@ -58,6 +58,13 @@ export class LoginComponent {
           this.warning_message = "For your safety, you have been disconnected after 10min of inactivity"
           this.email = this.userService.getEmail() || "";
           this.userService.clear();
+          break;
+        }
+        case 'sessionEnd':{
+          this.warning_message = "For your safety, your session must be renewed every hour."
+          this.email = this.userService.getEmail() || "";
+          this.userService.clear();
+          break;
         }
       }
       

@@ -212,6 +212,29 @@ export class EditTOTPComponent implements OnInit{
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
       }
+    }, (error) => {
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+
+      if(error.status == 0){
+        errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+      } else if (error.status == 401){
+        this.userService.clear();
+        this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
+        return;
+      }
+      
+      superToast({
+        message: "Error : Impossible to retrieve your secret from the server. "+ errorMessage,
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
     });
   }
 
@@ -262,6 +285,14 @@ export class EditTOTPComponent implements OnInit{
       } else if(error.error.detail != null){
         errorMessage = error.error.detail;
       }
+
+      if(error.status == 0){
+        errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+      } else if (error.status == 401){
+        this.userService.clear();
+        this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
+        return;
+      }
       superToast({
         message: "An error occured while updating your vault with a new code. "+ errorMessage,
        type: "is-warning",
@@ -288,6 +319,15 @@ export class EditTOTPComponent implements OnInit{
       } else if(error.error.detail != null){
         errorMessage = error.error.detail;
       }
+
+      if(error.status == 0){
+        errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+      } else if (error.status == 401){
+        this.userService.clear();
+        this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
+        return;
+      }
+
       superToast({
         message: "An error occured while updating your vault with a new code. "+ errorMessage,
        type: "is-warning",
