@@ -35,8 +35,9 @@ export class SignupComponent implements OnInit {
   encryptedZKEkey=""
   derivedKeySalt=""
   passphraseSalt=""
-  modalDisabled=true;
+  modal_confim_button_diabled=true;
   beta=false;
+  isModalSentenceCompleted=false;
 
   constructor(
     private http: HttpClient,
@@ -109,7 +110,10 @@ export class SignupComponent implements OnInit {
 
 
   signup() {
-    this.modal();
+    if(!this.isModalSentenceCompleted){
+      this.openModal();
+    } else {
+this.closeModal()
     this.emailErrorMessage="";
     this.usernameErrorMessage="";
     this.passwordErrorMessage = [''];
@@ -154,6 +158,7 @@ export class SignupComponent implements OnInit {
         this.hashPassword()
       });
     });   
+  }
   }
 
   hashPassword(){
@@ -206,20 +211,26 @@ export class SignupComponent implements OnInit {
         message: "Error : "+ error.error.message,
         type: "is-danger",
         dismissible: true,
+        duration: 20000,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
     });
   }
 
-  modal(){
-    this.isModalActive = !this.isModalActive;
+ openModal(){
+    this.isModalActive=true;
+  }
+
+  closeModal(){
+    this.isModalActive=false;
   }
 
   confirmSentence(){
     console.log(this.input.replace(/[^a-zA-Z]/g, ''));
     console.log(this.input)
     if(this.input.replace(/[^a-zA-Z]/g, '') == 'MypassphraseisstrongandIwontforgetit'){
-      this.modalDisabled = false
+      this.modal_confim_button_diabled = false
+      this.isModalSentenceCompleted = true
     }
   }
 }

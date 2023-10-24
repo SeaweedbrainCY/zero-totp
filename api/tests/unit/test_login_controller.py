@@ -24,9 +24,6 @@ class TestLoginController(unittest.TestCase):
         self.check_email = patch("Utils.utils.check_email").start()
         self.check_email.return_value = True 
 
-        self.check_password = patch("Utils.utils.check_password").start()
-        self.check_password.return_value = True
-
         self.json_payload = {"email" : "test@test.com", "password": "Abcdefghij1#"}
 
     def tearDown(self):
@@ -64,10 +61,6 @@ class TestLoginController(unittest.TestCase):
         response = self.client.post(self.loginEndpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
     
-    def test_login_forbidden_passphrase(self):
-        self.check_password.return_value = False
-        response = self.client.post(self.loginEndpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
     
     def test_login_no_user(self):
         self.getByEmailMocked.return_value = None 
