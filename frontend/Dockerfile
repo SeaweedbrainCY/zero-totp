@@ -12,7 +12,7 @@ RUN npm ci
 
 COPY . .
 
-RUN ng build --configuration production
+RUN ng build --configuration production --subresource-integrity
 
 EXPOSE 80
 FROM nginx:alpine
