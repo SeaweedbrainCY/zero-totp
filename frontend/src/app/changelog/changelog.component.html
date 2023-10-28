@@ -5,6 +5,19 @@
     <span class="tag is-success is-medium">{{imageHash}}</span>
 </div>
 
+<h3 class="is-size-5-mobile  is-size-3-tablet mt-4 has-text-weight-bold " style="border-bottom: 0.5px lightgray solid; width: 100%;">27/10/2023</h3>
+<div class="tags has-addons mt-2">
+    <span class="tag is-dark">version</span>
+    <span class="tag is-info">b0.48</span>
+</div>
+<p class="has-text-weight-bold"><fa-icon [icon]="faCirclePlus" style="color:#63A375"></fa-icon> We added : </p>
+<ul>
+    <li>A very strong and strict Content-Security-Policy (CSP) to add an extra layer of security to Zero-TOTP, particularly against XSS attacks, clickjacking, XSF, etc.</li>
+    <li> This strict new policy is applied to all pages of Zero-TOTP and may cause some visual perturbations on some browsers. If you encounter any issue, please contact us. We will deeply test the application and apply some fixes if needed in futur releases.
+    </li>
+</ul>
+
+
 <h3 class="is-size-5-mobile  is-size-3-tablet mt-4 has-text-weight-bold " style="border-bottom: 0.5px lightgray solid; width: 100%;">24/10/2023</h3>
 <div class="tags has-addons mt-2">
     <span class="tag is-dark">version</span>
@@ -12,8 +25,8 @@
 </div>
 <p class="has-text-weight-bold"><fa-icon [icon]="faTruckMedical" style="color:#FE6847"></fa-icon> We fixed : </p>
 <ul>
-    <li>We had a better verification of your inputs to improve the application security at a very global scale.</li>
-    <li>We had a strong sanitizing of all inputs to avoid any security issue. </li>
+    <li>We added a better verification of your inputs to improve the application security at a very global scale.</li>
+    <li>We added a strong sanitizing of all inputs to avoid any security issue. </li>
     <li>The "confirm your passphrase is strong" pop-up is now showed only once, even if your signup form has an error. You can now re-submit a signup without having to fill the pop-up again.</li>
     <li>As for now, if your session is expired or if you don't have internet anymore, the frontend can adapt to display more accurate error message and send you to the login page if your 1h session is ended.</li>
     <li>The "Create my vault" button on the home page is now "Open my vault" and leads to the login page instead. It is more convenient for most of users.</li>
