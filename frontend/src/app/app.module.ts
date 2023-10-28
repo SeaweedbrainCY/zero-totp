@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CSP_NONCE } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
@@ -60,7 +60,10 @@ import { AdminPageComponent } from './admin-page/admin-page.component';
     ClipboardModule,
     ZXingScannerModule
   ],
-  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, BnNgIdleService],
+  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, BnNgIdleService, {
+    provide: CSP_NONCE,
+    useValue: 'random-nonce-placeholder'
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
