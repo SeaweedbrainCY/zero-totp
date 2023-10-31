@@ -7,6 +7,8 @@ services:
     user: "101:101"
     ports: 
       - ${FRONTEND_PORT}
+    volumes:
+      - /var/log/nginx:/var/log/nginx
     env_file:
       - .env
     networks:
@@ -23,6 +25,7 @@ services:
       - .env
     volumes:
       - ./secret:/api/secret
+      - /var/log/api:/var/log/api
     restart: always
     networks:
       - internal
