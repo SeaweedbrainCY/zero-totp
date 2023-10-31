@@ -46,12 +46,8 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(){
     const crypto = new Crypto();
-   
-    console.log(crypto.generateRandomSalt())
     // each second :
     setInterval(()=> { this.generateCode() }, 500);
-
-   console.log(this.userService.getId())
   }
 
   generateCode(){
@@ -64,7 +60,6 @@ export class HomeComponent implements OnInit {
  login(){
     const crypto = new Crypto();
     const salt = crypto.generateRandomSalt();
-    console.log(Buffer.from(salt).toString('base64'))
     crypto.deriveKey(salt, this.password).then(key=>{
       crypto.encrypt(this.plaintext, key).then(encrypted=>{
         this.encrypted = encrypted;

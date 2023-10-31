@@ -132,7 +132,6 @@ export class LoginComponent {
           } else if (version == 1){
             this.local_vault_service = this.localVaultv1
           this.local_vault_service.parseUploadedVault(unsecure_context).then((vault_parsing_status) => {
-            console.log("vault_parsing_status = "+ vault_parsing_status)
           switch (vault_parsing_status) {
             case UploadVaultStatus.SUCCESS:{
               this.isPassphraseModalActive = true;

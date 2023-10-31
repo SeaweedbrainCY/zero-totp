@@ -201,13 +201,10 @@ export class AccountComponent implements OnInit {
             const derivedKeySalt = this.crypto.generateRandomSalt();
             this.deriveNewPassphrase(derivedKeySalt).then(derivedKey => {
               const zke_key_str = this.crypto.generateZKEKey();
-              console.log("zke_key_str", zke_key_str)
                 this.step++;
                 this.encryptVault(vault, zke_key_str).then(enc_vault => {
-                  console.log("enc_vault", enc_vault)
                   this.crypto.encrypt(zke_key_str , derivedKey).then((enc_zke_key) => {
                     this.step++;
-                    console.log("enc_zke_key", enc_zke_key)
                     this.verifyEncryption(derivedKey, enc_zke_key, enc_vault, vault).then(_ => {
                       this.step++;
                       this.uploadNewVault(enc_vault, enc_zke_key, derivedKeySalt).then(_ => {

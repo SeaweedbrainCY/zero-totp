@@ -66,7 +66,6 @@ export class QrcodeReaderComponent implements OnInit {
   }
 
   onCodeResult(resultString: string) {
-    console.log("resultString", resultString);
     if(this.scannerEnabled){ // false positive
       this.scannerEnabled = false;
     

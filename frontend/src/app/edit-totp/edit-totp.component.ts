@@ -57,7 +57,6 @@ export class EditTOTPComponent implements OnInit{
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } 
     this.secret_uuid = this.route.snapshot.paramMap.get('id');
-    console.log(this.secret_uuid)
     if(this.secret_uuid == null){
         if(this.currentUrl != "/vault/add"){
           this.router.navigate(["/vault"], {relativeTo:this.route.root});
@@ -128,7 +127,6 @@ export class EditTOTPComponent implements OnInit{
   }
 
   changeColor(colorSelected:string){
-    console.log(colorSelected)
     switch(colorSelected){
       case "Blue":{
         this.color = "info";
@@ -162,9 +160,7 @@ export class EditTOTPComponent implements OnInit{
     this.http.get(ApiService.API_URL+"/encrypted_secret/"+this.uuid,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       try{
         const data = JSON.parse(JSON.stringify(response.body));
-        console.log("dara = " + data.enc_secret)
         this.crypto.decrypt(data.enc_secret, this.userService.get_zke_key()!).then((decrypted_secret)=>{
-          console.log("decrypted secret = " + decrypted_secret)
           if(decrypted_secret == null){
             superToast({
               message: "An error occured while decrypting your secret",

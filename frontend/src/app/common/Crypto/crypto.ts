@@ -89,7 +89,6 @@ export class Crypto {
         const publicKeyDER = atob(publicKeyPEM.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----/g, ''));
       
         const publicKeyBuffer = this.str2ab(publicKeyDER);
-        console.log("publicKeyBuffer: " + publicKeyBuffer)
       
         const publicKey = await crypto.subtle.importKey(
           'spki',
@@ -119,29 +118,8 @@ export class Crypto {
 
 
     async sign_rsa(str_to_sign:string, privateKeyBase64: string): Promise<String>{
-        //const keyPair = await window.crypto.subtle.generateKey({
-        //    name: 'RSASSA-PKCS1-v1_5',
-        //    modulusLength: 4096, // Longueur de la clé en bits
-        //    publicExponent: new Uint8Array([0x01, 0x00, 0x01]), // Exposant public
-        //    hash: 'SHA-512', // Fonction de hachage
-        //},
-        //true,
-        //['sign', 'verify']
-        //)
-        //let exported = await window.crypto.subtle.exportKey("pkcs8", keyPair.privateKey);
-        //let exportedAsString = this.ab2str(exported);
-        //let exportedAsBase64 = window.btoa(exportedAsString);
-        //let pemExported = `-----BEGIN PRIVATE KEY-----\n${exportedAsBase64}\n-----END PRIVATE KEY-----`
-        //console.log(pemExported)
-////
-        //exported = await window.crypto.subtle.exportKey("spki", keyPair.publicKey);
-        //exportedAsString = this.ab2str(exported);
-        //exportedAsBase64 = window.btoa(exportedAsString);
-        //pemExported = `-----BEGIN PUBLIC KEY-----\n${exportedAsBase64}\n-----BEGIN PUBLIC KEY-----`
-        //console.log(pemExported)
 
         try{
-        console.log(privateKeyBase64.replace(/-----BEGIN RSA PRIVATE KEY-----|-----END RSA PRIVATE KEY-----|\n/g, ''))
         const buf = atob(privateKeyBase64.replace(/-----BEGIN RSA PRIVATE KEY-----|-----END RSA PRIVATE KEY-----|\n/g, ''));
         
         const privateKeyPem = this.str2ab(buf)

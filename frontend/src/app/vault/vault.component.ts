@@ -105,7 +105,6 @@ export class VaultComponent implements OnInit {
   }
 
   startDisplayingCode(){
-        console.log("vault = ", this.vaultDomain)
         setInterval(()=> { this.generateTime() }, 20);
         setInterval(()=> { this.generateCode() }, 100);
   }
@@ -118,7 +117,6 @@ export class VaultComponent implements OnInit {
       try{
         this.startDisplayingCode()
         for (let secret of encrypted_vault){
-          console.log("secret = ", secret)
           this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
             if(dec_secret == null){
               superToast({
@@ -137,10 +135,8 @@ export class VaultComponent implements OnInit {
             } else {
                 try{
                   this.vault?.set(secret.uuid, this.utils.mapFromJson(dec_secret));
-                  console.log(this.vault)
                   this.userService.setVault(this.vault!);
                   this.vaultDomain = Array.from(this.vault!.keys()) as string[];
-                  console.log("vault set")
                 } catch {
                   superToast({
                     message: "Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.   ",

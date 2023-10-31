@@ -59,9 +59,7 @@ export class LocalVaultV1Service {
       const unsecure_vault_b64 = unsecure_context_b64.split(",")[0];
       const signature = unsecure_context_b64.split(",")[1];
       let unsecure_vault = atob(unsecure_vault_b64);
-      console.log(unsecure_vault)
       let context = JSON.parse(unsecure_vault);
-      console.log(context)
       if(context == null){
         resolve( UploadVaultStatus.INVALID_JSON);
       }
@@ -73,7 +71,6 @@ export class LocalVaultV1Service {
             if(context.hasOwnProperty(key)){
               if(key == "secrets"){
                 for(let secret of context[key]){
-                  console.log("secret = " + secret)
                   if(secret.hasOwnProperty("uuid") && secret.hasOwnProperty("enc_secret")){
                     const sanitized_uuid = this.sanitizer.sanitize(SecurityContext.HTML, secret.uuid)
                     const sanitized_enc_secret = this.sanitizer.sanitize(SecurityContext.HTML, secret.enc_secret)
@@ -103,15 +100,6 @@ export class LocalVaultV1Service {
           this.derived_key_salt = context.derived_key_salt;
           this.zke_key_enc = context.zke_key_enc;
           this.enc_secrets = context.secrets;
-          console.log("enc_secrets = " + enc_secrets)
-          /*for (let enc_secret of context.secrets){
-            console.log(enc_secret)
-            if(enc_secret.hasOwnProperty("uuid"), enc_secret.hasOwnProperty("enc_secret")){
-              this.enc_secrets.set(enc_secret.uuid, enc_secret.enc_secret);
-            } else {
-              resolve(UploadVaultStatus.INVALID_ARGUMENT);
-            }
-          }*/
            this.crypto.verifySignature(unsecure_vault_b64, signature).then(result => {
             if(result){
               this.is_signature_valid = true;

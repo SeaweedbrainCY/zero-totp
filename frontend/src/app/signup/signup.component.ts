@@ -190,7 +190,6 @@ this.closeModal()
     };
 
     this.http.post(ApiService.API_URL+"/signup", data, {observe: 'response'}).subscribe((response) => {
-      console.log(response);
       this.isLoading=false;
       superToast({
         message: "Account created successfully. You can now log in",
@@ -226,8 +225,6 @@ this.closeModal()
   }
 
   confirmSentence(){
-    console.log(this.input.replace(/[^a-zA-Z]/g, ''));
-    console.log(this.input)
     if(this.input.replace(/[^a-zA-Z]/g, '') == 'MypassphraseisstrongandIwontforgetit'){
       this.modal_confim_button_diabled = false
       this.isModalSentenceCompleted = true
