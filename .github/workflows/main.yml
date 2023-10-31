@@ -7,6 +7,7 @@ on:
 
 jobs:
     tests_and_security:
+      name: Tests and security analysis
       uses: ./.github/workflows/security_analysis.yml  # use the callable tests job to run tests
       secrets:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -26,7 +27,7 @@ jobs:
           run: bash generate-env.sh '${{ github.ref_name }}' '${{secrets.RSA_PUBLIC_KEY}}'
         - name: Build Docker image
           working-directory: ./frontend
-          run: docker build -t $REPO:latest -t $REPO:${{ github.ref_name }} . 
+          run: current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/') && docker build -t $REPO:latest -t $REPO:$current_version . 
         - name: Publish Docker Image
           run: docker push $REPO --all-tags
     docker-api:
