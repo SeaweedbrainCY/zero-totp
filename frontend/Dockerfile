@@ -16,6 +16,9 @@ RUN ng build --configuration production --subresource-integrity
 
 EXPOSE 80
 FROM nginx:alpine
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=builder /app/dist /usr/share/nginx/html/
+RUN  touch /var/run/nginx.pid && \
+     chown -R nginx:nginx /var/cache/nginx /var/run/nginx.pid
+USER nginx
+COPY --chown=nginx:nginx nginx.conf /etc/nginx/nginx.conf
+COPY --chown=nginx:nginx --from=builder /app/dist /usr/share/nginx/html/
 

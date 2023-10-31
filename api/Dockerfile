@@ -12,5 +12,5 @@ RUN pip install -r requirements.txt
 EXPOSE 8080
 
 RUN chmod +x ./start.sh
-USER 65534:65534
+USER 1001:1001
 CMD ["./start.sh"]
