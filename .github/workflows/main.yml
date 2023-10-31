@@ -26,9 +26,9 @@ jobs:
           run: bash generate-env.sh '${{ github.ref_name }}' '${{secrets.RSA_PUBLIC_KEY}}'
         - name: Build Docker image
           working-directory: ./frontend
-          run: docker build -t $REPO:latest -t $REPO:${GITHUB_SHA::8} .
+          run: docker build -t $REPO:latest -t $REPO:${{ github.ref_name }} . 
         - name: Publish Docker Image
-          run: docker push $REPO
+          run: docker push $REPO --all-tags
     docker-api:
       needs: [tests_and_security]
       name: Publish API Docker image
@@ -41,9 +41,9 @@ jobs:
           run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
         - name: Build Docker image
           working-directory: ./api
-          run: docker build -t $REPO:latest -t $REPO:${GITHUB_SHA::8} .
+          run: docker build -t $REPO:latest -t $REPO:${{ github.ref_name }} .
         - name: Publish Docker Image
-          run: docker push $REPO
+          run: docker push $REPO --all-tags
     deploy-production-eu:
        needs: [docker-frontend, docker-api] 
        name: Deploy on production server (EUROPE)
