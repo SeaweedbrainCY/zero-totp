@@ -4,6 +4,7 @@ services:
   frontend:
     container_name: frontend
     image: seaweedbrain/zero-totp-frontend:latest
+    user: "101:101"
     ports: 
       - ${FRONTEND_PORT}
     env_file:
@@ -15,6 +16,7 @@ services:
   api:
     container_name: api
     image: seaweedbrain/zero-totp-api:latest
+    user: '1001:1001'
     ports:
       - ${API_PORT}
     env_file:
