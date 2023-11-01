@@ -74,6 +74,13 @@ export class LoginComponent {
           this.is_oauth_flow=true;
           break;
         }
+        case 'confirmPassphrase':{
+          this.warning_message = "To continue, please confirm your passphrase"
+          this.email = this.userService.getEmail() || "";
+          this.warning_message_color="is-success";
+          this.userService.clear();
+          break;
+        }
       }
       
     }
