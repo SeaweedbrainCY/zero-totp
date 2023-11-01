@@ -360,16 +360,15 @@ paths:
           description: Access denied
         "500":
           description: Internal server error
-
-  /role:
+  /google-drive/oauth/option:
     get:
-      operationId: controllers.get_role
+      operationId: controllers.get_google_drive_option
       tags:
-        - User
-      summary: Return the user's role
+        - Google Drive
+      summary: Check if the google drive option as a backup is enabled
       responses:
-        "200": # status code
-          description: Return the user's role
+        "200": 
+          description: Return the sync status
           content:
             application/json:
               schema:
