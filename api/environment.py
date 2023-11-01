@@ -9,12 +9,22 @@ private_key_path = os.environ.get('PRIVATE_KEY_PATH')
 public_key_path = os.environ.get('PUBLIC_KEY_PATH')
 
 
+
 if environment == "development":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(
+        format='%(asctime)s %(levelname)-8s %(message)s',
+        level=logging.DEBUG,
+        datefmt='%d-%m-%Y %H:%M:%S')
     logging.debug("Environment set to development")
     frontend_domain = 'zero-totp.local'
     frontend_URI = ['http://localhost:4200']
 else:
+    logging.basicConfig(
+        filename="/var/log/api/api.log",
+        filemode='a',
+        format='%(asctime)s %(levelname)-8s %(message)s',
+        level=logging.DEBUG,
+        datefmt='%d-%m-%Y %H:%M:%S')
     frontend_domain="zero-totp.com"
     frontend_URI = ["https://zero-totp.com", "https://ca.zero-totp.com", "https://eu.zero-totp.com"]
 
