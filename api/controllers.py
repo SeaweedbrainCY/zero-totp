@@ -8,6 +8,8 @@ from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
 from database.admin_repo import Admin as Admin_db
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging
+from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
+from CryptoClasses.hash_func import Bcrypt
 import environment as env
 import random
 import string
@@ -452,6 +454,7 @@ def admin_login(*args, **kwargs):
     
     
 # GET /oauth/authorization_flow
+# GET /google-drive/oauth/authorization_flow
 def get_authorization_flow():
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
@@ -459,13 +462,49 @@ def get_authorization_flow():
     logging.info(flask.session["state"])
     return {"authorization_url": authorization_url, "state":state}, 200
 
-# GET /oauth/callback
+# GET /google-drive/oauth/callback
 def oauth_callback():
     #TODO store token URI
     #TODO get expiration date
     #TODO handle errors
     credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
     response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=success&state="+flask.session["state"], code=302))
+    flask.session.pop("state")
+    flask.session["expires_in"] = credentials["expires_in"]
+    logging.info(credentials["expires_in"])
+    flask.session["token_uri"] = credentials["token_uri"]
+    logging.info(credentials["token_uri"])
     response.set_cookie("google_drive_token_id", credentials["token"], httponly=False, secure=True, samesite="Strict")
     response.set_cookie("google_drive_refresh_token", credentials["refresh_token"], httponly=False, secure=True, samesite="Strict")
     return response
+
+
+# POST /google-drive/oauth/enc_tokens
+def set_encrypted_tokens():
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+        dataJSON = json.dumps(request.get_json())
+        data = json.loads(dataJSON)
+        enc_token = utils.escape(data["enc_access_token"]).strip()
+        enc_refresh_token = utils.escape(data["enc_refresh_token"]).strip()
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    if not enc_token or not enc_refresh_token:
+        return {"message": "Missing parameters"}, 400
+    if not flask.session["token_uri"]  or not flask.session["expires_in"]:
+        return {"message": "Unknown context"}, 401
+    token_db = Oauth_tokens_db()
+    tokens = token_db.get_by_user_id(user_id)
+    expires_at = datetime.datetime.utcnow()+datetime.timedelta(seconds=flask.session["expires_in"])
+    if tokens:
+        tokens = token_db.update(user_id=user_id, enc_token=enc_token, enc_refresh_token=enc_refresh_token, expires_at=expires_at, token_uri=flask.session["token_uri"])
+    else:
+        tokens = token_db.add(user_id=user_id, enc_token=enc_token, enc_refresh_token=enc_refresh_token, expires_at=expires_at, token_uri=flask.session["token_uri"])
+    if tokens:
+        return {"message": "Encrypted tokens stored"}, 201
+    else:
+        logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
+        return {"message": "Unknown error while storing encrypted tokens"}, 500
