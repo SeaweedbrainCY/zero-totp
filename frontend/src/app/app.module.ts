@@ -66,14 +66,10 @@ import { CookieModule, CookieService } from 'ngx-cookie';
     ZXingScannerModule,
     CookieModule.withOptions()
   ],
-<<<<<<< HEAD
-  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, BnNgIdleService, {
+  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, BnNgIdleService, CookieService, {
     provide: CSP_NONCE,
     useValue: 'random-nonce-placeholder'
   }],
-=======
-  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service,CookieService],
->>>>>>> 2549e87 (Resolve conflicts)
   bootstrap: [AppComponent]
 })
 export class AppModule { }

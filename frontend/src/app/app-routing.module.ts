@@ -28,11 +28,16 @@ const routes: Routes = [
   {path:"logout", component: LogoutComponent},
   {path:'dev', component: DevComponent},
   {path:"account", component: AccountComponent},
+<<<<<<< HEAD
   {path:"privacy", component: PrivacyPolicyComponent},
   {path:"changelog", component: ChangelogComponent},
   {path:"admin", component: AdminPageComponent},
   {path:"/oauth/callback", component: CallbackComponent},
   {path:"/oauth/synchronize", component: OauthSyncComponent},
+=======
+  {path:"oauth/callback", component: CallbackComponent},
+  {path:"oauth/synchronize", component: OauthSyncComponent},
+>>>>>>> 992a8e9 (Fix oauth routes (frontend))
   {path:'**', component: PagenotfoundComponent}
 ];
 
