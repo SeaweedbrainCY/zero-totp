@@ -30,6 +30,8 @@ import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.componen
 import { BnNgIdleService } from 'bn-ng-idle'; 
 import { ChangelogComponent } from './changelog/changelog.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
+import { CallbackComponent } from './callback/callback.component';
+import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 
 
 @NgModule({
@@ -49,7 +51,9 @@ import { AdminPageComponent } from './admin-page/admin-page.component';
     AccountComponent,
     PrivacyPolicyComponent,
     ChangelogComponent,
-    AdminPageComponent
+    AdminPageComponent,
+    CallbackComponent,
+    OauthSyncComponent
   ],
   imports: [
     BrowserModule,
