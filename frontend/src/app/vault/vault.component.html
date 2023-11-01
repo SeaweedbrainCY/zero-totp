@@ -5,27 +5,30 @@
             <p class="has-text-centered has-text-grey pb-6">You and only you can access to this data. All the magic is
                 done
                 on your computer.</p>
-                <article class="message is-info" *ngIf="this.userService.getIsVaultLocal()">
-                    <div class="message-body">
-                      This is a vault stored locally on your computer. You can't sync it with other devices, nor with zero-totp servers. You don't need internet to open it.<br>
-                      <b>To restore this backup and sync it on all your devices, log in and then choose <code>restore a backup</code> in the storage options</b>.
-                    </div>
-                  </article>
-            <div class="message is-success" *ngIf="!this.userService.getIsVaultLocal()">
-                <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen" style="cursor: pointer;">
-                    <p>Your storage options <span class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
-            <div class="message" [ngClass]="{'is-success': isGoogleDriveSync, 'is-warning': !isGoogleDriveSync}">
-                <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen" style="cursor: pointer;" >
-                    <p>Your storage options <span *ngIf="!isGoogleDriveSync" class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
-                    <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">Less</span>
-                        <span *ngIf="!storageOptionOpen">More</span>
-                        <fa-icon [icon]="faChevronDown" class="pl-1" *ngIf="!storageOptionOpen"></fa-icon>
-                        <fa-icon [icon]="faChevronUp" class="pl-1" *ngIf="storageOptionOpen"></fa-icon>
-                    </div>
-                </div>
+            <article class="message is-info" *ngIf="this.userService.getIsVaultLocal()">
                 <div class="message-body">
-                    <div class="is-flex is-justify-content-space-around is-flex-wrap-wrap columns">
-                        <div class="column is-full-mobile
+                    This is a vault stored locally on your computer. You can't sync it with other devices, nor with
+                    zero-totp servers. You don't need internet to open it.<br>
+                    <b>To restore this backup and sync it on all your devices, log in and then choose
+                        <code>restore a backup</code> in the storage options</b>.
+                </div>
+            </article>
+            <div class="message is-success" *ngIf="!this.userService.getIsVaultLocal()">
+                    <div class="message"
+                        [ngClass]="{'is-success': isGoogleDriveSync, 'is-warning': !isGoogleDriveSync}">
+                        <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen"
+                            style="cursor: pointer;">
+                            <p>Your storage options <span *ngIf="!isGoogleDriveSync"
+                                    class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
+                            <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">Less</span>
+                                <span *ngIf="!storageOptionOpen">More</span>
+                                <fa-icon [icon]="faChevronDown" class="pl-1" *ngIf="!storageOptionOpen"></fa-icon>
+                                <fa-icon [icon]="faChevronUp" class="pl-1" *ngIf="storageOptionOpen"></fa-icon>
+                            </div>
+                        </div>
+                        <div class="message-body">
+                            <div class="is-flex is-justify-content-space-around is-flex-wrap-wrap columns">
+                                <div class="column is-full-mobile
                     is-four-fifths-tablet
                     is-one-third-desktop
                     is-one-third-widescreen
@@ -38,147 +41,165 @@
                                     <span class="tag is-success is-medium" id="totp-status-tag"> <fa-icon
                                             [icon]="faCheckCircle"></fa-icon></span>
                                             <br>
+                                        </div>
+                                    </div>
+                                    <div [hidden]="!storageOptionOpen" class="mb-3">
+                                        <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
+                                            <button class="button is-outlined is-dark"><fa-icon [icon]="faRotateRight"
+                                                    class="mr-3"></fa-icon> Reload the vault </button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div [hidden]="!storageOptionOpen" class="mb-3">
-                                <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
-                                    <button class="button is-outlined is-dark"><fa-icon [icon]="faRotateRight"
-                                            class="mr-3"></fa-icon> Reload the vault </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class=" column is-full-mobile
+                                <div class=" column is-full-mobile
                       is-four-fifths-tablet
                       is-one-third-desktop
                       is-one-third-widescreen
                       is-one-quarter-fullhd">
-                            <div class="is-flex is-justify-content-center">
-                                <div class="tags has-addons mb-0" style="align-items: normal;" (click)="storageOptionOpen = true">
-                                    <span class="tag is-medium is-dark" id="google-tag"> <fa-icon [icon]="faGoogleDrive"
-                                            class="pr-1"></fa-icon> <span class=" has-text-weight-bold">Google Drive
-                                        </span></span>
-                                    <span class="tag is-danger is-medium " [ngClass]="{'is-danger':!isGoogleDriveSync, 'is-success':isGoogleDriveSync}"id="google-status-tag">
-                                        <fa-icon *ngIf="!isGoogleDriveSync"
-                                            [icon]="faCircleXmark"></fa-icon>
-                                            <fa-icon *ngIf="isGoogleDriveSync"
-                                            [icon]="faCheckCircle"></fa-icon></span>
+                                    <div class="is-flex is-justify-content-center">
+                                        <div class="tags has-addons mb-0" style="align-items: normal;"
+                                            (click)="storageOptionOpen = true">
+                                            <span class="tag is-medium is-dark" id="google-tag"> <fa-icon
+                                                    [icon]="faGoogleDrive" class="pr-1"></fa-icon> <span
+                                                    class=" has-text-weight-bold">Google Drive
+                                                </span></span>
+                                            <span class="tag is-danger is-medium "
+                                                [ngClass]="{'is-danger':!isGoogleDriveSync, 'is-success':isGoogleDriveSync}"
+                                                id="google-status-tag">
+                                                <fa-icon *ngIf="!isGoogleDriveSync" [icon]="faCircleXmark"></fa-icon>
+                                                <fa-icon *ngIf="isGoogleDriveSync"
+                                                    [icon]="faCheckCircle"></fa-icon></span>
+                                        </div>
+                                    </div>
+                                    <div [hidden]="!storageOptionOpen" class="mb-3">
+                                        <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
+                                            [hidden]="!storageOptionOpen">
+                                            <button *ngIf="!isGoogleDriveSync"
+                                                class="button  is-outlined is-dark mb-3 mr-2 ml-2"
+                                                (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
+                                                    class="mr-3"></fa-icon> Sync now </button>
+                                            <button *ngIf="!isGoogleDriveSync"
+                                                class="button  is-outlined is-dark mb-3 mr-2 ml-2"><fa-icon
+                                                    [icon]="faCircleInfo" class="mr-3"></fa-icon> More info</button>
+
+                                            <button *ngIf="isGoogleDriveSync"
+                                                class="button  is-outlined is-dark mb-3 mr-2 ml-2"
+                                                (click)="get_oauth_authorization_url()"><fa-icon [icon]="faCircleXmark"
+                                                    class="mr-3"></fa-icon> Stop sync </button>
+
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div [hidden]="!storageOptionOpen" class="mb-3">
-                                <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
-                                    [hidden]="!storageOptionOpen">
-                                    <button *ngIf="!isGoogleDriveSync" class="button  is-outlined is-dark mb-3 mr-2 ml-2" (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
-                                            class="mr-3"></fa-icon> Sync now </button>
-                                    <button *ngIf="!isGoogleDriveSync" class="button  is-outlined is-dark mb-3 mr-2 ml-2"><fa-icon
-                                            [icon]="faCircleInfo" class="mr-3"></fa-icon> More info</button>
-                                    
-                                    <button *ngIf="isGoogleDriveSync" class="button  is-outlined is-dark mb-3 mr-2 ml-2" (click)="get_oauth_authorization_url()"><fa-icon [icon]="faCircleXmark"  class="mr-3"></fa-icon> Stop sync </button>
-                                    
-                                </div>
-                            </div>
-                            </div>
-                            
-                            <div class=" column is-full-mobile
+
+                                <div class=" column is-full-mobile
                     is-four-fifths-tablet
                     is-one-third-desktop
                     is-one-third-widescreen
                     is-one-quarter-fullhd">
-                                <div class="is-flex is-justify-content-center">
-                                    <div class="tags has-addons mb-0" style="align-items: normal;" (click)="storageOptionOpen = true">
-                                        <span class="tag is-medium is-dark has-text-weight-bold" id="download-tag">
-                                            <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>Backup locally
-                                        </span>
-                                        <span class="tag is-info is-medium" id="download-status-tag"> <fa-icon
-                                                [icon]="faDownload"></fa-icon></span>
+                                    <div class="is-flex is-justify-content-center">
+                                        <div class="tags has-addons mb-0" style="align-items: normal;"
+                                            (click)="storageOptionOpen = true">
+                                            <span class="tag is-medium is-dark has-text-weight-bold" id="download-tag">
+                                                <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>Backup locally
+                                            </span>
+                                            <span class="tag is-info is-medium" id="download-status-tag"> <fa-icon
+                                                    [icon]="faDownload"></fa-icon></span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div [hidden]="!storageOptionOpen" class="mb-3">
-                                <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
-                                    [hidden]="!storageOptionOpen">
-                                    <button class="button  is-outlined is-dark mb-3 mr-2 ml-2" (click)="downloadVault()"><fa-icon
-                                            [icon]="faDownload" class="mr-3 "></fa-icon> Save a backup</button>
-                                            <div class="dropdown" [ngClass]="{'is-active': isRestoreBackupModaleActive}">
+                                    <div [hidden]="!storageOptionOpen" class="mb-3">
+                                        <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
+                                            [hidden]="!storageOptionOpen">
+                                            <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
+                                                (click)="downloadVault()"><fa-icon [icon]="faDownload"
+                                                    class="mr-3 "></fa-icon> Save a backup</button>
+                                            <div class="dropdown"
+                                                [ngClass]="{'is-active': isRestoreBackupModaleActive}">
                                                 <div class="dropdown-trigger">
-                                                    <button class="button  is-outlined is-dark mr-2 ml-2 " (click)="isRestoreBackupModaleActive = !isRestoreBackupModaleActive" ria-haspopup="true" aria-controls="dropdown-menu"><fa-icon [icon]="faUpload"
-                                                        class="mr-3 " ></fa-icon> Open a local Vault</button>
+                                                    <button class="button  is-outlined is-dark mr-2 ml-2 "
+                                                        (click)="isRestoreBackupModaleActive = !isRestoreBackupModaleActive"
+                                                        ria-haspopup="true" aria-controls="dropdown-menu"><fa-icon
+                                                            [icon]="faUpload" class="mr-3 "></fa-icon> Open a local
+                                                        Vault</button>
                                                 </div>
                                                 <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                                                  <div class="dropdown-content">
-                                                    <a  class="dropdown-item">
-                                                      Restore a backup
-                                                    </a>
-                                                    <a href="/login/#openVault" class="dropdown-item">
-                                                        Open a backup locally (read-only)
-                                                    </a>
-                                                  </div>
+                                                    <div class="dropdown-content">
+                                                        <a class="dropdown-item">
+                                                            Restore a backup
+                                                        </a>
+                                                        <a href="/login/#openVault" class="dropdown-item">
+                                                            Open a backup locally (read-only)
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                              </div>
-                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                 </div>
-                <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault" *ngIf="!this.userService.getIsVaultLocal()">Reload my vault <fa-icon
-                        [icon]="faRotateRight" class="pl-1" [spin]=reloadSpin></fa-icon></span>
-                <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
+            </div>
+                    <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault"
+                        *ngIf="!this.userService.getIsVaultLocal()">Reload my vault <fa-icon [icon]="faRotateRight"
+                            class="pl-1" [spin]=reloadSpin></fa-icon></span>
+                    <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
 
-                    <div class="column is-full-mobile
+                        <div class="column is-full-mobile
             is-one-third-tablet
             is-one-third-desktop
             is-one-third-widescreen
             is-one-quarter-fullhd" *ngIf="!this.userService.getIsVaultLocal()">
-                        <a (click)="isModalActive = !isModalActive">
-                            <div class="card  ">
-                                <header class="card-header">
-                                    <p class="card-header-title">Add a new TOTP code</p>
-                                </header>
-                                <div class="card-content">
-                                    <div class="content has-text-centered">
-                                        <p class="is-size-2"><fa-icon [icon]="faSquarePlus"
-                                                style='color: #dbdbdb; height:20px;'></fa-icon></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="column  is-full-mobile
-            is-one-third-tablet
-            is-one-third-desktop
-            is-one-third-widescreen
-            is-one-quarter-fullhd" *ngFor="let uuid of vaultDomain">
-                        <div class="card has-background-{{vault!.get(uuid)?.get('color')}} has-text-white">
-                            <header class="card-header">
-                                <p class="card-header-title  has-text-white" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; max-width: 80%;">{{vault!.get(uuid)?.get('name')}}</p>
-                                <button class="card-header-icon" aria-label="edit" (click)="edit(uuid)">
-                                    <span class="icon">
-                                        <fa-icon [icon]="faPen"></fa-icon>
-                                    </span>
-                                </button>
-                                <button class="card-header-icon" aria-label="copy" (click)="copy()"
-                                    [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!">
-                                    <span class="icon">
-                                        <fa-icon [icon]="faCopy"></fa-icon>
-                                    </span>
-                                </button>
-                            </header>
-                            <a class="noHover" (click)="copy()" [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!">
-                                <div class="card-content has-text-white" style="text-decoration: none;">
-                                    <div class="content has-text-centered">
-                                        <p class="is-size-2 has-text-weight-bold">{{vault!.get(uuid)?.get('code')}}
-                                            <br>
-                                            <progress class="progress is-small" value="{{remainingTime}}" max="100"
-                                                style="height: 10px;">{{remainingTime}}%</progress>
-                                        </p>
-
+                            <a (click)="isModalActive = !isModalActive">
+                                <div class="card  ">
+                                    <header class="card-header">
+                                        <p class="card-header-title">Add a new TOTP code</p>
+                                    </header>
+                                    <div class="card-content">
+                                        <div class="content has-text-centered">
+                                            <p class="is-size-2"><fa-icon [icon]="faSquarePlus"
+                                                    style='color: #dbdbdb; height:20px;'></fa-icon></p>
+                                        </div>
                                     </div>
                                 </div>
                             </a>
                         </div>
+                        <div class="column  is-full-mobile
+            is-one-third-tablet
+            is-one-third-desktop
+            is-one-third-widescreen
+            is-one-quarter-fullhd" *ngFor="let uuid of vaultDomain">
+                            <div class="card has-background-{{vault!.get(uuid)?.get('color')}} has-text-white">
+                                <header class="card-header">
+                                    <p class="card-header-title  has-text-white">{{vault!.get(uuid)?.get('name')}}</p>
+                                    <button class="card-header-icon" aria-label="edit" (click)="edit(uuid)">
+                                        <span class="icon">
+                                            <fa-icon [icon]="faPen"></fa-icon>
+                                        </span>
+                                    </button>
+                                    <button class="card-header-icon" aria-label="copy" (click)="copy()"
+                                        [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!">
+                                        <span class="icon">
+                                            <fa-icon [icon]="faCopy"></fa-icon>
+                                        </span>
+                                    </button>
+                                </header>
+                                <a class="noHover" (click)="copy()"
+                                    [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!">
+                                    <div class="card-content has-text-white" style="text-decoration: none;">
+                                        <div class="content has-text-centered">
+                                            <p class="is-size-2 has-text-weight-bold">{{vault!.get(uuid)?.get('code')}}
+                                                <br>
+                                                <progress class="progress is-small" value="{{remainingTime}}" max="100"
+                                                    style="height: 10px;">{{remainingTime}}%</progress>
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 </section>
 <div id="addTOTPModal" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
     <div class="modal-background" (click)="isModalActive = !isModalActive"></div>
