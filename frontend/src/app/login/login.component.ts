@@ -30,8 +30,7 @@ export class LoginComponent {
   isUnsecureVaultModaleActive = false;
   isPassphraseModalActive = false;
   local_vault_service: LocalVaultV1Service | null = null;
-
-
+  is_oauth_flow=false;
 
   constructor(
     private http: HttpClient,
@@ -61,25 +60,83 @@ export class LoginComponent {
           this.userService.clear();
           break;
         }
+
         case 'sessionEnd':{
           this.warning_message = "For your safety, your session must be renewed every hour."
           this.email = this.userService.getEmail() || "";
           break;
         }
-        case 'confirmPassphrase':{
-          this.warning_message = "To continue, please confirm your passphrase"
+        case 'oauth':{
+          this.warning_message = "One last step, please confirm your password to complete the synchronization"
           this.email = this.userService.getEmail() || "";
           this.warning_message_color="is-success";
           this.userService.clear();
+          this.is_oauth_flow=true;
           break;
         }
       }
       
     }
 
-  
-
-  
+  getZKEKeyAndNavigate(derivedKey: CryptoKey){
+    this.http.get(ApiService.API_URL+"/zke_encrypted_key",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      const data = JSON.parse(JSON.stringify(response.body))
+      const zke_key_encrypted = data.zke_encrypted_key
+      this.crypto.decrypt(zke_key_encrypted, derivedKey).then(zke_key_b64=>{
+        if (zke_key_b64 != null) {
+          const zke_key_raw = Buffer.from(zke_key_b64!, 'base64');
+          try{
+          window.crypto.subtle.importKey(
+            "raw",
+            zke_key_raw,
+            "AES-GCM",
+            true,
+            ["encrypt", "decrypt"]
+          ).then((zke_key)=>{
+            this.userService.set_zke_key(zke_key!);
+            if(this.is_oauth_flow){
+              this.router.navigate(["/oauth/synchronize"], {relativeTo:this.route.root});
+            } else {
+              superToast({
+                message: "Welcome back",
+                type: "is-success",
+                dismissible: true,
+                animate: { in: 'fadeIn', out: 'fadeOut' }
+              });
+              this.router.navigate(["/vault"], {relativeTo:this.route.root});
+            }
+          });
+        } catch(e) {
+          superToast({
+            message: "Error : Impossible to import your key." + e,
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        }
+        } else {
+          superToast({
+            message: "Impossible to decrypt your key",
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        }
+      
+      });
+    }, (error)=> {
+      superToast({
+        message: "Impossible to retrieve your encryption key. Please try again later",
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
+    
+  }
 
 
   
@@ -353,12 +410,6 @@ export class LoginComponent {
       password: this.hashedPassword
     }
     this.http.post(ApiService.API_URL+"/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
-      superToast({
-        message: "Welcome back",
-        type: "is-success",
-        dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
       try{
         const data = JSON.parse(JSON.stringify(response.body))
         this.userService.setId(data.id);
