@@ -79,6 +79,7 @@ export class LoginComponent {
           this.email = this.userService.getEmail() || "";
           this.warning_message_color="is-success";
           this.userService.clear();
+          this.is_oauth_flow=true;
           break;
         }
       }
