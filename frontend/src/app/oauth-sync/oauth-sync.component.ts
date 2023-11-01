@@ -83,6 +83,10 @@ export class OauthSyncComponent implements OnInit {
         this.errorMessage = "An error occured while storing your encrypted access tokens." + error.error.message;
       });
   }
+
+  uploadEncryptedTokens(){
+
+  }
 }
 
 

@@ -18,11 +18,7 @@ if environment == "development":
         datefmt='%d-%m-%Y %H:%M:%S')
     logging.debug("Environment set to development")
     frontend_domain = 'zero-totp.local'
-<<<<<<< HEAD
     frontend_URI = ['http://localhost:4200']
-=======
-    frontend_URI = 'http://localhost:4200'
->>>>>>> 59bd376 (Update call back URI)
     callback_URI = 'http://localhost:8080/google-drive/oauth/callback'
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 else:
