@@ -32,6 +32,7 @@ import { ChangelogComponent } from './changelog/changelog.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
 import { CallbackComponent } from './callback/callback.component';
 import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
+import { CookieModule, CookieService } from 'ngx-cookie';
 
 
 @NgModule({
@@ -62,12 +63,17 @@ import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
     FontAwesomeModule,
     HttpClientModule, 
     ClipboardModule,
-    ZXingScannerModule
+    ZXingScannerModule,
+    CookieModule.withOptions()
   ],
+<<<<<<< HEAD
   providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, BnNgIdleService, {
     provide: CSP_NONCE,
     useValue: 'random-nonce-placeholder'
   }],
+=======
+  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service,CookieService],
+>>>>>>> 2549e87 (Resolve conflicts)
   bootstrap: [AppComponent]
 })
 export class AppModule { }
