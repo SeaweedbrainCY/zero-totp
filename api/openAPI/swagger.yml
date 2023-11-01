@@ -332,11 +332,7 @@ paths:
         "200": 
           description: Callback successful
   
-<<<<<<< HEAD
-  /google-drive/oauth/enc-tokens:
-=======
   /google-drive/oauth/enc_tokens:
->>>>>>> 38dba34 (Add /enc_token POST endpoint)
     post:
       operationId: controllers.set_encrypted_tokens
       tags:
@@ -364,7 +360,6 @@ paths:
           description: Access denied
         "500":
           description: Internal server error
-<<<<<<< HEAD
 
   /role:
     get:
@@ -432,8 +427,6 @@ paths:
         "403":
           description: Access denied
 
-=======
->>>>>>> 38dba34 (Add /enc_token POST endpoint)
 
 components:
   securitySchemes:
