@@ -307,11 +307,11 @@ paths:
         "404":
           description: No secrets found
 
-  /oauth/authorization_flow:
+  /google-drive/oauth/authorization-flow:
     get:
       operationId: controllers.get_authorization_flow
       tags:
-        - OAuth
+        - Google Drive
       summary: Get the OAuth authorization flow URI
       responses:
         "200": 
@@ -321,18 +321,22 @@ paths:
         "403":
           description: Access denied
   
-  /oauth/callback:
+  /google-drive/oauth/callback:
     get:
       operationId: controllers.oauth_callback
       tags:
-        - OAuth
+        - Google Drive
       summary: OAuth callback endpoint for the authorization flow
       security: []
       responses:
         "200": 
           description: Callback successful
   
+<<<<<<< HEAD
   /google-drive/oauth/enc-tokens:
+=======
+  /google-drive/oauth/enc_tokens:
+>>>>>>> 38dba34 (Add /enc_token POST endpoint)
     post:
       operationId: controllers.set_encrypted_tokens
       tags:
@@ -360,6 +364,7 @@ paths:
           description: Access denied
         "500":
           description: Internal server error
+<<<<<<< HEAD
 
   /role:
     get:
@@ -427,6 +432,8 @@ paths:
         "403":
           description: Access denied
 
+=======
+>>>>>>> 38dba34 (Add /enc_token POST endpoint)
 
 components:
   securitySchemes:
