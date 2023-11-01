@@ -433,7 +433,20 @@ paths:
       requestBody:
         required: true
         content:
-          description: Access disabled
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+      responses:
+        "200": # status code
+          description:  Return 200 with an admin cookie if the challenge is solved. 403 otherwise
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+      
   /google-drive/backup:
     put:
       operationId: controllers.backup_to_google_drive
