@@ -457,62 +457,64 @@ def admin_login(*args, **kwargs):
 def get_authorization_flow():
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
-    logging.info(authorization_url)
-    logging.info(flask.session["state"])
     return {"authorization_url": authorization_url, "state":state}, 200
 
 # GET /google-drive/oauth/callback
 def oauth_callback():
-    credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
-    
-    if credentials == None:
-        response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=error&state="+flask.session["state"], code=302))
+    try: 
+        credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
+
+        if credentials == None:
+            response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=error&state="+flask.session["state"],  code=302))
+            flask.session.pop("state")
+            return response
+
+        response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=success&state="+flask.session["state"],    code=302))
+        flask.session.pop("state")
+        creds_b64 = base64.b64encode(json.dumps(credentials).encode("utf-8")).decode("utf-8")
+        response.set_cookie("credentials", creds_b64, httponly=False, secure=True, samesite="Strict", max_age=timedelta(minutes=2))
+        return response
+    except Exception as e:
+        logging.error("Error while exchanging the authorization code " + str(e))
+        response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=error&state="+flask.session["state"],  code=302))
         flask.session.pop("state")
         return response
 
-    response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=success&state="+flask.session["state"], code=302))
-    flask.session.pop("state")
-    logging.info(credentials["token_uri"])
-    flask.session["token_uri"] = credentials["token_uri"]
-    response.set_cookie("google_drive_token_id", credentials["token"], httponly=False, secure=True, samesite="Strict", max_age=3600)
-    response.set_cookie("google_drive_refresh_token", credentials["refresh_token"], httponly=False, secure=True, samesite="Strict", max_age=3600)
-    return response
 
-
-# POST /google-drive/oauth/enc_tokens
-def set_encrypted_tokens():
+# POST  /google-drive/oauth/enc-credentials:
+def set_encrypted_credentials():
     try:
         user_id = connexion.context.get("user")
         if user_id == None:
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
-        enc_token = utils.escape(data["enc_access_token"]).strip()
-        enc_refresh_token = utils.escape(data["enc_refresh_token"]).strip()
-        if not flask.session["token_uri"] :
-            return {"message": "Unknown context"}, 401
+        enc_credentials = utils.escape(data["enc_credentials"]).strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
-    if not enc_token or not enc_refresh_token:
+    if not enc_credentials :
         return {"message": "Missing parameters"}, 400
    
     token_db = Oauth_tokens_db()
     tokens = token_db.get_by_user_id(user_id)
     expires_at = (datetime.datetime.utcnow() + datetime.timedelta(hours=1)).timestamp()
     if tokens:
-        tokens = token_db.update(user_id=user_id, access_token_enc=enc_token, refresh_token_enc=enc_refresh_token, expires_at=expires_at, token_uri=flask.session["token_uri"])
+        tokens = token_db.update(user_id=user_id, enc_credentials=enc_credentials ,expires_at=expires_at)
     else:
-        tokens = token_db.add(user_id=user_id, access_token_enc=enc_token, refresh_token_enc=enc_refresh_token, expires_at=expires_at, token_uri=flask.session["token_uri"])
+        tokens = token_db.add(user_id=user_id, enc_credentials=enc_credentials, expires_at=expires_at)
     if tokens:
         userDB = UserDB()
+        flask.session.pop('credentials')
         userDB.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
-        return {"message": "Encrypted tokens stored"}, 201
+        response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "Encrypted tokens stored"}))
+        response.set_cookie('credentials', "", expires=0)
+        return response
     else:
         logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
         return {"message": "Unknown error while storing encrypted tokens"}, 500
     
-#GET /google-drive/oauth/status
+#GET /google-drive/status
 def get_google_drive_option():
     try:
         user_id = connexion.context.get("user")
@@ -527,3 +529,18 @@ def get_google_drive_option():
         return {"status": "enabled"}, 200
     else:
         return {"status": "disabled"}, 200
+    
+#PUT /google-drive/backup
+def backup_to_google_drive():
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+        dataJSON = json.dumps(request.get_json())
+        data = json.loads(dataJSON)
+        access_token = utils.escape(data["access_token"]).strip()
+        refresh_token = utils.escape(data["refresh_token"]).strip()
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    
