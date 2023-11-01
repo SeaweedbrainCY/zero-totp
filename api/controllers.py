@@ -457,7 +457,9 @@ def admin_login(*args, **kwargs):
 def get_authorization_flow():
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
-    return {"authorization_url": authorization_url}, 200
+    logging.info(authorization_url)
+    logging.info(flask.session["state"])
+    return {"authorization_url": authorization_url, "state":state}, 200
 
 # GET /oauth/callback
 def oauth_callback():
