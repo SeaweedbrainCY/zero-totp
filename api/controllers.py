@@ -10,6 +10,7 @@ from CryptoClasses.hash_func import Bcrypt
 from environment import logging
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
 from CryptoClasses.hash_func import Bcrypt
+from Oauth import google_drive_api
 import environment as env
 import random
 import string
@@ -457,6 +458,7 @@ def admin_login(*args, **kwargs):
 def get_authorization_flow():
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
+    logging.info("State stored in session : " + str(state))
     return {"authorization_url": authorization_url, "state":state}, 200
 
 # GET /google-drive/oauth/callback
@@ -476,8 +478,11 @@ def oauth_callback():
         return response
     except Exception as e:
         logging.error("Error while exchanging the authorization code " + str(e))
-        response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=error&state="+flask.session["state"],  code=302))
-        flask.session.pop("state")
+        if flask.session.get("state"):
+            response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=error&state="+flask.session.get('state'),  code=302))
+            flask.session.pop("state")
+        else :
+            response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=error&state=none",  code=302))
         return response
 
 # GET  /google-drive/oauth/enc-credentials:
@@ -522,7 +527,6 @@ def set_encrypted_credentials():
         tokens = token_db.add(user_id=user_id, enc_credentials=enc_credentials, expires_at=expires_at)
     if tokens:
         userDB = UserDB()
-        flask.session.pop('credentials')
         userDB.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
         response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "Encrypted tokens stored"}))
         response.set_cookie('credentials', "", expires=0)
@@ -555,9 +559,36 @@ def backup_to_google_drive():
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
-        access_token = utils.escape(data["access_token"]).strip()
+        token = utils.escape(data["token"]).strip()
         refresh_token = utils.escape(data["refresh_token"]).strip()
+        token_uri = utils.escape(data["token_uri"]).strip()
+        client_id = utils.escape(data["client_id"]).strip()
+        client_secret = utils.escape(data["client_secret"]).strip()
+        scopes_unsecure = data["scopes"]
+        expiry = utils.escape(data["expiry"]).strip()
+        scopes = []
+        for scope in scopes_unsecure:
+            scopes.append(utils.escape(scope).strip())
+
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
+    if not token or not refresh_token or not token_uri or not client_id or not client_secret or not scopes:
+        return {"message": "Missing parameters"}, 400
+
+    credentials = {
+        'token': token,
+        'refresh_token': refresh_token,
+        'token_uri': token_uri,
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'scopes': scopes,
+        'expiry' : expiry}
+   # try:
+    google_drive_api.backup(credentials=credentials)
+    return {"message": "Backup done"}, 201
+   # except Exception as e:
+   #     logging.error("Error while backing up to google drive " + str(e))
+   #     return {"message": "Error while backing up to google drive"}, 500
+    
     
