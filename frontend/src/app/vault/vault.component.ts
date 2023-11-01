@@ -299,6 +299,28 @@ export class VaultComponent implements OnInit {
     });
   }
 
+  get_oauth_authorization_url(){
+    this.http.get(ApiService.API_URL+"/oauth/authorization_flow",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
+      const data = JSON.parse(JSON.stringify(response.body))
+      sessionStorage.setItem("oauth_state", data.state);
+      window.location.href = data.authorization_url;
+    }, (error) => {
+        let errorMessage = "";
+        if(error.error.message != null){
+          errorMessage = error.error.message;
+        } else if(error.error.detail != null){
+          errorMessage = error.error.detail;
+        }
+        superToast({
+          message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+    });
+  }
+
   
 
 
