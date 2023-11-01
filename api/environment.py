@@ -11,8 +11,6 @@ public_key_path = os.environ.get('PUBLIC_KEY_PATH')
 oauth_client_secret_file = os.environ.get('OAUTH_CLIENT_SECRET_FILE')
 flask_secret_key = os.environ.get('FLASK_SECRET_KEY')
 
-
-
 if environment == "development":
     logging.basicConfig(
         format='%(asctime)s %(levelname)-8s %(message)s',
