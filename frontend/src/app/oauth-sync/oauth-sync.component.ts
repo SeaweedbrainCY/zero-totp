@@ -85,7 +85,16 @@ export class OauthSyncComponent implements OnInit {
   }
 
   uploadEncryptedTokens(){
-
+    this.errorMessage = '';
+    const data = {
+      "enc_access_token" : this.encrypted_access_token,
+      "enc_refresh_token" : this.encrypted_refresh_token
+    }
+    this.http.post(ApiService.API_URL+"/google-drive/oauth/enc-tokens",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+        this.router.navigate(["/vault"], {relativeTo:this.route.root});
+      }, (error) => {
+        this.errorMessage = "An error occured while storing your encrypted access tokens." + error.error.message;
+      });
   }
 }
 
