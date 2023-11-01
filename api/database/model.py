@@ -11,6 +11,7 @@ class User(db.Model):
     createdAt = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(256), nullable=False, default="user")
     isBlocked =  db.Column(db.Boolean, nullable=False, default=False)
+    googleDriveSync = db.Column(db.Boolean, nullable=True)
 
 
 class ZKE_encryption_key(db.Model):
