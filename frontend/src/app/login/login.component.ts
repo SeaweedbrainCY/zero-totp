@@ -25,6 +25,7 @@ export class LoginComponent {
   hashedPassword:string = "";
   isLoading = false;
   warning_message="";
+  warning_message_color="is-warning";
   error_param: string|null=null;
   isUnsecureVaultModaleActive = false;
   isPassphraseModalActive = false;
@@ -63,6 +64,12 @@ export class LoginComponent {
         case 'sessionEnd':{
           this.warning_message = "For your safety, your session must be renewed every hour."
           this.email = this.userService.getEmail() || "";
+          break;
+        }
+        case 'confirmPassphrase':{
+          this.warning_message = "To continue, please confirm your passphrase"
+          this.email = this.userService.getEmail() || "";
+          this.warning_message_color="is-success";
           this.userService.clear();
           break;
         }
