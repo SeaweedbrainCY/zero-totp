@@ -418,6 +418,7 @@ export class LoginComponent {
         if(data.role == "admin"){
           this.userService.setIsAdmin(true);
         }
+        this.userService.setGoogleDriveSync(data.isGoogleDriveSync);
         this.final_zke_flow();
       } catch(e){
         this.isLoading=false;
