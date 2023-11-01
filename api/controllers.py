@@ -454,15 +454,12 @@ def admin_login(*args, **kwargs):
     
     
 # GET /oauth/authorization_flow
-# GET /google-drive/oauth/authorization_flow
 def get_authorization_flow():
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
-    logging.info(authorization_url)
-    logging.info(flask.session["state"])
-    return {"authorization_url": authorization_url, "state":state}, 200
+    return {"authorization_url": authorization_url}, 200
 
-# GET /google-drive/oauth/callback
+# GET /oauth/callback
 def oauth_callback():
     #TODO store token URI
     #TODO get expiration date
@@ -510,3 +507,4 @@ def set_encrypted_tokens():
     else:
         logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
         return {"message": "Unknown error while storing encrypted tokens"}, 500
+   
