@@ -1,7 +1,7 @@
 from database.user_repo import User as UserDB
 from CryptoClasses.jwt_func import verify_jwt
 import connexion
-import logging
+from environment import logging
 
 def require_admin_role(func):
     def wrapper(*args, **kwargs):

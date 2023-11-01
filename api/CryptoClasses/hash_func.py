@@ -1,5 +1,5 @@
 import bcrypt
-import logging
+from environment import logging
 
 class Bcrypt():
     password:str

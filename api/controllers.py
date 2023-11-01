@@ -6,7 +6,7 @@ from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
 from database.admin_repo import Admin as Admin_db
 from CryptoClasses.hash_func import Bcrypt
-import logging
+from environment import logging
 import environment as env
 import random
 import string

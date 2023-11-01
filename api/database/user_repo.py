@@ -1,6 +1,6 @@
 from database.db import db 
 from database.model import User as UserModel
-import logging
+from environment import logging
 
 class User:
 
