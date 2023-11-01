@@ -307,11 +307,11 @@ paths:
         "404":
           description: No secrets found
 
-  /google-drive/oauth/authorization-flow:
+  /oauth/authorization_flow:
     get:
       operationId: controllers.get_authorization_flow
       tags:
-        - Google Drive
+        - OAuth
       summary: Get the OAuth authorization flow URI
       responses:
         "200": 
@@ -321,11 +321,11 @@ paths:
         "403":
           description: Access denied
   
-  /google-drive/oauth/callback:
+  /oauth/callback:
     get:
       operationId: controllers.oauth_callback
       tags:
-        - Google Drive
+        - OAuth
       summary: OAuth callback endpoint for the authorization flow
       security: []
       responses:
