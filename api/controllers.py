@@ -454,6 +454,7 @@ def admin_login(*args, **kwargs):
     
     
 # GET /oauth/authorization_flow
+# GET /google-drive/oauth/authorization_flow
 def get_authorization_flow():
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
@@ -497,7 +498,7 @@ def set_encrypted_tokens():
         return {"message": "Unknown context"}, 401
     token_db = Oauth_tokens_db()
     tokens = token_db.get_by_user_id(user_id)
-    expires_at = datetime.datetime.utcnow()+datetime.datetime.timedelta(seconds=flask.session["expires_in"])
+    expires_at = (datetime.datetime.utcnow() + datetime.timedelta(hours=1)).timestamp()
     if tokens:
         tokens = token_db.update(user_id=user_id, access_token_enc=enc_token, refresh_token_enc=enc_refresh_token, expires_at=expires_at, token_uri=flask.session["token_uri"])
     else:
