@@ -12,7 +12,7 @@ RUN pip install -r requirements.txt
 EXPOSE 8080
 
 RUN chmod +x ./start.sh
-RUN mkdir /var/log/api/ && touch /var/log/api/gunicorn_error.log && touch /var/log/api/gunicorn_access.log
+RUN mkdir /var/log/api/ && touch /var/log/api/gunicorn_error.log && touch /var/log/api/api.log && touch /var/log/api/gunicorn_access.log
 RUN chown -R 1001:1001 /var/log/api/
 USER 1001:1001
 CMD ["./start.sh"]
