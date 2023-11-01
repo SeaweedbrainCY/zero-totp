@@ -469,8 +469,8 @@ def oauth_callback():
     credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
     response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=success&state="+flask.session["state"], code=302))
     flask.session.pop("state")
-    flask.session["expires_in"] = credentials["expires_in"]
-    logging.info(credentials["expires_in"])
+    flask.session["expires_in"] = 0 #credentials["expires_in"]
+    #logging.info(credentials["expires_in"])
     flask.session["token_uri"] = credentials["token_uri"]
     logging.info(credentials["token_uri"])
     response.set_cookie("google_drive_token_id", credentials["token"], httponly=False, secure=True, samesite="Strict")
@@ -493,15 +493,15 @@ def set_encrypted_tokens():
         return {"message": "Invalid request"}, 400
     if not enc_token or not enc_refresh_token:
         return {"message": "Missing parameters"}, 400
-    if not flask.session["token_uri"]  or not flask.session["expires_in"]:
+    if not flask.session["token_uri"] :
         return {"message": "Unknown context"}, 401
     token_db = Oauth_tokens_db()
     tokens = token_db.get_by_user_id(user_id)
     expires_at = datetime.datetime.utcnow()+datetime.datetime.timedelta(seconds=flask.session["expires_in"])
     if tokens:
-        tokens = token_db.update(user_id=user_id, enc_token=enc_token, enc_refresh_token=enc_refresh_token, expires_at=expires_at, token_uri=flask.session["token_uri"])
+        tokens = token_db.update(user_id=user_id, access_token_enc=enc_token, refresh_token_enc=enc_refresh_token, expires_at=expires_at, token_uri=flask.session["token_uri"])
     else:
-        tokens = token_db.add(user_id=user_id, enc_token=enc_token, enc_refresh_token=enc_refresh_token, expires_at=expires_at, token_uri=flask.session["token_uri"])
+        tokens = token_db.add(user_id=user_id, access_token_enc=enc_token, refresh_token_enc=enc_refresh_token, expires_at=expires_at, token_uri=flask.session["token_uri"])
     if tokens:
         return {"message": "Encrypted tokens stored"}, 201
     else:
