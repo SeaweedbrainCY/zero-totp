@@ -12,7 +12,7 @@ FOLDER_NAME = "Zero-TOTP Backup"
 
 
 
-def backup(credentials):
+def backup(credentials, vault):
         dat_obj = datetime.strptime(credentials["expiry"], '%Y-%m-%d %H:%M:%S.%f')
         credentials["expiry"] = dat_obj.strftime('%Y-%m-%dT%H:%M:%SZ')
         creds = Credentials.from_authorized_user_info(credentials)
@@ -21,8 +21,9 @@ def backup(credentials):
         if folder.get("id") is None or folder.get('explicitlyTrashed'):
              folder = create_folder(FOLDER_NAME, drive)
         now = datetime.now()
-        now_str = now.strftime('%d-%m-%Y_%H-%M')
-        file = create_file(name=f"{now_str}_backup", drive=drive, content="This is a backup 2", folder_id=folder.get("id"))
+        now_str = now.strftime('%d-%m-%Y_%H-%M-%S')
+
+        file = create_file(name=f"{now_str}_backup", drive=drive, content=vault, folder_id=folder.get("id"))
         return file
             
            
