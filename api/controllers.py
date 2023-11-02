@@ -395,7 +395,7 @@ def export_vault():
     secrets = []
     for secret in totp_secrets_list:
         secrets.append({"uuid": secret.uuid, "enc_secret": secret.secret_enc})
-    vault["secrets"] = secrets
+    vault["secrets"] = dict(sorted(secrets.items))
     vault_b64 = base64.b64encode(json.dumps(vault).encode("utf-8")).decode("utf-8")
     signature = API_signature().sign_rsa(vault_b64)
     vault = vault_b64 + "," + signature
@@ -464,7 +464,7 @@ def get_authorization_flow():
 
 # GET /google-drive/oauth/callback
 def oauth_callback():
-    frontend_URI = env.frontend_URI[0] # keep the default URI, not regionized
+    frontend_URI = env.frontend_URI[0] # keep the default URI, not regionized. 
     try: 
         credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
 
