@@ -24,6 +24,7 @@ import base64
 import datetime
 from Utils.security_wrapper import require_admin_token, require_admin_role
 import traceback
+from hashlib import sha256
 
 
 
@@ -395,7 +396,9 @@ def export_vault():
     secrets = []
     for secret in totp_secrets_list:
         secrets.append({"uuid": secret.uuid, "enc_secret": secret.secret_enc})
-    vault["secrets"] = dict(sorted(secrets.items))
+    secrets = sorted(secrets,key=lambda x: x["uuid"])
+    vault["secrets"] = secrets
+    vault["secrets_sha256sum"] = sha256(json.dumps(vault["secrets"],  sort_keys=True).encode("utf-8")).hexdigest()
     vault_b64 = base64.b64encode(json.dumps(vault).encode("utf-8")).decode("utf-8")
     signature = API_signature().sign_rsa(vault_b64)
     vault = vault_b64 + "," + signature
@@ -588,7 +591,8 @@ def backup_to_google_drive():
         'scopes': scopes,
         'expiry' : expiry}
    # try:
-    google_drive_api.backup(credentials=credentials)
+    exported_vault,_ = export_vault()
+    google_drive_api.backup(credentials=credentials, vault=exported_vault)
     return {"message": "Backup done"}, 201
    # except Exception as e:
    #     logging.error("Error while backing up to google drive " + str(e))
