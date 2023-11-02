@@ -109,14 +109,6 @@ export class UserService {
     this.googleDriveSync = sync;
     }
 
-    getGoogleDriveSync(): boolean | null {
-    return this.googleDriveSync;
-    }
-
-    setGoogleDriveSync(sync:boolean){
-    this.googleDriveSync = sync;
-    }
-
    clear(){
     this.id = null;
     this.email = null;

@@ -30,7 +30,10 @@ const routes: Routes = [
   {path:"account", component: AccountComponent},
   {path:"privacy", component: PrivacyPolicyComponent},
   {path:"changelog", component: ChangelogComponent},
+  {path:"admin", component: AdminPageComponent},
   {path:"oauth/callback", component: CallbackComponent},
+  {path:"oauth/synchronize", component: OauthSyncComponent},
+  {path:'**', component: PagenotfoundComponent}
 ];
 
 @NgModule({
