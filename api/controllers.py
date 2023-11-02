@@ -23,6 +23,7 @@ import os
 import base64
 import datetime
 from Utils.security_wrapper import require_admin_token, require_admin_role
+import traceback
 
 
 
@@ -463,26 +464,28 @@ def get_authorization_flow():
 
 # GET /google-drive/oauth/callback
 def oauth_callback():
+    frontend_URI = env.frontend_URI[0] # keep the default URI, not regionized
     try: 
         credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
 
         if credentials == None:
-            response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=error&state="+flask.session["state"],  code=302))
+            response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state="+str(flask.session["state"]),  code=302))
             flask.session.pop("state")
             return response
 
-        response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=success&state="+flask.session["state"],    code=302))
+        response = make_response(redirect(frontend_URI + "/oauth/callback?status=success&state="+str(flask.session["state"]),    code=302))
         flask.session.pop("state")
         creds_b64 = base64.b64encode(json.dumps(credentials).encode("utf-8")).decode("utf-8")
-        response.set_cookie("credentials", creds_b64, httponly=False, secure=True, samesite="Strict", max_age=timedelta(minutes=2))
+        response.set_cookie("credentials", creds_b64, httponly=False, secure=True, samesite="Strict", max_age=datetime.timedelta(minutes=2))
         return response
     except Exception as e:
         logging.error("Error while exchanging the authorization code " + str(e))
+        logging.error(traceback.format_exc())
         if flask.session.get("state"):
-            response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=error&state="+flask.session.get('state'),  code=302))
+            response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state="+flask.session.get('state'),  code=302))
             flask.session.pop("state")
         else :
-            response = make_response(redirect(env.frontend_URI + "/oauth/callback?status=error&state=none",  code=302))
+            response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state=none",  code=302))
         return response
 
 # GET  /google-drive/oauth/enc-credentials:
@@ -511,7 +514,7 @@ def set_encrypted_credentials():
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
-        enc_credentials = utils.escape(data["enc_credentials"]).strip()
+        enc_credentials = utils.sanitize_input(data["enc_credentials"]).strip()
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
@@ -559,16 +562,16 @@ def backup_to_google_drive():
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
-        token = utils.escape(data["token"]).strip()
-        refresh_token = utils.escape(data["refresh_token"]).strip()
-        token_uri = utils.escape(data["token_uri"]).strip()
-        client_id = utils.escape(data["client_id"]).strip()
-        client_secret = utils.escape(data["client_secret"]).strip()
+        token = utils.sanitize_input(data["token"]).strip()
+        refresh_token = utils.sanitize_input(data["refresh_token"]).strip()
+        token_uri = utils.sanitize_input(data["token_uri"]).strip()
+        client_id = utils.sanitize_input(data["client_id"]).strip()
+        client_secret = utils.sanitize_input(data["client_secret"]).strip()
         scopes_unsecure = data["scopes"]
-        expiry = utils.escape(data["expiry"]).strip()
+        expiry = utils.sanitize_input(data["expiry"]).strip()
         scopes = []
         for scope in scopes_unsecure:
-            scopes.append(utils.escape(scope).strip())
+            scopes.append(utils.sanitize_input(scope).strip())
 
     except Exception as e:
         logging.info(e)
