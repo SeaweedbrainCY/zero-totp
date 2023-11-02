@@ -237,11 +237,11 @@ export class VaultComponent implements OnInit {
   
   downloadVault(){
     this.http.get(ApiService.API_URL+"/vault/export",  {withCredentials:true, observe: 'response',  responseType: 'blob' }, ).subscribe((response) => {
-      const blob = new Blob([response.body!], { type: 'application/json' });
+      const blob = new Blob([response.body!], { type: 'text/plain' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        const date = String(formatDate(new Date(), 'dd-MM-yyyy', 'en'));
+        const date = String(formatDate(new Date (), 'dd-MM-yyyy-hh-mm-ss', 'en'));
         a.download = 'enc_vault_' + date + '.zero-totp';
         a.click();
         window.URL.revokeObjectURL(url);
