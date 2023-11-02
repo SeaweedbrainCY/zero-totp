@@ -302,9 +302,6 @@ export class VaultComponent implements OnInit {
 
 
 
-  
-
-
   get_google_drive_option(){
     this.http.get(ApiService.API_URL+"/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
       const data = JSON.parse(JSON.stringify(response.body))

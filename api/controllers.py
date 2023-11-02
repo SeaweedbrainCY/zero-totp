@@ -591,4 +591,3 @@ def backup_to_google_drive():
    #     logging.error("Error while backing up to google drive " + str(e))
    #     return {"message": "Error while backing up to google drive"}, 500
     
-    

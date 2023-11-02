@@ -84,7 +84,6 @@ export class OauthSyncComponent implements OnInit {
       });
   }
 
-  
 }
 
 
