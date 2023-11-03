@@ -327,7 +327,6 @@ paths:
       tags:
         - Google Drive
       summary: OAuth callback endpoint for the authorization flow
-      security: []
       responses:
         "302": 
           description: Callback successful
