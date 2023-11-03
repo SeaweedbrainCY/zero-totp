@@ -11,6 +11,8 @@ public_key_path = os.environ.get('PUBLIC_KEY_PATH')
 oauth_client_secret_file = os.environ.get('OAUTH_CLIENT_SECRET_FILE')
 flask_secret_key = os.environ.get('FLASK_SECRET_KEY')
 
+sever_side_encryption_key = os.environ.get('SEVER_SIDE_ENCRYPTION_KEY')
+
 
 if environment == "development":
     logging.basicConfig(
@@ -68,3 +70,8 @@ if oauth_client_secret_file == None:
 if flask_secret_key == None:
     logging.error("FLASK_SECRET_KEY environment variable not set. Please set it to a valid secret key. Aborting...")
     raise Exception("FLASK_SECRET_KEY environment variable not set. Please set it to a valid secret key.")
+
+
+if sever_side_encryption_key == None:
+    logging.error("SEVER_SIDE_ENCRYPTION_KEY environment variable not set. Please set it to a valid secret key. Aborting...")
+    raise Exception("SEVER_SIDE_ENCRYPTION_KEY environment variable not set. Please set it to a valid secret key.")
