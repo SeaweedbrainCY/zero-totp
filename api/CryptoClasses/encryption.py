@@ -17,18 +17,13 @@ class ServiceSideEncryption:
         encrypted_data = {"ciphertext": b64encode(ciphertext).decode("utf-8"), "nonce": b64encode(cipher.nonce).decode("utf-8"), "tag": b64encode(tag).decode("utf-8")}
         return  encrypted_data
     
-    def decrypt(self, json_cipher) -> str or None:
+    def decrypt(self, ciphertext, tag, nonce) -> str or None:
         try:
-            json_cipher = json.loads(json_cipher)
-        except Exception as e:
-            logging.warning("Invalid json cipher : " + str(e))
-            return None
-        try:
-            cipher = AES.new(self.key, AES.MODE_EAX, b64decode(json_cipher["nonce"]))
+            cipher = AES.new(self.key, AES.MODE_EAX, b64decode(nonce))
 
-            plaintext = cipher.decrypt(b64decode(json_cipher["ciphertext"]))
+            plaintext = cipher.decrypt(b64decode(ciphertext))
         
-            cipher.verify(b64decode(json_cipher["tag"]))
+            cipher.verify(b64decode(tag))
             return plaintext.decode("utf-8")
         except (ValueError , KeyError) as e:
             logging.error("Invalid decryption : " + str(e))
