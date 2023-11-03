@@ -39,50 +39,24 @@ export class OauthSyncComponent implements OnInit {
     if(this.userService.getId() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
   } else {
-      this.encryptCredentials().then(() => {
-        this.uploadEncryptedTokens();
-      }, (_) => {
-       return;
-      });
+      this.backupVault();
   }
   }
 
-  encryptCredentials(): Promise<Boolean>{
-    return new Promise((resolve, reject) => {
-      if(this.credentials == '' || this.credentials == undefined){
-        this.errorMessage = 'Authentication with Google Drive impossible. Verify that you have allowed Zero-TOTP to access your Google Drive account. Please, try again';
-        reject(false);
-      } else {
-        const zke_key = this.userService.get_zke_key();
-        if (zke_key == null){
-          this.errorMessage = 'Encryption key not found. Please log out and log in again.';
-          reject(false);
-        } else {
-          this.crypto.encrypt(this.credentials, zke_key).then((encrypted_credentials) => {
-              this.encrypted_credentials = encrypted_credentials;
-              resolve(true);
-          }, (error) => {
-            this.errorMessage = "An error occured while encrypted token. " + error + ". Please, try again.";
-            reject(false);
-          });
-        }
+  backupVault(){
+    this.http.put(ApiService.API_URL+"/google-drive/backup", {}, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+      this.router.navigate(["/vault"], {relativeTo:this.route.root});
+    }, (error) => {
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.title;
       }
+      this.errorMessage = "Error : Impossible to backup your vault. "+ errorMessage + ". Please, try to re-sync your Google Drive account.";
     });
   }
-
-  uploadEncryptedTokens(){
-    this.errorMessage = '';
-    const data = {
-      "enc_credentials" : this.encrypted_credentials,
-    }
-    this.http.post(ApiService.API_URL+"/google-drive/oauth/enc-credentials",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
-        this.userService.setGoogleDriveSync(true);
-        this.router.navigate(["/vault"], {relativeTo:this.route.root});
-        sessionStorage.removeItem('credentials');
-      }, (error) => {
-        this.errorMessage = "An error occured while storing your encrypted access tokens." + error.error.message;
-      });
-  }
+  
 
 }
 
