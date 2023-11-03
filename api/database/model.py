@@ -39,4 +39,6 @@ class Oauth_tokens(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     enc_credentials = db.Column(db.Text, nullable=False)
+    cipher_nonce = db.Column(db.Text, nullable=False)
+    cipher_tag = db.Column(db.Text, nullable=False)
     expires_at = db.Column(db.Integer, nullable=False)
