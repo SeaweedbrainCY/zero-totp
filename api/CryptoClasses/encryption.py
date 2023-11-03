@@ -10,12 +10,12 @@ class ServiceSideEncryption:
       self.key = b64decode(env.sever_side_encryption_key)
 
 
-    def encrypt(self, message) -> str :
+    def encrypt(self, message) -> dict :
         data = message.encode("utf-8")
         cipher = AES.new(self.key, AES.MODE_EAX)
         ciphertext, tag = cipher.encrypt_and_digest(data)
-        json_cipher = {"ciphertext": b64encode(ciphertext).decode("utf-8"), "nonce": b64encode(cipher.nonce).decode("utf-8"), "tag": b64encode(tag).decode("utf-8")}
-        return json.dumps(json_cipher)
+        encrypted_data = {"ciphertext": b64encode(ciphertext).decode("utf-8"), "nonce": b64encode(cipher.nonce).decode("utf-8"), "tag": b64encode(tag).decode("utf-8")}
+        return  encrypted_data
     
     def decrypt(self, json_cipher) -> str or None:
         try:
