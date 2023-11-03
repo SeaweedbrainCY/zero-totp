@@ -586,33 +586,21 @@ def backup_to_google_drive():
         user_id = connexion.context.get("user")
         if user_id == None:
             return {"message": "Unauthorized"}, 401
-        dataJSON = json.dumps(request.get_json())
-        data = json.loads(dataJSON)
-        token = utils.sanitize_input(data["token"]).strip()
-        refresh_token = utils.sanitize_input(data["refresh_token"]).strip()
-        token_uri = utils.sanitize_input(data["token_uri"]).strip()
-        client_id = utils.sanitize_input(data["client_id"]).strip()
-        client_secret = utils.sanitize_input(data["client_secret"]).strip()
-        scopes_unsecure = data["scopes"]
-        expiry = utils.sanitize_input(data["expiry"]).strip()
-        scopes = []
-        for scope in scopes_unsecure:
-            scopes.append(utils.sanitize_input(scope).strip())
-
     except Exception as e:
         logging.info(e)
         return {"message": "Invalid request"}, 400
-    if not token or not refresh_token or not token_uri or not client_id or not client_secret or not scopes:
-        return {"message": "Missing parameters"}, 400
-
-    credentials = {
-        'token': token,
-        'refresh_token': refresh_token,
-        'token_uri': token_uri,
-        'client_id': client_id,
-        'client_secret': client_secret,
-        'scopes': scopes,
-        'expiry' : expiry}
+    
+    token_db = Oauth_tokens_db()
+    oauth_tokens = token_db.get_by_user_id(user_id)
+    if not oauth_tokens:
+        return {"message": "Google drive sync is not enabled"}, 403
+    sse = ServiceSideEncryption()
+    creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce, tag=oauth_tokens.cipher_tag)
+    if creds_b64 == None:
+        logging.warning("Error while decrypting credentials for user " + str(user_id))
+        return {"message": "Error while decrypting credentials"}, 500
+    credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+    logging.info("Credentials decrypted :" + str(credentials))
    # try:
     exported_vault,_ = export_vault()
    # google_drive_api.backup(credentials=credentials, vault=exported_vault)
