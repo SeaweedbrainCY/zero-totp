@@ -25,6 +25,7 @@ import datetime
 from Utils.security_wrapper import require_admin_token, require_admin_role
 import traceback
 from hashlib import sha256
+from CryptoClasses.encryption import ServiceSideEncryption 
 
 
 
@@ -467,6 +468,10 @@ def get_authorization_flow():
 
 # GET /google-drive/oauth/callback
 def oauth_callback():
+    try:
+        user_id = connexion.context.get("user")
+    except:
+        return {"message": "Invalid request"}, 400
     frontend_URI = env.frontend_URI[0] # keep the default URI, not regionized. 
     try: 
         credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
@@ -479,8 +484,22 @@ def oauth_callback():
         response = make_response(redirect(frontend_URI + "/oauth/callback?status=success&state="+str(flask.session["state"]),    code=302))
         flask.session.pop("state")
         creds_b64 = base64.b64encode(json.dumps(credentials).encode("utf-8")).decode("utf-8")
-        response.set_cookie("credentials", creds_b64, httponly=False, secure=True, samesite="Strict", max_age=datetime.timedelta(minutes=2))
-        return response
+        sse = ServiceSideEncryption()
+        encrypted_cipher = sse.encrypt(creds_b64)
+        expires_at = int(datetime.datetime.strptime(credentials["expiry"], "%Y-%m-%d %H:%M:%S.%f").timestamp())
+        token_db = Oauth_tokens_db()
+        tokens = token_db.get_by_user_id(user_id)
+        if tokens:
+            tokens = token_db.update(user_id=user_id, enc_credentials=encrypted_cipher["ciphertext"] ,expires_at=expires_at, nonce=encrypted_cipher["nonce"], tag=encrypted_cipher["tag"])
+        else:
+            tokens = token_db.add(user_id=user_id, enc_credentials=encrypted_cipher["ciphertext"], expires_at=expires_at, nonce=encrypted_cipher["nonce"], tag=encrypted_cipher["tag"])
+        if tokens:
+            userDB = UserDB()
+            userDB.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
+            return response
+        else:
+            logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
+            return {"message": "Unknown error while storing encrypted tokens"}, 500
     except Exception as e:
         logging.error("Error while exchanging the authorization code " + str(e))
         logging.error(traceback.format_exc())
@@ -596,7 +615,7 @@ def backup_to_google_drive():
         'expiry' : expiry}
    # try:
     exported_vault,_ = export_vault()
-    google_drive_api.backup(credentials=credentials, vault=exported_vault)
+   # google_drive_api.backup(credentials=credentials, vault=exported_vault)
     return {"message": "Backup done"}, 201
    # except Exception as e:
    #     logging.error("Error while backing up to google drive " + str(e))
