@@ -454,29 +454,6 @@ paths:
       tags:
         - Google Drive
       summary: Back up the encrypted vault to Google Drive
-      requestBody:
-        required: true
-        content: 
-          application/json:
-            schema:
-              type: object
-              properties:
-                token:
-                  type: string
-                refresh_token:
-                  type: string
-                token_uri:
-                  type: string
-                client_id:
-                  type: string
-                client_secret:
-                  type: string
-                scopes:
-                  type: array
-                  items:
-                    type: string
-                expiry:
-                  type: string
       responses:
         "200": 
           description: Return the backup status
