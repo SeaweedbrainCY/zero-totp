@@ -491,8 +491,10 @@ def oauth_callback():
             response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state=none",  code=302))
         return response
 
-# GET  /google-drive/oauth/enc-credentials:
+# GET  /google-drive/oauth/enc-credentials
+# DEPRECATED
 def get_encrypted_creds():
+    logging.error("This endpoint (GET /google-drive/oauth/enc-credentials) is deprecated and should not be used anymore.")
     try:
         user_id = connexion.context.get("user")
         if user_id == None:
@@ -510,7 +512,9 @@ def get_encrypted_creds():
 
 
 # POST  /google-drive/oauth/enc-credentials:
+# DEPRECATED
 def set_encrypted_credentials():
+    logging.error("This endpoint (POST /google-drive/oauth/enc-credentials) is deprecated and should not be used anymore.")
     try:
         user_id = connexion.context.get("user")
         if user_id == None:
@@ -597,4 +601,16 @@ def backup_to_google_drive():
    # except Exception as e:
    #     logging.error("Error while backing up to google drive " + str(e))
    #     return {"message": "Error while backing up to google drive"}, 500
-    
+
+
+def verify_last_backup():
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    token_db = Oauth_tokens_db()
+
+
