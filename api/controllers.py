@@ -394,10 +394,7 @@ def export_vault():
     
     vault["derived_key_salt"] = user.derivedKeySalt
     vault["zke_key_enc"] = zkeKey.ZKE_key
-    secrets = []
-    for secret in totp_secrets_list:
-        secrets.append({"uuid": secret.uuid, "enc_secret": secret.secret_enc})
-    secrets = sorted(secrets,key=lambda x: x["uuid"])
+    secrets = utils.get_all_secrets_sorted(totp_secrets_list)
     vault["secrets"] = secrets
     vault["secrets_sha256sum"] = sha256(json.dumps(vault["secrets"],  sort_keys=True).encode("utf-8")).hexdigest()
     vault_b64 = base64.b64encode(json.dumps(vault).encode("utf-8")).decode("utf-8")
@@ -600,10 +597,9 @@ def backup_to_google_drive():
         logging.warning("Error while decrypting credentials for user " + str(user_id))
         return {"message": "Error while decrypting credentials"}, 500
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
-    logging.info("Credentials decrypted :" + str(credentials))
    # try:
     exported_vault,_ = export_vault()
-   # google_drive_api.backup(credentials=credentials, vault=exported_vault)
+    google_drive_api.backup(credentials=credentials, vault=exported_vault)
     return {"message": "Backup done"}, 201
    # except Exception as e:
    #     logging.error("Error while backing up to google drive " + str(e))
@@ -619,5 +615,30 @@ def verify_last_backup():
         logging.info(e)
         return {"message": "Invalid request"}, 400
     token_db = Oauth_tokens_db()
-
+    oauth_tokens = token_db.get_by_user_id(user_id)
+    if not oauth_tokens:
+        return {"message": "Google drive sync is not enabled"}, 403
+    sse = ServiceSideEncryption()
+    creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce, tag=oauth_tokens.cipher_tag)
+    if creds_b64 == None:
+        logging.warning("Error while decrypting credentials for user " + str(user_id))
+        return {"error": "Error while connecting to thz Google API"}, 500
+    
+    
+    credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+    try:
+        last_backup_checksum, last_backup_date = google_drive_api.get_last_backup_checksum(credentials)
+    except google_drive_api.CorruptedFile as e:
+        logging.warning("Error while getting last backup checksum " + str(e))
+        return {"status": "corrupted_file"}, 200
+    except google_drive_api.FileNotFound as e:
+        logging.warning("Error while getting last backup checksum " + str(e))
+        return {"error": "file_not_found"}, 404
+    totp_secrets_list = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user_id)
+    secrets = utils.get_all_secrets_sorted(totp_secrets_list)
+    sha256sum = sha256(json.dumps(secrets,  sort_keys=True).encode("utf-8")).hexdigest()
+    if last_backup_checksum == sha256sum:
+        return {"status": "ok", "is_up_to_date": True, "last_backup_date": last_backup_date }, 200
+    else:
+        return {"status": "ok"}, 200
 
