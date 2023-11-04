@@ -10,3 +10,9 @@ def sanitize_input(string) -> str:
     string = string.replace("'", "")
     string = string.replace('"', "")
     return html.escape(string)
+
+def get_all_secrets_sorted(totp_secrets_list):
+    secrets = []
+    for secret in totp_secrets_list:
+        secrets.append({"uuid": secret.uuid, "enc_secret": secret.secret_enc})
+    return sorted(secrets,key=lambda x: x["uuid"])
