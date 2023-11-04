@@ -307,7 +307,7 @@ export class VaultComponent implements OnInit {
       const data = JSON.parse(JSON.stringify(response.body))
       if(data.status == "enabled"){
         this.isGoogleDriveEnabled = true;
-        this.backup_vault_to_google_drive();
+        this.check_last_backup();
       } else {
         this.isGoogleDriveEnabled = false;
         this.isGoogleDriveSync = "false";
@@ -330,24 +330,7 @@ export class VaultComponent implements OnInit {
   }
 
   backup_vault_to_google_drive(){
-    this.http.get(ApiService.API_URL+"/google-drive/oauth/enc-credentials",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
-      const data = JSON.parse(JSON.stringify(response.body))
-      const encrypted_credentials = data.enc_credentials;
-      this.crypto.decrypt(encrypted_credentials, this.userService.get_zke_key()!).then((credentials) => {
-        if(credentials == null){
-          this.isGoogleDriveSync = 'false'; 
-          superToast({
-            message: "Error : Impossible to decrypt your credentials. Please, try to re-sync your Google Drive account.",
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
-          return;
-        }
-        try{
-          const creds_object = JSON.parse(atob(credentials!));
-          this.http.put(ApiService.API_URL+"/google-drive/backup", creds_object, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+          this.http.put(ApiService.API_URL+"/google-drive/backup", {}, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
             this.isGoogleDriveSync = "true";
           }, (error) => {
             this.isGoogleDriveSync = 'false';
@@ -365,31 +348,34 @@ export class VaultComponent implements OnInit {
             animate: { in: 'fadeIn', out: 'fadeOut' }
             });
           });
-        } catch (error){
-          console.log(error)
-          this.isGoogleDriveSync = 'false';
-          superToast({
-            message: "Error : Impossible to decrypt your credentials. " + error + ". Please, try to re-sync your Google Drive account.",
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
-        }
+  }
 
-      }, (error) => {
-        console.log(error)
-        this.isGoogleDriveSync = 'false';
+  check_last_backup(){
+    // TODO : add an adaptative message for 1. OK, 2. need to backup because outdated(automatic), 3. need to backup because corrupted (manual)
+    this.http.get(ApiService.API_URL+"/google-drive/last-backup/verify",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+      const data = JSON.parse(JSON.stringify(response.body))
+      if(data.status == "ok"){
+        if(data.is_up_to_date == true){
+          this.isGoogleDriveSync = "true";
+        } else {
+          this.backup_vault_to_google_drive();
+        }
+      } else if (data.status == "corrupted_file"){
+        this.isGoogleDriveSync = "false";
         superToast({
-          message: "Error : Impossible to decrypt your credentials. ",
+          message: "Error : Your vault backup is unreadable. Please, try to re-backup your Google Drive account.",
           type: "is-danger",
           dismissible: false,
           duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
-      });
-
-    }, error => {
+      } else {
+        this.isGoogleDriveSync = "false";
+      }
+    }, (error) => {
+      if(error.status == 404){
+        this.backup_vault_to_google_drive();
+      } else {
       this.isGoogleDriveSync = 'false';
       let errorMessage = "";
       if(error.error.message != null){
@@ -398,12 +384,13 @@ export class VaultComponent implements OnInit {
         errorMessage = error.error.detail;
       }
       superToast({
-        message: "Error : Impossible to backup your vault. "+ errorMessage,
+        message: "Error : Impossible to verify your vault backups. "+ errorMessage,
         type: "is-danger",
         dismissible: false,
         duration: 20000,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    }
     });
   }
 }
