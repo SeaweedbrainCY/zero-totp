@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -35,6 +35,7 @@ export class VaultComponent implements OnInit {
   faChevronRight=faChevronRight;
   faLink=faLink;
   faCircleInfo=faCircleInfo;
+  faCircleQuestion=faCircleQuestion;
   faUpload=faUpload;
   vault: Map<string, Map<string,string>> | undefined;
   vaultDomain : string[] = [];
@@ -48,6 +49,7 @@ export class VaultComponent implements OnInit {
   isRestoreBackupModaleActive=false;
   isGoogleDriveEnabled = true;
   isGoogleDriveSync = "loading"; // uptodate, loading, error, false
+  lastBackupDate = "";
 
   constructor(
     public userService: UserService,
@@ -357,6 +359,7 @@ export class VaultComponent implements OnInit {
       if(data.status == "ok"){
         if(data.is_up_to_date == true){
           this.isGoogleDriveSync = "uptodate";
+          this.lastBackupDate = data.last_backup_date.split("T")[0] + " " + data.last_backup_date.split("T")[1];
         } else {
           this.backup_vault_to_google_drive();
         }
