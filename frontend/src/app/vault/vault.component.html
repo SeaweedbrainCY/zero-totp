@@ -15,10 +15,10 @@
             </article>
             <div class="message is-success" *ngIf="!this.userService.getIsVaultLocal()">
                     <div class="message"
-                        [ngClass]="{'is-success': isGoogleDriveSync == 'true' ||  isGoogleDriveSync == 'loading', 'is-warning': isGoogleDriveSync == 'warning'}">
+                        [ngClass]="{'is-success': isGoogleDriveSync == 'uptodate' ||  isGoogleDriveSync == 'loading', 'is-warning': isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false' }">
                         <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen"
                             style="cursor: pointer;">
-                            <p>Your storage options <span *ngIf="isGoogleDriveSync == 'false'"
+                            <p>Your storage options <span *ngIf="isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false'"
                                     class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
                             <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">Less</span>
                                 <span *ngIf="!storageOptionOpen">More</span>
@@ -63,11 +63,13 @@
                                                     class=" has-text-weight-bold">Google Drive
                                                 </span></span>
                                             <span class="tag is-danger is-medium "
-                                                [ngClass]="{'is-danger':isGoogleDriveSync == 'false', 'is-success':isGoogleDriveSync == 'true', 'is-warning':isGoogleDriveSync == 'loading'}"
+                                                [ngClass]="{'is-danger':isGoogleDriveSync == 'false' || isGoogleDriveSync == 'error' , 'is-success':isGoogleDriveSync == 'uptodate', 'is-warning':isGoogleDriveSync == 'loading'}"
                                                 id="google-status-tag">
                                                 <fa-icon *ngIf="isGoogleDriveSync == 'false'" [icon]="faCircleXmark"></fa-icon>
-                                                <fa-icon *ngIf="isGoogleDriveSync == 'true'"
+                                                <fa-icon *ngIf="isGoogleDriveSync == 'uptodate'"
                                                     [icon]="faCheckCircle"></fa-icon>
+                                                <fa-icon *ngIf="isGoogleDriveSync == 'error'"
+                                                    [icon]="faCircleExclamation" animation="fade"></fa-icon>
                                                     <fa-icon *ngIf="isGoogleDriveSync== 'loading'" [spin]="true" 
                                                     [icon]="faCircleNotch"></fa-icon></span>
                                         </div>
@@ -82,11 +84,22 @@
                                             <button *ngIf="isGoogleDriveSync == 'false'"
                                                 class="button  is-outlined is-dark mb-3 mr-2 ml-2"><fa-icon
                                                     [icon]="faCircleInfo" class="mr-3"></fa-icon> More info</button>
-
-                                            <button *ngIf="isGoogleDriveSync == 'true'"
+                                            
+                                                    <div  *ngIf="isGoogleDriveSync == 'uptodate'">
+                                            <button *ngIf="isGoogleDriveSync == 'uptodate'"
                                                 class="button  is-outlined is-dark mb-3 mr-2 ml-2"
                                                 (click)="get_oauth_authorization_url()"><fa-icon [icon]="faCircleXmark"
                                                     class="mr-3"></fa-icon> Stop sync </button>
+                                            </div>
+                                            <div *ngIf="isGoogleDriveSync == 'error'"  class="has-text-centered">
+                                                <p class="has-text-danger is-size-7 ">An error occured while checking your backup</p>
+                                                <p class="has-text-centered mt-1">
+                                            <button 
+                                                    class="button  is-outlined is-dark mb-3 mr-2 ml-2"
+                                                    (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
+                                                        class="mr-3"></fa-icon> Try to re-sync </button>
+                                                    </p>
+                                            </div>
 
                                         </div>
                                     </div>

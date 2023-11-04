@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -28,6 +28,7 @@ export class VaultComponent implements OnInit {
   faRotateRight = faRotateRight;
   faCircleNotch = faCircleNotch;
   faDesktop=faDesktop;
+  faCircleExclamation=faCircleExclamation;
   faDownload=faDownload;
   faChevronUp=faChevronUp;
   faChevronDown=faChevronDown;
@@ -46,7 +47,7 @@ export class VaultComponent implements OnInit {
   page_title="Here is your TOTP vault";
   isRestoreBackupModaleActive=false;
   isGoogleDriveEnabled = true;
-  isGoogleDriveSync = "loading";
+  isGoogleDriveSync = "loading"; // uptodate, loading, error, false
 
   constructor(
     public userService: UserService,
@@ -331,9 +332,9 @@ export class VaultComponent implements OnInit {
 
   backup_vault_to_google_drive(){
           this.http.put(ApiService.API_URL+"/google-drive/backup", {}, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
-            this.isGoogleDriveSync = "true";
+            this.isGoogleDriveSync = "uptodate";
           }, (error) => {
-            this.isGoogleDriveSync = 'false';
+            this.isGoogleDriveSync = 'error';
             let errorMessage = "";
             if(error.error.message != null){
               errorMessage = error.error.message;
@@ -351,17 +352,16 @@ export class VaultComponent implements OnInit {
   }
 
   check_last_backup(){
-    // TODO : add an adaptative message for 1. OK, 2. need to backup because outdated(automatic), 3. need to backup because corrupted (manual)
     this.http.get(ApiService.API_URL+"/google-drive/last-backup/verify",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
       const data = JSON.parse(JSON.stringify(response.body))
       if(data.status == "ok"){
         if(data.is_up_to_date == true){
-          this.isGoogleDriveSync = "true";
+          this.isGoogleDriveSync = "uptodate";
         } else {
           this.backup_vault_to_google_drive();
         }
       } else if (data.status == "corrupted_file"){
-        this.isGoogleDriveSync = "false";
+        this.isGoogleDriveSync = "error";
         superToast({
           message: "Error : Your vault backup is unreadable. Please, try to re-backup your Google Drive account.",
           type: "is-danger",
@@ -370,13 +370,20 @@ export class VaultComponent implements OnInit {
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
       } else {
-        this.isGoogleDriveSync = "false";
+        this.isGoogleDriveSync = "error";
+        superToast({
+          message: "Error : Your vault backup is unreadable. Please, try to re-backup your Google Drive account.",
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
       }
     }, (error) => {
       if(error.status == 404){
         this.backup_vault_to_google_drive();
       } else {
-      this.isGoogleDriveSync = 'false';
+      this.isGoogleDriveSync = 'error';
       let errorMessage = "";
       if(error.error.message != null){
         errorMessage = error.error.message;
