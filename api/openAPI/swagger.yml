@@ -501,11 +501,11 @@ paths:
                 properties:
                   status:
                     type: string
-                    example: "ok|error|not_authorized"
+                    example: "ok|corrupted_file"
                   is_up_to_date:
                     type: boolean
                     example: true
-                  last_backup:
+                  last_backup_date:
                     type: string
                     example: 01/01/2001
         "401":
@@ -514,6 +514,8 @@ paths:
           description: Access disabled
         "404":
           description: No backup found
+        "500":
+          description: Internal server error
 components:
   securitySchemes:
     JWTAuth:
