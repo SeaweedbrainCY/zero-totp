@@ -105,7 +105,6 @@ def get_last_backup_checksum(creds):
     file, date = get_last_backup_file(drive)
     try:
         data_b64 = drive.files().get_media(fileId=file.get("id")).execute().decode("utf-8").split(",")[0]
-        logging.info("data_b64 = " + data_b64)
         data = json.loads(b64decode(data_b64).decode("utf-8"))
         if "secrets_sha256sum" in data:
             return data["secrets_sha256sum"], date
