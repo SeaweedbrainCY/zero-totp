@@ -331,57 +331,6 @@ paths:
         "302": 
           description: Callback successful
   
-  /google-drive/oauth/enc-credentials:
-    get:
-      operationId: controllers.get_encrypted_creds
-      tags:
-        - Google Drive
-      deprecated: true
-      summary: Get the user's encrypted Oauth credentials
-      responses:
-        "200": 
-          description: Encrypted credentials
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  enc_credentials:
-                    type: string
-                    description: The user's encrypted credentials
-                    example: "encrypted_credentials"
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access denied
-        "404":
-          description: No credentials found
-    post:
-      operationId: controllers.set_encrypted_credentials
-      tags:
-        - Google Drive
-      summary: Set the user's encrypted Google Drive credentials
-      deprecated: true
-      requestBody:
-        required: true
-        content: 
-          application/json:
-            schema:
-              type: object
-              properties:
-                enc_credentials:
-                  type: string
-      responses:
-        "201": # status code
-          description: Encrypted creds set
-        "400":
-          description: Missing required parameters
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access denied
-        "500":
-          description: Internal server error
   /google-drive/option:
     get:
       operationId: controllers.get_google_drive_option
@@ -400,6 +349,18 @@ paths:
                     type: string
                     description: The option status
                     example: "enabled"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access disabled
+    delete:
+      operationId: controllers.delete_google_drive_option
+      tags:
+        - Google Drive
+      summary: Disable the google drive option as a backup. Delete the oauth token.
+      responses:
+        "200": 
+          description: Google drive option disabled
         "401":
           description: Unauthorized
         "403":
