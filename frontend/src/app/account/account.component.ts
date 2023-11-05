@@ -54,7 +54,7 @@ export class AccountComponent implements OnInit {
   
   ngOnInit(): void {
      if(this.userService.getId() == null){
-       //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
        if("email" in this.buttonLoading){
 
        }
