@@ -21,3 +21,8 @@ class Oauth_tokens:
         oauth_tokens.cipher_tag = tag
         db.session.commit()
         return oauth_tokens
+
+    def delete(self, user_id):
+        db.session.query(Oauth_tokens_model).filter_by(user_id=user_id).delete()
+        db.session.commit()
+        return True
