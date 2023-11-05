@@ -126,6 +126,101 @@
                         </div>
                     </div>
 
+                    <div class="mt-6">
+                        <h1 class="has-text-info has-text-weight-bold is-size-3">
+                            Advanced settings
+                        </h1>
+                        <div style="border-bottom: 1px solid silver"></div>
+                        <p class="has-text-grey pb-3">Settings to manage more precisely your Zero-TOTP account.
+                             </p>
+                        <div class="control">
+                            <button class="button is-info is-outlined" (click)="displayAdvancedSettings()" *ngIf="!isDisplayingAdvancedSettings"
+                                data-target="confirmation">Display advanced settings
+                             </button>
+                             <div *ngIf="isDisplayingAdvancedSettings">
+                             <label class="label">Number of iterations used in the PBKDF2 derivation function</label>
+                        <div class="field is-flex-tablet">
+                            <div class="control has-icons-left mb-3">
+                                <input class="input" type="number" placeholder="700000" value="700000" disabled>
+                                <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                <span class="icon is-small is-left">
+                                    <fa-icon [icon]="faShield"></fa-icon>
+                                </span>
+                            </div>
+                            <div class="has-text-centered">
+                                <button class="button is-info is-outlined is-centered ml-3" disabled>Change</button>
+                            </div>
+                           
+                        </div>
+                        <div class="notification is-warning is-light mb-4">
+                            <strong>Zero-TOTP is still in beta. This value will be customizable in the future.</strong>
+                           </div>
+
+                           <label class="label mt-6">Maximum Backup retention in Google Drive <span class="tag is-rounded is-info"> Synched account only </span></label>
+
+                        <div class="field is-flex is-flex-wrap-wrap">
+                            <div class="mr-2 ml-2"> <span class="has-text-centered">Hourly : </span>
+                            <div class="control has-icons-left mb-3" style="max-width: 100px;">
+                               <input class="input" type="number" placeholder="1" value="1" disabled>
+                                <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                <span class="icon is-small is-left">
+                                    <fa-icon [icon]="faHourglassStart"></fa-icon>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mr-2 ml-2">
+                        <span>Daily : </span>
+                            <div class="control has-icons-left mb-3" style="max-width: 100px;">
+                              <input class="input" type="number" placeholder="5" value="5" disabled>
+                                <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                <span class="icon is-small is-left">
+                                    <fa-icon [icon]="faHourglassStart"></fa-icon>
+                                </span>
+                            </div>
+                            </div>
+                            <div class="mr-2 ml-2">
+                            <span>Weekly : </span>
+                            <div class="control has-icons-left mb-3" style="max-width: 100px;">
+                               <input class="input" type="number" placeholder="7" value="7" disabled>
+                                <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                <span class="icon is-small is-left">
+                                    <fa-icon [icon]="faHourglassStart"></fa-icon>
+                                </span>
+                            </div>
+                            </div>
+                            <div class="mr-2 ml-2">
+                            <span>Monthly : </span>
+                            <div class="control has-icons-left mb-3" style="max-width: 100px;">
+                                <input class="input" type="number" placeholder="15" value="15" disabled>
+                                <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                <span class="icon is-small is-left">
+                                    <fa-icon [icon]="faHourglassStart"></fa-icon>
+                                </span>
+                            </div>
+                            </div>
+                            <div class="mr-2 ml-2">
+                            <span>Yearly : </span>
+                            <div class="control has-icons-left mb-3" style="max-width: 100px;">
+                                <input class="input" type="number" placeholder="30" value="30" disabled>
+                                <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                <span class="icon is-small is-left">
+                                    <fa-icon [icon]="faHourglassStart"></fa-icon>
+                                </span>
+                            </div>
+                            </div>
+                            <div class="has-text-centered" style="width:90vw">
+                                <button class="button is-info is-outlined is-centered ml-3" disabled>Change</button>
+                            </div>
+                           
+                        </div>
+                        <div class="notification is-warning is-light">
+                            <strong>Zero-TOTP is still in beta. This value will be customizable in the future.</strong>
+                           </div>
+                            </div>
+
+                        </div>
+                    </div>
+
 
                 </div>
             </div>
