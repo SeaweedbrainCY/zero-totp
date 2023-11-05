@@ -109,7 +109,7 @@
                                                 </div>
                                             <p class="has-text-centered mt-1">
                                                 <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
-                                                    (click)="get_oauth_authorization_url()"><fa-icon
+                                                    (click)="disable_google_drive()"><fa-icon
                                                         [icon]="faCircleXmark" class="mr-3"></fa-icon> Stop sync
                                                 </button>
                                             </p>
@@ -121,6 +121,10 @@
                                                 <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
                                                     (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
                                                         class="mr-3"></fa-icon> Try to re-sync </button>
+                                                        <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
+                                                    (click)="disable_google_drive()"><fa-icon
+                                                        [icon]="faCircleXmark" class="mr-3"></fa-icon> Stop sync
+                                                </button>
                                             </p>
                                         </div>
 
