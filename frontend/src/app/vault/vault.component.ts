@@ -76,6 +76,7 @@ export class VaultComponent implements OnInit {
           if(isTimedOut){
             this.bnIdle.stopTimer();
             this.userService.clear();
+            isTimedOut = false;
             this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
           }
         });
@@ -403,4 +404,33 @@ export class VaultComponent implements OnInit {
     }
     });
   }
+
+  disable_google_drive(){
+    this.http.delete(ApiService.API_URL+"/google-drive/option",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+      this.isGoogleDriveEnabled = false;
+      this.isGoogleDriveSync = "false";
+      superToast({
+        message: "Google Drive disabled ! ✅",
+        type: "is-success",
+        dismissible: true,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    }, (error) => {
+      this.isGoogleDriveSync = 'error';
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+      superToast({
+        message: "Error : Impossible to disable Google Drive. "+ errorMessage,
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
+  }
 }
+
