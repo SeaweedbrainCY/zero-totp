@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { toast as superToast } from 'bulma-toast'
-import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -19,9 +19,12 @@ export class AccountComponent implements OnInit {
   faEnvelope=faEnvelope;
   faLock=faLock;
   faShield=faShield;
+  faCircleInfo=faCircleInfo;
+  faArrowsRotate=faArrowsRotate;
   faHourglassStart=faHourglassStart;
   faCheck=faCheck;
   faCog=faCog;
+  faFlask=faFlask;
   isDeletionModalActive=false;
   isPassphraseModalActive=false;
   buttonLoading = {"email":0, "username":0, "passphrase":0, "deletion":0}
