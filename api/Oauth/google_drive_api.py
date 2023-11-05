@@ -121,8 +121,8 @@ def clean_backup_retention(credentials, user_id) -> bool:
          if (datetime.now() - date).days < 1:
                 logging.info("Backup retention already cleaned today")
                 return True
-    MINIMUM_NB_BACKUP = 10
-    MAXIMUM_BACKUP_AGE = 0
+    MINIMUM_NB_BACKUP = 20
+    MAXIMUM_BACKUP_AGE = 30
     drive = get_drive_service(credentials)
     folder = get_folder(FOLDER_NAME, drive)
     result = get_files_from_folder(folder.get('id'), drive)
