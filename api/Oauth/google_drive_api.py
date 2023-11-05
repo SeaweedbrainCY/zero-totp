@@ -11,6 +11,7 @@ import json
 from base64 import  b64decode
 from Utils import utils
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
+import requests
 
 FOLDER_NAME = "Zero-TOTP Backup"
 
@@ -29,6 +30,9 @@ def get_drive_service(credentials):
 def backup(credentials, vault):
         drive = get_drive_service(credentials)
         folder = get_folder(FOLDER_NAME, drive)
+        if folder == None:
+            create_folder(FOLDER_NAME, drive)
+            folder = get_folder(FOLDER_NAME, drive)
         if folder.get("id") is None or folder.get('explicitlyTrashed'):
              folder = create_folder(FOLDER_NAME, drive)
         now = datetime.now()
@@ -82,12 +86,13 @@ def get_files_from_folder(folder_id, drive):
 
 def get_last_backup_file(drive)-> (any, datetime):
     folder = get_folder(FOLDER_NAME, drive)
+    if folder == None:
+            create_folder(FOLDER_NAME, drive)
+            folder = get_folder(FOLDER_NAME, drive)
     result = get_files_from_folder(folder.get('id'), drive)
     if len(result) == 0:
         logging.info("No backup file found in the drive")
         raise utils.FileNotFound("No backup file found")
-    elif len(result) == 1:
-          return result[0]
     else : 
           return utils.extract_last_backup_from_list(result)
 
@@ -143,4 +148,17 @@ def clean_backup_retention(credentials, user_id) -> bool:
                 body_value = {'trashed': True}
                 drive.files().update(fileId=file.get("id"), body=body_value).execute()
         google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.now().strftime('%Y-%m-%d'))
+    
+
+def revoke_credentials(credentials):
+    creds = google.oauth2.credentials.Credentials(**credentials)
+    revoke = requests.post('https://oauth2.googleapis.com/revoke',
+        params={'token': creds.token},
+        headers = {'content-type': 'application/x-www-form-urlencoded'})
+    status_code = getattr(revoke, 'status_code')
+    logging.info("Revoke status code : " + str(status_code))
+    if status_code == 200:
+        return True
+    else:
+        return False
     
