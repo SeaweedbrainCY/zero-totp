@@ -485,7 +485,7 @@ def oauth_callback():
         creds_b64 = base64.b64encode(json.dumps(credentials).encode("utf-8")).decode("utf-8")
         sse = ServiceSideEncryption()
         encrypted_cipher = sse.encrypt(creds_b64)
-        expires_at = int(datetime.datetime.strptime(credentials["expiry"], "%Y-%m-%dT%H:%M:%SZ").timestamp())
+        expires_at = int(datetime.datetime.strptime(credentials["expiry"], "%Y-%m-%d %H:%M:%S.%f").timestamp())
         token_db = Oauth_tokens_db()
         tokens = token_db.get_by_user_id(user_id)
         if tokens:
@@ -493,7 +493,7 @@ def oauth_callback():
         else:
             tokens = token_db.add(user_id=user_id, enc_credentials=encrypted_cipher["ciphertext"], expires_at=expires_at, nonce=encrypted_cipher["nonce"], tag=encrypted_cipher["tag"])
         if tokens:
-            google_drive_int = GoogleDriveIntegrationDB
+            google_drive_int = GoogleDriveIntegrationDB()
             google_drive_int.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
             return response
         else:
@@ -529,40 +529,7 @@ def get_encrypted_creds():
 
 
 
-# POST  /google-drive/oauth/enc-credentials:
-# DEPRECATED
-def set_encrypted_credentials():
-    logging.error("This endpoint (POST /google-drive/oauth/enc-credentials) is deprecated and should not be used anymore.")
-    try:
-        user_id = connexion.context.get("user")
-        if user_id == None:
-            return {"message": "Unauthorized"}, 401
-        dataJSON = json.dumps(request.get_json())
-        data = json.loads(dataJSON)
-        enc_credentials = utils.sanitize_input(data["enc_credentials"]).strip()
-    except Exception as e:
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
-    if not enc_credentials :
-        return {"message": "Missing parameters"}, 400
-   
-    token_db = Oauth_tokens_db()
-    tokens = token_db.get_by_user_id(user_id)
-    expires_at = (datetime.datetime.utcnow() + datetime.timedelta(hours=1)).timestamp()
-    if tokens:
-        tokens = token_db.update(user_id=user_id, enc_credentials=enc_credentials ,expires_at=expires_at)
-    else:
-        tokens = token_db.add(user_id=user_id, enc_credentials=enc_credentials, expires_at=expires_at)
-    if tokens:
-        google_drive_integration = GoogleDriveIntegrationDB()
-        google_drive_integration.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
-        response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "Encrypted tokens stored"}))
-        response.set_cookie('credentials', "", expires=0)
-        return response
-    else:
-        logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
-        return {"message": "Unknown error while storing encrypted tokens"}, 500
-    
+
 #GET /google-drive/status
 def get_google_drive_option():
     try:
@@ -646,3 +613,33 @@ def verify_last_backup():
     else:
         return {"status": "ok"}, 200
 
+def delete_google_drive_option():
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None:
+            return {"message": "Unauthorized"}, 401
+    except Exception as e:
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    token_db = Oauth_tokens_db()
+    oauth_tokens = token_db.get_by_user_id(user_id)
+    if not oauth_tokens:
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        return {"message": "Google drive sync is not enabled"}, 200
+    sse = ServiceSideEncryption()
+    try:
+        creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce,  tag=oauth_tokens.cipher_tag)
+        if creds_b64 == None:
+            token_db.delete(user_id)
+            GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+            return {"message": "Error while decrypting credentials"}, 200
+        credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+        google_drive_api.revoke_credentials(credentials)
+        token_db.delete(user_id)
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        return {"message": "Google drive sync disabled"}, 200
+    except Exception as e:
+        logging.error("Error while deleting backup from google drive " + str(e))
+        token_db.delete(user_id)
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        return {"message": "Error while decrypting credentials"}, 200
