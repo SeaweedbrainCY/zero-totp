@@ -11,7 +11,6 @@ class User(db.Model):
     createdAt = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(256), nullable=False, default="user")
     isBlocked =  db.Column(db.Boolean, nullable=False, default=False)
-    googleDriveSync = db.Column(db.Boolean, nullable=True)
 
 
 class ZKE_encryption_key(db.Model):
@@ -42,3 +41,11 @@ class Oauth_tokens(db.Model):
     cipher_nonce = db.Column(db.Text, nullable=False)
     cipher_tag = db.Column(db.Text, nullable=False)
     expires_at = db.Column(db.Integer, nullable=False)
+
+
+class GoogleDriveIntegration(db.Model):
+    __tablename__ = "google_drive_integration"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
+    isEnabled = db.Column(db.Boolean, nullable=False, default=False)
+    lastBackupCleanDate = db.Column(db.String(256), nullable=True, default=None)
