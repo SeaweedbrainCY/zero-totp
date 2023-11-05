@@ -5,6 +5,7 @@ import json
 from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
+from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
 from database.admin_repo import Admin as Admin_db
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging
@@ -106,6 +107,7 @@ def login():
     if(not utils.check_email(email) ):
         return {"message": "Bad email format"}, 403
     userDB = UserDB()
+
     user = userDB.getByEmail(email)
     logging.info(user)
     bcrypt = Bcrypt(passphrase)
@@ -122,7 +124,7 @@ def login():
 
     jwt_token = jwt_auth.generate_jwt(user.id)
 
-    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": user.googleDriveSync, "role":user.role}))
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role}))
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
 
@@ -483,7 +485,7 @@ def oauth_callback():
         creds_b64 = base64.b64encode(json.dumps(credentials).encode("utf-8")).decode("utf-8")
         sse = ServiceSideEncryption()
         encrypted_cipher = sse.encrypt(creds_b64)
-        expires_at = int(datetime.datetime.strptime(credentials["expiry"], "%Y-%m-%d %H:%M:%S.%f").timestamp())
+        expires_at = int(datetime.datetime.strptime(credentials["expiry"], "%Y-%m-%dT%H:%M:%SZ").timestamp())
         token_db = Oauth_tokens_db()
         tokens = token_db.get_by_user_id(user_id)
         if tokens:
@@ -491,8 +493,8 @@ def oauth_callback():
         else:
             tokens = token_db.add(user_id=user_id, enc_credentials=encrypted_cipher["ciphertext"], expires_at=expires_at, nonce=encrypted_cipher["nonce"], tag=encrypted_cipher["tag"])
         if tokens:
-            userDB = UserDB()
-            userDB.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
+            google_drive_int = GoogleDriveIntegrationDB
+            google_drive_int.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
             return response
         else:
             logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
@@ -552,8 +554,8 @@ def set_encrypted_credentials():
     else:
         tokens = token_db.add(user_id=user_id, enc_credentials=enc_credentials, expires_at=expires_at)
     if tokens:
-        userDB = UserDB()
-        userDB.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
+        google_drive_integration = GoogleDriveIntegrationDB()
+        google_drive_integration.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
         response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "Encrypted tokens stored"}))
         response.set_cookie('credentials', "", expires=0)
         return response
@@ -597,13 +599,14 @@ def backup_to_google_drive():
         logging.warning("Error while decrypting credentials for user " + str(user_id))
         return {"message": "Error while decrypting credentials"}, 500
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
-   # try:
-    exported_vault,_ = export_vault()
-    google_drive_api.backup(credentials=credentials, vault=exported_vault)
-    return {"message": "Backup done"}, 201
-   # except Exception as e:
-   #     logging.error("Error while backing up to google drive " + str(e))
-   #     return {"message": "Error while backing up to google drive"}, 500
+    try:
+        exported_vault,_ = export_vault()
+        google_drive_api.backup(credentials=credentials, vault=exported_vault)
+        google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_id)
+        return {"message": "Backup done"}, 201
+    except Exception as e:
+        logging.error("Error while backing up to google drive " + str(e))
+        return {"message": "Error while backing up to google drive"}, 500
 
 
 def verify_last_backup():
@@ -628,16 +631,17 @@ def verify_last_backup():
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
     try:
         last_backup_checksum, last_backup_date = google_drive_api.get_last_backup_checksum(credentials)
-    except google_drive_api.CorruptedFile as e:
+    except utils.CorruptedFile as e:
         logging.warning("Error while getting last backup checksum " + str(e))
         return {"status": "corrupted_file"}, 200
-    except google_drive_api.FileNotFound as e:
+    except utils.FileNotFound as e:
         logging.warning("Error while getting last backup checksum " + str(e))
         return {"error": "file_not_found"}, 404
     totp_secrets_list = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user_id)
     secrets = utils.get_all_secrets_sorted(totp_secrets_list)
     sha256sum = sha256(json.dumps(secrets,  sort_keys=True).encode("utf-8")).hexdigest()
     if last_backup_checksum == sha256sum:
+        google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_id)
         return {"status": "ok", "is_up_to_date": True, "last_backup_date": last_backup_date }, 200
     else:
         return {"status": "ok"}, 200
