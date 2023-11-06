@@ -1,12 +1,19 @@
 import unittest
 from CryptoClasses.hash_func import Bcrypt
-from Utils.utils import check_email, sanitize_input
+from Utils.utils import check_email, sanitize_input, extract_last_backup_from_list, FileNotFound, get_all_secrets_sorted
+import datetime
+from uuid import uuid4
+from random import shuffle
+from database.model import TOTP_secret
 
 class TestBcrypt(unittest.TestCase):
     
     def setUp(self):
         pass
 
+#####################
+### check_email tests
+#####################
     def test_valid_emails_validation(self):
         valid_emails = [
             "user@example.com",
@@ -57,7 +64,9 @@ class TestBcrypt(unittest.TestCase):
             with self.subTest(email=email):
                 self.assertFalse(check_email(email), f"Email '{email}' should not pass the check")
     
-
+#####################
+###### sanitize tests
+#####################
     def test_sanitize_plain_text(self):
         input_data = "This is plain text."
         sanitized = sanitize_input(input_data)
@@ -97,3 +106,103 @@ class TestBcrypt(unittest.TestCase):
         input_data = 'Double quote " and single quote \''
         sanitized = sanitize_input(input_data)
         self.assertEqual(sanitized, 'Double quote  and single quote ')
+    
+################################
+## extract_last_backup_from_list
+################################
+
+
+    def test_extract_last_backup_from_list(self):
+        files = [
+            {"name" : "06-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "15-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "02-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "03-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "04-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "05-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "12-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "07-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "08-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "16-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "10-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "11-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "01-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "13-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "14-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "18-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "17-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+        ]
+        last_backup_file,last_backup_file_date = extract_last_backup_from_list(files)
+        self.assertEqual(last_backup_file.get("name"), "18-01-2021-00-00-00_backup")
+        self.assertEqual(last_backup_file_date, datetime.datetime(2021, 1, 18, 0, 0))
+    
+    def test_extract_last_backup_from_list_with_trashed_files(self):
+        files = [
+            {"name" : "06-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "15-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "02-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "03-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "04-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "05-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "12-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "07-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "08-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "16-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "10-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "11-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "01-01-2021-00-00-00_backup", "explicitlyTrashed": True},
+            {"name" : "13-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "14-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "18-01-2021-00-00-00_backup", "explicitlyTrashed": True},
+            {"name" : "17-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+        ]
+        last_backup_file,last_backup_file_date = extract_last_backup_from_list(files)
+        self.assertEqual(last_backup_file.get("name"), "17-01-2021-00-00-00_backup")
+        self.assertEqual(last_backup_file_date, datetime.datetime(2021, 1, 17, 0, 0))
+    
+    def test_extract_last_backup_from_list_with_no_backup_files(self):
+        files = []
+        self.assertRaises(FileNotFound, extract_last_backup_from_list, files)
+
+    
+    def test_extract_last_backup_from_list_with_bad_file_name(self):
+        files = [
+            {"name" : "06-01-2021_00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "bad", "explicitlyTrashed": False},
+            {"name" : "02-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "03-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "04-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "05-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "12-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "07-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "08-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "16-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "10-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "11-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "01-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "13-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "14-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "18-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+            {"name" : "17-01-2021-00-00-00_backup", "explicitlyTrashed": False},
+        ]
+        last_backup_file,last_backup_file_date = extract_last_backup_from_list(files)
+        self.assertEqual(last_backup_file.get("name"), "18-01-2021-00-00-00_backup")
+        self.assertEqual(last_backup_file_date, datetime.datetime(2021, 1, 18, 0, 0))
+
+#########################
+## get_all_secrets_sorted
+#########################
+
+    def test_get_all_secrets_sorted(self):
+        secrets_uuid = []
+        secrets = []
+        for _ in range(0,50):
+            secrets_uuid.append(str(uuid4()))
+        secrets_uuid.sort()
+        already_sorted_secrets = []
+        for i in range(0,50):
+            secrets.append(TOTP_secret(uuid=secrets_uuid[i], user_id=1, secret_enc="secret" ))
+            already_sorted_secrets.append({"uuid": secrets_uuid[i], "enc_secret": "secret"})
+        shuffle(secrets)
+        secrets_sorted = get_all_secrets_sorted(secrets)
+        self.assertEqual(secrets_sorted, already_sorted_secrets)
