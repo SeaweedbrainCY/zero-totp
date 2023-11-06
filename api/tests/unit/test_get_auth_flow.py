@@ -1,0 +1,26 @@
+import unittest
+from app import create_app
+import environment as env
+from CryptoClasses.jwt_func import generate_jwt
+from controllers import flask
+from unittest.mock import patch
+
+
+class TestGetAuthFlow(unittest.TestCase):
+    
+        def setUp(self):
+            env.db_uri = "sqlite:///:memory:"
+            self.app = create_app()
+            self.client = self.app.test_client()
+            self.roleEndpoint = "/google-drive/oauth/authorization-flow"
+            self.admin_user_id = 1
+
+            self.get_authorization_url_patch = patch("Oauth.oauth_flow.get_authorization_url").start()
+            self.get_authorization_url_patch.return_value = "https://www.google.com", "state"
+        
+        
+        def test_get_auth_flow(self):
+            with self.app.app_context():
+                self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_user_id))
+                response = self.client.get(self.roleEndpoint)
+                self.assertEqual(response.status_code, 200)
