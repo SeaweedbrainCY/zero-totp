@@ -33,8 +33,9 @@ def backup(credentials, vault):
         if folder == None:
             create_folder(FOLDER_NAME, drive)
             folder = get_folder(FOLDER_NAME, drive)
-        if folder.get("id") is None or folder.get('explicitlyTrashed'):
-             folder = create_folder(FOLDER_NAME, drive)
+            if folder == None:
+                logging.error("Error while creating the backup folder")
+                raise Exception("Error while creating the backup folder")
         now = datetime.now()
         now_str = now.strftime('%d-%m-%Y-%H-%M-%S')
 
@@ -53,8 +54,9 @@ def get_folder(name, drive):
           return result.get('files')[0]
     else : 
           for folder in result.get('files'):
-              if folder.get('name') == name:
+              if folder.get('name') == name and not folder.get('explicitlyTrashed'):
                   return folder
+          return None
 
 def create_folder(name, drive):
     file_metadata = {
@@ -63,7 +65,7 @@ def create_folder(name, drive):
     }
     return drive.files().create(body=file_metadata).execute()
 
-def create_file(name, drive, content, folder_id=None):
+def create_file(name, drive, content, folder_id= None):
      file_metadata = {
              'name': name,  
         }
@@ -87,8 +89,7 @@ def get_files_from_folder(folder_id, drive):
 def get_last_backup_file(drive)-> (any, datetime):
     folder = get_folder(FOLDER_NAME, drive)
     if folder == None:
-            create_folder(FOLDER_NAME, drive)
-            folder = get_folder(FOLDER_NAME, drive)
+        raise utils.FileNotFound("No backup file found")
     result = get_files_from_folder(folder.get('id'), drive)
     if len(result) == 0:
         logging.info("No backup file found in the drive")
