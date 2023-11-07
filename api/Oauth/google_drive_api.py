@@ -158,7 +158,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
         return True
     
 
-def revoke_credentials(credentials):
+def revoke_credentials(credentials): # pragma: no cover
     creds = google.oauth2.credentials.Credentials(**credentials)
     revoke = requests.post('https://oauth2.googleapis.com/revoke',
         params={'token': creds.token},

@@ -553,4 +553,3 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 delete_execute.assert_not_called()
                 self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now().strftime('%Y-%m-%d'))
         
-     
