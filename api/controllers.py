@@ -469,7 +469,7 @@ def get_authorization_flow():
 def oauth_callback():
     try:
         user_id = connexion.context.get("user")
-    except:
+    except: # pragma: no cover
         return {"message": "Invalid request"}, 400
     frontend_URI = env.frontend_URI[0] # keep the default URI, not regionized. 
     try: 
@@ -494,7 +494,11 @@ def oauth_callback():
             tokens = token_db.add(user_id=user_id, enc_credentials=encrypted_cipher["ciphertext"], expires_at=expires_at, nonce=encrypted_cipher["nonce"], tag=encrypted_cipher["tag"])
         if tokens:
             google_drive_int = GoogleDriveIntegrationDB()
-            google_drive_int.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
+            integration = google_drive_int.get_by_user_id(user_id)
+            if integration == None:
+                google_drive_int.create(user_id=user_id, google_drive_sync=1)
+            else :
+                google_drive_int.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
             return response
         else:
             logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
