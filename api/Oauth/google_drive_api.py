@@ -114,7 +114,7 @@ def get_last_backup_checksum(creds):
 
 
 def clean_backup_retention(credentials, user_id) -> bool:
-    logging.info("Cleaning backup retention")
+    logging.info("Cleaning backup retention for user " + str(user_id) + " ...")
     google_drive_integration_db = GoogleDriveIntegrationDB()
     last_backup_clean_date = google_drive_integration_db.get_last_backup_clean_date(user_id)
     if last_backup_clean_date is not None:
@@ -126,6 +126,10 @@ def clean_backup_retention(credentials, user_id) -> bool:
     MAXIMUM_BACKUP_AGE = 30
     drive = get_drive_service(credentials)
     folder = get_folder(FOLDER_NAME, drive)
+    if folder == None:
+        logging.info("No backup to clean (no backup folder)")
+        google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.now().strftime('%Y-%m-%d'))
+        return True
     result = get_files_from_folder(folder.get('id'), drive)
     logging.info("Found " + str(len(result)) + " backups")
     if len(result) <= MINIMUM_NB_BACKUP or len(result) == 0:
@@ -137,7 +141,9 @@ def clean_backup_retention(credentials, user_id) -> bool:
         try:
             sorted_files = sorted(result, key=lambda x:  datetime.strptime(x.get("name").split("_")[0], '%d-%m-%Y-%H-%M-%S'))
             logging.info("Found " + str(len(sorted_files)) + " backups")
-        except:
+        except Exception as e:
+             logging.info("Error while sorting backup files : " + str(e))
+             google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.now().strftime('%Y-%m-%d'))
              return False
         for file in sorted_files[:-MINIMUM_NB_BACKUP]:
             date_str = file.get("name").split("_")[0]
@@ -149,6 +155,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
                 body_value = {'trashed': True}
                 drive.files().update(fileId=file.get("id"), body=body_value).execute()
         google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.now().strftime('%Y-%m-%d'))
+        return True
     
 
 def revoke_credentials(credentials):
