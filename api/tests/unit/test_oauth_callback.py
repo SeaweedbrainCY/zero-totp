@@ -67,10 +67,92 @@ class TestOauthCallback(unittest.TestCase):
             self.assertNotIn(self.creds["secret"], encrypted_credentials.enc_credentials)
             self.assertEqual(self.creds, json.loads(b64decode(self.sse.decrypt(encrypted_credentials.enc_credentials,encrypted_credentials.cipher_tag, encrypted_credentials.cipher_nonce))))
             self.assertEqual(self.google_integration_repo.is_google_drive_enabled(1), 1)
-
-
-        
-
-        
     
-   
+    def test_oauth_callback_no_creds(self):
+        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.get_credentials.return_value = None
+        with self.app.app_context():
+            with self.client.session_transaction() as session:
+                session["state"] = "state"
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 302)
+            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertIn("error", response.headers["Location"])
+
+    def test_oauth_callback_already_token(self):
+        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.app.app_context():
+            self.oauth_tokens.add(1, "creds", "date","tag", "nonce")
+            with self.client.session_transaction() as session:
+                session["state"] = "state"
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 302)
+            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertNotIn("error", response.headers["Location"])
+            encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
+            self.assertIsNotNone(encrypted_credentials.enc_credentials)
+            self.assertNotIn(self.creds["secret"], encrypted_credentials.enc_credentials)
+            self.assertEqual(self.creds, json.loads(b64decode(self.sse.decrypt(encrypted_credentials.enc_credentials,encrypted_credentials.cipher_tag, encrypted_credentials.cipher_nonce))))
+            self.assertEqual(self.google_integration_repo.is_google_drive_enabled(1), 1)
+
+    def test_oauth_callback_already_synched(self):
+        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.app.app_context():
+            self.oauth_tokens.add(1, "creds", "date","tag", "nonce")
+            self.google_integration_repo.create(1, 1)
+            with self.client.session_transaction() as session:
+                session["state"] = "state"
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 302)
+            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertNotIn("error", response.headers["Location"])
+            encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
+            self.assertIsNotNone(encrypted_credentials.enc_credentials)
+            self.assertNotIn(self.creds["secret"], encrypted_credentials.enc_credentials)
+            self.assertEqual(self.creds, json.loads(b64decode(self.sse.decrypt(encrypted_credentials.enc_credentials,encrypted_credentials.cipher_tag, encrypted_credentials.cipher_nonce))))
+            self.assertEqual(self.google_integration_repo.is_google_drive_enabled(1), 1)
+        
+
+    def test_oauth_callback_exception(self):
+        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.app.app_context():
+            google_get_by_userid = patch("database.google_drive_integration_repo.GoogleDriveIntegration.get_by_user_id").start()
+            google_get_by_userid.side_effect = Exception("test")
+            with self.client.session_transaction() as session:
+                session["state"] = "state"
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 302)
+            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertIn("error", response.headers["Location"])
+            encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
+            self.assertIsNotNone(encrypted_credentials.enc_credentials)
+            self.assertNotIn(self.creds["secret"], encrypted_credentials.enc_credentials)
+            self.assertEqual(self.google_integration_repo.is_google_drive_enabled(1), 0)
+        
+    def test_oauth_callback_add_token_error(self):
+        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.app.app_context():
+            add_token = patch("database.oauth_tokens_repo.Oauth_tokens.add").start()
+            add_token.return_value = None
+            with self.client.session_transaction() as session:
+                session["state"] = "state"
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 302)
+            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertIn("error", response.headers["Location"])
+            encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
+            self.assertIsNone(encrypted_credentials)
+            self.assertEqual(self.google_integration_repo.is_google_drive_enabled(1), 0)
+        
+    def test_oauth_callback_no_flask_session(self):
+        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.app.app_context():
+            add_token = patch("database.oauth_tokens_repo.Oauth_tokens.add").start()
+            add_token.return_value = None
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 302)
+            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertIn("error", response.headers["Location"])
+            encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
+            self.assertIsNone(encrypted_credentials)
+            self.assertEqual(self.google_integration_repo.is_google_drive_enabled(1), 0)
