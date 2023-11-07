@@ -32,6 +32,9 @@ class GoogleDriveIntegration:
         if integration == None:
             return None
         return integration.lastBackupCleanDate
+
+    def get_by_user_id(self, user_id):
+        return db.session.query(GoogleDriveIntegrationModel).filter_by(user_id=user_id).first()
     
     def create(self, user_id, google_drive_sync):
         integration = GoogleDriveIntegrationModel(user_id=user_id)
