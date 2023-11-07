@@ -481,7 +481,6 @@ def oauth_callback():
             return response
 
         response = make_response(redirect(frontend_URI + "/oauth/callback?status=success&state="+str(flask.session["state"]),    code=302))
-        flask.session.pop("state")
         creds_b64 = base64.b64encode(json.dumps(credentials).encode("utf-8")).decode("utf-8")
         sse = ServiceSideEncryption()
         encrypted_cipher = sse.encrypt(creds_b64)
@@ -499,10 +498,13 @@ def oauth_callback():
                 google_drive_int.create(user_id=user_id, google_drive_sync=1)
             else :
                 google_drive_int.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
+            flask.session.pop("state")
             return response
         else:
             logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
-            return {"message": "Unknown error while storing encrypted tokens"}, 500
+            response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state="+flask.session.get('state'),  code=302))
+            flask.session.pop("state")
+            return response
     except Exception as e:
         logging.error("Error while exchanging the authorization code " + str(e))
         logging.error(traceback.format_exc())
