@@ -33,7 +33,7 @@ else:
         datefmt='%d-%m-%Y %H:%M:%S')
     frontend_domain="zero-totp.com"
     frontend_URI = ["https://zero-totp.com", "https://ca.zero-totp.com", "https://eu.zero-totp.com"]
-    callback_URI = "https://zero-totp.com/callback"
+    callback_URI = "https://api.zero-totp.com/google-drive/oauth/callback"
 
 
 
