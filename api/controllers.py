@@ -611,8 +611,12 @@ def delete_google_drive_option():
     except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
+    google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
+    
+    if google_integration.get_by_user_id(user_id) is None:
+        google_integration.create(user_id, 0)
     if not oauth_tokens:
         GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
         return {"message": "Google drive sync is not enabled"}, 200
@@ -632,4 +636,4 @@ def delete_google_drive_option():
         logging.error("Error while deleting backup from google drive " + str(e))
         token_db.delete(user_id)
         GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
-        return {"message": "Error while decrypting credentials"}, 200
+        return {"message": "Error while revoking credentials"}, 200
