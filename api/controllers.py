@@ -515,28 +515,9 @@ def oauth_callback():
             response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state=none",  code=302))
         return response
 
-# GET  /google-drive/oauth/enc-credentials
-# DEPRECATED
-def get_encrypted_creds():
-    logging.error("This endpoint (GET /google-drive/oauth/enc-credentials) is deprecated and should not be used anymore.")
-    try:
-        user_id = connexion.context.get("user")
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
-    oauth_db = Oauth_tokens_db()
-    oauth = oauth_db.get_by_user_id(user_id)
-    if oauth:
-        return {"enc_credentials": oauth.enc_credentials}, 200
-    else:
-        return {"message": "No encrypted credentials found"}, 404
 
 
-
-
-#GET /google-drive/status
+#GET /google-drive/option
 def get_google_drive_option():
     try:
         user_id = connexion.context.get("user")
@@ -545,9 +526,9 @@ def get_google_drive_option():
     except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
-    token_db = Oauth_tokens_db()
-    tokens = token_db.get_by_user_id(user_id)
-    if tokens:
+    google_drive_integrations = GoogleDriveIntegrationDB()
+    status = google_drive_integrations.is_google_drive_enabled(user_id)
+    if status:
         return {"status": "enabled"}, 200
     else:
         return {"status": "disabled"}, 200
@@ -564,7 +545,9 @@ def backup_to_google_drive():
     
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
-    if not oauth_tokens:
+    google_drive_integrations = GoogleDriveIntegrationDB()
+
+    if not oauth_tokens or not google_drive_integrations.is_google_drive_enabled(user_id):
         return {"message": "Google drive sync is not enabled"}, 403
     sse = ServiceSideEncryption()
     creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce, tag=oauth_tokens.cipher_tag)

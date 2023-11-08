@@ -156,3 +156,9 @@ class TestOauthCallback(unittest.TestCase):
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNone(encrypted_credentials)
             self.assertEqual(self.google_integration_repo.is_google_drive_enabled(1), 0)
+    
+    def test_oauth_callback_no_cookie(self):
+        with self.app.app_context():
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 401)
+            self.assertEqual(self.google_integration_repo.is_google_drive_enabled(1), 0)
