@@ -1,0 +1,183 @@
+import unittest
+import controllers
+from app import create_app
+from unittest.mock import patch
+from database.user_repo import User as UserRepo
+from database.oauth_tokens_repo import Oauth_tokens as OAuthTokensRepo
+from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationRepo
+import environment as env
+from CryptoClasses import jwt_func
+import jwt
+import datetime
+from database.db import db
+from CryptoClasses.encryption import ServiceSideEncryption
+import base64
+import json
+from uuid import uuid4
+
+class TestGoogleDriveOption(unittest.TestCase):
+
+    def setUp(self):
+        env.db_uri = "sqlite:///:memory:"
+        self.app = create_app()
+        self.jwtCookie = jwt_func.generate_jwt(1)
+        self.client = self.app.test_client()
+        self.endpoint = "/google-drive/option"
+
+        self.google_api_revoke_creds = patch("Oauth.google_drive_api.revoke_credentials").start()
+        self.google_api_revoke_creds.return_value = True
+
+
+        self.user_repo = UserRepo()
+        self.google_integration = GoogleDriveIntegrationRepo()
+        self.oauth_token = OAuthTokensRepo()
+        self.sse = ServiceSideEncryption()
+        self.creds = {"creds": "creds", "expiry":datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
+        creds_b64 = base64.b64encode(json.dumps(self.creds).encode("utf-8")).decode("utf-8")
+        encrypted_creds = self.sse.encrypt(creds_b64)
+        with self.app.app_context():
+            db.create_all()
+            self.user_repo.create(username="user", email="user@test.test", password="password", 
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+
+            
+            self.oauth_token.add(user_id=1, enc_credentials=encrypted_creds["ciphertext"], expires_at=self.creds["expiry"], nonce=encrypted_creds["nonce"], tag=encrypted_creds["tag"])
+
+            
+            
+
+    def tearDown(self):
+        patch.stopall()
+    
+    def generate_expired_cookie(self):
+        payload = {
+            "iss": jwt_func.ISSUER,
+            "sub": 1,
+            "iat": datetime.datetime.utcnow(),
+            "nbf": datetime.datetime.utcnow(),
+            "exp": datetime.datetime.utcnow() - datetime.timedelta(hours=1),
+        }
+        jwtCookie = jwt.encode(payload, env.jwt_secret, algorithm=jwt_func.ALG)
+        return jwtCookie
+
+#########
+## GET ##
+#########
+
+    def test_google_drive_option(self):
+        with self.app.app_context():
+            self.google_integration.create(user_id=1, google_drive_sync=True)
+            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json["status"], "enabled")
+
+    def test_google_drive_option_disabled(self):
+        with self.app.app_context():
+            self.google_integration.create(user_id=1, google_drive_sync=False)
+            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json["status"], "disabled")
+
+    def test_google_drive_option_doesnt_exists(self):
+        with self.app.app_context():
+            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json["status"], "disabled")
+    
+    def test_google_drive_no_cookie(self):
+        with self.app.app_context():
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 401)
+
+    def test_google_drive_bad_cookie(self):
+         with self.app.app_context():
+            self.client.set_cookie("localhost", "api-key", "badcookie")
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+
+   
+############
+## DELETE ##
+############
+
+    def test_google_drive_option_delete(self):
+        with self.app.app_context():
+            self.google_integration.create(user_id=1, google_drive_sync=True)
+            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json["message"], "Google drive sync disabled")
+            self.google_api_revoke_creds.assert_called_once()
+            self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
+            self.assertIsNone(self.oauth_token.get_by_user_id(1))
+            self.assertIsNone(self.oauth_token.get_by_user_id(1))
+
+
+    def test_google_drive_option_delete_decryption_failed(self):
+        with self.app.app_context():
+            self.google_integration.create(user_id=1, google_drive_sync=True)
+            self.oauth_token.update(user_id=1, enc_credentials="bad_credentials", tag="bad_tag", nonce="bad_nonce", expires_at=datetime.datetime.now())
+            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json["message"], "Error while decrypting credentials")
+            self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
+            self.assertIsNone(self.oauth_token.get_by_user_id(1))
+
+    def test_google_drive_option_delete_no_oauth_token(self):
+        with self.app.app_context():
+            self.google_integration.create(user_id=1, google_drive_sync=True)
+            self.oauth_token.delete(user_id=1)
+            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json["message"],  "Google drive sync is not enabled")
+            self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
+            self.assertIsNone(self.oauth_token.get_by_user_id(1))
+    
+    def test_google_drive_option_delete_option_disable(self):
+         with self.app.app_context():
+            self.google_integration.create(user_id=1, google_drive_sync=False)
+            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json["message"], "Google drive sync disabled")
+            self.google_api_revoke_creds.assert_called_once()
+            self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
+            self.assertIsNone(self.oauth_token.get_by_user_id(1))
+
+    
+    def test_google_drive_delete_option_option_doesnt_exists(self):
+         with self.app.app_context():
+            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json["message"], "Google drive sync disabled")
+            self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
+            self.assertIsNone(self.oauth_token.get_by_user_id(1))
+    
+    def test_google_drive_option_delete_revoke_exception(self):
+        with self.app.app_context():
+            self.google_integration.create(user_id=1, google_drive_sync=True)
+            self.google_api_revoke_creds.side_effect = Exception("error")
+            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json["message"], "Error while revoking credentials")
+            self.google_api_revoke_creds.assert_called_once()
+            self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
+            self.assertIsNone(self.oauth_token.get_by_user_id(1))
+    
+    def test_google_drive_option_delete_no_cookie(self):
+        with self.app.app_context():
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 401)
+        
+    def test_google_drive_option_delete_bad_cookie(self):
+        with self.app.app_context():
+            self.client.set_cookie("localhost", "api-key", "badcookie")
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 403)

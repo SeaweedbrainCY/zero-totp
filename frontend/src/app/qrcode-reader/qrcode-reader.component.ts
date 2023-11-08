@@ -51,6 +51,7 @@ export class QrcodeReaderComponent implements OnInit {
     this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
       if(isTimedOut){
         this.bnIdle.stopTimer();
+        isTimedOut=false;
         this.userService.clear();
         this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
       }

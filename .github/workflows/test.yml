@@ -52,6 +52,9 @@ jobs:
         JWT_SECRET : "secret"
         PRIVATE_KEY_PATH: "./tests/ressources/test_private.pem"
         PUBLIC_KEY_PATH: "./tests/ressources/test_public.pem"
+        OAUTH_CLIENT_SECRET_FILE: "fake_client_secret.json"
+        FLASK_SECRET_KEY: "secret"
+        SEVER_SIDE_ENCRYPTION_KEY: "/SMwC/kEZCXRwzoFas8HU2KggGUYRnHuxziuE6NN1aM="
       run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml  --cov-fail-under=90
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2

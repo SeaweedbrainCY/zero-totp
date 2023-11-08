@@ -307,27 +307,64 @@ paths:
         "404":
           description: No secrets found
 
-  /role:
+  /google-drive/oauth/authorization-flow:
     get:
-      operationId: controllers.get_role
+      operationId: controllers.get_authorization_flow
       tags:
-        - User
-      summary: Return the user's role
+        - Google Drive
+      summary: Get the OAuth authorization flow URI
       responses:
-        "200": # status code
-          description: Return the user's role
+        "200": 
+          description: Return the authorization URI
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+  
+  /google-drive/oauth/callback:
+    get:
+      operationId: controllers.oauth_callback
+      tags:
+        - Google Drive
+      summary: OAuth callback endpoint for the authorization flow
+      responses:
+        "302": 
+          description: Callback successful
+  
+  /google-drive/option:
+    get:
+      operationId: controllers.get_google_drive_option
+      tags:
+        - Google Drive
+      summary: Check if the google drive option as a backup is enabled
+      responses:
+        "200": 
+          description: Return the sync status
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  role:
+                  status:
                     type: string
-                    example: user
+                    description: The option status
+                    example: "enabled"
         "401":
           description: Unauthorized
-        "404":
-          description: No role found
+        "403":
+          description: Access disabled
+    delete:
+      operationId: controllers.delete_google_drive_option
+      tags:
+        - Google Drive
+      summary: Disable the google drive option as a backup. Delete the oauth token.
+      responses:
+        "200": 
+          description: Google drive option disabled
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access disabled
   /admin/users:
     get:
       operationId: controllers.get_users_list
@@ -372,8 +409,74 @@ paths:
           description: Unauthorized
         "403":
           description: Access denied
+  /google-drive/backup:
+    put:
+      operationId: controllers.backup_to_google_drive
+      tags:
+        - Google Drive
+      summary: Back up the encrypted vault to Google Drive
+      responses:
+        "200": 
+          description: Return the backup status
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access disabled
+        "500":
+          description: Backup failed
 
-
+  /role:
+    get:
+      operationId: controllers.get_role
+      tags:
+        - User
+      summary: Return the user's role
+      responses:
+        "200": # status code
+          description: Return the user's role
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  role:
+                    type: string
+                    example: user
+        "401":
+          description: Unauthorized
+        "404":
+          description: No role found
+  /google-drive/last-backup/verify:
+    get:
+      operationId: controllers.verify_last_backup
+      tags:
+        - Google Drive
+      summary: Verify the last backup checksum to determine if the last backup is up to date.
+      responses:
+        "200": 
+          description: Return the last backup date and if it's up to date. If an error occurs during the verification, the status contains the error key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok|corrupted_file"
+                  is_up_to_date:
+                    type: boolean
+                    example: true
+                  last_backup_date:
+                    type: string
+                    example: 01/01/2001
+        "401":
+          description: Unauthorized.
+        "403":
+          description: Access disabled
+        "404":
+          description: No backup found
+        "500":
+          description: Internal server error
 components:
   securitySchemes:
     JWTAuth:

@@ -32,3 +32,20 @@ class Admin(db.Model):
     token_hashed = db.Column(db.Text, nullable=False)
     token_expiration = db.Column(db.String(256), nullable=True, default=None)
 
+
+class Oauth_tokens(db.Model):
+    __tablename__ = "oauth_tokens"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
+    enc_credentials = db.Column(db.Text, nullable=False)
+    cipher_nonce = db.Column(db.Text, nullable=False)
+    cipher_tag = db.Column(db.Text, nullable=False)
+    expires_at = db.Column(db.Integer, nullable=False)
+
+
+class GoogleDriveIntegration(db.Model):
+    __tablename__ = "google_drive_integration"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
+    isEnabled = db.Column(db.Boolean, nullable=False, default=False)
+    lastBackupCleanDate = db.Column(db.String(256), nullable=True, default=None)

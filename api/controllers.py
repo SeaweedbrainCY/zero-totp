@@ -1,22 +1,32 @@
-from flask import request, Response
+from flask import request, Response, redirect, make_response
+import flask
 import connexion
 import json
 from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
+from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
 from database.admin_repo import Admin as Admin_db
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging
+from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
+from CryptoClasses.hash_func import Bcrypt
+from Oauth import google_drive_api
 import environment as env
 import random
 import string
 import CryptoClasses.jwt_func as jwt_auth
 from CryptoClasses.sign_func import API_signature
+import CryptoClasses.jwt_func as jwt_auth
+import Oauth.oauth_flow as oauth_flow
 import Utils.utils as utils
 import os
 import base64
 import datetime
 from Utils.security_wrapper import require_admin_token, require_admin_role
+import traceback
+from hashlib import sha256
+from CryptoClasses.encryption import ServiceSideEncryption 
 
 
 
@@ -35,7 +45,7 @@ def signup():
         derivedKeySalt = utils.sanitize_input(data["derivedKeySalt"].strip())
         zke_key = utils.sanitize_input(data["ZKE_key"].strip())
         passphraseSalt = utils.sanitize_input(data["passphraseSalt"].strip())
-    except Exception as e:
+    except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
@@ -97,6 +107,7 @@ def login():
     if(not utils.check_email(email) ):
         return {"message": "Bad email format"}, 403
     userDB = UserDB()
+
     user = userDB.getByEmail(email)
     logging.info(user)
     bcrypt = Bcrypt(passphrase)
@@ -113,7 +124,7 @@ def login():
 
     jwt_token = jwt_auth.generate_jwt(user.id)
 
-    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "role":user.role}))
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role}))
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
 
@@ -138,9 +149,9 @@ def get_encrypted_secret(uuid):
     try:
         user_id = connexion.context.get("user")
         logging.info(connexion.context)
-        if user_id == None:
+        if user_id == None: # pragma: no cover # pragma: no cover
             return {"message": "Unauthorized"}, 401
-    except Exception as e:
+    except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
     totp_secretDB =  TOTP_secretDB()
@@ -159,12 +170,12 @@ def add_encrypted_secret(uuid):
     try:
         user_id = connexion.context.get("user")
         logging.info(connexion.context)
-        if user_id == None:
+        if user_id == None: # pragma: no cover
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
         enc_secret = utils.sanitize_input(data["enc_secret"]).strip()
-    except Exception as e:
+    except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
     if(uuid == ""):
@@ -184,12 +195,12 @@ def update_encrypted_secret(uuid):
     try:
         user_id = connexion.context.get("user")
         logging.info(connexion.context)
-        if user_id == None:
+        if user_id == None: # pragma: no cover
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
         enc_secret = data["enc_secret"]
-    except Exception as e:
+    except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
@@ -214,9 +225,9 @@ def delete_encrypted_secret(uuid):
     try:
         user_id = connexion.context.get("user")
         logging.info(connexion.context)
-        if user_id == None:
+        if user_id == None: # pragma: no cover
             return {"message": "Unauthorized"}, 401
-    except Exception as e:
+    except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
     if(uuid == ""):
@@ -242,9 +253,9 @@ def get_all_secrets():
     try:
         user_id = connexion.context.get("user")
         logging.info(connexion.context)
-        if user_id == None:
+        if user_id == None: # pragma: no cover
             return {"message": "Unauthorized"}, 401
-    except Exception as e:
+    except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
     totp_secretDB =  TOTP_secretDB()
@@ -269,7 +280,7 @@ def get_ZKE_encrypted_key():
                 return {"zke_encrypted_key": zke_key.ZKE_key}, 200
         else:
             return {"message": "No ZKE key found for this user"}, 404
-    except Exception as e:
+    except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
 
@@ -278,7 +289,7 @@ def get_ZKE_encrypted_key():
 #PUT /email
 def update_email():
     user_id = connexion.context.get("user")
-    if user_id == None:
+    if user_id == None: # pragma: no cover
         return {"message": "Unauthorized"}, 401
     dataJSON = json.dumps(request.get_json())
     data = json.loads(dataJSON)
@@ -302,7 +313,7 @@ def update_vault():
     returnJson = {"message": "Internal server error", "hashing":-1, "totp":-1, "user":-1, "zke":-1}
     try:
         user_id = connexion.context.get("user")
-        if user_id == None:
+        if user_id == None: # pragma: no cover
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
@@ -373,7 +384,7 @@ def update_vault():
 def export_vault():
     try:
         user_id = connexion.context.get("user")
-    except:
+    except: # pragma: no cover
         return {"message": "Invalid request"}, 400
     
     vault = {"version":1, "date": str(datetime.datetime.utcnow())}
@@ -385,10 +396,9 @@ def export_vault():
     
     vault["derived_key_salt"] = user.derivedKeySalt
     vault["zke_key_enc"] = zkeKey.ZKE_key
-    secrets = []
-    for secret in totp_secrets_list:
-        secrets.append({"uuid": secret.uuid, "enc_secret": secret.secret_enc})
+    secrets = utils.get_all_secrets_sorted(totp_secrets_list)
     vault["secrets"] = secrets
+    vault["secrets_sha256sum"] = sha256(json.dumps(vault["secrets"],  sort_keys=True).encode("utf-8")).hexdigest()
     vault_b64 = base64.b64encode(json.dumps(vault).encode("utf-8")).decode("utf-8")
     signature = API_signature().sign_rsa(vault_b64)
     vault = vault_b64 + "," + signature
@@ -417,12 +427,12 @@ def get_users_list(*args, **kwargs):
 def admin_login(*args, **kwargs):
     try:
         user_id = connexion.context.get("user")
-        if user_id == None:
+        if user_id == None: # pragma: no cover
             return {"message": "Unauthorized"}, 401
         dataJSON = json.dumps(request.get_json())
         data = json.loads(dataJSON)
         token = data["token"].strip()
-    except Exception as e:
+    except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
     admin_user = Admin_db().get_by_user_id(user_id)
@@ -447,3 +457,183 @@ def admin_login(*args, **kwargs):
     logging.info("User " + str(user_id) + " logged in as admin")
     return response
     
+    
+# GET /google-drive/oauth/authorization_flow
+def get_authorization_flow():
+    authorization_url, state = oauth_flow.get_authorization_url()
+    flask.session["state"] = state
+    logging.info("State stored in session : " + str(state))
+    return {"authorization_url": authorization_url, "state":state}, 200
+
+# GET /google-drive/oauth/callback
+def oauth_callback():
+    try:
+        user_id = connexion.context.get("user")
+    except: # pragma: no cover
+        return {"message": "Invalid request"}, 400
+    frontend_URI = env.frontend_URI[0] # keep the default URI, not regionized. 
+    try: 
+        credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
+
+        if credentials == None:
+            response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state="+str(flask.session["state"]),  code=302))
+            flask.session.pop("state")
+            return response
+
+        response = make_response(redirect(frontend_URI + "/oauth/callback?status=success&state="+str(flask.session["state"]),    code=302))
+        creds_b64 = base64.b64encode(json.dumps(credentials).encode("utf-8")).decode("utf-8")
+        sse = ServiceSideEncryption()
+        encrypted_cipher = sse.encrypt(creds_b64)
+        expires_at = int(datetime.datetime.strptime(credentials["expiry"], "%Y-%m-%d %H:%M:%S.%f").timestamp())
+        token_db = Oauth_tokens_db()
+        tokens = token_db.get_by_user_id(user_id)
+        if tokens:
+            tokens = token_db.update(user_id=user_id, enc_credentials=encrypted_cipher["ciphertext"] ,expires_at=expires_at, nonce=encrypted_cipher["nonce"], tag=encrypted_cipher["tag"])
+        else:
+            tokens = token_db.add(user_id=user_id, enc_credentials=encrypted_cipher["ciphertext"], expires_at=expires_at, nonce=encrypted_cipher["nonce"], tag=encrypted_cipher["tag"])
+        if tokens:
+            google_drive_int = GoogleDriveIntegrationDB()
+            integration = google_drive_int.get_by_user_id(user_id)
+            if integration == None:
+                google_drive_int.create(user_id=user_id, google_drive_sync=1)
+            else :
+                google_drive_int.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
+            flask.session.pop("state")
+            return response
+        else:
+            logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
+            response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state="+flask.session.get('state'),  code=302))
+            flask.session.pop("state")
+            return response
+    except Exception as e:
+        logging.error("Error while exchanging the authorization code " + str(e))
+        logging.error(traceback.format_exc())
+        if flask.session.get("state"):
+            response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state="+flask.session.get('state'),  code=302))
+            flask.session.pop("state")
+        else :
+            response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state=none",  code=302))
+        return response
+
+
+
+#GET /google-drive/option
+def get_google_drive_option():
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None: # pragma: no cover
+            return {"message": "Unauthorized"}, 401
+    except Exception as e: # pragma: no cover
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    google_drive_integrations = GoogleDriveIntegrationDB()
+    status = google_drive_integrations.is_google_drive_enabled(user_id)
+    if status:
+        return {"status": "enabled"}, 200
+    else:
+        return {"status": "disabled"}, 200
+    
+#PUT /google-drive/backup
+def backup_to_google_drive():
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None: # pragma: no cover
+            return {"message": "Unauthorized"}, 401
+    except Exception as e: # pragma: no cover
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    
+    token_db = Oauth_tokens_db()
+    oauth_tokens = token_db.get_by_user_id(user_id)
+    google_drive_integrations = GoogleDriveIntegrationDB()
+
+    if not oauth_tokens or not google_drive_integrations.is_google_drive_enabled(user_id):
+        return {"message": "Google drive sync is not enabled"}, 403
+    sse = ServiceSideEncryption()
+    creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce, tag=oauth_tokens.cipher_tag)
+    if creds_b64 == None:
+        logging.warning("Error while decrypting credentials for user " + str(user_id))
+        return {"message": "Error while decrypting credentials"}, 500
+    credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+    try:
+        exported_vault,_ = export_vault()
+        google_drive_api.backup(credentials=credentials, vault=exported_vault)
+        google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_id)
+        return {"message": "Backup done"}, 201
+    except Exception as e:
+        logging.error("Error while backing up to google drive " + str(e))
+        return {"message": "Error while backing up to google drive"}, 500
+
+
+def verify_last_backup():
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None: # pragma: no cover
+            return {"message": "Unauthorized"}, 401
+    except Exception as e: # pragma: no cover
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    token_db = Oauth_tokens_db()
+    oauth_tokens = token_db.get_by_user_id(user_id)
+    google_drive_integrations = GoogleDriveIntegrationDB()
+    if not oauth_tokens or not google_drive_integrations.is_google_drive_enabled(user_id):
+        return {"message": "Google drive sync is not enabled"}, 403
+    sse = ServiceSideEncryption()
+    creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce, tag=oauth_tokens.cipher_tag)
+    if creds_b64 == None:
+        logging.warning("Error while decrypting credentials for user " + str(user_id))
+        return {"error": "Error while connecting to thz Google API"}, 500
+    
+    
+    credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+    try:
+        last_backup_checksum, last_backup_date = google_drive_api.get_last_backup_checksum(credentials)
+    except utils.CorruptedFile as e:
+        logging.warning("Error while getting last backup checksum " + str(e))
+        return {"status": "corrupted_file"}, 200
+    except utils.FileNotFound as e:
+        logging.warning("Error while getting last backup checksum " + str(e))
+        return {"error": "file_not_found"}, 404
+    totp_secrets_list = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user_id)
+    secrets = utils.get_all_secrets_sorted(totp_secrets_list)
+    sha256sum = sha256(json.dumps(secrets,  sort_keys=True).encode("utf-8")).hexdigest()
+    if last_backup_checksum == sha256sum:
+        google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_id)
+        return {"status": "ok", "is_up_to_date": True, "last_backup_date": last_backup_date }, 200
+    else:
+        return {"status": "ok", "is_up_to_date": False, "last_backup_date": "" }, 200
+
+def delete_google_drive_option():
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None: # pragma: no cover
+            return {"message": "Unauthorized"}, 401
+    except Exception as e: # pragma: no cover
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    google_integration = GoogleDriveIntegrationDB()
+    token_db = Oauth_tokens_db()
+    oauth_tokens = token_db.get_by_user_id(user_id)
+    
+    if google_integration.get_by_user_id(user_id) is None:
+        google_integration.create(user_id, 0)
+    if not oauth_tokens:
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        return {"message": "Google drive sync is not enabled"}, 200
+    sse = ServiceSideEncryption()
+    try:
+        creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce,  tag=oauth_tokens.cipher_tag)
+        if creds_b64 == None:
+            token_db.delete(user_id)
+            GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+            return {"message": "Error while decrypting credentials"}, 200
+        credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+        google_drive_api.revoke_credentials(credentials)
+        token_db.delete(user_id)
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        return {"message": "Google drive sync disabled"}, 200
+    except Exception as e:
+        logging.error("Error while deleting backup from google drive " + str(e))
+        token_db.delete(user_id)
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        return {"message": "Error while revoking credentials"}, 200

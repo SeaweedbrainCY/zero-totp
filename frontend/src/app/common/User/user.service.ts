@@ -16,6 +16,7 @@ export class UserService {
   private isVaultLocal:boolean = false;
   private local_vault_service:LocalVaultV1Service | null = null;
   private isAdmin: boolean = false;
+  private googleDriveSync:boolean | null = null;;
 
   constructor(private utils: Utils) {
    }
@@ -99,6 +100,14 @@ export class UserService {
     }
 
 
+
+    getGoogleDriveSync(): boolean | null {
+    return this.googleDriveSync;
+    }
+
+    setGoogleDriveSync(sync:boolean){
+    this.googleDriveSync = sync;
+    }
 
    clear(){
     this.id = null;

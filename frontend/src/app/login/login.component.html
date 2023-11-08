@@ -1,6 +1,6 @@
 <section class="hero is-halfheight mt-6" style="min-height: 70vh;">
     <div class="hero-body is-flex is-flex-direction-column	is-fullheight">
-      <div class="has-text-centered	is-full is-flex is-justify-content-center block">
+      <div class="has-text-centered	is-full is-flex is-justify-content-center block" *ngIf="!is_oauth_flow">
         <p class="block"><span class="title is-1 is-full has-text-centered has-text-info has-text-weight-bold">
             It's time to open your vault !</span><br />
   
@@ -9,7 +9,7 @@
         </p>
       </div>
       <div class="has-text-centered columns p-5" *ngIf="warning_message != ''">
-        <div class="notification is-warning column is-6 is-offset-3 ">
+        <div class="notification {{warning_message_color}} column is-6 is-offset-3 ">
           <strong class="block">{{warning_message}}</strong>
         </div>
       </div>
@@ -42,7 +42,7 @@
         
         <div class="field">
           <div class="control">
-            <button class="button is-info is-medium block " (click)="login()" [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading">Give me my zero-vault
+            <button class="button is-info is-medium block " (click)="login()" [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading">{{login_button}}
               </button>
           </div>
         </div>
@@ -52,7 +52,7 @@
       <div class="m-6" style="border-top: 1px lightgray solid; width: 50vw;"></div>
     </div>
   
-    <div class="is-flex is-flex-direction-column">
+    <div class="is-flex is-flex-direction-column" *ngIf="!is_oauth_flow">
       <div class="is-flex is-justify-content-center has-text-centered">
         <p class="block"><span class="title is-1 is-full  has-text-info has-text-weight-bold" id="openVault">
           Open a backup</span><br />

@@ -25,12 +25,13 @@ export class LoginComponent {
   hashedPassword:string = "";
   isLoading = false;
   warning_message="";
+  warning_message_color="is-warning";
   error_param: string|null=null;
   isUnsecureVaultModaleActive = false;
   isPassphraseModalActive = false;
   local_vault_service: LocalVaultV1Service | null = null;
-
-
+  is_oauth_flow=false;
+  login_button="Open my vault"
 
   constructor(
     private http: HttpClient,
@@ -60,10 +61,27 @@ export class LoginComponent {
           this.userService.clear();
           break;
         }
+
         case 'sessionEnd':{
           this.warning_message = "For your safety, your session must be renewed every hour."
           this.email = this.userService.getEmail() || "";
+          break;
+        }
+        case 'oauth':{
+          this.warning_message = "One last step, please confirm your password to complete the synchronization"
+          this.email = this.userService.getEmail() || "";
+          this.warning_message_color="is-success";
           this.userService.clear();
+          this.is_oauth_flow=true;
+          this.login_button="Authorize"
+          break;
+        }
+        case 'confirmPassphrase':{
+          this.warning_message = "To continue, please confirm your passphrase"
+          this.email = this.userService.getEmail() || "";
+          this.warning_message_color="is-success";
+          this.userService.clear();
+          this.is_oauth_flow=true;
           break;
         }
       }
@@ -71,10 +89,6 @@ export class LoginComponent {
     }
 
   
-
-  
-
-
   
 
   checkEmail() : boolean{
@@ -346,12 +360,6 @@ export class LoginComponent {
       password: this.hashedPassword
     }
     this.http.post(ApiService.API_URL+"/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
-      superToast({
-        message: "Welcome back",
-        type: "is-success",
-        dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
       try{
         const data = JSON.parse(JSON.stringify(response.body))
         this.userService.setId(data.id);
@@ -360,6 +368,7 @@ export class LoginComponent {
         if(data.role == "admin"){
           this.userService.setIsAdmin(true);
         }
+        this.userService.setGoogleDriveSync(data.isGoogleDriveSync);
         this.final_zke_flow();
       } catch(e){
         this.isLoading=false;
@@ -389,7 +398,11 @@ export class LoginComponent {
       this.getZKEKey().then((zke_key_encrypted)=>{
         this.decryptZKEKey(zke_key_encrypted, derivedKey).then((zke_key)=>{
           this.userService.set_zke_key(zke_key!);
-          this.router.navigate(["/vault"], {relativeTo:this.route.root});
+          if(this.is_oauth_flow){
+            this.router.navigate(["/oauth/synchronize"], {relativeTo:this.route.root});
+          } else {
+            this.router.navigate(["/vault"], {relativeTo:this.route.root});
+          }
         }, (error)=>{
           superToast({
             message: error,

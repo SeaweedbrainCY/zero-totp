@@ -1,0 +1,13 @@
+<div class="hero is-fullheight">
+    <div class="hero-body is-flex is-justify-content-center">
+        <div class="notification is-danger" *ngIf="errorMessage !=''">
+            <p class="has-text-weight-bold">{{errorMessage}}</p>
+          </div>
+          <div *ngIf="errorMessage ==''">
+            <p class="has-text-dark has-text-centered"><fa-icon [icon]="faCircleNotch" size="2xl" [spin]="true" class="is-dark"></fa-icon></p>
+            <p class="has-text-dark has-text-centered">Synchronizing, do not close your browser...</p>
+          </div>
+          
+    </div>
+
+</div>

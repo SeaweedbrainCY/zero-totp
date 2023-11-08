@@ -63,6 +63,7 @@ class TestAllSecret(unittest.TestCase):
             self.assertTrue(vault["secrets"])
             self.assertTrue(vault["derived_key_salt"])
             self.assertTrue(vault["zke_key_enc"])
+            self.assertTrue(vault["secrets_sha256sum"])
         else :
             raise Exception("Unknown vault version")
 
