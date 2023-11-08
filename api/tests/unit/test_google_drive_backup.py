@@ -105,5 +105,25 @@ class TestGoogleDriveBackup(unittest.TestCase):
             backup.side_effect = Exception("error")
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 500)
+    
+    def test_google_drive_backup_error_while_cleaning(self):
+        with self.app.app_context():
+            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            backup = patch("Oauth.google_drive_api.clean_backup_retention").start()
+            backup.side_effect = Exception("error")
+            response = self.client.put(self.endpoint)
+            self.assertEqual(response.status_code, 500)
+    
+    def test_google_drive_no_cookie(self):
+        with self.app.app_context():
+            response = self.client.put(self.endpoint)
+            self.assertEqual(response.status_code, 401)
+
+    
+    def test_google_drive_bad_cookie(self):
+        with self.app.app_context():
+            self.client.set_cookie("localhost", "api-key", "badcookie")
+            response = self.client.put(self.endpoint)
+            self.assertEqual(response.status_code, 403)
 
    
