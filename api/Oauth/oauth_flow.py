@@ -9,7 +9,7 @@ import datetime
 SCOPES = ['https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.appdata'] 
 
 
-def get_authorization_url():
+def get_authorization_url(): # pragma: no cover
     # Use the client_secret.json file to identify the application requesting
     # authorization. The client ID (from that file) and access scopes are required.
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
@@ -34,7 +34,7 @@ def get_authorization_url():
     return authorization_url, state
 
 
-def get_credentials(request_url, state):
+def get_credentials(request_url, state): # pragma: no cover
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
         env.oauth_client_secret_file,
         scopes=SCOPES,
