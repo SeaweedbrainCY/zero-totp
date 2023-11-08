@@ -575,7 +575,8 @@ def verify_last_backup():
         return {"message": "Invalid request"}, 400
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
-    if not oauth_tokens:
+    google_drive_integrations = GoogleDriveIntegrationDB()
+    if not oauth_tokens or not google_drive_integrations.is_google_drive_enabled(user_id):
         return {"message": "Google drive sync is not enabled"}, 403
     sse = ServiceSideEncryption()
     creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce, tag=oauth_tokens.cipher_tag)
@@ -600,7 +601,7 @@ def verify_last_backup():
         google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_id)
         return {"status": "ok", "is_up_to_date": True, "last_backup_date": last_backup_date }, 200
     else:
-        return {"status": "ok"}, 200
+        return {"status": "ok", "is_up_to_date": False, "last_backup_date": "" }, 200
 
 def delete_google_drive_option():
     try:
