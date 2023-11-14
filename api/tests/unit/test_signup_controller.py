@@ -9,7 +9,7 @@ class TestSignupController(unittest.TestCase):
 
     def setUp(self):
         env.db_uri = "sqlite:///:memory:"
-        self.app = create_app()
+        self.app = create_app().app
         self.client = self.app.test_client()
 
 

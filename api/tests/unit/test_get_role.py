@@ -13,7 +13,7 @@ class TestJWT(unittest.TestCase):
 
     def setUp(self):
         env.db_uri = "sqlite:///:memory:"
-        self.app = create_app()
+        self.app = create_app().app
         self.client = self.app.test_client()
         self.roleEndpoint = "/role"
         self.admin_user_id = 1

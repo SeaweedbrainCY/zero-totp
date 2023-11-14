@@ -18,7 +18,7 @@ class TestOauthCallback(unittest.TestCase):
 
     def setUp(self):
         env.db_uri = "sqlite:///:memory:"
-        self.app = create_app()
+        self.app = create_app().app
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.app.test_client()
         self.creds = {"secret" : "secret_should_be_encrypted", "expiry": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}

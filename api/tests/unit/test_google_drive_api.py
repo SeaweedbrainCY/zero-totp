@@ -42,7 +42,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
     
         def setUp(self):
             env.db_uri = "sqlite:///:memory:"
-            self.app = create_app()
+            self.app = create_app().app
             self.jwtCookie = jwt_func.generate_jwt(1)
             self.client = self.app.test_client()
             self.endpoint = "/vault/export"
