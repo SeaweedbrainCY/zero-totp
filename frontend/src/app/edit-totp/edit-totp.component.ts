@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import { faChevronCircleLeft, faGlobe, faKey } from '@fortawesome/free-solid-svg-icons';
+import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
 import { toast as superToast } from 'bulma-toast'
 import { ApiService } from '../common/ApiService/api-service';
@@ -19,10 +19,14 @@ export class EditTOTPComponent implements OnInit{
   faChevronCircleLeft = faChevronCircleLeft;
   faGlobe = faGlobe;
   faKey = faKey;
+  faCircleQuestion = faCircleQuestion;
   name = "";
+  uri="";
+  favicon=false;
   uuid="";
   secret = "";
   nameError = "";
+  uriError = "";
   secretError = "";
   color="info";
   selected_color="Blue";
@@ -54,7 +58,7 @@ export class EditTOTPComponent implements OnInit{
 
   ngOnInit(){
     if(this.userService.getId() == null  && !this.userService.getIsVaultLocal()){
-      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } 
     this.secret_uuid = this.route.snapshot.paramMap.get('id');
     if(this.secret_uuid == null){
@@ -98,6 +102,14 @@ export class EditTOTPComponent implements OnInit{
       return;
     }
     if(this.utils.sanitize(this.name) != this.name){
+      this.nameError = "<, >, \" and ' are forbidden";
+      return;
+    }
+  }
+
+  checkURI(){
+    this.nameError = "";
+    if(this.utils.sanitize(this.uri) != this.uri){
       this.nameError = "<, >, \" and ' are forbidden";
       return;
     }
@@ -375,6 +387,10 @@ export class EditTOTPComponent implements OnInit{
       });
     });
     
+  }
+
+  faviconChange(){
+    this.favicon = !this.favicon;
   }
 
   modal(){
