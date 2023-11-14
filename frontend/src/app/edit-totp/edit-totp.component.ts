@@ -11,6 +11,7 @@ import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
 import { BnNgIdleService } from 'bn-ng-idle';
 import  * as URLParse from 'url-parse';
+import { dom } from '@fortawesome/fontawesome-svg-core';
 
 @Component({
   selector: 'app-edit-totp',
@@ -283,12 +284,15 @@ export class EditTOTPComponent implements OnInit{
     if(this.userService.getId() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
+    const parsedUrl = new URLParse(this.uri);
+    const domain = parsedUrl.hostname;
     const property = new Map<string,string>();
     property.set("secret", this.secret);
     property.set("color", this.color);
     property.set("name", this.name);
     property.set("uri", this.uri);
     property.set("favicon", this.favicon.toString());
+    property.set("domain", domain)
     const jsonProperty = this.utils.mapToJson(property);
     try{
       this.crypto.encrypt(jsonProperty, this.userService.get_zke_key()!).then  ((enc_jsonProperty)=>{
