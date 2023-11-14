@@ -2,9 +2,12 @@ import connexion
 from flask_cors import CORS
 import environment as env
 from database.db import db
+import uvicorn
+from asgiref.wsgi import WsgiToAsgi
+
 
 def create_app():
-    app_instance = connexion.App(__name__, specification_dir="./openAPI/")
+    app_instance = connexion.FlaskApp(__name__, specification_dir="./openAPI/")
     app_instance.add_api("swagger.yml")
 
     app = app_instance.app
@@ -18,14 +21,14 @@ def create_app():
 
     db.init_app(app)
 
-    @app.before_first_request
-    def create_tables():
+    with app.app_context():
         db.create_all()
 
-    return app
+    return app_instance
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(port=env.port, debug=True, host="0.0.0.0")
+   app.run(port=env.port,  host="0.0.0.0",  )
+  # uvicorn.run("app:app", host="0.0.0.0", port=env.port, reload=True)
 
 
