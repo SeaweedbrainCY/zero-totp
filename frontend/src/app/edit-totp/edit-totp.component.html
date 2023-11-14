@@ -1,6 +1,7 @@
 <article class="hero is-{{color}} mt-6">
   <div class="hero-body has-text-centered">
     <p class="subtitle">
+      <img src="{{faviconURL}}" alt="favicon " *ngIf="favicon && uriError==''" width="20px" height="20px" style="margin-bottom: -4px;">
       {{name}}<span *ngIf="name==''">example.com</span>
     </p>
     <p class="title is-size-2 has-text-weight-bold">
@@ -34,7 +35,7 @@
                 [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }"
                 [disabled]="this.userService.getIsVaultLocal()!">
               <span class="icon is-small is-left">
-                <fa-icon [icon]="faGlobe"></fa-icon>
+                <fa-icon [icon]="faPassport"></fa-icon>
               </span>
             </div>
             <p class="help is-danger" *ngIf="nameError != ''">{{nameError}}</p>
@@ -47,7 +48,7 @@
             <label class="label">URI</label>
             <div class="control has-icons-left has-icons-right">
               <input class="input" type="text" placeholder="https://github.com" name="uri" [(ngModel)]="uri"
-                (keyup)="checkURI()"
+                (change)="checkURI()"
                 [ngClass]="{'is-danger':uriError != '',  'is-success' : uriError == '' }"
                 [disabled]="this.userService.getIsVaultLocal()!">
               <span class="icon is-small is-left">
@@ -79,7 +80,7 @@
             Your are in read-only mode. You can't modify anything in a local vault.
           </div>
           <label class="checkbox">
-            <input type="checkbox" name="favicon" [(ngModel)]="favicon" (onChange)="faviconChange()" class="mr-3">
+            <input type="checkbox" name="favicon" [(ngModel)]="favicon" (change)="faviconChange()" class="mr-3">
             <strong class="mr-1">Display favicon</strong><div class="dropdown is-hoverable">
               <div class="dropdown-trigger">
                 <a  aria-haspopup="true" aria-controls="dropdown-menu4">

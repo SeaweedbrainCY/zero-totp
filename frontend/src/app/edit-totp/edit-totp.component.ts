@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
 import { toast as superToast } from 'bulma-toast'
 import { ApiService } from '../common/ApiService/api-service';
@@ -10,6 +10,8 @@ import { Crypto } from '../common/Crypto/crypto';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
 import { BnNgIdleService } from 'bn-ng-idle';
+import  * as URLParse from 'url-parse';
+
 @Component({
   selector: 'app-edit-totp',
   templateUrl: './edit-totp.component.html',
@@ -19,7 +21,9 @@ export class EditTOTPComponent implements OnInit{
   faChevronCircleLeft = faChevronCircleLeft;
   faGlobe = faGlobe;
   faKey = faKey;
+  faPassport = faPassport;
   faCircleQuestion = faCircleQuestion;
+  faviconURL = "";
   name = "";
   uri="";
   favicon=false;
@@ -112,6 +116,14 @@ export class EditTOTPComponent implements OnInit{
     if(this.utils.sanitize(this.uri) != this.uri){
       this.nameError = "<, >, \" and ' are forbidden";
       return;
+    }
+    if(this.favicon == true){
+      if(this.uri == ""){
+        this.uriError = "No favicon found for this domain";
+        return;
+      } else {
+        this.faviconChange()
+      }
     }
   }
 
@@ -390,7 +402,25 @@ export class EditTOTPComponent implements OnInit{
   }
 
   faviconChange(){
-    this.favicon = !this.favicon;
+    if(this.favicon == true){
+      if(this.uri != ""){
+        try{
+          const parsedUrl = new URLParse(this.uri);
+           const domain = parsedUrl.hostname;
+           console.log(domain)
+           this.faviconURL = "https://icons.duckduckgo.com/ip3/" +domain + ".ico";
+         // const urlTree = this.urlSerializer.parse(this.uri);
+          //const domain = urlTree.
+        } catch{
+          this.uriError = "Invalid URI";
+          return;
+        }
+        
+       
+      } else {
+        this.uriError = "No favicon found for this domain";
+      }
+    }
   }
 
   modal(){
