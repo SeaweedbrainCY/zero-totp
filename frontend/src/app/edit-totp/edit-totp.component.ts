@@ -62,7 +62,7 @@ export class EditTOTPComponent implements OnInit{
 
   ngOnInit(){
     if(this.userService.getId() == null  && !this.userService.getIsVaultLocal()){
-      //this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } 
     this.secret_uuid = this.route.snapshot.paramMap.get('id');
     if(this.secret_uuid == null){
@@ -84,6 +84,16 @@ export class EditTOTPComponent implements OnInit{
         this.name = property!.get("name")!;
         this.secret = property!.get("secret")!;
         this.color = property!.get("color")!;
+        if(property!.has("uri")){
+          this.uri = property!.get("uri")!;
+        }
+        if(property!.has("favicon")){
+          this.favicon = property!.get("favicon")! == "true";
+          if(this.favicon){
+            this.loadFavicon()
+          }
+        }
+
       }
     }
     this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
@@ -122,7 +132,7 @@ export class EditTOTPComponent implements OnInit{
         this.uriError = "No favicon found for this domain";
         return;
       } else {
-        this.faviconChange()
+        this.loadFavicon()
       }
     }
   }
@@ -222,6 +232,16 @@ export class EditTOTPComponent implements OnInit{
                 break;
               }
             }
+            if(property!.has("uri")){
+              this.uri = property!.get("uri")!;
+            }
+            if(property!.has("favicon")){
+              this.favicon = property!.get("favicon")! == "true";
+              if(this.favicon){
+                this.loadFavicon()
+              }
+            }
+    
           }
         });
       } catch {
@@ -267,6 +287,8 @@ export class EditTOTPComponent implements OnInit{
     property.set("secret", this.secret);
     property.set("color", this.color);
     property.set("name", this.name);
+    property.set("uri", this.uri);
+    property.set("favicon", this.favicon.toString());
     const jsonProperty = this.utils.mapToJson(property);
     try{
       this.crypto.encrypt(jsonProperty, this.userService.get_zke_key()!).then  ((enc_jsonProperty)=>{
@@ -401,16 +423,19 @@ export class EditTOTPComponent implements OnInit{
     
   }
 
-  faviconChange(){
+  loadFavicon(){
+    this.uriError = "";
     if(this.favicon == true){
       if(this.uri != ""){
         try{
           const parsedUrl = new URLParse(this.uri);
            const domain = parsedUrl.hostname;
-           console.log(domain)
-           this.faviconURL = "https://icons.duckduckgo.com/ip3/" +domain + ".ico";
-         // const urlTree = this.urlSerializer.parse(this.uri);
-          //const domain = urlTree.
+           if(domain != null && domain != ""){
+            this.faviconURL = "https://icons.duckduckgo.com/ip3/" +domain + ".ico";
+           } else {
+            this.uriError = "Invalid URI";
+            return;
+           }
         } catch{
           this.uriError = "Invalid URI";
           return;

@@ -49,7 +49,7 @@
             <div class="control has-icons-left has-icons-right">
               <input class="input" type="text" placeholder="https://github.com" name="uri" [(ngModel)]="uri"
                 (change)="checkURI()"
-                [ngClass]="{'is-danger':uriError != '',  'is-success' : uriError == '' }"
+                [ngClass]="{'is-danger':uriError != '',  'is-success' : uriError == '' && uri != '' }"
                 [disabled]="this.userService.getIsVaultLocal()!">
               <span class="icon is-small is-left">
                 <fa-icon [icon]="faGlobe"></fa-icon>
@@ -80,7 +80,7 @@
             Your are in read-only mode. You can't modify anything in a local vault.
           </div>
           <label class="checkbox">
-            <input type="checkbox" name="favicon" [(ngModel)]="favicon" (change)="faviconChange()" class="mr-3">
+            <input type="checkbox" name="favicon" [(ngModel)]="favicon" (change)="loadFavicon()" class="mr-3">
             <strong class="mr-1">Display favicon</strong><div class="dropdown is-hoverable">
               <div class="dropdown-trigger">
                 <a  aria-haspopup="true" aria-controls="dropdown-menu4">
