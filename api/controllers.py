@@ -640,7 +640,7 @@ def delete_google_drive_option():
         return {"message": "Error while revoking credentials"}, 200
 
 
-def get_preferences(field):
+def get_preferences(fields):
     try:
         user_id = connexion.context.get("user")
         if user_id == None: # pragma: no cover
@@ -649,19 +649,29 @@ def get_preferences(field):
         logging.info(e)
         return {"message": "Invalid request"}, 400
     valid_fields = [ "favicon-policy", "derivation-iteration", "backup-lifetime", "backup-minimum", "all"]
-    if field not in valid_fields:
-        return {"message": "Invalid request"}, 400
+    all_field = fields == "all" 
+    fields_asked = []
+    if not all_field:
+        fields = fields.split(",")
+        for field in fields:
+            if field not in fields_asked:
+                for valid_field in valid_fields:
+                    if field == valid_field:
+                        fields_asked.append(valid_field)
+
+        if len(fields_asked) == 0:
+            return {"message": "Invalid request"}, 400
     
     user_preferences = {}
     preferences_db = PreferencesDB()
     preferences = preferences_db.get_preferences_by_user_id(user_id)
-    if field == "favicon-policy" or field == "all":
+    if "favicon-policy" in fields_asked or all_field:
         user_preferences["favicon-policy"] = preferences.favicon_preview_policy
-    if field == "derivation-iteration" or field == "all":
+    if  "derivation-iteration" in fields_asked or all_field:
         user_preferences["derivation-iteration"] = preferences.derivation_iteration
-    if field == "backup-lifetime" or field == "all":
+    if "backup-lifetime" in fields_asked or all_field:
         user_preferences["backup-lifetime"] = preferences.backup_lifetime
-    if field == "backup-minimum" or field == "all":
+    if "backup-minimum" in fields_asked or all_field:
         user_preferences["backup-minimum"] = preferences.minimum_backup_kept
     return user_preferences, 200
 

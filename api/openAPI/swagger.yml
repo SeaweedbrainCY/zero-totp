@@ -454,11 +454,11 @@ paths:
       summary: Return the user's role
       parameters:
         - in: query
-          name: field
+          name: fields
           schema:
             type: string
           required: true
-          description: The field to retrieve. Can be "favicon-policy", "derivation-iteration", "backup-lifetime", "backup-minimum" or "all"
+          description: The field to retrieve. Can be "favicon-policy", "derivation-iteration", "backup-lifetime", "backup-minimum" or "all". Fields can be separated by a comma.
       responses:
         "200": # status code
           description: Return the user's role
