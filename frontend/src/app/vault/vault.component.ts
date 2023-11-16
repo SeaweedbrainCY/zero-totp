@@ -50,7 +50,7 @@ export class VaultComponent implements OnInit {
   isGoogleDriveEnabled = true;
   isGoogleDriveSync = "loading"; // uptodate, loading, error, false
   lastBackupDate = "";
-
+  faviconPolicy = "";
   constructor(
     public userService: UserService,
     private router: Router,
@@ -83,6 +83,7 @@ export class VaultComponent implements OnInit {
         const data = JSON.parse(JSON.stringify(response.body))
         this.decrypt_and_display_vault(data.enc_secrets);
         this.get_google_drive_option();
+        this.get_preferences();
       }, (error) => {
         if(error.status == 404){
           this.userService.setVault(new Map<string, Map<string,string>>());
@@ -116,6 +117,44 @@ export class VaultComponent implements OnInit {
   startDisplayingCode(){
         setInterval(()=> { this.generateTime() }, 20);
         setInterval(()=> { this.generateCode() }, 100);
+  }
+
+  get_preferences(){
+    this.http.get(ApiService.API_URL+"/preferences?fields=all", {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      if(response.body != null){
+        const data = JSON.parse(JSON.stringify(response.body));
+        if(data.favicon_policy != null){
+          this.faviconPolicy = data.favicon_policy;
+        } else {
+          this.faviconPolicy = "enabledOnly";
+          superToast({
+            message: "An error occured while retrieving your preferences",
+            type: "is-danger",
+            dismissible: false,
+            duration: 5000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        }
+      }
+    }, (error) => {
+        let errorMessage = "";
+          if(error.error.message != null){
+            errorMessage = error.error.message;
+          } else if(error.error.detail != null){
+            errorMessage = error.error.detail;
+          }
+          if(error.status == 0){
+            errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+            return;
+          } 
+          superToast({
+            message: "Error : Impossible to update your preferences. "+ errorMessage,
+            type: "is-danger",
+            dismissible: false,
+            duration: 5000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+    });
   }
 
   decrypt_and_display_vault(encrypted_vault:any){
