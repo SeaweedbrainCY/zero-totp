@@ -6,6 +6,7 @@ from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
+from database.preferences_repo import Preferences as PreferencesDB
 from database.admin_repo import Admin as Admin_db
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging
@@ -637,3 +638,30 @@ def delete_google_drive_option():
         token_db.delete(user_id)
         GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
         return {"message": "Error while revoking credentials"}, 200
+
+
+def get_preferences(field):
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None: # pragma: no cover
+            return {"message": "Unauthorized"}, 401
+    except Exception as e: # pragma: no cover
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    valid_fields = [ "favicon-policy", "derivation-iteration", "backup-lifetime", "backup-minimum", "all"]
+    if field not in valid_fields:
+        return {"message": "Invalid request"}, 400
+    
+    user_preferences = {}
+    preferences_db = PreferencesDB()
+    preferences = preferences_db.get_preferences_by_user_id(user_id)
+    if field == "favicon-policy" or field == "all":
+        user_preferences["favicon-policy"] = preferences.favicon_preview_policy
+    if field == "derivation-iteration" or field == "all":
+        user_preferences["derivation-iteration"] = preferences.derivation_iteration
+    if field == "backup-lifetime" or field == "all":
+        user_preferences["backup-lifetime"] = preferences.backup_lifetime
+    if field == "backup-minimum" or field == "all":
+        user_preferences["backup-minimum"] = preferences.minimum_backup_kept
+    return user_preferences, 200
+
