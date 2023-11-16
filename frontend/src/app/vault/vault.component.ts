@@ -120,7 +120,7 @@ export class VaultComponent implements OnInit {
   }
 
   get_preferences(){
-    this.http.get(ApiService.API_URL+"/preferences?fields=all", {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.get(ApiService.API_URL+"/preferences?fields=favicon_policy", {withCredentials: true, observe: 'response'}).subscribe((response) => {
       if(response.body != null){
         const data = JSON.parse(JSON.stringify(response.body));
         if(data.favicon_policy != null){
