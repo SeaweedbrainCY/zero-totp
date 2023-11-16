@@ -446,6 +446,36 @@ paths:
           description: Unauthorized
         "404":
           description: No role found
+  /preferences:
+    get:
+      operationId: controllers.get_preferences
+      tags:
+        - User
+      summary: Return the user's role
+      parameters:
+        - in: query
+          name: field
+          schema:
+            type: string
+          required: true
+          description: The field to retrieve. Can be "favicon-policy", "derivation-iteration", "backup-lifetime", "backup-minimum" or "all"
+      responses:
+        "200": # status code
+          description: Return the user's role
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  perefences:
+                    type: object
+                    example: {"field":"value"}
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
   /google-drive/last-backup/verify:
     get:
       operationId: controllers.verify_last_backup
