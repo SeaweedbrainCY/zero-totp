@@ -648,7 +648,7 @@ def get_preferences(fields):
     except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
-    valid_fields = [ "favicon-policy", "derivation-iteration", "backup-lifetime", "backup-minimum"]
+    valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
     all_field = fields == "all" 
     fields_asked = []
     if not all_field:
@@ -666,13 +666,13 @@ def get_preferences(fields):
     preferences_db = PreferencesDB()
     preferences = preferences_db.get_preferences_by_user_id(user_id)
     if "favicon-policy" in fields_asked or all_field:
-        user_preferences["favicon-policy"] = preferences.favicon_preview_policy
+        user_preferences["favicon_policy"] = preferences.favicon_preview_policy
     if  "derivation-iteration" in fields_asked or all_field:
-        user_preferences["derivation-iteration"] = preferences.derivation_iteration
+        user_preferences["derivation_teration"] = preferences.derivation_iteration
     if "backup-lifetime" in fields_asked or all_field:
-        user_preferences["backup-lifetime"] = preferences.backup_lifetime
+        user_preferences["backup_lifetime"] = preferences.backup_lifetime
     if "backup-minimum" in fields_asked or all_field:
-        user_preferences["backup-minimum"] = preferences.minimum_backup_kept
+        user_preferences["backup_minimum"] = preferences.minimum_backup_kept
     return user_preferences, 200
 
 
@@ -689,11 +689,11 @@ def set_preference():
         logging.info(e)
         return {"message": "Invalid request"}, 400
     
-    valid_fields = [ "favicon-policy", "derivation-iteration", "backup-lifetime", "backup-minimum"]
+    valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
     if field not in valid_fields:
         return {"message": "Invalid request"}, 400
     preferences_db = PreferencesDB()
-    if field == "favicon-policy":
+    if field == "favicon_policy":
         if value not in ["always", "never", "enabledOnly"]:
             return {"message": "Invalid request"}, 400
         preferences = preferences_db.update_favicon(user_id, value)
@@ -701,7 +701,7 @@ def set_preference():
             return {"message": "Preference updated"}, 200
         else:
             return {"message": "Unknown error while updating preference"}, 500
-    elif field == "derivation-iteration":
+    elif field == "derivation_iteration":
         try:
             value = int(value)
         except:
@@ -713,7 +713,7 @@ def set_preference():
             return {"message": "Preference updated"}, 200
         else:
             return {"message": "Unknown error while updating preference"}, 500
-    elif field == "backup-lifetime":
+    elif field == "backup_lifetime":
         try:
             value = int(value)
         except:
@@ -725,7 +725,7 @@ def set_preference():
             return {"message": "Preference updated"}, 200
         else:
             return {"message": "Unknown error while updating preference"}, 500
-    elif field == "backup-minimum":
+    elif field == "backup_minimum":
         try:
             value = int(value)
         except:

@@ -458,7 +458,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The field to retrieve. Can be "favicon-policy", "derivation-iteration", "backup-lifetime", "backup-minimum" or "all". Fields can be separated by a comma.
+          description: The field to retrieve. Can be "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum" or "all". Fields can be separated by a comma.
       responses:
         "200": # status code
           description: Return the user's role
@@ -491,7 +491,7 @@ paths:
                 id:
                   type: string
                   description: The preference id
-                  example:  favicon-policy || derivation-iteration || backup-lifetime || backup-minimum
+                  example:  favicon_policy || derivation_iteration || backup_lifetime || backup_minimum
                 value:
                   type: string
                   description: The preference value
