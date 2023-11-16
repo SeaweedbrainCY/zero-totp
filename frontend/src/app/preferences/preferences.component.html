@@ -1,4 +1,21 @@
-<section class="hero is-halfheight mt-6 " style="min-height: 70vh;">
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingPreferences">
+    <article class="hero-body is-flex is-justify-content-center" >
+        <div>
+        <p class="is-light has-text-centered">Retrieving your favorite ice-cream flavor ...<br>
+            <fa-icon [icon]="faCircleNotch" [spin]="true" style="color:#000000;" size="2xl"></fa-icon > </p>
+        
+        </div>
+    </article>
+</section>
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingPreferencesError && !loadingPreferences">
+    <article class="hero-body is-flex is-justify-content-center" >
+        <div>
+        <p><fa-icon [icon]="faCircleExclamation"  style="color:#ff0000;" size="2xl"></fa-icon > </p>
+        </div>
+    </article>
+</section>
+
+<section class="hero is-halfheight mt-6 " style="min-height: 70vh;" *ngIf="!loadingPreferences && !loadingPreferencesError">
     <div class="container is-fluid ">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6"
@@ -23,13 +40,13 @@
                             </strong> 
                         <br><br>
                             <div class="buttons has-addons">
-                                <button class="button "   [ngClass]="{'is-selected is-success':faviconPolicy == 'always'}" (click)="changeFaviconSettings('always')">
+                                <button class="button "   [ngClass]="{'is-selected is-success':faviconPolicy == 'always'}" (click)="changeFaviconSettings('always')" [disabled]="this.buttonLoading.favicon_policy == true">
                                     Always
                                 </button>
-                                <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'enabledOnly'}" (click)="changeFaviconSettings('enabledOnly')">
+                                <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'enabledOnly'}" (click)="changeFaviconSettings('enabledOnly')" [disabled]="this.buttonLoading.favicon_policy == true">
                                     If enabled only
                                 </button>
-                                <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'never'}" (click)="changeFaviconSettings('never')">
+                                <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'never'}" (click)="changeFaviconSettings('never')" [disabled]="this.buttonLoading.favicon_policy == true">
                                     Never
                                 </button>
                             </div>
