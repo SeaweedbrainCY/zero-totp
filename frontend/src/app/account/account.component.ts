@@ -41,7 +41,6 @@ export class AccountComponent implements OnInit {
   step =0;
   password="";
   hashedOldPassword="";
-  isDisplayingAdvancedSettings = false;
   constructor(
     private http: HttpClient,
     public userService: UserService,
@@ -575,10 +574,6 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
     if(!this.buttonLoading["passphrase"]){
       this.isPassphraseModalActive = !this.isPassphraseModalActive;
     }
-  }
-
-  displayAdvancedSettings(){
-    this.isDisplayingAdvancedSettings = true;
   }
 
 }
