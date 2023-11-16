@@ -665,13 +665,13 @@ def get_preferences(fields):
     user_preferences = {}
     preferences_db = PreferencesDB()
     preferences = preferences_db.get_preferences_by_user_id(user_id)
-    if "favicon-policy" in fields_asked or all_field:
+    if "favicon_policy" in fields_asked or all_field:
         user_preferences["favicon_policy"] = preferences.favicon_preview_policy
-    if  "derivation-iteration" in fields_asked or all_field:
+    if  "derivation_iteration" in fields_asked or all_field:
         user_preferences["derivation_teration"] = preferences.derivation_iteration
-    if "backup-lifetime" in fields_asked or all_field:
+    if "backup_lifetime" in fields_asked or all_field:
         user_preferences["backup_lifetime"] = preferences.backup_lifetime
-    if "backup-minimum" in fields_asked or all_field:
+    if "backup_minimum" in fields_asked or all_field:
         user_preferences["backup_minimum"] = preferences.minimum_backup_kept
     return user_preferences, 200
 
