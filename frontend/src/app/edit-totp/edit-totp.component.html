@@ -1,7 +1,7 @@
 <article class="hero is-{{color}} mt-6">
   <div class="hero-body has-text-centered">
     <p class="subtitle">
-      <img src="{{faviconURL}}" alt="favicon " *ngIf="favicon && uriError==''" width="20px" height="20px" style="margin-bottom: -4px;">
+      <img src="{{faviconURL}}" alt="favicon " *ngIf="(favicon || faviconPolicy=='always') && uriError=='' && faviconPolicy != 'never' " width="20px" height="20px" style="margin-bottom: -4px;">
       {{name}}<span *ngIf="name==''">example.com</span>
     </p>
     <p class="title is-size-2 has-text-weight-bold">
@@ -75,27 +75,32 @@
             <p class="help is-danger" *ngIf="secretError != ''">{{secretError}}</p>
           </div>
         </div>
+        <div class="notification is-warning" *ngIf="this.userService.getIsVaultLocal()!">
+          Your are in read-only mode. You can't modify anything in a local vault.
+        </div>
         <div class="field p-5 is-flex is-justify-content-center">
-          <div class="notification is-warning" *ngIf="this.userService.getIsVaultLocal()!">
-            Your are in read-only mode. You can't modify anything in a local vault.
-          </div>
+          
           <label class="checkbox">
             <input type="checkbox" name="favicon" [(ngModel)]="favicon" (change)="loadFavicon()" class="mr-3">
-            <strong class="mr-1">Display favicon</strong><div class="dropdown is-hoverable">
-              <div class="dropdown-trigger">
-                <a  aria-haspopup="true" aria-controls="dropdown-menu4">
-                  <fa-icon
-          [icon]="faCircleQuestion"></fa-icon>
-                </a>
-              </div>
-              <div class="dropdown-menu" id="dropdown-menu4" role="menu" style="width:40vw">
-                <div class="dropdown-content">
-                  <div class="dropdown-item">
-                    <p class="has-text-left">Add the favicon logo of the related website.<br>
-                      <strong>The URI or domain name is never transmitted to zero-totp servers. Your browser uses DuckDuckGo API to fetch the favicon. No information is transmitted by Zero-TOTP to DuckDuckGo or the target website.</strong><br> You can configure a global policy in your settings.</p>
-                  </div>
+            <strong class="mr-1">Display favicon</strong>  
+              
+            <span class="tag is-success is-light ml-1" *ngIf="faviconPolicy == 'always'">Global policy: Always</span>
+            <span class="tag is-warning is-light ml-1" *ngIf="faviconPolicy == 'never'">Global policy: Never</span>
+          <div class="dropdown is-hoverable" style="margin-top: 2px;">
+            <div class="dropdown-trigger">
+              <a  aria-haspopup="true" aria-controls="dropdown-menu4">
+                <fa-icon
+        [icon]="faCircleQuestion" class="ml-2" ></fa-icon>
+              </a>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu4" role="menu" style="width:40vw">
+              <div class="dropdown-content">
+                <div class="dropdown-item">
+                  <span class="has-text-left">Add the favicon logo of the related website.<br>
+                    <strong>The URI or domain name is never transmitted to zero-totp servers. Your browser uses DuckDuckGo API to fetch the favicon. No information is transmitted by Zero-TOTP to DuckDuckGo or the target website.</strong><br> You can configure a global policy in your settings. The global policy overrides this setting.</span>
                 </div>
               </div>
+            </div>
             </div>
           </label>
         </div>

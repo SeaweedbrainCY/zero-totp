@@ -44,6 +44,7 @@ export class EditTOTPComponent implements OnInit{
   superToast = require('bulma-toast');
   isModalActive = false;  
   isDestroying = false;
+  faviconPolicy=""; // never, always, enabledOnly
   constructor(
     private router: Router,
     private route : ActivatedRoute,
@@ -75,9 +76,11 @@ export class EditTOTPComponent implements OnInit{
           this.name = this.QRCodeService.getLabel()!
           this.secret = this.QRCodeService.getSecret()!
         }
+        this.get_preferences()
     } else {
       if(!this.userService.getIsVaultLocal()){
         this.getSecretTOTP()
+        this.get_preferences()
       } else {
         const vault = this.userService.getVault()!;
         const property = vault.get(this.secret_uuid);
@@ -189,6 +192,47 @@ export class EditTOTPComponent implements OnInit{
 
   cancel(){
     this.router.navigate(["/vault"], {relativeTo:this.route.root});
+  }
+
+  get_preferences(){
+    this.http.get(ApiService.API_URL+"/preferences?fields=favicon_policy", {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      if(response.body != null){
+        const data = JSON.parse(JSON.stringify(response.body));
+        if(data.favicon_policy != null){
+          this.faviconPolicy = data.favicon_policy;
+          if (this.faviconPolicy == "always"){
+            this.favicon = true;
+          }
+        } else {
+          this.faviconPolicy = "enabledOnly";
+          superToast({
+            message: "An error occured while retrieving your preferences",
+            type: "is-danger",
+            dismissible: false,
+            duration: 5000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        }
+      }
+    }, (error) => {
+        let errorMessage = "";
+          if(error.error.message != null){
+            errorMessage = error.error.message;
+          } else if(error.error.detail != null){
+            errorMessage = error.error.detail;
+          }
+          if(error.status == 0){
+            errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+            return;
+          } 
+          superToast({
+            message: "Error : Impossible to update your preferences. "+ errorMessage,
+            type: "is-danger",
+            dismissible: false,
+            duration: 5000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+    });
   }
 
   getSecretTOTP(){
