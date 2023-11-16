@@ -648,7 +648,7 @@ def get_preferences(fields):
     except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
-    valid_fields = [ "favicon-policy", "derivation-iteration", "backup-lifetime", "backup-minimum", "all"]
+    valid_fields = [ "favicon-policy", "derivation-iteration", "backup-lifetime", "backup-minimum"]
     all_field = fields == "all" 
     fields_asked = []
     if not all_field:
@@ -674,4 +674,69 @@ def get_preferences(fields):
     if "backup-minimum" in fields_asked or all_field:
         user_preferences["backup-minimum"] = preferences.minimum_backup_kept
     return user_preferences, 200
+
+
+def set_preference():
+    try:
+        user_id = connexion.context.get("user")
+        dataJSON = json.dumps(request.get_json())
+        data = json.loads(dataJSON)
+        field = data["id"]
+        value = data["value"]
+        if user_id == None: # pragma: no cover
+            return {"message": "Unauthorized"}, 401
+    except Exception as e: # pragma: no cover
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    
+    valid_fields = [ "favicon-policy", "derivation-iteration", "backup-lifetime", "backup-minimum"]
+    if field not in valid_fields:
+        return {"message": "Invalid request"}, 400
+    preferences_db = PreferencesDB()
+    if field == "favicon-policy":
+        if value not in ["always", "never", "enabledOnly"]:
+            return {"message": "Invalid request"}, 400
+        preferences = preferences_db.update_favicon(user_id, value)
+        if preferences:
+            return {"message": "Preference updated"}, 200
+        else:
+            return {"message": "Unknown error while updating preference"}, 500
+    elif field == "derivation-iteration":
+        try:
+            value = int(value)
+        except:
+            return {"message": "Invalid request"}, 400
+        if value < 1000 or value > 1000000:
+            return {"message": "iteration must be between 1000 and 1000000 "}, 400
+        preferences = preferences_db.update_derivation_iteration(user_id, value)
+        if preferences:
+            return {"message": "Preference updated"}, 200
+        else:
+            return {"message": "Unknown error while updating preference"}, 500
+    elif field == "backup-lifetime":
+        try:
+            value = int(value)
+        except:
+            return {"message": "Invalid request"}, 400
+        if value < 1 :
+            return {"message": "backup lifetime must be at least day"}, 400
+        preferences = preferences_db.update_backup_lifetime(user_id, value)
+        if preferences:
+            return {"message": "Preference updated"}, 200
+        else:
+            return {"message": "Unknown error while updating preference"}, 500
+    elif field == "backup-minimum":
+        try:
+            value = int(value)
+        except:
+            return {"message": "Invalid request"}, 400
+        if value < 1 :
+            return {"message": "minimum backup kept must be at least of 1"}, 400
+        preferences = preferences_db.update_backup_minimum(user_id, value)
+        if preferences:
+            return {"message": "Preference updated"}, 200
+        else:
+            return {"message": "Unknown error while updating preference"}, 500
+    else:
+        return {"message": "Invalid request"}, 400
 
