@@ -476,6 +476,35 @@ paths:
           description: Unauthorized
         "403":
           description: Forbidden
+    put:
+      operationId: controllers.set_preference
+      tags:
+        - User
+      summary: Update one of the user's preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The preference id
+                  example:  favicon-policy || derivation-iteration || backup-lifetime || backup-minimum
+                value:
+                  type: string
+                  description: The preference value
+                  example: always || 1000 || 30 || 1
+      responses:
+        "201": # status code
+          description: Preferences updated
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
   /google-drive/last-backup/verify:
     get:
       operationId: controllers.verify_last_backup
