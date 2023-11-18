@@ -467,9 +467,13 @@ paths:
               schema:
                 type: object
                 properties:
-                  perefences:
-                    type: object
-                    example: {"field":"value"}
+                  field_name1:
+                    type: string
+                    example: value1
+                  field_name2:
+                    type: string
+                    example: value2
+                  
         "400":
           description: Bad request
         "401":
