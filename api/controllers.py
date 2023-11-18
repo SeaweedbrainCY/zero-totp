@@ -668,7 +668,7 @@ def get_preferences(fields):
     if "favicon_policy" in fields_asked or all_field:
         user_preferences["favicon_policy"] = preferences.favicon_preview_policy
     if  "derivation_iteration" in fields_asked or all_field:
-        user_preferences["derivation_teration"] = preferences.derivation_iteration
+        user_preferences["derivation_iteration"] = preferences.derivation_iteration
     if "backup_lifetime" in fields_asked or all_field:
         user_preferences["backup_lifetime"] = preferences.backup_lifetime
     if "backup_minimum" in fields_asked or all_field:
