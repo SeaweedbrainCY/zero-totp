@@ -41,7 +41,7 @@ class Preferences:
         db.session.commit()
         return pref
     
-    def update_backup_lifetile(self, user_id, backup_lifetime):
+    def update_backup_lifetime(self, user_id, backup_lifetime):
         pref = db.session.query(PreferencesModel).filter_by(user_id=user_id).first()
         if pref == None:
             pref = self.create_default_preferences(user_id)
