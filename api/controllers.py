@@ -6,6 +6,7 @@ from database.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
+from database.preferences_repo import Preferences as PreferencesDB
 from database.admin_repo import Admin as Admin_db
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging
@@ -637,3 +638,105 @@ def delete_google_drive_option():
         token_db.delete(user_id)
         GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
         return {"message": "Error while revoking credentials"}, 200
+
+
+def get_preferences(fields):
+    try:
+        user_id = connexion.context.get("user")
+        if user_id == None: # pragma: no cover
+            return {"message": "Unauthorized"}, 401
+    except Exception as e: # pragma: no cover
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
+    all_field = fields == "all" 
+    fields_asked = []
+    if not all_field:
+        fields = fields.split(",")
+        for field in fields:
+            if field not in fields_asked:
+                for valid_field in valid_fields:
+                    if field == valid_field:
+                        fields_asked.append(valid_field)
+
+        if len(fields_asked) == 0:
+            return {"message": "Invalid request"}, 400
+    
+    user_preferences = {}
+    preferences_db = PreferencesDB()
+    preferences = preferences_db.get_preferences_by_user_id(user_id)
+    if "favicon_policy" in fields_asked or all_field:
+        user_preferences["favicon_policy"] = preferences.favicon_preview_policy
+    if  "derivation_iteration" in fields_asked or all_field:
+        user_preferences["derivation_iteration"] = preferences.derivation_iteration
+    if "backup_lifetime" in fields_asked or all_field:
+        user_preferences["backup_lifetime"] = preferences.backup_lifetime
+    if "backup_minimum" in fields_asked or all_field:
+        user_preferences["backup_minimum"] = preferences.minimum_backup_kept
+    return user_preferences, 200
+
+
+def set_preference():
+    try:
+        user_id = connexion.context.get("user")
+        dataJSON = json.dumps(request.get_json())
+        data = json.loads(dataJSON)
+        field = data["id"]
+        value = data["value"]
+        if user_id == None: # pragma: no cover
+            return {"message": "Unauthorized"}, 401
+    except Exception as e: # pragma: no cover
+        logging.info(e)
+        return {"message": "Invalid request"}, 400
+    
+    valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
+    if field not in valid_fields:
+        return {"message": "Invalid request"}, 400
+    preferences_db = PreferencesDB()
+    if field == "favicon_policy":
+        if value not in ["always", "never", "enabledOnly"]:
+            return {"message": "Invalid request"}, 400
+        preferences = preferences_db.update_favicon(user_id, value)
+        if preferences:
+            return {"message": "Preference updated"}, 201
+        else:# pragma: no cover
+            return {"message": "Unknown error while updating preference"}, 500
+    elif field == "derivation_iteration":
+        try:
+            value = int(value)
+        except:
+            return {"message": "Invalid request"}, 400
+        if value < 1000 or value > 1000000:
+            return {"message": "iteration must be between 1000 and 1000000 "}, 400
+        preferences = preferences_db.update_derivation_iteration(user_id, value)
+        if preferences:
+            return {"message": "Preference updated"}, 201
+        else:# pragma: no cover
+            return {"message": "Unknown error while updating preference"}, 500
+    elif field == "backup_lifetime":
+        try:
+            value = int(value)
+        except:
+            return {"message": "Invalid request"}, 400
+        if value < 1 :
+            return {"message": "backup lifetime must be at least day"}, 400
+        preferences = preferences_db.update_backup_lifetime(user_id, value)
+        if preferences:
+            return {"message": "Preference updated"}, 201
+        else:# pragma: no cover
+            return {"message": "Unknown error while updating preference"}, 500
+    elif field == "backup_minimum":
+        try:
+            value = int(value)
+        except:
+            return {"message": "Invalid request"}, 400
+        if value < 1 :
+            return {"message": "minimum backup kept must be at least of 1"}, 400
+        preferences = preferences_db.update_minimum_backup_kept(user_id, value)
+        if preferences:
+            return {"message": "Preference updated"}, 201
+        else:# pragma: no cover
+            return {"message": "Unknown error while updating preference"}, 500
+    else:# pragma: no cover
+        return {"message": "Invalid request"}, 400
+

@@ -1,59 +1,114 @@
 <article class="hero is-{{color}} mt-6">
-    <div class="hero-body has-text-centered">
-        <p class="subtitle">
-          {{name}}<span *ngIf="name==''">example.com</span>
-          </p>
-        <p class="title is-size-2 has-text-weight-bold">
-        <span *ngIf="secret=='' || code == ''">XXX XXX</span>
-        <span *ngIf="secret!=''">{{code}}</span>
-      </p>
-      <div class="is-flex is-justify-content-center">
-        <progress class="progress is-small" value="{{time}}" max="100" style="width:20vw; height: 5px;">{{time}}%</progress></div>
+  <div class="hero-body has-text-centered">
+    <p class="subtitle">
+      <img src="{{faviconURL}}" alt="favicon " *ngIf="(favicon || faviconPolicy=='always') && uriError=='' && faviconPolicy != 'never' " width="20px" height="20px" style="margin-bottom: -4px;">
+      {{name}}<span *ngIf="name==''">example.com</span>
+    </p>
+    <p class="title is-size-2 has-text-weight-bold">
+      <span *ngIf="secret=='' || code == ''">XXX XXX</span>
+      <span *ngIf="secret!=''">{{code}}</span>
+    </p>
+    <div class="is-flex is-justify-content-center">
+      <progress class="progress is-small" value="{{time}}" max="100"
+        style="width:20vw; height: 5px;">{{time}}%</progress>
     </div>
-  </article>
+  </div>
+</article>
 <article class="hero is-halfheight">
-<div class="columns is-flex is-justify-content-center pt-6 is-mobile ">
+  <div class="columns is-flex is-justify-content-center pt-6 is-mobile">
     <div class="column is-full-mobile
     is-full-tablet
-    is-full-desktop
-    is-full-widescreen
-    is-three-quarters-fullhd ">
-        <div class="is-flex is-justify-content-space-around is-flex-direction-column	">
-          <div class="is-flex is-justify-content-space-around columns is-flex-wrap-wrap">
-        <div class="field column is-two-thirds-mobile
+    is-three-quarters-desktop
+    is-three-quarters-widescreen
+    is-three-quarters-fullhd">
+      <div class="is-flex is-justify-content-space-around is-flex-direction-column	">
+        <div class="is-flex is-justify-content-space-around columns is-flex-wrap-wrap">
+          <div class="field column is-two-thirds-mobile
         is-one-third-tablet
-        is-one-quarter-desktop
-        is-one-quarter-widescreen
-        is-one-quarter-fullhd">
-            <label class="label">Domain or name</label>
+        is-one-third-desktop
+        is-one-third-widescreen
+        is-one-third-fullhd mr-2 ml-2">
+            <label class="label">Name</label>
             <div class="control has-icons-left has-icons-right">
-              <input class="input" type="text" placeholder="github.com" name="name" [(ngModel)]="name" (keyup)="checkName()" [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }" [disabled]="this.userService.getIsVaultLocal()!">
+              <input class="input" type="text" placeholder="github.com" name="name" [(ngModel)]="name"
+                (keyup)="checkName()"
+                [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }"
+                [disabled]="this.userService.getIsVaultLocal()!">
               <span class="icon is-small is-left">
-                <fa-icon [icon]="faGlobe"></fa-icon>
+                <fa-icon [icon]="faPassport"></fa-icon>
               </span>
             </div>
             <p class="help is-danger" *ngIf="nameError != ''">{{nameError}}</p>
           </div>
           <div class="field column is-two-thirds-mobile
+        is-one-third-tablet
+        is-one-third-desktop
+        is-one-third-widescreen
+        is-one-third-fullhd mr-2 ml-2">
+            <label class="label">URI</label>
+            <div class="control has-icons-left has-icons-right">
+              <input class="input" type="text" placeholder="https://github.com" name="uri" [(ngModel)]="uri"
+                (change)="checkURI()"
+                [ngClass]="{'is-danger':uriError != '',  'is-success' : uriError == '' && uri != '' }"
+                [disabled]="this.userService.getIsVaultLocal()!">
+              <span class="icon is-small is-left">
+                <fa-icon [icon]="faGlobe"></fa-icon>
+              </span>
+            </div>
+            <p class="help is-danger" *ngIf="uriError != ''">{{uriError}}</p>
+          </div>
+          <div class="field column is-two-thirds-mobile
           is-one-third-tablet
-          is-one-quarter-desktop
-          is-one-quarter-widescreen
-          is-one-quarter-fullhd">
+          is-one-third-desktop
+          is-one-third-widescreen
+          is-one-third-fullhd mr-2 ml-2">
             <label class="label">TOTP secret</label>
             <div class="control has-icons-left has-icons-right">
-              <input class="input" type="test" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret" (keyup)="checkSecret()" [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }" [disabled]="this.userService.getIsVaultLocal()!">
+              <input class="input" type="text" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret"
+                (keyup)="checkSecret()"
+                [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }"
+                [disabled]="this.userService.getIsVaultLocal()!">
               <span class="icon is-small is-left">
                 <fa-icon [icon]="faKey"></fa-icon>
               </span>
             </div>
             <p class="help is-danger" *ngIf="secretError != ''">{{secretError}}</p>
-          </div></div>
-          <div class="field p-5 is-flex is-justify-content-center">
-            <div class="notification is-warning" *ngIf="this.userService.getIsVaultLocal()!">
-              Your are in read-only mode. You can't modify anything in a local vault.
-             </div>
+          </div>
+        </div>
+        <div class="notification is-warning" *ngIf="this.userService.getIsVaultLocal()!">
+          Your are in read-only mode. You can't modify anything in a local vault.
+        </div>
+        <div class="field p-5 is-flex is-justify-content-center">
+          
+          <label class="checkbox">
+            <input type="checkbox" name="favicon" [(ngModel)]="favicon" (change)="loadFavicon()" class="mr-3">
+            <strong class="mr-1">Display favicon</strong>  
+              
+            <span class="tag is-success is-light ml-1" *ngIf="faviconPolicy == 'always'">Global policy: Always</span>
+            <span class="tag is-warning is-light ml-1" *ngIf="faviconPolicy == 'never'">Global policy: Never</span>
+          <div class="dropdown is-hoverable" style="margin-top: 2px;">
+            <div class="dropdown-trigger">
+              <a  aria-haspopup="true" aria-controls="dropdown-menu4">
+                <fa-icon
+        [icon]="faCircleQuestion" class="ml-2" ></fa-icon>
+              </a>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu4" role="menu" style="width:40vw">
+              <div class="dropdown-content">
+                <div class="dropdown-item">
+                  <span class="has-text-left">Add the favicon logo of the related website.<br>
+                    <strong>The URI or domain name is never transmitted to zero-totp servers. Your browser uses DuckDuckGo API to fetch the favicon. No information is transmitted by Zero-TOTP to DuckDuckGo or the target website.</strong><br> You can configure a global policy in your settings. The global policy overrides this setting.</span>
+                </div>
+              </div>
+            </div>
+            </div>
+          </label>
+        </div>
+        <div class="field p-5 is-flex is-justify-content-center">
           <div class=" select is-{{color}}">
-            <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color" (keyup)="changeColor(colorSelected.value)" (change)="changeColor(colorSelected.value)" *ngIf="!this.userService.getIsVaultLocal()!">
+            <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color"
+              (keyup)="changeColor(colorSelected.value)" (change)="changeColor(colorSelected.value)"
+              *ngIf="!this.userService.getIsVaultLocal()!">
               <option default>Blue</option>
               <option>Green</option>
               <option>Orange</option>
@@ -66,16 +121,18 @@
             <button class="button is-info is-light block" (click)="cancel()">Cancel</button>
           </div>
           <div class="control" *ngIf="secret_uuid != '' && secret_uuid != null ">
-            <button class="button is-danger block" (click)="modal()" data-target="confirmation" [disabled]="this.userService.getIsVaultLocal()!">Delete</button>
+            <button class="button is-danger block" (click)="modal()" data-target="confirmation"
+              [disabled]="this.userService.getIsVaultLocal()!">Delete</button>
           </div>
           <div class="control">
-            <button class="button is-info block" (click)="save()" [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != ''">Save</button>
+            <button class="button is-info block" (click)="save()"
+              [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != ''">Save</button>
           </div>
         </div>
-        </div>
-        
+      </div>
+
     </div>
-</div>
+  </div>
 </article>
 <div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
   <div class="modal-background" (click)="modal()"></div>
@@ -86,7 +143,8 @@
     </section>
     <footer class="modal-card-foot is-flex is-justify-content-right">
       <button class="button" (click)="modal()" [disabled]="isDestroying">Cancel</button>
-      <button class="button is-danger"  (click)="delete()" [ngClass]="{'is-loading': isDestroying}">Destroy this secret</button>
+      <button class="button is-danger" (click)="delete()" [ngClass]="{'is-loading': isDestroying}">Destroy this
+        secret</button>
     </footer>
   </div>
   <button class="modal-close is-large" aria-label="close" (click)="modal()" *ngIf="!isDestroying"></button>

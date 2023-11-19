@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import { faChevronCircleLeft, faGlobe, faKey } from '@fortawesome/free-solid-svg-icons';
+import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
 import { toast as superToast } from 'bulma-toast'
 import { ApiService } from '../common/ApiService/api-service';
@@ -10,6 +10,9 @@ import { Crypto } from '../common/Crypto/crypto';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
 import { BnNgIdleService } from 'bn-ng-idle';
+import  * as URLParse from 'url-parse';
+import { dom } from '@fortawesome/fontawesome-svg-core';
+
 @Component({
   selector: 'app-edit-totp',
   templateUrl: './edit-totp.component.html',
@@ -19,10 +22,16 @@ export class EditTOTPComponent implements OnInit{
   faChevronCircleLeft = faChevronCircleLeft;
   faGlobe = faGlobe;
   faKey = faKey;
+  faPassport = faPassport;
+  faCircleQuestion = faCircleQuestion;
+  faviconURL = "";
   name = "";
+  uri="";
+  favicon=false;
   uuid="";
   secret = "";
   nameError = "";
+  uriError = "";
   secretError = "";
   color="info";
   selected_color="Blue";
@@ -35,6 +44,7 @@ export class EditTOTPComponent implements OnInit{
   superToast = require('bulma-toast');
   isModalActive = false;  
   isDestroying = false;
+  faviconPolicy=""; // never, always, enabledOnly
   constructor(
     private router: Router,
     private route : ActivatedRoute,
@@ -66,9 +76,11 @@ export class EditTOTPComponent implements OnInit{
           this.name = this.QRCodeService.getLabel()!
           this.secret = this.QRCodeService.getSecret()!
         }
+        this.get_preferences()
     } else {
       if(!this.userService.getIsVaultLocal()){
         this.getSecretTOTP()
+        this.get_preferences()
       } else {
         const vault = this.userService.getVault()!;
         const property = vault.get(this.secret_uuid);
@@ -76,6 +88,16 @@ export class EditTOTPComponent implements OnInit{
         this.name = property!.get("name")!;
         this.secret = property!.get("secret")!;
         this.color = property!.get("color")!;
+        if(property!.has("uri")){
+          this.uri = property!.get("uri")!;
+        }
+        if(property!.has("favicon")){
+          this.favicon = property!.get("favicon")! == "true";
+          if(this.favicon){
+            this.loadFavicon()
+          }
+        }
+
       }
     }
     this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
@@ -100,6 +122,22 @@ export class EditTOTPComponent implements OnInit{
     if(this.utils.sanitize(this.name) != this.name){
       this.nameError = "<, >, \" and ' are forbidden";
       return;
+    }
+  }
+
+  checkURI(){
+    this.nameError = "";
+    if(this.utils.sanitize(this.uri) != this.uri){
+      this.nameError = "<, >, \" and ' are forbidden";
+      return;
+    }
+    if(this.favicon == true){
+      if(this.uri == ""){
+        this.uriError = "No favicon found for this domain";
+        return;
+      } else {
+        this.loadFavicon()
+      }
     }
   }
 
@@ -156,6 +194,47 @@ export class EditTOTPComponent implements OnInit{
     this.router.navigate(["/vault"], {relativeTo:this.route.root});
   }
 
+  get_preferences(){
+    this.http.get(ApiService.API_URL+"/preferences?fields=favicon_policy", {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      if(response.body != null){
+        const data = JSON.parse(JSON.stringify(response.body));
+        if(data.favicon_policy != null){
+          this.faviconPolicy = data.favicon_policy;
+          if (this.faviconPolicy == "always"){
+            this.favicon = true;
+          }
+        } else {
+          this.faviconPolicy = "enabledOnly";
+          superToast({
+            message: "An error occured while retrieving your preferences",
+            type: "is-danger",
+            dismissible: false,
+            duration: 5000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        }
+      }
+    }, (error) => {
+        let errorMessage = "";
+          if(error.error.message != null){
+            errorMessage = error.error.message;
+          } else if(error.error.detail != null){
+            errorMessage = error.error.detail;
+          }
+          if(error.status == 0){
+            errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+            return;
+          } 
+          superToast({
+            message: "Error : Impossible to update your preferences. "+ errorMessage,
+            type: "is-danger",
+            dismissible: false,
+            duration: 5000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+    });
+  }
+
   getSecretTOTP(){
     this.uuid = this.secret_uuid!;
     this.http.get(ApiService.API_URL+"/encrypted_secret/"+this.uuid,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
@@ -198,6 +277,16 @@ export class EditTOTPComponent implements OnInit{
                 break;
               }
             }
+            if(property!.has("uri")){
+              this.uri = property!.get("uri")!;
+            }
+            if(property!.has("favicon")){
+              this.favicon = property!.get("favicon")! == "true";
+              if(this.favicon){
+                this.loadFavicon()
+              }
+            }
+    
           }
         });
       } catch {
@@ -239,10 +328,15 @@ export class EditTOTPComponent implements OnInit{
     if(this.userService.getId() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
+    const parsedUrl = new URLParse(this.uri);
+    const domain = parsedUrl.hostname;
     const property = new Map<string,string>();
     property.set("secret", this.secret);
     property.set("color", this.color);
     property.set("name", this.name);
+    property.set("uri", this.uri);
+    property.set("favicon", this.favicon.toString());
+    property.set("domain", domain)
     const jsonProperty = this.utils.mapToJson(property);
     try{
       this.crypto.encrypt(jsonProperty, this.userService.get_zke_key()!).then  ((enc_jsonProperty)=>{
@@ -375,6 +469,31 @@ export class EditTOTPComponent implements OnInit{
       });
     });
     
+  }
+
+  loadFavicon(){
+    this.uriError = "";
+    if(this.favicon == true){
+      if(this.uri != ""){
+        try{
+          const parsedUrl = new URLParse(this.uri);
+           const domain = parsedUrl.hostname;
+           if(domain != null && domain != ""){
+            this.faviconURL = "https://icons.duckduckgo.com/ip3/" +domain + ".ico";
+           } else {
+            this.uriError = "Invalid URI";
+            return;
+           }
+        } catch{
+          this.uriError = "Invalid URI";
+          return;
+        }
+        
+       
+      } else {
+        this.uriError = "No favicon found for this domain";
+      }
+    }
   }
 
   modal(){

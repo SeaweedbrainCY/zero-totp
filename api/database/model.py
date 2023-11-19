@@ -49,3 +49,13 @@ class GoogleDriveIntegration(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     isEnabled = db.Column(db.Boolean, nullable=False, default=False)
     lastBackupCleanDate = db.Column(db.String(256), nullable=True, default=None)
+
+
+class Preferences(db.Model):
+    __tablename__ = "preferences"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
+    favicon_preview_policy = db.Column(db.String(256), nullable=True, default="enabledOnly")
+    derivation_iteration = db.Column(db.Integer, nullable=True, default=700000)
+    minimum_backup_kept = db.Column(db.Integer, nullable=True, default=20)
+    backup_lifetime = db.Column(db.Integer, nullable=True, default=30)

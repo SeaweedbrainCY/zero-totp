@@ -34,11 +34,12 @@
     "bulma": "^0.9.4",
     "bulma-modal-fx": "^1.1.1",
     "bulma-toast": "^2.4.3",
-    "rxjs": "~7.8.1",
     "ngx-cookie": "^6.0.1",
+    "rxjs": "~7.8.1",
     "seedrandom": "^3.0.5",
     "totp-generator": "^0.0.14",
     "tslib": "^2.6.2",
+    "url-parse": "^1.5.10",
     "zone.js": "~0.13.0"
   },
   "devDependencies": {
@@ -46,6 +47,7 @@
     "@angular/cli": "~16.2.6",
     "@angular/compiler-cli": "^16.2.9",
     "@types/jasmine": "~5.1.0",
+    "@types/url-parse": "^1.4.11",
     "jasmine-core": "~5.1.1",
     "karma": "~6.4.2",
     "karma-chrome-launcher": "~3.2.0",

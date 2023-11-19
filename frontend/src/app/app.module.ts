@@ -32,6 +32,7 @@ import { ChangelogComponent } from './changelog/changelog.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
 import { CallbackComponent } from './callback/callback.component';
 import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
+import { PreferencesComponent } from './preferences/preferences.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +53,8 @@ import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
     ChangelogComponent,
     AdminPageComponent,
     CallbackComponent,
-    OauthSyncComponent
+    OauthSyncComponent,
+    PreferencesComponent
   ],
   imports: [
     BrowserModule,

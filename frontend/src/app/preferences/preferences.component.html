@@ -1,0 +1,169 @@
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingPreferences">
+    <article class="hero-body is-flex is-justify-content-center" >
+        <div>
+        <p class="is-light has-text-centered">Retrieving your favorite ice-cream flavor ...<br>
+            <fa-icon [icon]="faCircleNotch" [spin]="true" style="color:#000000;" size="2xl"></fa-icon > </p>
+        
+        </div>
+    </article>
+</section>
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingPreferencesError && !loadingPreferences">
+    <article class="hero-body is-flex is-justify-content-center" >
+        <div>
+        <p><fa-icon [icon]="faCircleExclamation"  style="color:#ff0000;" size="2xl" animation="fade"></fa-icon > </p>
+        </div>
+    </article>
+</section>
+
+<section class="hero is-halfheight mt-6 " style="min-height: 70vh;" *ngIf="!loadingPreferences && !loadingPreferencesError">
+    <div class="container is-fluid ">
+        <div>
+            <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6"
+                style="line-height: normal;">Your preferences 🔧
+            </h1>
+
+
+            <div class="is-flex columns is-centered mt-4">
+                <div class="column  is-four-fifths-desktop">
+
+                    <div class="form-container ">
+                        <h1 class="has-text-info has-text-weight-bold is-size-3">
+                            Vault display settings
+                        </h1>
+                        <div style="border-bottom: 1px solid silver"></div>
+                        <p class="has-text-grey pb-3">Global settings on how your vault is displayed.
+                        </p>
+                        <div class="box">
+                            <strong class="mr-1 label is-size-4	">
+                                Display website's favicon beside its name <span class="tag is-rounded is-info">Global setting
+                                </span>
+                            </strong> 
+                        <br><br>
+                            <div class="buttons has-addons">
+                                <button class="button "   [ngClass]="{'is-selected is-success':faviconPolicy == 'always'}" (click)="changeFaviconSettings('always')" [disabled]="this.buttonLoading.favicon_policy == true">
+                                    Always
+                                </button>
+                                <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'enabledOnly'}" (click)="changeFaviconSettings('enabledOnly')" [disabled]="this.buttonLoading.favicon_policy == true">
+                                    If enabled only
+                                </button>
+                                <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'never'}" (click)="changeFaviconSettings('never')" [disabled]="this.buttonLoading.favicon_policy == true">
+                                    Never
+                                </button>
+                            </div>
+                            <button class="button is-info is-rounded is-small is-light" *ngIf="!this.moreHelpDisplayed.favicon_settings" (click)="this.moreHelpDisplayed.favicon_settings = true">More info <fa-icon [icon]="faCircleInfo" class="ml-2"></fa-icon></button>
+                            <article class="message is-info" *ngIf="this.moreHelpDisplayed.favicon_settings">
+                                <div class="message-header">
+                                  <p>More info <fa-icon [icon]="faCircleInfo" class="ml-2"></fa-icon></p>
+                                  <button class="delete" (click)="this.moreHelpDisplayed.favicon_settings = false"></button>
+                                </div>
+                                <div class="message-body">
+                                    <ul>
+                                        <li>  When enabled, your browser will try to fetch the favicon of the website you are adding to your vault when displaying it. If it fails, it will display a default icon.</li>
+                                        <br>
+                                    
+                                      <li>  The favicon is fetched by your browser using DuckDuckGo API (a privacy friendly search engine). Zero-TOTP does not transmit any information to DuckDuckGo or the target website. The URI or domain name is never transmitted to zero-totp servers. 
+                                      </li><br>
+                                    <li>
+                                        You can disable this feature globally, enable it globally, or use each secrets' setting.
+                                    </li>
+                                    </ul>
+                                </div>
+                              </article>
+                            </div>
+
+                            
+                          
+                    </div>
+
+
+
+                    
+                    <div class="mt-6">
+                        <h1 class="has-text-info has-text-weight-bold is-size-3">
+                            Advanced settings
+                        </h1>
+                        <div style="border-bottom: 1px solid silver"></div>
+                        <p class="has-text-grey pb-3">Settings to manage more precisely your Zero-TOTP account.
+                             </p>
+                        <div class="control">
+                            <button class="button is-info is-outlined" (click)="displayAdvancedSettings()" *ngIf="!isDisplayingAdvancedSettings"
+                                data-target="confirmation">Display advanced settings
+                             </button>
+                             <div *ngIf="isDisplayingAdvancedSettings">
+                             <div class="box">
+                                <label class="label is-size-4	">Number of iterations used in the PBKDF2 derivation function</label>
+                        <div class="field is-flex-tablet">
+                            <div class="control has-icons-left mb-3">
+                                <input class="input" type="number" placeholder="700000" value="700000" disabled>
+                                <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                <span class="icon is-small is-left">
+                                    <fa-icon [icon]="faShield"></fa-icon>
+                                </span>
+                            </div>
+                            <div class="has-text-centered">
+                                <button class="button is-info is-outlined is-centered ml-3" disabled>Update</button>
+                            </div>
+                           
+                        </div>
+                   
+                        <div class="notification is-warning is-light mb-4">
+                           <fa-icon [icon]="faFlask"></fa-icon> Zero-TOTP is still in beta. This value will be customizable in the future.
+                           </div>
+                        </div>
+                        <div class="box">
+
+                           <label class="label is-size-4">Minimum of backup kept in Google Drive <span class="tag is-rounded is-info"> Synched account only </span></label>
+                           <div class="field is-flex-tablet">
+                            <div class="control has-icons-left mb-3">
+                                <input class="input" type="number" placeholder="20" value="20" disabled>
+                                <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                <span class="icon is-small is-left">
+                                    <fa-icon [icon]="faArrowsRotate"></fa-icon>
+                                </span>
+                            </div>
+                            <div class="has-text-centered">
+                                <button class="button is-info is-outlined is-centered ml-3" disabled>Update</button>
+                            </div>
+                        </div>
+                        <div class="notification is-info is-light">
+                            <fa-icon [icon]="faCircleInfo"></fa-icon> This is the minimum number of backup that Zero-TOTP will keep above all in your Google Drive.<br>
+                            This paramater overrides any other parameter.
+                           </div>
+                        
+                        <div class="notification is-warning is-light">
+                            <fa-icon [icon]="faFlask"></fa-icon> Zero-TOTP is still in beta. This value will be customizable in the future.
+                           </div>
+                        </div>
+                        <div class="box">
+
+                           <label class="label is-size-4	">Backups end of life (in days) <span class="tag is-rounded is-info"> Synched account only </span></label>
+                           <div class="field is-flex-tablet">
+                            <div class="control has-icons-left mb-3">
+                                <input class="input" type="number" placeholder="30" value="30" disabled>
+                                <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                <span class="icon is-small is-left">
+                                    <fa-icon [icon]="faArrowsRotate"></fa-icon>
+                                </span>
+                            </div>
+                            <div class="has-text-centered">
+                                <button class="button is-info is-outlined is-centered ml-3" disabled>Update</button>
+                            </div>
+                        </div>
+                        <div class="notification is-info is-light">
+                            <fa-icon [icon]="faCircleInfo"></fa-icon> This is the number of days after which a backup will be deleted (only if your minimum backup setting is reached). This parameter is overridden by your minimum backup setting.
+                           </div>
+                        
+                        <div class="notification is-warning is-light">
+                         <fa-icon [icon]="faFlask"></fa-icon> Zero-TOTP is still in beta. This value will be customizable in the future.
+                           </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
