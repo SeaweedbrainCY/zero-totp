@@ -698,8 +698,8 @@ def set_preference():
             return {"message": "Invalid request"}, 400
         preferences = preferences_db.update_favicon(user_id, value)
         if preferences:
-            return {"message": "Preference updated"}, 200
-        else:
+            return {"message": "Preference updated"}, 201
+        else:# pragma: no cover
             return {"message": "Unknown error while updating preference"}, 500
     elif field == "derivation_iteration":
         try:
@@ -710,8 +710,8 @@ def set_preference():
             return {"message": "iteration must be between 1000 and 1000000 "}, 400
         preferences = preferences_db.update_derivation_iteration(user_id, value)
         if preferences:
-            return {"message": "Preference updated"}, 200
-        else:
+            return {"message": "Preference updated"}, 201
+        else:# pragma: no cover
             return {"message": "Unknown error while updating preference"}, 500
     elif field == "backup_lifetime":
         try:
@@ -722,8 +722,8 @@ def set_preference():
             return {"message": "backup lifetime must be at least day"}, 400
         preferences = preferences_db.update_backup_lifetime(user_id, value)
         if preferences:
-            return {"message": "Preference updated"}, 200
-        else:
+            return {"message": "Preference updated"}, 201
+        else:# pragma: no cover
             return {"message": "Unknown error while updating preference"}, 500
     elif field == "backup_minimum":
         try:
@@ -732,11 +732,11 @@ def set_preference():
             return {"message": "Invalid request"}, 400
         if value < 1 :
             return {"message": "minimum backup kept must be at least of 1"}, 400
-        preferences = preferences_db.update_backup_minimum(user_id, value)
+        preferences = preferences_db.update_minimum_backup_kept(user_id, value)
         if preferences:
-            return {"message": "Preference updated"}, 200
-        else:
+            return {"message": "Preference updated"}, 201
+        else:# pragma: no cover
             return {"message": "Unknown error while updating preference"}, 500
-    else:
+    else:# pragma: no cover
         return {"message": "Invalid request"}, 400
 
