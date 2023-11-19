@@ -328,15 +328,22 @@ export class EditTOTPComponent implements OnInit{
     if(this.userService.getId() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
-    const parsedUrl = new URLParse(this.uri);
-    const domain = parsedUrl.hostname;
+   
+    
     const property = new Map<string,string>();
     property.set("secret", this.secret);
     property.set("color", this.color);
     property.set("name", this.name);
     property.set("uri", this.uri);
     property.set("favicon", this.favicon.toString());
-    property.set("domain", domain)
+    if(this.uri != ""){
+      if(this.uri.startsWith("http://") || this.uri.startsWith("https://")){
+        const parsedUrl = new URLParse(this.uri);
+      const domain = parsedUrl.hostname;
+      property.set("domain", domain)
+      }
+    }
+    
     const jsonProperty = this.utils.mapToJson(property);
     try{
       this.crypto.encrypt(jsonProperty, this.userService.get_zke_key()!).then  ((enc_jsonProperty)=>{
@@ -473,11 +480,18 @@ export class EditTOTPComponent implements OnInit{
 
   loadFavicon(){
     this.uriError = "";
+    console.log(this.uri)
     if(this.favicon == true){
       if(this.uri != ""){
+        if(!this.uri.startsWith("http://") && !this.uri.startsWith("https://")){
+          this.uriError = 'Missing http(s)://';
+            return;
+        }
         try{
           const parsedUrl = new URLParse(this.uri);
+          console.log(parsedUrl)
            const domain = parsedUrl.hostname;
+           console.log(domain)
            if(domain != null && domain != ""){
             this.faviconURL = "https://icons.duckduckgo.com/ip3/" +domain + ".ico";
            } else {
