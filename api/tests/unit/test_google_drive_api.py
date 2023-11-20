@@ -61,7 +61,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
             with self.application.app.app_context():
                     db.create_all()
                     user_repo.create(username="user", email="user@test.test", password="password", 
-                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
                     zke_repo.create(user_id=1, encrypted_key="key")
                     for i in range(10):
                         totp_repo.add(user_id=1, enc_secret="secret" + str(i), uuid=str(uuid4()))
@@ -229,7 +229,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
              self.create_file.return_value = "file"
              
              self.assertEqual(google_drive_api.backup(credentials="creds", vault=VAULT), "file")
-             self.create_file.assert_called_with(name=datetime.datetime.now().strftime('%d-%m-%Y-%H-%M-%S')+"_backup", drive=self.drive, content=VAULT, folder_id=FOLDER_ID)
+             self.create_file.assert_called_with(name=datetime.datetime.utcnow().strftime('%d-%m-%Y-%H-%M-%S')+"_backup", drive=self.drive, content=VAULT, folder_id=FOLDER_ID)
         
         def test_backup_with_folder_creation(self):
              VAULT = "vault"
@@ -247,7 +247,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
 
              
              self.assertEqual(google_drive_api.backup(credentials="creds", vault=VAULT), "file")
-             create_file.assert_called_with(name=datetime.datetime.now().strftime('%d-%m-%Y-%H-%M-%S')+"_backup", drive=self.drive, content=VAULT, folder_id=FOLDER_ID)
+             create_file.assert_called_with(name=datetime.datetime.utcnow().strftime('%d-%m-%Y-%H-%M-%S')+"_backup", drive=self.drive, content=VAULT, folder_id=FOLDER_ID)
 
         def test_backup_with_folder_creation_error(self):
              VAULT = "vault"
@@ -470,7 +470,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 self.assertEqual(delete_execute.call_count, nb_backup - 20 - 1)
                 for file in files_to_be_deleted:
                     self.assertTrue(file in files_deleted)
-                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now().strftime('%Y-%m-%d'))
+                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
 
 
         def test_clean_backup_not_enough(self):
@@ -485,13 +485,13 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 delete_execute.return_value = True
                 self.assertTrue(google_drive_api.clean_backup_retention("creds", 1))
                 delete_execute.assert_not_called()
-                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now().strftime('%Y-%m-%d'))
+                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
         
         def test_clean_backup_not_old_enough(self):
              nb_backup = 30
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
-                today = datetime.datetime.now().strftime('%m-%Y')
+                today = datetime.datetime.utcnow().strftime('%m-%Y')
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = {"id" : 1}
                 get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
@@ -500,12 +500,12 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 delete_execute.return_value = True
                 self.assertTrue(google_drive_api.clean_backup_retention("creds", 1))
                 delete_execute.assert_not_called()
-                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now().strftime('%Y-%m-%d'))
+                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
         
         def test_clean_backup_already_cleaned_today(self):
              nb_backup = 30
              with self.application.app.app_context():
-                self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime.now().strftime('%Y-%m-%d'))
+                self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime.utcnow().strftime('%Y-%m-%d'))
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = {"id" : 1}
                 get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
@@ -514,7 +514,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 delete_execute.return_value = True
                 self.assertTrue(google_drive_api.clean_backup_retention("creds", 1))
                 delete_execute.assert_not_called()
-                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now().strftime('%Y-%m-%d'))
+                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
         
         def test_clean_backup_no_folder(self):
              nb_backup = 30
@@ -528,7 +528,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 delete_execute.return_value = True
                 self.assertTrue(google_drive_api.clean_backup_retention("creds", 1))
                 delete_execute.assert_not_called()
-                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now().strftime('%Y-%m-%d'))
+                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
 
         def test_clean_backup_no_files(self):
              with self.application.app.app_context():
@@ -541,7 +541,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 delete_execute.return_value = True
                 self.assertTrue(google_drive_api.clean_backup_retention("creds", 1))
                 delete_execute.assert_not_called()
-                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now().strftime('%Y-%m-%d'))
+                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
         
         def test_clean_backup_bad_files(self):
              nb_backup = 30 
@@ -555,5 +555,5 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 delete_execute.return_value = True
                 self.assertFalse(google_drive_api.clean_backup_retention("creds", 1))
                 delete_execute.assert_not_called()
-                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now().strftime('%Y-%m-%d'))
+                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
         

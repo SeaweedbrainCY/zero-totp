@@ -33,13 +33,13 @@ class TestGoogleDriveOption(unittest.TestCase):
         self.google_integration = GoogleDriveIntegrationRepo()
         self.oauth_token = OAuthTokensRepo()
         self.sse = ServiceSideEncryption()
-        self.creds = {"creds": "creds", "expiry":datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
+        self.creds = {"creds": "creds", "expiry":datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
         creds_b64 = base64.b64encode(json.dumps(self.creds).encode("utf-8")).decode("utf-8")
         encrypted_creds = self.sse.encrypt(creds_b64)
         with self.application.app.app_context():
             db.create_all()
             self.user_repo.create(username="user", email="user@test.test", password="password", 
-                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
 
             
             self.oauth_token.add(user_id=1, enc_credentials=encrypted_creds["ciphertext"], expires_at=self.creds["expiry"], nonce=encrypted_creds["nonce"], tag=encrypted_creds["tag"])
@@ -123,7 +123,7 @@ class TestGoogleDriveOption(unittest.TestCase):
     def test_google_drive_option_delete_decryption_failed(self):
         with self.application.app.app_context():
             self.google_integration.create(user_id=1, google_drive_sync=True)
-            self.oauth_token.update(user_id=1, enc_credentials="bad_credentials", tag="bad_tag", nonce="bad_nonce", expires_at=datetime.datetime.now())
+            self.oauth_token.update(user_id=1, enc_credentials="bad_credentials", tag="bad_tag", nonce="bad_nonce", expires_at=datetime.datetime.utcnow())
             self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
