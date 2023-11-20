@@ -5,6 +5,28 @@
     <span class="tag is-success is-medium">{{imageHash}}</span>
 </div>
 
+<h3 class="is-size-5-mobile  is-size-3-tablet mt-4 has-text-weight-bold " style="border-bottom: 0.5px lightgray solid; width: 100%;">19/11/2023</h3>
+<div class="tags has-addons mt-2">
+    <span class="tag is-dark">version</span>
+    <span class="tag is-info">b1.3</span>
+</div>
+<p class="has-text-weight-bold"><fa-icon [icon]="faCirclePlus" style="color:#63A375"></fa-icon> We added : </p>
+<ul>
+    <li>
+        We migrated the API from an WSGI server to a ASGI server to improve the performance of the application. As for now, the API is 20% faster and can handle more requests at the same time.
+    </li>
+    <li>
+        We upgraded Zero-TOTP's API to Flask 3.0, connexion 3.0 to improve the performance and security of the application. This is an important upgrade in the maintainability and futur development of the application.
+    </li>
+</ul>
+<p class="has-text-weight-bold"><fa-icon [icon]="faTruckMedical" style="color:#FE6847"></fa-icon> We fixed : </p>
+<ul>
+    <li>
+        We upgraded all the dependencies of the API to keep Zero-TOTP secure. In particular, the API is now protected against CVE-2023-46136 (moderate), CVE-2023-45803 (moderate) and CVE-2023-43804 (moderate).
+
+    </li>
+</ul>
+
 <h3 class="is-size-5-mobile  is-size-3-tablet mt-4 has-text-weight-bold " style="border-bottom: 0.5px lightgray solid; width: 100%;">18/11/2023</h3>
 <div class="tags has-addons mt-2">
     <span class="tag is-dark">version</span>
