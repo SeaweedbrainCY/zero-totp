@@ -4,9 +4,9 @@ import connexion
 from environment import logging
 
 def require_admin_role(func):
-    def wrapper(_context, user, token_info,*args, **kwargs):
+    def wrapper(context_, user, token_info,*args, **kwargs):
         try:
-            user_id = _context["user"]
+            user_id = context_["user"]
         except:
             return {"error": "Unauthorized"}, 401
         user = UserDB().getById(user_id)
@@ -22,13 +22,12 @@ def require_admin_role(func):
 # The require_admin_role wrapper must not be removed without adding the admin role check in the require_admin_token wrapper.
 def require_admin_token(func):
      @require_admin_role
-     def wrapper(*args, **kwargs):
+     def wrapper(user_id,*args, **kwargs):
         try:
-            user_id = connexion.context.get("user")
-            admin_cookie = connexion.request.cookies.get("admin-api-key")
+            admin_cookie = connexion.request.cookies["admin-api-key"]
         except:
             logging.info("Admin token rejected because of missing cookie or user id")
-            return {"error": "Unauthorized"}, 401
+            return {"error": "Unauthorized"}, 403
         try:
             jwt_token = verify_jwt(admin_cookie)
         except Exception as e:
