@@ -18,11 +18,12 @@ from uuid import uuid4
 class TestGoogleDriveOption(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
+        if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
         self.flask_app = app
         self.app = self.flask_app.app
         self.jwtCookie = jwt_func.generate_jwt(1)
-        self.client = self.app.test_client()
+        self.client = self.application.test_client()
         self.endpoint = "/google-drive/option"
 
         self.google_api_revoke_creds = patch("Oauth.google_drive_api.revoke_credentials").start()
@@ -72,7 +73,7 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.client.cookies
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["status"], "enabled")
+            self.assertEqual(response.json()["status"], "enabled")
 
     def test_google_drive_option_disabled(self):
         with self.flask_app.app.app_context():
@@ -80,14 +81,14 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.client.set_cookie("localhost", "api-key", self.jwtCookie)
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["status"], "disabled")
+            self.assertEqual(response.json()["status"], "disabled")
 
     def test_google_drive_option_doesnt_exists(self):
         with self.flask_app.app.app_context():
             self.client.set_cookie("localhost", "api-key", self.jwtCookie)
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["status"], "disabled")
+            self.assertEqual(response.json()["status"], "disabled")
     
     def test_google_drive_no_cookie(self):
         with self.flask_app.app.app_context():
@@ -111,7 +112,7 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.client.set_cookie("localhost", "api-key", self.jwtCookie)
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["message"], "Google drive sync disabled")
+            self.assertEqual(response.json()["message"], "Google drive sync disabled")
             self.google_api_revoke_creds.assert_called_once()
             self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
             self.assertIsNone(self.oauth_token.get_by_user_id(1))
@@ -125,7 +126,7 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.client.set_cookie("localhost", "api-key", self.jwtCookie)
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["message"], "Error while decrypting credentials")
+            self.assertEqual(response.json()["message"], "Error while decrypting credentials")
             self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
             self.assertIsNone(self.oauth_token.get_by_user_id(1))
 
@@ -136,7 +137,7 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.client.set_cookie("localhost", "api-key", self.jwtCookie)
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["message"],  "Google drive sync is not enabled")
+            self.assertEqual(response.json()["message"],  "Google drive sync is not enabled")
             self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
             self.assertIsNone(self.oauth_token.get_by_user_id(1))
     
@@ -146,7 +147,7 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.client.set_cookie("localhost", "api-key", self.jwtCookie)
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["message"], "Google drive sync disabled")
+            self.assertEqual(response.json()["message"], "Google drive sync disabled")
             self.google_api_revoke_creds.assert_called_once()
             self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
             self.assertIsNone(self.oauth_token.get_by_user_id(1))
@@ -157,7 +158,7 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.client.set_cookie("localhost", "api-key", self.jwtCookie)
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["message"], "Google drive sync disabled")
+            self.assertEqual(response.json()["message"], "Google drive sync disabled")
             self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
             self.assertIsNone(self.oauth_token.get_by_user_id(1))
     
@@ -168,7 +169,7 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.client.set_cookie("localhost", "api-key", self.jwtCookie)
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["message"], "Error while revoking credentials")
+            self.assertEqual(response.json()["message"], "Error while revoking credentials")
             self.google_api_revoke_creds.assert_called_once()
             self.assertEqual(self.google_integration.is_google_drive_enabled(1),0)
             self.assertIsNone(self.oauth_token.get_by_user_id(1))

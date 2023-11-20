@@ -1,6 +1,6 @@
 import unittest
 import controllers
-from app import create_app
+from app import app
 from unittest.mock import patch
 from database.model import User, TOTP_secret
 import environment as env
@@ -11,10 +11,11 @@ import datetime
 class TestUpdateEmail(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app().app
+        if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+        self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
-        self.client = self.app.test_client()
+        self.client = self.application.test_client()
         self.endpoint = "/update/email"
         
 
@@ -45,7 +46,7 @@ class TestUpdateEmail(unittest.TestCase):
         return jwtCookie
     
     def test_update_email(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 201)
         self.update_email.assert_called_once()
@@ -55,29 +56,29 @@ class TestUpdateEmail(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
     
     def test_update_email_bad_cookie(self):
-        self.client.set_cookie("localhost", "api-key", "badcookie")
+        self.client.cookies = {"api-key": "badcookie"}
         response = self.client.put(self.endpoint)
         self.assertEqual(response.status_code, 403)
     
     def test_update_email_expired_jwt(self):
-        self.client.set_cookie("localhost", "api-key", self.generate_expired_cookie())
+        self.client.cookies = {"api-key": self.generate_expired_cookie()}
         response = self.client.put(self.endpoint)
         self.assertEqual(response.status_code, 403)
     
     def test_update_email_bad_format(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.check_email.return_value = False
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 400)
     
     def test_update_email_already_used(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.getUserByEmail.return_value = True
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 403)
     
     def test_update_email_error_db(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.update_email.return_value = False
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 500)
