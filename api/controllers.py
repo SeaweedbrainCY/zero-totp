@@ -551,15 +551,8 @@ def delete_google_drive_option(user_id):
         GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
         return {"message": "Error while revoking credentials"}, 200
 
-
-def get_preferences(fields):
-    try:
-        user_id = connexion.context.get("user")
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+@require_userid
+def get_preferences(user_id,fields):
     valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
     all_field = fields == "all" 
     fields_asked = []
@@ -588,18 +581,10 @@ def get_preferences(fields):
     return user_preferences, 200
 
 
-def set_preference():
-    try:
-        user_id = connexion.context.get("user")
-        dataJSON = json.dumps(request.get_json())
-        data = json.loads(dataJSON)
-        field = data["id"]
-        value = data["value"]
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+@require_userid
+def set_preference(user_id, body):
+    field = body["id"]
+    value = body["value"]
     
     valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
     if field not in valid_fields:
