@@ -376,6 +376,7 @@ export class VaultComponent implements OnInit {
   backup_vault_to_google_drive(){
           this.http.put(ApiService.API_URL+"/google-drive/backup", {}, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
             this.isGoogleDriveSync = "uptodate";
+            this.lastBackupDate =  String(formatDate(new Date(), 'dd/MM/yyyy HH:mm:ss', 'en'));
           }, (error) => {
             this.isGoogleDriveSync = 'error';
             let errorMessage = "";
@@ -400,7 +401,8 @@ export class VaultComponent implements OnInit {
       if(data.status == "ok"){
         if(data.is_up_to_date == true){
           this.isGoogleDriveSync = "uptodate";
-          this.lastBackupDate = data.last_backup_date.split("T")[0] + " " + data.last_backup_date.split("T")[1];
+          const date_str = data.last_backup_date.split("T")[0] + " " + data.last_backup_date.split("T")[1];
+          this.lastBackupDate =  String(formatDate(new Date(date_str), 'dd/MM/yyyy HH:mm:ss', 'en'));
         } else {
           this.backup_vault_to_google_drive();
         }
