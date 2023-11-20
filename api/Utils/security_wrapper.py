@@ -9,10 +9,10 @@ def require_admin_role(func):
             user_id = context_["user"]
         except:
             return {"error": "Unauthorized"}, 401
-        user = UserDB().getById(user_id)
-        if user == None:
+        user_obj = UserDB().getById(user_id)
+        if user_obj == None:
             return {"error": "Forbidden"}, 403
-        if user.role == "admin":
+        if user_obj.role == "admin":
             return func(user_id,*args, **kwargs)
         return {"error": "Unauthorized"}, 403
     return wrapper
