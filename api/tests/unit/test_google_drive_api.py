@@ -11,7 +11,7 @@ from database.google_drive_integration_repo import GoogleDriveIntegration as Goo
 from database.db import db
 from uuid import uuid4
 from CryptoClasses import jwt_func
-from app import create_app
+from app import app
 import json
 from base64 import b64decode, b64encode
 
@@ -41,10 +41,11 @@ class TestGoogleDriveAPI(unittest.TestCase):
 
     
         def setUp(self):
-            env.db_uri = "sqlite:///:memory:"
-            self.app = create_app()
+            if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+            self.application = app
             self.jwtCookie = jwt_func.generate_jwt(1)
-            self.client = self.app.test_client()
+            self.client = self.application.test_client()
             self.endpoint = "/vault/export"
             self.from_authorized_user_info = patch("google.oauth2.credentials.Credentials.from_authorized_user_info").start()
             self.from_authorized_user_info.return_value = "credentials"
@@ -57,7 +58,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
             zke_repo = ZKE_encryption_key_repo()
             totp_repo = TOTP_secret_repo()
             self.google_integration_db = GoogleDriveIntegration_repo()
-            with self.app.app_context():
+            with self.application.app.app_context():
                     db.create_all()
                     user_repo.create(username="user", email="user@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
@@ -68,6 +69,9 @@ class TestGoogleDriveAPI(unittest.TestCase):
                     db.session.commit()
         def tearDown(self):
           patch.stopall()
+          with self.application.app.app_context():
+            db.session.remove()
+            db.drop_all()
         
 ####################
 ## get_drive_service
@@ -405,14 +409,14 @@ class TestGoogleDriveAPI(unittest.TestCase):
             LAST_BACKUP_FILENAME = "02-01-2023-00-00-00_backup"
             get_last_backup_file = patch("Oauth.google_drive_api.get_last_backup_file").start()
             get_last_backup_file.return_value = {"name" : LAST_BACKUP_FILENAME, "explicitlyTrashed": False, "id":1}, datetime.datetime(year=2023, month=1, day=2, hour=0, minute=0, second=0 )
-            with self.app.app_context():
-                self.client.set_cookie("localhost", "api-key",self.jwtCookie)
+            with self.application.app.app_context():
+                self.client.cookies = {"api-key":self.jwtCookie}
                 response = self.client.get(self.endpoint)
-                print("json=" , response.json)
+                print("json=" , response.json())
                 execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
-                execute.return_value = response.json.encode("utf-8")
+                execute.return_value = response.json().encode("utf-8")
                 try:
-                    json_str = b64decode(response.json.split(",")[0])
+                    json_str = b64decode(response.json().split(",")[0])
                     json_obj = json.loads(json_str)
                 except:
                     raise Exception("json not valid")
@@ -460,7 +464,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
              update = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.update").start()
              update.side_effect = update_file
              
-             with self.app.app_context():
+             with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 self.assertTrue(google_drive_api.clean_backup_retention("creds", 1))
                 self.assertEqual(delete_execute.call_count, nb_backup - 20 - 1)
@@ -471,7 +475,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
 
         def test_clean_backup_not_enough(self):
              nb_backup = 19
-             with self.app.app_context():
+             with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = {"id" : 1}
@@ -485,7 +489,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
         
         def test_clean_backup_not_old_enough(self):
              nb_backup = 30
-             with self.app.app_context():
+             with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 today = datetime.datetime.now().strftime('%m-%Y')
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
@@ -500,7 +504,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
         
         def test_clean_backup_already_cleaned_today(self):
              nb_backup = 30
-             with self.app.app_context():
+             with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime.now().strftime('%Y-%m-%d'))
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = {"id" : 1}
@@ -514,7 +518,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
         
         def test_clean_backup_no_folder(self):
              nb_backup = 30
-             with self.app.app_context():
+             with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = None
@@ -527,7 +531,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now().strftime('%Y-%m-%d'))
 
         def test_clean_backup_no_files(self):
-             with self.app.app_context():
+             with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = {"id":1}
@@ -541,7 +545,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
         
         def test_clean_backup_bad_files(self):
              nb_backup = 30 
-             with self.app.app_context():
+             with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = {"id":1}

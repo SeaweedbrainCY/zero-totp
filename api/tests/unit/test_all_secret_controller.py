@@ -1,6 +1,6 @@
 import unittest
 import controllers
-from app import create_app
+from app import app
 from unittest.mock import patch
 from database.model import User, TOTP_secret
 import environment as env
@@ -11,10 +11,11 @@ import datetime
 class TestAllSecret(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app()
+        if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+        self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
-        self.client = self.app.test_client()
+        self.client = self.application.test_client()
         self.endpoint = "/all_secrets"
         
 
@@ -38,7 +39,7 @@ class TestAllSecret(unittest.TestCase):
     
 
     def test_get_all_secret(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 200)
         self.get_all_secret.assert_called_once()
@@ -48,17 +49,17 @@ class TestAllSecret(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
     
     def test_get_all_secret_bad_cookie(self):
-        self.client.set_cookie("localhost", "api-key", "badcookie")
+        self.client.cookies = {"api-key": "badcookie"}
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 403)
     
     def test_get_all_secret_expired_jwt(self):
-        self.client.set_cookie("localhost", "api-key", self.generate_expired_cookie())
+        self.client.cookies = {"api-key": self.generate_expired_cookie()}
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 403)
     
     def test_get_all_secret_no_secret(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.get_all_secret.return_value = []
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 404)

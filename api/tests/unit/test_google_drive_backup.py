@@ -1,6 +1,6 @@
 import unittest
 import controllers
-from app import create_app
+from app import app
 from unittest.mock import patch
 from database.user_repo import User as UserRepo
 from database.oauth_tokens_repo import Oauth_tokens as OAuthTokensRepo
@@ -21,10 +21,11 @@ import json
 class TestGoogleDriveBackup(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app()
+        if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+        self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
-        self.client = self.app.test_client()
+        self.client = self.application.test_client()
         self.endpoint = "/google-drive/backup"
 
 
@@ -42,7 +43,7 @@ class TestGoogleDriveBackup(unittest.TestCase):
         self.creds = {"creds": "creds", "expiry":datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
         creds_b64 = base64.b64encode(json.dumps(self.creds).encode("utf-8")).decode("utf-8")
         encrypted_creds = self.sse.encrypt(creds_b64)
-        with self.app.app_context():
+        with self.application.app.app_context():
             db.create_all()
             self.user_repo.create(username="user", email="user@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
@@ -57,6 +58,9 @@ class TestGoogleDriveBackup(unittest.TestCase):
 
     def tearDown(self):
         patch.stopall()
+        with self.application.app.app_context():
+            db.session.remove()
+            db.drop_all()
     
     def generate_expired_cookie(self):
         payload = {
@@ -70,59 +74,59 @@ class TestGoogleDriveBackup(unittest.TestCase):
         return jwtCookie
     
     def test_google_drive_backup(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 201)
             self.google_drive_backup.assert_called_once()
             self.google_drive_clean.assert_called_once()
     
     def test_google_drive_backup_no_oauth_token(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             self.oauth_token.delete(user_id=1)
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 403)
     
     def test_google_drive_backup_option_disable(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             self.google_integration.update_google_drive_sync(user_id=1, google_drive_sync=False)
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 403)
             
     def test_google_drive_backup_bad_credentials(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             self.oauth_token.update(user_id=1, enc_credentials="bad_credentials", tag="bad_tag", nonce="bad_nonce", expires_at=datetime.datetime.now())
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 500)
     
     def test_google_drive_backup_error_while_backuping(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             backup = patch("Oauth.google_drive_api.backup").start()
             backup.side_effect = Exception("error")
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 500)
     
     def test_google_drive_backup_error_while_cleaning(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             backup = patch("Oauth.google_drive_api.clean_backup_retention").start()
             backup.side_effect = Exception("error")
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 500)
     
     def test_google_drive_no_cookie(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 401)
 
     
     def test_google_drive_bad_cookie(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", "badcookie")
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": "badcookie"}
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 403)
 

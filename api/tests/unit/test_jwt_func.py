@@ -3,7 +3,7 @@ import unittest
 from CryptoClasses.jwt_func import verify_jwt, generate_jwt
 import datetime
 import environment as env
-from werkzeug.exceptions import Forbidden
+from connexion.exceptions import Forbidden
 
 
 class TestJWT(unittest.TestCase):

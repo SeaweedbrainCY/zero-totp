@@ -1,6 +1,6 @@
 import unittest
 import controllers
-from app import create_app
+from app import app
 from unittest.mock import patch
 from database.model import User, TOTP_secret
 import environment as env
@@ -11,10 +11,11 @@ import datetime
 class TestEncryptedSecretController(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app()
+        if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+        self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
-        self.client = self.app.test_client()
+        self.client = self.application.test_client()
         self.endpoint = "/encrypted_secret/uuid"
         
 
@@ -49,42 +50,42 @@ class TestEncryptedSecretController(unittest.TestCase):
     
 
     def test_get_encrypted_secret(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("enc_secret", response.json)
+        self.assertIn("enc_secret", response.json())
     
     def test_get_encrypted_secret_no_cookie(self):
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 401)
     
     def test_get_encrypted_secret_bad_cookie(self):
-        self.client.set_cookie("localhost", "api-key", "bad_cookie")
+        self.client.cookies = {"api-key": "bad_cookie"}
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 403)
 
     def test_get_encrypted_secret_JWT_expired(self):
         jwtCookie = self.generate_expired_cookie()
-        self.client.set_cookie("localhost", "api-key", jwtCookie)
+        self.client.cookies = {"api-key": jwtCookie}
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 403)
     
     def test_get_encrypted_secret_no_secret(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.getEncSecretByUUID.return_value = None
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 403)
     
 
     def test_get_encrypted_secret_of_another_user(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.getEncSecretByUUID.return_value =  TOTP_secret(uuid="uuid", user_id=2, secret_enc = "enc_secret")
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 403)
         
 
     def test_post_encrypted_secret(self):
-         self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+         self.client.cookies = {"api-key": self.jwtCookie}
          self.getEncSecretByUUID.return_value = None
          response = self.client.post(self.endpoint, json=self.json_payload)
          self.assertEqual(response.status_code, 201)
@@ -95,22 +96,22 @@ class TestEncryptedSecretController(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
     
     def test_post_encrypted_secret_bad_cookie(self):
-        self.client.set_cookie("localhost", "api-key", "bad_cookie")
+        self.client.cookies = {"api-key": "bad_cookie"}
         response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
     
     def test_post_encrypted_secret_JWT_expired(self):
-        self.client.set_cookie("localhost", "api-key", self.generate_expired_cookie())
+        self.client.cookies = {"api-key": self.generate_expired_cookie()}
         response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
     
     def test_post_encrypted_secret_secret_already_exists(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
     
     def test_post_encrypted_secret_error_db(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.getEncSecretByUUID.return_value = None
         self.addTOTPSecret.return_value = False
         response = self.client.post(self.endpoint, json=self.json_payload)
@@ -118,7 +119,7 @@ class TestEncryptedSecretController(unittest.TestCase):
     
 
     def test_update_encrypted_secret(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 201)
         self.updateTOTPSecret.assert_called_once()
@@ -128,35 +129,35 @@ class TestEncryptedSecretController(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
     
     def test_update_encrypted_secret_bad_cookie(self):
-        self.client.set_cookie("localhost", "api-key", "badCookie")
+        self.client.cookies = {"api-key": "badCookie"}
         response = self.client.put(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
     
     def test_update_encrypted_secret_expired_cookie(self):
-        self.client.set_cookie("localhost", "api-key", self.generate_expired_cookie())
+        self.client.cookies = {"api-key": self.generate_expired_cookie()}
         response = self.client.put(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
     
     def test_update_encrypted_secret_no_exists(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.getEncSecretByUUID.return_value = None
         response = self.client.put(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
     
     def test_update_encrypted_secret_wrong_user(self):
-         self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+         self.client.cookies = {"api-key": self.jwtCookie}
          self.getEncSecretByUUID.return_value = TOTP_secret(uuid="uuid", user_id=2, secret_enc = "enc_secret")
          response = self.client.put(self.endpoint, json=self.json_payload)
          self.assertEqual(response.status_code, 403)
     
     def test_update_encrypted_secret_fail(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.updateTOTPSecret.return_value = None
         response = self.client.put(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 500)
     
     def test_delete_encrypted_secret(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.delete(self.endpoint)
         self.assertEqual(response.status_code, 201)
         self.deleteTOTPSecret.assert_called_once()
@@ -166,30 +167,30 @@ class TestEncryptedSecretController(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
     
     def test_delete_encrypted_secret_bad_cookie(self):
-        self.client.set_cookie("localhost", "api-key", "badCookie")
+        self.client.cookies = {"api-key": "badCookie"}
         response = self.client.delete(self.endpoint)
         self.assertEqual(response.status_code, 403)
     
     def test_delete_encrypted_secret_expired_cookie(self):
-        self.client.set_cookie("localhost", 'api-key', self.generate_expired_cookie())
+        self.client.cookies = {'api-key': self.generate_expired_cookie()}
         response = self.client.delete(self.endpoint)
         self.assertEqual(response.status_code, 403)
     
     def test_delete_encrypted_secret_no_exists(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.getEncSecretByUUID.return_value = None
         response = self.client.delete(self.endpoint)
         self.assertEqual(response.status_code, 403)
     
 
     def test_delete_encrypted_secret_wrong_user(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.getEncSecretByUUID.return_value = TOTP_secret(uuid="uuid", user_id=2, secret_enc = "enc_secret")
         response = self.client.delete(self.endpoint)
         self.assertEqual(response.status_code, 403)
     
     def test_delete_encrypted_secret_fail(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         self.deleteTOTPSecret.return_value = None
         response = self.client.delete(self.endpoint)
         self.assertEqual(response.status_code, 500)

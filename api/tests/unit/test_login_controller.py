@@ -1,6 +1,6 @@
 import unittest
 import controllers
-from app import create_app
+from app import app
 from unittest.mock import patch
 from database.model import User
 import environment as env
@@ -8,15 +8,19 @@ import environment as env
 class TestLoginController(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app()
-        self.client = self.app.test_client()
+        if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+        self.application = app
+        self.client = self.application.test_client()
         self.loginEndpoint = "/login"
         self.specsEndpoint = "/login/specs?username=test@test.fr"
 
 
         self.getByEmailMocked = patch("database.user_repo.User.getByEmail").start()
         self.getByEmailMocked.return_value = User(id=1, username="username", derivedKeySalt="randomSalt", password="hashed", isVerified=1, passphraseSalt="salt")
+
+        self.get_is_google_drive_enabled = patch("database.google_drive_integration_repo.GoogleDriveIntegration.is_google_drive_enabled").start()
+        self.get_is_google_drive_enabled.return_value = False
 
         self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
         self.checkpw.return_value = True
@@ -33,9 +37,9 @@ class TestLoginController(unittest.TestCase):
     def test_login(self):
         response = self.client.post(self.loginEndpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("username", response.json)
-        self.assertIn("id", response.json)
-        self.assertIn("derivedKeySalt", response.json)
+        self.assertIn("username", response.json())
+        self.assertIn("id", response.json())
+        self.assertIn("derivedKeySalt", response.json())
         self.assertIn("Set-Cookie", response.headers)
         self.assertIn("api-key", response.headers["Set-Cookie"])
         self.assertIn("HttpOnly", response.headers["Set-Cookie"])
@@ -79,7 +83,7 @@ class TestLoginController(unittest.TestCase):
     def test_login_specs(self):
         response = self.client.get(self.specsEndpoint)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("passphrase_salt", response.json)
+        self.assertIn("passphrase_salt", response.json())
     
     def test_login_specs_bad_email(self):
         self.check_email.return_value = False
@@ -94,4 +98,4 @@ class TestLoginController(unittest.TestCase):
         self.getByEmailMocked = None 
         response = self.client.get(self.specsEndpoint)
         self.assertEqual(response.status_code, 200)
-        self.assertIn("passphrase_salt", response.json)
+        self.assertIn("passphrase_salt", response.json())

@@ -1,5 +1,5 @@
 import unittest
-from app import create_app
+from app import app
 from database.db import db 
 import environment as env
 from database.model import User as UserModel
@@ -12,9 +12,10 @@ import jwt
 class TestJWT(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app()
-        self.client = self.app.test_client()
+        if env.db_uri != "sqlite:///:memory:":
+            raise Exception("Test must be run with in memory database")
+        self.flask_application = app
+        self.client = self.flask_application.test_client()
         self.roleEndpoint = "/role"
         self.admin_user_id = 1
         self.not_admin_user_id = 2
@@ -23,7 +24,7 @@ class TestJWT(unittest.TestCase):
         admin_user = UserModel(id=self.admin_user_id,username="admin", mail="admin@admin.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="admin")
         not_admin_user = UserModel(id=self.not_admin_user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="user")
         user_without_role = UserModel(id=self.user_without_role_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None)
-        with self.app.app_context():
+        with self.flask_application.app.app_context():
             db.create_all()
             db.session.add(admin_user)
             db.session.add(not_admin_user)
@@ -32,7 +33,7 @@ class TestJWT(unittest.TestCase):
     
        
     def tearDown(self):
-        with self.app.app_context():
+        with self.flask_application.app.app_context():
             db.session.remove()
             db.drop_all()
             patch.stopall()
@@ -49,39 +50,38 @@ class TestJWT(unittest.TestCase):
         return jwt_cookie
 
     def test_get_role_admin(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_user_id))
-            response = self.client.get(self.roleEndpoint)
+        with self.flask_application.app.app_context():
+            response = self.client.get(self.roleEndpoint, cookies={"api-key":generate_jwt(self.admin_user_id)})
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["role"], "admin")
+            self.assertEqual(response.json()["role"], "admin")
 
     def test_get_role_not_admin(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key",generate_jwt(self.not_admin_user_id))
+        with self.flask_application.app.app_context():
+            self.client.cookies= { "api-key":generate_jwt(self.not_admin_user_id)}
             response = self.client.get(self.roleEndpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["role"], "user")
+            self.assertEqual(response.json()["role"], "user")
     
     def test_get_role_user_without_role(self):
-         with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key",generate_jwt(self.user_without_role_id))
+         with self.flask_application.app.app_context():
+            self.client.cookies= {"api-key" :generate_jwt(self.user_without_role_id)}
             response = self.client.get(self.roleEndpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["role"], "user")
+            self.assertEqual(response.json()["role"], "user")
     
     def test_get_role_no_cookie(self):
         response = self.client.get(self.roleEndpoint)
         self.assertEqual(response.status_code, 401)
     
     def test_get_role_expired_cookie(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key",self.generate_expired_cookie(self.user_without_role_id))
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"api-key":self.generate_expired_cookie(self.user_without_role_id)}
             response = self.client.get(self.roleEndpoint)
             self.assertEqual(response.status_code, 403)
     
     def test_user_not_found(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", generate_jwt(-1))
+        with self.flask_application.app.app_context():
+            self.client.cookies= {"api-key" :generate_jwt(-1)}
             response = self.client.get(self.roleEndpoint)
             self.assertEqual(response.status_code, 404)
 

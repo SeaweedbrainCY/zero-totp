@@ -1,6 +1,6 @@
 import unittest
 import controllers
-from app import create_app
+from app import app
 from unittest.mock import patch
 from database.user_repo import User as UserRepo
 from database.preferences_repo import Preferences as PreferencesRepo
@@ -21,10 +21,11 @@ class TestPreferences(unittest.TestCase):
     favicon_policy_default_value = "enabledOnly"
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app()
+        if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+        self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
-        self.client = self.app.test_client()
+        self.client = self.application.test_client()
         self.endpoint = "/preferences"
 
         self.google_api_revoke_creds = patch("Oauth.google_drive_api.revoke_credentials").start()
@@ -33,7 +34,7 @@ class TestPreferences(unittest.TestCase):
 
         self.user_repo = UserRepo()
         self.preferences_repo = PreferencesRepo()
-        with self.app.app_context():
+        with self.application.app.app_context():
             db.create_all()
             self.user_repo.create(username="user", email="user@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
@@ -46,6 +47,10 @@ class TestPreferences(unittest.TestCase):
 
     def tearDown(self):
         patch.stopall()
+        with self.application.app.app_context():
+            db.session.remove()
+            db.drop_all()
+
     
     def generate_expired_cookie(self):
         payload = {
@@ -63,42 +68,42 @@ class TestPreferences(unittest.TestCase):
 #########
 
     def test_get_all_default_pref(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.get(self.endpoint+"?fields=all")
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["favicon_policy"], self.favicon_policy_default_value)
-            self.assertEqual(response.json["derivation_iteration"], self.derivation_iteration_default_value)
-            self.assertEqual(response.json["backup_lifetime"], self.backup_lifetime_default_value)
-            self.assertEqual(response.json["backup_minimum"], self.minimum_backup_kept_default_value)
-            self.assertEqual(len(response.json), 4)
+            self.assertEqual(response.json()["favicon_policy"], self.favicon_policy_default_value)
+            self.assertEqual(response.json()["derivation_iteration"], self.derivation_iteration_default_value)
+            self.assertEqual(response.json()["backup_lifetime"], self.backup_lifetime_default_value)
+            self.assertEqual(response.json()["backup_minimum"], self.minimum_backup_kept_default_value)
+            self.assertEqual(len(response.json()), 4)
     
     def test_get_some_default_pref(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             possible_value = ["favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            self.client.cookies = {"api-key": self.jwtCookie}
             for i in range(10):
                 random.shuffle(possible_value)
                 nb_fields = random.randint(1, 4)
                 fields = possible_value[:nb_fields]
                 response = self.client.get(self.endpoint+"?fields="+",".join(fields))
                 self.assertEqual(response.status_code, 200)
-                self.assertEqual(len(response.json), nb_fields)
+                self.assertEqual(len(response.json()), nb_fields)
                 for field in fields:
-                    self.assertIn(field, response.json)
+                    self.assertIn(field, response.json())
                     if field == "favicon_policy":
-                        self.assertEqual(response.json[field], self.favicon_policy_default_value)
+                        self.assertEqual(response.json()[field], self.favicon_policy_default_value)
                     elif field == "derivation_iteration":
-                        self.assertEqual(response.json[field], self.derivation_iteration_default_value)
+                        self.assertEqual(response.json()[field], self.derivation_iteration_default_value)
                     elif field == "backup_lifetime":
-                        self.assertEqual(response.json[field], self.backup_lifetime_default_value)
+                        self.assertEqual(response.json()[field], self.backup_lifetime_default_value)
                     elif field == "backup_minimum":
-                        self.assertEqual(response.json[field], self.minimum_backup_kept_default_value)
+                        self.assertEqual(response.json()[field], self.minimum_backup_kept_default_value)
     
     def test_get_some_default_pref_with_invalid_field(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             possible_value = ["favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            self.client.cookies = {"api-key": self.jwtCookie}
             random.shuffle(possible_value)
             nb_fields = random.randint(1, 4)
             fields = possible_value[:nb_fields]
@@ -107,52 +112,52 @@ class TestPreferences(unittest.TestCase):
             fields.append("all")
             response = self.client.get(self.endpoint+"?fields="+",".join(fields))
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.json), nb_fields)
+            self.assertEqual(len(response.json()), nb_fields)
             for field in real_fields:
-                self.assertIn(field, response.json)
+                self.assertIn(field, response.json())
     
     def test_get_all_modified_values(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             self.preferences_repo.update_favicon(user_id=1, favicon_policy="never")
             self.preferences_repo.update_derivation_iteration(user_id=1, derivation_iteration=100000)
             self.preferences_repo.update_backup_lifetime(user_id=1, backup_lifetime=10)
             self.preferences_repo.update_minimum_backup_kept(user_id=1, minimum_backup_kept=5)
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.get(self.endpoint+"?fields=all")
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["favicon_policy"], "never")
-            self.assertEqual(response.json["derivation_iteration"], 100000)
-            self.assertEqual(response.json["backup_lifetime"], 10)
-            self.assertEqual(response.json["backup_minimum"], 5)
-            self.assertEqual(len(response.json), 4)
+            self.assertEqual(response.json()["favicon_policy"], "never")
+            self.assertEqual(response.json()["derivation_iteration"], 100000)
+            self.assertEqual(response.json()["backup_lifetime"], 10)
+            self.assertEqual(response.json()["backup_minimum"], 5)
+            self.assertEqual(len(response.json()), 4)
     
     def test_get_invalid_fields(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.get(self.endpoint+"?fields=invalid_field,,,,,,,,")
             self.assertEqual(response.status_code, 400)
     
     def test_get_pref_no_cookie(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             response = self.client.get(self.endpoint+"?fields=all")
             self.assertEqual(response.status_code, 401)
     
     def test_get_pref_expired_cookie(self):
-         with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.generate_expired_cookie())
+         with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.generate_expired_cookie()}
             response = self.client.get(self.endpoint+"?fields=all")
             self.assertEqual(response.status_code, 403)
     
     def test_get_preference_new_user(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", jwt_func.generate_jwt(2))
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(2)}
             response = self.client.get(self.endpoint+"?fields=all")
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["favicon_policy"], self.favicon_policy_default_value)
-            self.assertEqual(response.json["derivation_iteration"], self.derivation_iteration_default_value)
-            self.assertEqual(response.json["backup_lifetime"], self.backup_lifetime_default_value)
-            self.assertEqual(response.json["backup_minimum"], self.minimum_backup_kept_default_value)
-            self.assertEqual(len(response.json), 4)
+            self.assertEqual(response.json()["favicon_policy"], self.favicon_policy_default_value)
+            self.assertEqual(response.json()["derivation_iteration"], self.derivation_iteration_default_value)
+            self.assertEqual(response.json()["backup_lifetime"], self.backup_lifetime_default_value)
+            self.assertEqual(response.json()["backup_minimum"], self.minimum_backup_kept_default_value)
+            self.assertEqual(len(response.json()), 4)
 
 
 ##########
@@ -160,8 +165,8 @@ class TestPreferences(unittest.TestCase):
 ##########
 
     def test_put_favicon_policy(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "favicon_policy", "value": "never"})
             self.assertEqual(response.status_code, 201)
             preferences = self.preferences_repo.get_preferences_by_user_id(user_id=1)
@@ -185,8 +190,8 @@ class TestPreferences(unittest.TestCase):
             self.assertEqual(preferences.minimum_backup_kept, self.minimum_backup_kept_default_value)
     
     def test_put_derivation_iteration(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "derivation_iteration", "value": 100000})
             self.assertEqual(response.status_code, 201)
             preferences = self.preferences_repo.get_preferences_by_user_id(user_id=1)
@@ -196,10 +201,10 @@ class TestPreferences(unittest.TestCase):
             self.assertEqual(preferences.minimum_backup_kept, self.minimum_backup_kept_default_value)
 
     def test_put_backup_lifetime(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "backup_lifetime", "value": 10})
-            print(response.json)
+            print(response.json())
             self.assertEqual(response.status_code, 201)
             preferences = self.preferences_repo.get_preferences_by_user_id(user_id=1)
             self.assertEqual(preferences.favicon_preview_policy, self.favicon_policy_default_value)
@@ -208,8 +213,8 @@ class TestPreferences(unittest.TestCase):
             self.assertEqual(preferences.minimum_backup_kept, self.minimum_backup_kept_default_value)
     
     def test_put_minimum_backup_kept(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "backup_minimum" , "value": 10})
             self.assertEqual(response.status_code, 201)
             preferences = self.preferences_repo.get_preferences_by_user_id(user_id=1)
@@ -219,22 +224,26 @@ class TestPreferences(unittest.TestCase):
             self.assertEqual(preferences.minimum_backup_kept, 10)
     
     def test_put_invalid_id(self):
-         with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+         with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "badId" , "value": 10})
             self.assertEqual(response.status_code, 400)
     
-    def test_put_missing_arg(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+    def test_put_missing_value(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "badId"})
             self.assertEqual(response.status_code, 400)
+    
+    def test_put_missing_id(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"value": "badValue"})
             self.assertEqual(response.status_code, 400)
     
     def test_mutliple_id(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "backup_minimum" , "value": "10", "id": "backup_lifetime" , "value": "10"})
             self.assertEqual(response.status_code, 201)
             preferences = self.preferences_repo.get_preferences_by_user_id(user_id=1)
@@ -246,15 +255,15 @@ class TestPreferences(unittest.TestCase):
 
     
     def test_put_favicon_with_bad_value(self):
-         with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+         with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "favicon_policy", "value": "badValue"})
             self.assertEqual(response.status_code, 400)
 
 
     def test_put_iteration_with_bad_value(self):
-         with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+         with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "derivation_iteration", "value": "badValue"})
             self.assertEqual(response.status_code, 400)
             response = self.client.put(self.endpoint, json={"id": "derivation_iteration", "value": 999})
@@ -263,16 +272,16 @@ class TestPreferences(unittest.TestCase):
             self.assertEqual(response.status_code, 400)
     
     def test_put_backup_lifetime_with_bad_value(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "backup_lifetime", "value": "badValue"})
             self.assertEqual(response.status_code, 400)
             response = self.client.put(self.endpoint, json={"id": "backup_lifetime", "value": 0})
             self.assertEqual(response.status_code, 400)
     
     def test_put_minimum_backup_kept_with_bad_value(self):
-         with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+         with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "backup_minimum", "value": "badValue"})
             self.assertEqual(response.status_code, 400)
             response = self.client.put(self.endpoint, json={"id": "backup_minimum", "value": 0})

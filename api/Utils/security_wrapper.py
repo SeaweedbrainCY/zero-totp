@@ -4,16 +4,16 @@ import connexion
 from environment import logging
 
 def require_admin_role(func):
-    def wrapper(*args, **kwargs):
+    def wrapper(context_, user, token_info,*args, **kwargs):
         try:
-            user_id = connexion.context.get("user")
+            user_id = context_["user"]
         except:
             return {"error": "Unauthorized"}, 401
-        user = UserDB().getById(user_id)
-        if user == None:
+        user_obj = UserDB().getById(user_id)
+        if user_obj == None:
             return {"error": "Forbidden"}, 403
-        if user.role == "admin":
-            return func(*args, **kwargs)
+        if user_obj.role == "admin":
+            return func(user_id,*args, **kwargs)
         return {"error": "Unauthorized"}, 403
     return wrapper
 
@@ -22,13 +22,12 @@ def require_admin_role(func):
 # The require_admin_role wrapper must not be removed without adding the admin role check in the require_admin_token wrapper.
 def require_admin_token(func):
      @require_admin_role
-     def wrapper(*args, **kwargs):
+     def wrapper(user_id,*args, **kwargs):
         try:
-            user_id = connexion.context.get("user")
-            admin_cookie = connexion.request.cookies.get("admin-api-key")
+            admin_cookie = connexion.request.cookies["admin-api-key"]
         except:
             logging.info("Admin token rejected because of missing cookie or user id")
-            return {"error": "Unauthorized"}, 401
+            return {"error": "Unauthorized"}, 403
         try:
             jwt_token = verify_jwt(admin_cookie)
         except Exception as e:
@@ -50,3 +49,14 @@ def require_admin_token(func):
         logging.info("Admin token rejected because of admin cookie admin field is false")
         return {"error": "Unauthorized"}, 403
      return wrapper
+
+def require_userid(func):
+    def wrapper(context_, user, token_info, *args, **kwargs):
+        try:
+            user_id = context_["user"]
+            if user_id == None:
+                return {"error": "Unauthorized"}, 401
+        except:
+            return {"error": "Unauthorized"}, 401
+        return func(user_id, *args, **kwargs)
+    return wrapper

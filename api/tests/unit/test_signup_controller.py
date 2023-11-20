@@ -1,6 +1,6 @@
 import unittest
 import controllers
-from app import create_app
+from app import app
 from unittest.mock import patch
 from database.model import User
 import environment as env
@@ -8,9 +8,10 @@ import environment as env
 class TestSignupController(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app()
-        self.client = self.app.test_client()
+        if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+        self.application = app
+        self.client = self.application.test_client()
 
 
         self.getByEmailMocked = patch("database.user_repo.User.getByEmail").start()
