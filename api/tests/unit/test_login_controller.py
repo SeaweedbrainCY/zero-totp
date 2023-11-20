@@ -19,6 +19,9 @@ class TestLoginController(unittest.TestCase):
         self.getByEmailMocked = patch("database.user_repo.User.getByEmail").start()
         self.getByEmailMocked.return_value = User(id=1, username="username", derivedKeySalt="randomSalt", password="hashed", isVerified=1, passphraseSalt="salt")
 
+        self.get_is_google_drive_enabled = patch("database.google_drive_integration_repo.GoogleDriveIntegration.is_google_drive_enabled").start()
+        self.get_is_google_drive_enabled.return_value = False
+
         self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
         self.checkpw.return_value = True
 

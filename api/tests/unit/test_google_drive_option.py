@@ -20,8 +20,7 @@ class TestGoogleDriveOption(unittest.TestCase):
     def setUp(self):
         if env.db_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
-        self.flask_app = app
-        self.app = self.flask_app.app
+        self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
         self.endpoint = "/google-drive/option"
@@ -37,7 +36,7 @@ class TestGoogleDriveOption(unittest.TestCase):
         self.creds = {"creds": "creds", "expiry":datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
         creds_b64 = base64.b64encode(json.dumps(self.creds).encode("utf-8")).decode("utf-8")
         encrypted_creds = self.sse.encrypt(creds_b64)
-        with self.flask_app.app.app_context():
+        with self.application.app.app_context():
             db.create_all()
             self.user_repo.create(username="user", email="user@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
@@ -50,6 +49,9 @@ class TestGoogleDriveOption(unittest.TestCase):
 
     def tearDown(self):
         patch.stopall()
+        with self.application.app.app_context():
+            db.session.remove()
+            db.drop_all()
     
     def generate_expired_cookie(self):
         payload = {
@@ -67,37 +69,36 @@ class TestGoogleDriveOption(unittest.TestCase):
 #########
 
     def test_google_drive_option(self):
-        with self.flask_app.app.app_context():
+        with self.application.app.app_context():
             self.google_integration.create(user_id=1, google_drive_sync=True)
-            self.app.set_cookie(domain="localhost", key="api-key", value=self.jwtCookie)
-            self.client.cookies
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["status"], "enabled")
 
     def test_google_drive_option_disabled(self):
-        with self.flask_app.app.app_context():
+        with self.application.app.app_context():
             self.google_integration.create(user_id=1, google_drive_sync=False)
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["status"], "disabled")
 
     def test_google_drive_option_doesnt_exists(self):
-        with self.flask_app.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["status"], "disabled")
     
     def test_google_drive_no_cookie(self):
-        with self.flask_app.app.app_context():
+        with self.application.app.app_context():
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 401)
 
     def test_google_drive_bad_cookie(self):
-         with self.flask_app.app.app_context():
-            self.client.set_cookie("localhost", "api-key", "badcookie")
+         with self.application.app.app_context():
+            self.client.cookies = {"api-key": "badcookie"}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
 
@@ -107,9 +108,9 @@ class TestGoogleDriveOption(unittest.TestCase):
 ############
 
     def test_google_drive_option_delete(self):
-        with self.flask_app.app.app_context():
+        with self.application.app.app_context():
             self.google_integration.create(user_id=1, google_drive_sync=True)
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["message"], "Google drive sync disabled")
@@ -120,10 +121,10 @@ class TestGoogleDriveOption(unittest.TestCase):
 
 
     def test_google_drive_option_delete_decryption_failed(self):
-        with self.flask_app.app.app_context():
+        with self.application.app.app_context():
             self.google_integration.create(user_id=1, google_drive_sync=True)
             self.oauth_token.update(user_id=1, enc_credentials="bad_credentials", tag="bad_tag", nonce="bad_nonce", expires_at=datetime.datetime.now())
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["message"], "Error while decrypting credentials")
@@ -131,10 +132,10 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.assertIsNone(self.oauth_token.get_by_user_id(1))
 
     def test_google_drive_option_delete_no_oauth_token(self):
-        with self.flask_app.app.app_context():
+        with self.application.app.app_context():
             self.google_integration.create(user_id=1, google_drive_sync=True)
             self.oauth_token.delete(user_id=1)
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["message"],  "Google drive sync is not enabled")
@@ -142,9 +143,9 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.assertIsNone(self.oauth_token.get_by_user_id(1))
     
     def test_google_drive_option_delete_option_disable(self):
-         with self.flask_app.app.app_context():
+         with self.application.app.app_context():
             self.google_integration.create(user_id=1, google_drive_sync=False)
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["message"], "Google drive sync disabled")
@@ -154,8 +155,8 @@ class TestGoogleDriveOption(unittest.TestCase):
 
     
     def test_google_drive_delete_option_option_doesnt_exists(self):
-         with self.flask_app.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+         with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["message"], "Google drive sync disabled")
@@ -163,10 +164,10 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.assertIsNone(self.oauth_token.get_by_user_id(1))
     
     def test_google_drive_option_delete_revoke_exception(self):
-        with self.flask_app.app.app_context():
+        with self.application.app.app_context():
             self.google_integration.create(user_id=1, google_drive_sync=True)
             self.google_api_revoke_creds.side_effect = Exception("error")
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["message"], "Error while revoking credentials")
@@ -175,12 +176,12 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.assertIsNone(self.oauth_token.get_by_user_id(1))
     
     def test_google_drive_option_delete_no_cookie(self):
-        with self.flask_app.app.app_context():
+        with self.application.app.app_context():
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 401)
         
     def test_google_drive_option_delete_bad_cookie(self):
-        with self.flask_app.app.app_context():
-            self.client.set_cookie("localhost", "api-key", "badcookie")
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": "badcookie"}
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 403)
