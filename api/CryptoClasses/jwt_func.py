@@ -6,7 +6,7 @@ import jwt
 import datetime
 from flask import jsonify, request
 import logging
-from werkzeug.exceptions import Forbidden
+from connexion.exceptions import Forbidden
 
 ALG = 'HS256'
 ISSUER = "https://api.zero-totp.com"
