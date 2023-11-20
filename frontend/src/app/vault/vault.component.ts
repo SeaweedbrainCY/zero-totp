@@ -82,9 +82,8 @@ export class VaultComponent implements OnInit {
         });
         const data = JSON.parse(JSON.stringify(response.body))
         this.decrypt_and_display_vault(data.enc_secrets);
-        this.get_google_drive_option();
-        this.get_preferences();
       }, (error) => {
+        this.reloadSpin = true
         if(error.status == 404){
           this.userService.setVault(new Map<string, Map<string,string>>());
         } else {
@@ -111,6 +110,8 @@ export class VaultComponent implements OnInit {
           });
         }
       });
+      this.get_google_drive_option();
+      this.get_preferences();
     }    
   }
 
