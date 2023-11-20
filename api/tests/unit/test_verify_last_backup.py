@@ -1,6 +1,6 @@
 import unittest
 import controllers
-from app import create_app
+from app import app
 from unittest.mock import patch
 from database.user_repo import User as UserRepo
 from database.oauth_tokens_repo import Oauth_tokens as OAuthTokensRepo
@@ -21,10 +21,11 @@ from Utils import utils
 class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app().app
+        if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+        self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
-        self.client = self.app.test_client()
+        self.client = self.application.test_client()
         self.endpoint = "/google-drive/last-backup/verify"
 
 
@@ -44,7 +45,7 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
         self.creds = {"creds": "creds", "expiry":datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
         creds_b64 = base64.b64encode(json.dumps(self.creds).encode("utf-8")).decode("utf-8")
         encrypted_creds = self.sse.encrypt(creds_b64)
-        with self.app.app_context():
+        with self.application.app.app_context():
             db.create_all()
             self.user_repo.create(username="user", email="user@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
@@ -55,9 +56,9 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
             for i in range(20):
                 self.secrets_repo.add(user_id=1, enc_secret=f"enc_secret{i}", uuid=str(uuid4()))
             
-            tmp_client = self.app.test_client()
-            tmp_client.set_cookie("localhost", "api-key", self.jwtCookie)
-            export_vault_b64 = tmp_client.get("/vault/export").json.split(",")[0]
+            tmp_client = self.application.test_client()
+            tmp_client.cookies = {"api-key": self.jwtCookie}
+            export_vault_b64 = tmp_client.get("/vault/export").json().split(",")[0]
             self.exported_vault = json.loads(base64.b64decode(export_vault_b64))
         self.get_checksum = patch("Oauth.google_drive_api.get_last_backup_checksum").start()
         self.get_checksum.return_value = self.exported_vault["secrets_sha256sum"], datetime.datetime.now().strftime("%Y-%m-%d")
@@ -65,6 +66,9 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
 
     def tearDown(self):
         patch.stopall()
+        with self.application.app.app_context():
+            db.session.remove()
+            db.drop_all()
     
     def generate_expired_cookie(self):
         payload = {
@@ -78,78 +82,78 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
         return jwtCookie
     
     def test_google_drive_verify_last_backup(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["status"], "ok")
-            self.assertEqual(response.json["last_backup_date"], datetime.datetime.now().strftime("%Y-%m-%d"))
-            self.assertEqual(response.json["is_up_to_date"], True)
+            self.assertEqual(response.json()["status"], "ok")
+            self.assertEqual(response.json()["last_backup_date"], datetime.datetime.now().strftime("%Y-%m-%d"))
+            self.assertEqual(response.json()["is_up_to_date"], True)
             self.get_checksum.assert_called_once()
             self.google_drive_backup.assert_not_called()
             self.google_drive_clean.assert_called_once()
 
     def test_google_drive_verify_last_backup_no_up_to_date(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             self.secrets_repo.add(user_id=1, enc_secret="new-secret", uuid=str(uuid4()))
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json["status"], "ok")
-            self.assertIn("last_backup_date", response.json)
-            self.assertEqual(response.json["is_up_to_date"], False)
+            self.assertEqual(response.json()["status"], "ok")
+            self.assertIn("last_backup_date", response.json())
+            self.assertEqual(response.json()["is_up_to_date"], False)
             self.get_checksum.assert_called_once()
             self.google_drive_backup.assert_not_called()
             self.google_drive_clean.assert_not_called()
     
     def test_google_verify_last_backup_corrupted_files(self):
-         with self.app.app_context():
-              self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+         with self.application.app.app_context():
+              self.client.cookies = {"api-key": self.jwtCookie}
               self.get_checksum.side_effect = utils.CorruptedFile("error")
               response = self.client.get(self.endpoint)
               self.assertEqual(response.status_code, 200)
-              self.assertEqual(response.json["status"], "corrupted_file")
+              self.assertEqual(response.json()["status"], "corrupted_file")
     
     def test_google_verify_last_backup_file_not_found(self):
-         with self.app.app_context():
-              self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+         with self.application.app.app_context():
+              self.client.cookies = {"api-key": self.jwtCookie}
               self.get_checksum.side_effect = utils.FileNotFound("error")
               response = self.client.get(self.endpoint)
               self.assertEqual(response.status_code, 404)
-              self.assertEqual(response.json["error"], "file_not_found")
+              self.assertEqual(response.json()["error"], "file_not_found")
 
 
     def test_google_verify_last_backup_no_oauth_token(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             self.oauth_token.delete(user_id=1)
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
     
     def test_google_verify_last_backup_option_disable(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             self.google_integration.update_google_drive_sync(user_id=1, google_drive_sync=False)
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
             
     def test_google_drive_backup_bad_credentials(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
             self.oauth_token.update(user_id=1, enc_credentials="bad_credentials", tag="bad_tag", nonce="bad_nonce", expires_at=datetime.datetime.now())
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 500)
     
     
     def test_google_verify_no_cookie(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 401)
 
     
     def test_google_drive_verify_bad_cookie(self):
-        with self.app.app_context():
-            self.client.set_cookie("localhost", "api-key", "badcookie")
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": "badcookie"}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
 

@@ -1,6 +1,6 @@
 import unittest
 import controllers
-from app import create_app
+from app import app
 from unittest.mock import patch
 from database.model import User, TOTP_secret, ZKE_encryption_key
 import environment as env
@@ -12,10 +12,11 @@ import datetime
 class TestUpdateVault(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app().app
+        if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+        self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
-        self.client = self.app.test_client()
+        self.client = self.application.test_client()
         self.endpoint = "/update/vault"
         
 
@@ -63,7 +64,7 @@ class TestUpdateVault(unittest.TestCase):
         return jwtCookie
     
     def test_update_vault(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 201)
         self.updateUser.assert_called_once()
@@ -76,17 +77,17 @@ class TestUpdateVault(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
     
     def test_update_vault_bad_cookie(self):
-        self.client.set_cookie("localhost", "api-key", "badcookie")
+        self.client.cookies = {"api-key": "badcookie"}
         response = self.client.put(self.endpoint)
         self.assertEqual(response.status_code, 403)
     
     def test_update_vault_expired_jwt(self):
-        self.client.set_cookie("localhost", "api-key", self.generate_expired_cookie())
+        self.client.cookies = {"api-key": self.generate_expired_cookie()}
         response = self.client.put(self.endpoint)
         self.assertEqual(response.status_code, 403)
 
     def test_update_vault_bad_args(self):
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         for key in self.payload.keys():
             payload = self.payload.copy()
             payload.pop(key)
@@ -102,28 +103,28 @@ class TestUpdateVault(unittest.TestCase):
 
     def test_update_vault_wrong_passphrase(self):
         self.checkpw.return_value = False
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 403)
     
     def test_update_vault_passphrase_too_long(self):
         self.hashpw.side_effect = ValueError
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json["hashing"], 0)
+        self.assertEqual(response.json()["hashing"], 0)
     
 
     def test_update_vault_passphrase_error(self):
         self.hashpw.side_effect = Exception
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json["hashing"], 0)
+        self.assertEqual(response.json()["hashing"], 0)
 
     def test_update_vault_unknown_totp(self):
         self.getSecretByUUID.return_value = None
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 201)
         self.addSecret.assert_called_once()
@@ -131,38 +132,38 @@ class TestUpdateVault(unittest.TestCase):
     def test_update_vault_unknown_totp_failed(self):
         self.getSecretByUUID.return_value = None
         self.addSecret.return_value = False
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json["totp"], 0)
+        self.assertEqual(response.json()["totp"], 0)
 
     def test_update_vault_wrong_totp_user_id(self):
         self.getSecretByUUID.return_value = TOTP_secret(user_id=2)
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json["totp"], 0)
+        self.assertEqual(response.json()["totp"], 0)
     
     def test_update_vault_update_totp_failed(self):
         self.updateSecret.return_value = None 
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json["totp"], 0)
+        self.assertEqual(response.json()["totp"], 0)
     
     def test_update_vault_failed_update_zke(self):
         self.zkeUpdate.return_value = None 
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json["zke"], 0)
+        self.assertEqual(response.json()["zke"], 0)
     
     def test_update_vault_failed_update_user(self):
         self.updateUser.return_value = None 
-        self.client.set_cookie("localhost", "api-key", self.jwtCookie)
+        self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json["user"], 0)
+        self.assertEqual(response.json()["user"], 0)
 
 
 

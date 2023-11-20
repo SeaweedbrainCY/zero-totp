@@ -1,5 +1,5 @@
 import unittest
-from app import create_app
+from app import app
 from database.db import db 
 import environment as env
 from database.model import User as UserModel, Admin as AdminModel
@@ -12,9 +12,10 @@ import jwt
 class TestJWT(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app().app
-        self.client = self.app.test_client()
+        if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+        self.application = app
+        self.client = self.application.test_client()
         self.loginEndpoint = "/admin/login"
         self.admin_user_id = 1
         self.admin_user_without_token_id = 2
@@ -27,7 +28,7 @@ class TestJWT(unittest.TestCase):
         not_admin_user = UserModel(id=self.not_admin_user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="user")
         admin_with_expired_token = UserModel(id=self.admin_with_expired_token_id,username="admin_with_expired_token", mail="admin@admin.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="admin")
         admin_with_expired_token_token = AdminModel(user_id=self.admin_with_expired_token_id, token_hashed="token", token_expiration=(datetime.datetime.utcnow() - datetime.timedelta(minutes=1)).timestamp())
-        with self.app.app_context():
+        with self.application.app.app_context():
             db.create_all()
             db.session.add(admin_user)
             db.session.add(admin_token)
@@ -44,7 +45,7 @@ class TestJWT(unittest.TestCase):
 
         
     def tearDown(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             db.session.remove()
             db.drop_all()
             patch.stopall()
@@ -62,9 +63,9 @@ class TestJWT(unittest.TestCase):
     
 
     def test_admin_login_success(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_user_id))
+            self.client.cookies = {"api-key":generate_jwt(self.admin_user_id)}
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 200)
             self.assertIn("admin-api-key", response.headers["Set-Cookie"])
@@ -77,49 +78,49 @@ class TestJWT(unittest.TestCase):
             self.assertTrue(verify_jwt(jwt_token)["admin"])
     
     def test_admin_login_but_bad_token(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             self.checkpw.return_value = False
-            self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_user_id))
+            self.client.cookies = {"api-key":generate_jwt(self.admin_user_id)}
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)
 
     
     def test_admin_login_but_no_token(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_user_without_token_id))
+            self.client.cookies = {"api-key":generate_jwt(self.admin_user_without_token_id)}
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)
     
     def test_admin_login_but_no_admin_role(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.set_cookie("localhost", "api-key",generate_jwt(self.not_admin_user_id))
+            self.client.cookies = {"api-key":generate_jwt(self.not_admin_user_id)}
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)
     
     def test_admin_login_but_no_cookie(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 401)
     
     def test_admin_login_but_expired_cookie(self):
-         with self.app.app_context():
+         with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.set_cookie("localhost", "api-key",self.generate_expired_cookie(self.admin_user_id)) 
+            self.client.cookies = {"api-key":self.generate_expired_cookie(self.admin_user_id)} 
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)
     
     def test_admin_login_but_no_user(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.set_cookie("localhost", "api-key",generate_jwt(-1)) 
+            self.client.cookies = {"api-key":generate_jwt(-1)} 
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)
     
     def test_admin_with_expired_token(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_with_expired_token_id))
+            self.client.cookies = {"api-key":generate_jwt(self.admin_with_expired_token_id)}
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)

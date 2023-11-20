@@ -1,5 +1,5 @@
 import unittest
-from app import create_app
+from app import app
 from database.db import db 
 import environment as env
 from database.model import User as UserModel, Admin as AdminModel
@@ -12,9 +12,10 @@ import jwt
 class TestJWT(unittest.TestCase):
 
     def setUp(self):
-        env.db_uri = "sqlite:///:memory:"
-        self.app = create_app().app
-        self.client = self.app.test_client()
+        if env.db_uri != "sqlite:///:memory:":
+            raise Exception("Test must be run with in memory database")
+        self.application = app
+        self.client = self.application.test_client()
         self.getAllUsersEndpoint = "/admin/users"
         self.admin_user_id = 1
         self.normal_user_id = 2
@@ -22,7 +23,7 @@ class TestJWT(unittest.TestCase):
         admin_user = UserModel(id=self.admin_user_id,username="admin", mail="admin@admin.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="admin")
         normal_user = UserModel(id=self.normal_user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None)
         admin_user_token = AdminModel(user_id=self.admin_user_id, token_hashed="token", token_expiration=(datetime.datetime.utcnow() + datetime.timedelta(minutes=10)).timestamp())
-        with self.app.app_context():
+        with self.application.app.app_context():
             db.create_all()
             db.session.add(admin_user)
             db.session.add(admin_user_token)
@@ -31,7 +32,7 @@ class TestJWT(unittest.TestCase):
     
        
     def tearDown(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
             db.session.remove()
             db.drop_all()
             patch.stopall()
@@ -50,77 +51,70 @@ class TestJWT(unittest.TestCase):
         return jwt_cookie
 
     def test_get_all_users_success(self):
-        with self.app.app_context():
-           self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_user_id))
-           self.client.set_cookie("localhost", "admin-api-key", generate_jwt(self.admin_user_id, admin=True))
+        with self.application.app.app_context():
+           self.client.cookies = {"api-key":generate_jwt(self.admin_user_id),"admin-api-key":generate_jwt(self.admin_user_id, admin=True)}
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 200)
-           self.assertIn("users", response.json)
-           self.assertEqual(len(response.json["users"]), 2)
+           self.assertIn("users", response.json())
+           self.assertEqual(len(response.json()["users"]), 2)
     
     def test_get_all_users_no_admin_cookie_but_admin(self):
-        with self.app.app_context():
-           self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_user_id))
+        with self.application.app.app_context():
+           self.client.cookies = {"api-key":generate_jwt(self.admin_user_id)}
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 403)
     
     def test_get_all_users_no_admin(self):
-        with self.app.app_context():
-           self.client.set_cookie("localhost", "api-key",generate_jwt(self.normal_user_id))
+        with self.application.app.app_context():
+           self.client.cookies = {"api-key":generate_jwt(self.normal_user_id)}
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 403)
     
     def test_get_all_users_no_cookie(self):
-        with self.app.app_context():
+        with self.application.app.app_context():
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 401)
     
     def test_get_all_users_expired_admin_cookie(self):
-        with self.app.app_context():
-           self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_user_id))
-           self.client.set_cookie("localhost", "admin-api-key",self.generate_expired_cookie(self.admin_user_id, admin=True))
+        with self.application.app.app_context():
+           self.client.cookies = {"api-key":generate_jwt(self.admin_user_id), "admin-api-key":self.generate_expired_cookie(self.admin_user_id, admin=True)}
+
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 403)
     
     def test_get_all_users_expired_cookie(self):
-        with self.app.app_context():
-           self.client.set_cookie("localhost", "api-key",self.generate_expired_cookie(self.admin_user_id))
-           self.client.set_cookie("localhost", "admin-api-key",generate_jwt(self.admin_user_id, admin=True))
+        with self.application.app.app_context():
+           self.client.cookies = {"api-key":self.generate_expired_cookie(self.admin_user_id), "admin-api-key":generate_jwt(self.admin_user_id, admin=True)}
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 403)
     
     def test_get_all_users_bad_admin_cookie(self):
-        with self.app.app_context():
-           self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_user_id))
-           self.client.set_cookie("localhost", "admin-api-key","bad cookie")
+        with self.application.app.app_context():
+           self.client.cookies = {"api-key":generate_jwt(self.admin_user_id), "admin-api-key":"bad cookie"}
            response = self.client.get(self.getAllUsersEndpoint)
-           self.assertEqual(response.status_code, 403) 
+           self.assertEqual(response.status_code, 401)
     
     def test_get_all_users_user_admin_not_found(self):
-         with self.app.app_context():
-           self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_user_id))
-           self.client.set_cookie("localhost", "admin-api-key", generate_jwt(-1, admin=True))
+         with self.application.app.app_context():
+           self.client.cookies = {"api-key":generate_jwt(self.admin_user_id), "admin-api-key":generate_jwt(-1, admin=True)}
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 403) 
 
     def test_get_all_users_user_not_found(self):
-         with self.app.app_context():
-           self.client.set_cookie("localhost", "api-key",generate_jwt(-1))
-           self.client.set_cookie("localhost", "admin-api-key", generate_jwt(self.admin_user_id, admin=True))
+         with self.application.app.app_context():
+           self.client.cookies = {"api-key":generate_jwt(-1), "admin-api-key":generate_jwt(self.admin_user_id, admin=True)}
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 403) 
     
     def test_get_all_users_admin_cookie_but_user_role(self):
-         with self.app.app_context():
-           self.client.set_cookie("localhost", "api-key",generate_jwt(self.normal_user_id))
-           self.client.set_cookie("localhost", "admin-api-key", generate_jwt(self.normal_user_id, admin=True))
+         with self.application.app.app_context():
+           self.client.cookies = {"api-key":generate_jwt(self.normal_user_id), "admin-api-key":generate_jwt(self.normal_user_id, admin=True)}
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 403) 
     
     def test_get_all_users_no_admin_field_in_jwt(self):
-         with self.app.app_context():
-           self.client.set_cookie("localhost", "api-key",generate_jwt(self.admin_user_id))
-           self.client.set_cookie("localhost", "admin-api-key", generate_jwt(self.admin_user_id))
+         with self.application.app.app_context():
+           self.client.cookies = {"api-key":generate_jwt(self.admin_user_id), "admin-api-key":generate_jwt(self.admin_user_id)}
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 403) 
            

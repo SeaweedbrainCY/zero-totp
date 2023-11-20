@@ -11,7 +11,7 @@ from database.google_drive_integration_repo import GoogleDriveIntegration as Goo
 from database.db import db
 from uuid import uuid4
 from CryptoClasses import jwt_func
-from app import create_app
+from app import app
 import json
 from base64 import b64decode, b64encode
 
@@ -41,10 +41,11 @@ class TestGoogleDriveAPI(unittest.TestCase):
 
     
         def setUp(self):
-            env.db_uri = "sqlite:///:memory:"
-            self.app = create_app().app
+            if env.db_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
+            self.application = app
             self.jwtCookie = jwt_func.generate_jwt(1)
-            self.client = self.app.test_client()
+            self.client = self.application.test_client()
             self.endpoint = "/vault/export"
             self.from_authorized_user_info = patch("google.oauth2.credentials.Credentials.from_authorized_user_info").start()
             self.from_authorized_user_info.return_value = "credentials"
@@ -408,11 +409,11 @@ class TestGoogleDriveAPI(unittest.TestCase):
             with self.app.app_context():
                 self.client.set_cookie("localhost", "api-key",self.jwtCookie)
                 response = self.client.get(self.endpoint)
-                print("json=" , response.json)
+                print("json=" , response.json())
                 execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
-                execute.return_value = response.json.encode("utf-8")
+                execute.return_value = response.json().encode("utf-8")
                 try:
-                    json_str = b64decode(response.json.split(",")[0])
+                    json_str = b64decode(response.json().split(",")[0])
                     json_obj = json.loads(json_str)
                 except:
                     raise Exception("json not valid")
