@@ -499,8 +499,8 @@ def verify_last_backup(user_id):
     sse = ServiceSideEncryption()
     creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce, tag=oauth_tokens.cipher_tag)
     if creds_b64 == None:
-        logging.warning("Error while decrypting credentials for user " + str(user_id))
-        return {"error": "Error while connecting to thz Google API"}, 500
+        logging.warning("Error while decrypting credentials for user " + str(user_id) + ". creds_b64 = " + str(creds_b64))
+        return {"error": "Error while connecting to the Google API"}, 500
     
     
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
