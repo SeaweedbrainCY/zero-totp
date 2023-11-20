@@ -256,4 +256,4 @@ uvloop==0.19.0
 virtualenv==20.24.2
 watchfiles==0.21.0
 websockets==12.0
-Werkzeug==2.2.2
+Werkzeug==2.3.8
