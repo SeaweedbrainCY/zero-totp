@@ -153,6 +153,7 @@ export class EditTOTPComponent implements OnInit{
    
 
   checkSecret(){
+    this.secretError = "";
     if(this.secret == ""){
       this.secretError = "Secret cannot be empty";
       return;
