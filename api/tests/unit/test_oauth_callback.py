@@ -24,6 +24,12 @@ class TestOauthCallback(unittest.TestCase):
         self.client = self.application.test_client()
         self.creds = {"secret" : "secret_should_be_encrypted", "expiry": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
         self.endpoint = "/google-drive/oauth/callback"
+        self.setSateSession = "/google-drive/oauth/authorization-flow"
+
+        self.get_auth_url = patch("Oauth.oauth_flow.get_authorization_url").start()
+        self.get_auth_url.return_value = "auth_url", 'state'
+
+        
 
         self.get_credentials = patch("Oauth.oauth_flow.get_credentials").start()
         self.get_credentials.return_value = self.creds
@@ -41,6 +47,11 @@ class TestOauthCallback(unittest.TestCase):
 
     def tearDown(self):
         patch.stopall()
+        with self.application.app.app_context():
+            db.session.remove()
+            db.drop_all()
+
+
     
     def generate_expired_cookie(self):
         payload = {
@@ -55,10 +66,10 @@ class TestOauthCallback(unittest.TestCase):
     
 
     def test_oauth_callback_no_token_yet(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
         with self.application.app.app_context():
-            with self.client.build_request() as session:
-                session["state"] = "state"
+            self.client.cookies = {"api-key": self.jwtCookie}
+            self.client.get(self.setSateSession)
+            self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
             self.assertIn(env.frontend_URI[0] , response.headers["Location"])
@@ -73,8 +84,8 @@ class TestOauthCallback(unittest.TestCase):
         self.client.cookies = {"api-key": self.jwtCookie}
         self.get_credentials.return_value = None
         with self.application.app.app_context():
-            with self.client.session_transaction() as session:
-                session["state"] = "state"
+            self.client.get(self.setSateSession)
+            self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
             self.assertIn(env.frontend_URI[0] , response.headers["Location"])
@@ -84,8 +95,8 @@ class TestOauthCallback(unittest.TestCase):
         self.client.cookies = {"api-key": self.jwtCookie}
         with self.application.app.app_context():
             self.oauth_tokens.add(1, "creds", "date","tag", "nonce")
-            with self.client.session_transaction() as session:
-                session["state"] = "state"
+            self.client.get(self.setSateSession)
+            self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
             self.assertIn(env.frontend_URI[0] , response.headers["Location"])
@@ -101,8 +112,8 @@ class TestOauthCallback(unittest.TestCase):
         with self.application.app.app_context():
             self.oauth_tokens.add(1, "creds", "date","tag", "nonce")
             self.google_integration_repo.create(1, 1)
-            with self.client.session_transaction() as session:
-                session["state"] = "state"
+            self.client.get(self.setSateSession)
+            self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
             self.assertIn(env.frontend_URI[0] , response.headers["Location"])
@@ -119,8 +130,8 @@ class TestOauthCallback(unittest.TestCase):
         with self.application.app.app_context():
             google_get_by_userid = patch("database.google_drive_integration_repo.GoogleDriveIntegration.get_by_user_id").start()
             google_get_by_userid.side_effect = Exception("test")
-            with self.client.session_transaction() as session:
-                session["state"] = "state"
+            self.client.get(self.setSateSession)
+            self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
             self.assertIn(env.frontend_URI[0] , response.headers["Location"])
@@ -135,8 +146,8 @@ class TestOauthCallback(unittest.TestCase):
         with self.application.app.app_context():
             add_token = patch("database.oauth_tokens_repo.Oauth_tokens.add").start()
             add_token.return_value = None
-            with self.client.session_transaction() as session:
-                session["state"] = "state"
+            self.client.get(self.setSateSession)
+            self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
             self.assertIn(env.frontend_URI[0] , response.headers["Location"])
@@ -150,6 +161,7 @@ class TestOauthCallback(unittest.TestCase):
         with self.application.app.app_context():
             add_token = patch("database.oauth_tokens_repo.Oauth_tokens.add").start()
             add_token.return_value = None
+            self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
             self.assertIn(env.frontend_URI[0] , response.headers["Location"])
