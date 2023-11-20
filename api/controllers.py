@@ -23,10 +23,11 @@ import Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import require_admin_token, require_admin_role
+from Utils.security_wrapper import require_admin_token, require_admin_role, require_userid
 import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
+from database.db import db
 
 
 
@@ -145,15 +146,8 @@ def get_login_specs(username):
     
     
 #GET /encrypted_secret/{uuid}
-def get_encrypted_secret(uuid):
-    try:
-        user_id = connexion.context.get("user")
-        logging.info(connexion.context)
-        if user_id == None: # pragma: no cover # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+@require_userid
+def get_encrypted_secret(user_id, uuid):
     totp_secretDB =  TOTP_secretDB()
     enc_secret = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
     if not enc_secret:
@@ -166,18 +160,9 @@ def get_encrypted_secret(uuid):
             return {"message": "Forbidden"}, 403
         
 #POST /encrypted_secret/{uuid}
-def add_encrypted_secret(uuid):
-    try:
-        user_id = connexion.context.get("user")
-        logging.info(connexion.context)
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-        dataJSON = json.dumps(request.get_json())
-        data = json.loads(dataJSON)
-        enc_secret = utils.sanitize_input(data["enc_secret"]).strip()
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+@require_userid
+def add_encrypted_secret(user_id,uuid, body):
+    enc_secret = utils.sanitize_input(body["enc_secret"]).strip()
     if(uuid == ""):
         return {"message": "Invalid request"}, 400
     totp_secretDB =  TOTP_secretDB()
@@ -191,18 +176,9 @@ def add_encrypted_secret(uuid):
             return {"message": "Unknown error while adding encrypted secret"}, 500
 
 #PUT /encrypted_secret/{uuid}
-def update_encrypted_secret(uuid):
-    try:
-        user_id = connexion.context.get("user")
-        logging.info(connexion.context)
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-        dataJSON = json.dumps(request.get_json())
-        data = json.loads(dataJSON)
-        enc_secret = data["enc_secret"]
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+@require_userid
+def update_encrypted_secret(user_id,uuid, body):
+    enc_secret = body["enc_secret"]
     
     totp_secretDB =  TOTP_secretDB()
     totp = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
@@ -221,15 +197,8 @@ def update_encrypted_secret(uuid):
                 return {"message": "Encrypted secret updated"}, 201
 
 #DELETE /encrypted_secret/{uuid}
-def delete_encrypted_secret(uuid):
-    try:
-        user_id = connexion.context.get("user")
-        logging.info(connexion.context)
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+@require_userid
+def delete_encrypted_secret(user_id,uuid):
     if(uuid == ""):
         return {"message": "Invalid request"}, 400
     totp_secretDB =  TOTP_secretDB()
@@ -249,15 +218,8 @@ def delete_encrypted_secret(uuid):
         
 
 #GET /all_secrets
-def get_all_secrets():
-    try:
-        user_id = connexion.context.get("user")
-        logging.info(connexion.context)
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+@require_userid
+def get_all_secrets(user_id):
     totp_secretDB =  TOTP_secretDB()
     enc_secrets = totp_secretDB.get_all_enc_secret_by_user_id(user_id)
     if not enc_secrets:
@@ -271,29 +233,22 @@ def get_all_secrets():
 
 
 #GET /zke_encrypted_key
-def get_ZKE_encrypted_key():
-    try:
-        user_id = connexion.context.get("user")
+@require_userid
+def get_ZKE_encrypted_key(user_id):
+        logging.info(user_id)
         zke_db = ZKE_DB()
         zke_key = zke_db.getByUserId(user_id)
         if zke_key:
                 return {"zke_encrypted_key": zke_key.ZKE_key}, 200
         else:
             return {"message": "No ZKE key found for this user"}, 404
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
 
 
 
 #PUT /email
-def update_email():
-    user_id = connexion.context.get("user")
-    if user_id == None: # pragma: no cover
-        return {"message": "Unauthorized"}, 401
-    dataJSON = json.dumps(request.get_json())
-    data = json.loads(dataJSON)
-    email = utils.sanitize_input(data["email"]).strip()
+@require_userid
+def update_email(user_id,body):
+    email = utils.sanitize_input(body["email"]).strip()
     if not utils.check_email(email):
         return {"message": "Bad email format"}, 400
          
@@ -309,21 +264,17 @@ def update_email():
 
    
 #PUT /update/vault 
-def update_vault():
+@require_userid
+def update_vault(user_id, body):
     returnJson = {"message": "Internal server error", "hashing":-1, "totp":-1, "user":-1, "zke":-1}
     try:
-        user_id = connexion.context.get("user")
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-        dataJSON = json.dumps(request.get_json())
-        data = json.loads(dataJSON)
-        newPassphrase = data["new_passphrase"].strip()
-        old_passphrase = data["old_passphrase"].strip()
-        enc_vault = data["enc_vault"].strip()
+        newPassphrase = body["new_passphrase"].strip()
+        old_passphrase = body["old_passphrase"].strip()
+        enc_vault = body["enc_vault"].strip()
         enc_vault = json.loads(enc_vault)
-        zke_key = data["zke_enc"].strip()
-        passphrase_salt = data["passphrase_salt"].strip()
-        derivedKeySalt = data["derived_key_salt"].strip()
+        zke_key = body["zke_enc"].strip()
+        passphrase_salt = body["passphrase_salt"].strip()
+        derivedKeySalt = body["derived_key_salt"].strip()
     except:
         return '{"message": "Invalid request"}', 400
 
@@ -380,12 +331,8 @@ def update_vault():
         return returnJson, 500
 
 
-
-def export_vault():
-    try:
-        user_id = connexion.context.get("user")
-    except: # pragma: no cover
-        return {"message": "Invalid request"}, 400
+@require_userid
+def export_vault(user_id):
     
     vault = {"version":1, "date": str(datetime.datetime.utcnow())}
     user = UserDB().getById(user_id=user_id)
@@ -424,17 +371,8 @@ def get_users_list(*args, **kwargs):
 
 
 @require_admin_role
-def admin_login(*args, **kwargs):
-    try:
-        user_id = connexion.context.get("user")
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-        dataJSON = json.dumps(request.get_json())
-        data = json.loads(dataJSON)
-        token = data["token"].strip()
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+def admin_login(user_id, body):
+    token = body["token"].strip()
     admin_user = Admin_db().get_by_user_id(user_id)
     
     bcrypt = Bcrypt(token)
@@ -466,11 +404,8 @@ def get_authorization_flow():
     return {"authorization_url": authorization_url, "state":state}, 200
 
 # GET /google-drive/oauth/callback
-def oauth_callback():
-    try:
-        user_id = connexion.context.get("user")
-    except: # pragma: no cover
-        return {"message": "Invalid request"}, 400
+@require_userid
+def oauth_callback(user_id):
     frontend_URI = env.frontend_URI[0] # keep the default URI, not regionized. 
     try: 
         credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
@@ -518,14 +453,8 @@ def oauth_callback():
 
 
 #GET /google-drive/option
-def get_google_drive_option():
-    try:
-        user_id = connexion.context.get("user")
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+@require_userid
+def get_google_drive_option(user_id):
     google_drive_integrations = GoogleDriveIntegrationDB()
     status = google_drive_integrations.is_google_drive_enabled(user_id)
     if status:
@@ -534,14 +463,8 @@ def get_google_drive_option():
         return {"status": "disabled"}, 200
     
 #PUT /google-drive/backup
-def backup_to_google_drive():
-    try:
-        user_id = connexion.context.get("user")
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+@require_userid
+def backup_to_google_drive(user_id, body):
     
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
@@ -565,14 +488,8 @@ def backup_to_google_drive():
         return {"message": "Error while backing up to google drive"}, 500
 
 
-def verify_last_backup():
-    try:
-        user_id = connexion.context.get("user")
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+@require_userid
+def verify_last_backup(user_id):
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
     google_drive_integrations = GoogleDriveIntegrationDB()
@@ -603,14 +520,9 @@ def verify_last_backup():
     else:
         return {"status": "ok", "is_up_to_date": False, "last_backup_date": "" }, 200
 
-def delete_google_drive_option():
-    try:
-        user_id = connexion.context.get("user")
-        if user_id == None: # pragma: no cover
-            return {"message": "Unauthorized"}, 401
-    except Exception as e: # pragma: no cover
-        logging.info(e)
-        return {"message": "Invalid request"}, 400
+
+@require_userid
+def delete_google_drive_option(user_id):
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
