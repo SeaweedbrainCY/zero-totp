@@ -4,16 +4,16 @@ import connexion
 from environment import logging
 
 def require_admin_role(func):
-    def wrapper(*args, **kwargs):
+    def wrapper(_context, user, token_info,*args, **kwargs):
         try:
-            user_id = connexion.context.get("user")
+            user_id = _context["user"]
         except:
             return {"error": "Unauthorized"}, 401
         user = UserDB().getById(user_id)
         if user == None:
             return {"error": "Forbidden"}, 403
         if user.role == "admin":
-            return func(*args, **kwargs)
+            return func(user_id,*args, **kwargs)
         return {"error": "Unauthorized"}, 403
     return wrapper
 
@@ -50,3 +50,14 @@ def require_admin_token(func):
         logging.info("Admin token rejected because of admin cookie admin field is false")
         return {"error": "Unauthorized"}, 403
      return wrapper
+
+def require_userid(func):
+    def wrapper(context_, user, token_info, *args, **kwargs):
+        try:
+            user_id = context_["user"]
+            if user_id == None:
+                return {"error": "Unauthorized"}, 401
+        except:
+            return {"error": "Unauthorized"}, 401
+        return func(user_id, *args, **kwargs)
+    return wrapper
