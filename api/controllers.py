@@ -465,7 +465,7 @@ def get_google_drive_option(user_id):
     
 #PUT /google-drive/backup
 @require_userid
-def backup_to_google_drive(user_id, body):
+def backup_to_google_drive(user_id, *args, **kwargs):
     
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
@@ -480,7 +480,7 @@ def backup_to_google_drive(user_id, body):
         return {"message": "Error while decrypting credentials"}, 500
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
     try:
-        exported_vault,_ = export_vault()
+        exported_vault,_ = export_vault(user=user_id, context_={"user":user_id}, token_info={"user":user_id})
         google_drive_api.backup(credentials=credentials, vault=exported_vault)
         google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_id)
         return {"message": "Backup done"}, 201
