@@ -11,7 +11,7 @@ black==23.3.0
 blinker==1.5
 cachetools==5.3.1
 celluloid==0.2.0
-certifi==2022.9.24
+certifi==2023.7.22
 cffi @ file:///private/tmp/cffi-20231014-5567-1hyue8f/cffi-1.16.0
 charset-normalizer==2.1.1
 click==8.1.7
