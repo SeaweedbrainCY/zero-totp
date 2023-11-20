@@ -66,7 +66,16 @@ export class VaultComponent implements OnInit {
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } else if(this.userService.getIsVaultLocal()){
       this.local_vault_service = this.userService.getLocalVaultService();
-      this.page_title = "Backup from " + this.local_vault_service!.get_date()!.split(".")[0];
+      let vaultDate = "unknown"
+      try{
+        const vaultDateStr = this.local_vault_service!.get_date()!.split(".")[0];
+        vaultDate = String(formatDate(new Date(vaultDateStr), 'dd/MM/yyyy HH:mm:ss O', 'en'));
+      }catch{
+        vaultDate = "error"
+      }
+      
+
+      this.page_title = "Backup from " + vaultDate;
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
       this.reloadSpin = true
