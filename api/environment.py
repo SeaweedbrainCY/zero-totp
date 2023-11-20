@@ -13,6 +13,7 @@ flask_secret_key = os.environ.get('FLASK_SECRET_KEY')
 
 sever_side_encryption_key = os.environ.get('SEVER_SIDE_ENCRYPTION_KEY')
 
+are_all_tables_created = False
 
 if environment == "development":
     logging.basicConfig(
