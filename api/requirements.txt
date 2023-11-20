@@ -72,7 +72,7 @@ swagger_ui_bundle==1.1.0
 tomli==2.0.1
 typing_extensions==4.8.0
 uritemplate==4.1.1
-urllib3==2.1.0
+urllib3==1.26.18
 uvicorn==0.24.0.post1
 uvloop==0.19.0
 watchfiles==0.21.0
