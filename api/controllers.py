@@ -637,3 +637,26 @@ def set_preference(user_id, body):
     else:# pragma: no cover
         return {"message": "Invalid request"}, 400
 
+
+@require_userid
+def delete_google_drive_backup(user_id):
+    google_integration = GoogleDriveIntegrationDB()
+    token_db = Oauth_tokens_db()
+    oauth_tokens = token_db.get_by_user_id(user_id)
+    
+    if google_integration.get_by_user_id(user_id) is None:
+        google_integration.create(user_id, 0)
+    if not oauth_tokens:
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        return {"message": "Google drive sync is not enabled"}, 200
+    sse = ServiceSideEncryption()
+    try:
+        creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce,  tag=oauth_tokens.cipher_tag)
+        credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+        google_drive_api.delete_all_backups(credentials=credentials)
+        return {"message": "Backups deleted"}, 200
+    except Exception as e:
+        logging.error("Error while deleting backup from google drive " + str(e))
+        token_db.delete(user_id)
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        return {"message": "Error while deleting backups"}, 500
