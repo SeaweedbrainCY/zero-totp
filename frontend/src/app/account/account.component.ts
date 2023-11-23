@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { toast as superToast } from 'bulma-toast'
-import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash,faVault } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -25,6 +25,8 @@ export class AccountComponent implements OnInit {
   faCheck=faCheck;
   faCog=faCog;
   faFlask=faFlask;
+  faTrash=faTrash;
+  faVault=faVault;
   isDeletionModalActive=false;
   isPassphraseModalActive=false;
   buttonLoading = {"email":0, "username":0, "passphrase":0, "deletion":0}
@@ -56,7 +58,7 @@ export class AccountComponent implements OnInit {
   
   ngOnInit(): void {
      if(this.userService.getId() == null){
-       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
        if("email" in this.buttonLoading){
 
        }
@@ -202,8 +204,10 @@ export class AccountComponent implements OnInit {
         const data = JSON.parse(JSON.stringify(response.body))
         if(data.status == "enabled"){
           this.isGoogleDriveBackupEnabled = true;
+          this.googleDriveBackupModaleActive = true;
         } else {
           this.isGoogleDriveBackupEnabled = false;
+          this.updatePassphraseConfirm();
         }
       }, (error) => {
           let errorMessage = "";
@@ -226,7 +230,47 @@ export class AccountComponent implements OnInit {
 
   deleteAllGoogleDriveBackup(): Promise<boolean>{
     return new Promise<boolean>((resolve, reject) => {
-      resolve(true);
+      this.http.delete(ApiService.API_URL+"/google-drive/backup",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+        resolve(true);
+      }, (error) => {
+        let errorMessage = "";
+        if(error.error.message != null){
+          errorMessage = error.error.message;
+        } else if(error.error.detail != null){
+          errorMessage = error.error.detail;
+        }
+        superToast({
+          message: "Error : Impossible to delete your google drive backup. "+ errorMessage,
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+        reject(error)
+      });
+    });
+  }
+
+  backup(): Promise<boolean>{
+    return new Promise<boolean>((resolve, reject) => {
+      this.http.put(ApiService.API_URL+"/google-drive/backup",  {}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
+        resolve(true);
+      }, (error) => {
+        let errorMessage = "";
+        if(error.error.message != null){
+          errorMessage = error.error.message;
+        } else if(error.error.detail != null){
+          errorMessage = error.error.detail;
+        }
+        superToast({
+          message: "Error : Impossible to backup your vault to google drive. "+ errorMessage,
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+        reject(error)
+      });
     });
   }
 
@@ -257,9 +301,24 @@ export class AccountComponent implements OnInit {
                       this.stepsDone.push("verification");
                       this.uploadNewVault(enc_vault, enc_zke_key, derivedKeySalt).then(_ => {
                         this.stepsDone.push("upload");
-                            if(this.isGoogleDriveBackupEnabled == true && this.deleteGoogleDriveBackup == true){
+                            if(this.isGoogleDriveBackupEnabled  && this.deleteGoogleDriveBackup){
                               this.deleteAllGoogleDriveBackup().then(_ => {
                                 this.stepsDone.push("deleteBackup");
+                                if(this.isGoogleDriveBackupEnabled){
+                                  this.backup().then(_ => {
+                                    this.stepsDone.push("backup");
+                                    superToast({
+                                      message: "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
+                                      type: "is-success",
+                                      dismissible: true,
+                                      duration: 10000,
+                                      animate: { in: 'fadeIn', out: 'fadeOut' }
+                                    });
+                                    this.router.navigate(["/login"], {relativeTo:this.route.root});
+                                  }, error =>{
+                                    this.updateAborted('#8. Reason : '+error)
+                                  });
+                                }
                                 superToast({
                                   message: "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
                                   type: "is-success",
@@ -272,14 +331,30 @@ export class AccountComponent implements OnInit {
                                 this.updateAborted('#7. Reason : '+error)
                               });
                             } else {
-                              superToast({
-                                message: "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
-                                type: "is-success",
-                                dismissible: true,
-                                duration: 10000,
-                                animate: { in: 'fadeIn', out: 'fadeOut' }
-                              });
-                              this.router.navigate(["/login"], {relativeTo:this.route.root});
+                              if(this.isGoogleDriveBackupEnabled){
+                                this.backup().then(_ => {
+                                  this.stepsDone.push("backup");
+                                  superToast({
+                                    message: "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
+                                    type: "is-success",
+                                    dismissible: true,
+                                    duration: 10000,
+                                    animate: { in: 'fadeIn', out: 'fadeOut' }
+                                  });
+                                  this.router.navigate(["/login"], {relativeTo:this.route.root});
+                                }, error =>{
+                                  this.updateAborted('#8. Reason : '+error)
+                                });
+                              } else {
+                                superToast({
+                                  message: "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
+                                  type: "is-success",
+                                  dismissible: true,
+                                  duration: 10000,
+                                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                                });
+                                this.router.navigate(["/login"], {relativeTo:this.route.root});
+                              }
                             }
                       }, error =>{
                         this.buttonLoading["passphrase"] = 0

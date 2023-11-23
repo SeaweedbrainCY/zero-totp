@@ -209,8 +209,15 @@
                 <span [ngClass]="{'has-text-success': stepsDone.includes('upload')}"> Upload of your encrypted vault</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('deleteBackup')"></fa-icon > 
-                    <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('deleteBackup')"></fa-icon > 
-                    <span [ngClass]="{'has-text-success': stepsDone.includes('deleteBackup')}"> Destroy of your google drive backup  </span><br>
+                    <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('deleteBackup') && deleteGoogleDriveBackup"></fa-icon > 
+                    <span [ngClass]="{'has-text-success': stepsDone.includes('deleteBackup')}" *ngIf="deleteGoogleDriveBackup"> Destroy of your google drive backup  </span><br *ngIf="deleteGoogleDriveBackup">
+
+
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('backup')"></fa-icon > 
+                        <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('backup') && isGoogleDriveBackupEnabled"></fa-icon > 
+                        <span [ngClass]="{'has-text-success': stepsDone.includes('backup')}" *ngIf="isGoogleDriveBackupEnabled">
+                            Upload a new encrypted backup on your google drive    
+                        </span><br>
                 
                 
             </p>
@@ -220,19 +227,34 @@
 </div>
 
 
-<div id="passphraseConfirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isPassphraseModalActive}">
+<div id="passphraseConfirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': googleDriveBackupModaleActive}">
     <div class="modal-background" (click)="passphraseModal()"></div>
     <div class="modal-content">
         <section class="modal-card-body">
-            <h1 class="is-size-1 has-text-info">Oh ! You have backups in your google drive</h1>
+            <h1 class="is-size-3 has-text-info mb-4 has-text-weight-bold">Oh ! You have backups in your google drive</h1>
             <div class="content">
-            <strong></strong> 
-
-            
+            <div class="box is-flex" style="cursor: pointer;" (click)="deleteGoogleDriveBackup=!deleteGoogleDriveBackup;" [ngClass]='{"has-background-danger-light	":deleteGoogleDriveBackup}'>
+                <div class="is-flex is-flex-direction-column is-justify-content-center mr-4">
+                <fa-icon [icon]="faTrash" style="color:red;" *ngIf="deleteGoogleDriveBackup"></fa-icon>
+                <fa-icon [icon]="faTrash" *ngIf="!deleteGoogleDriveBackup"></fa-icon>
+                </div>
+                <div>
+                <strong for="deleteGoogleDriveBackup" [ngClass]="{'has-text-danger':deleteGoogleDriveBackup}">Delete my old backup and make a new one now</strong> <span class="has-text-danger"> (Recommended if your passphrase is not safe anymore)</span>
+            </div>
+            </div>
+            <div class="box is-flex" style="cursor: pointer;" (click)="deleteGoogleDriveBackup=deleteGoogleDriveBackup == false;" [ngClass]='{"has-background-success-light":deleteGoogleDriveBackup == false }'>
+                <div class="is-flex is-flex-direction-column is-justify-content-center mr-4">
+                <fa-icon [icon]="faVault" style="color:green;" *ngIf="deleteGoogleDriveBackup == false"></fa-icon>
+                <fa-icon [icon]="faVault" *ngIf="deleteGoogleDriveBackup != false"></fa-icon>
+                </div>
+                <div>
+                <strong for="deleteGoogleDriveBackup" [ngClass]="{'has-text-success':deleteGoogleDriveBackup == false}">Keep my old backup with my old password and make a new one now</strong>
+                </div>
+            </div>
         </div>
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
-            <button class="button" (click)="googleDriveBackupModaleActive = false; isPassphraseModalActive=false; isDeletionModalActive=false;" >Abort</button>
+            <button class="button" (click)="googleDriveBackupModaleActive = false; isPassphraseModalActive=false; isDeletionModalActive=false; deleteGoogleDriveBackup=undefined" >Abort</button>
             <button class="button is-info" (click)=" googleDriveBackupModaleActive=false; updatePassphraseConfirm()" [disabled]="deleteGoogleDriveBackup == undefined">Continue</button>
         </footer>
     </div>
