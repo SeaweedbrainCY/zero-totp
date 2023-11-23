@@ -33,3 +33,4 @@ services:
 networks:
   internal:
     name: "internal_net"
+    external: true
