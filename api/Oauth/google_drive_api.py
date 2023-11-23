@@ -169,4 +169,15 @@ def revoke_credentials(credentials): # pragma: no cover
         return True
     else:
         return False
+
+def delete_all_backups(credentials):
+    drive = get_drive_service(credentials)
+    folder = get_folder(FOLDER_NAME, drive)
+    if folder == None:
+        return True
+    result = get_files_from_folder(folder.get('id'), drive)
+    for file in result:
+        body_value = {'trashed': True}
+        drive.files().update(fileId=file.get("id"), body=body_value).execute()
+    return True
     
