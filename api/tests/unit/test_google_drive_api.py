@@ -458,7 +458,6 @@ class TestGoogleDriveAPI(unittest.TestCase):
              get_folder.return_value = {"id" : 1}
              get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
              get_files_from_folder.return_value = [{"name" : f"{str(day).zfill(2)}-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": day} for day in range(1, nb_backup)]
-             print("backups", get_files_from_folder.return_value)
              delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
              delete_execute.return_value = True
              update = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.update").start()
@@ -556,4 +555,28 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 self.assertFalse(google_drive_api.clean_backup_retention("creds", 1))
                 delete_execute.assert_not_called()
                 self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
+
+#####################
+## delete_all_backups
+#####################
+
+        def test_delete_all_backups(self):
+            get_service = patch("Oauth.google_drive_api.get_drive_service").start()
+            get_service.return_value = self.drive
+            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder.return_value = {"id":1}
+            get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+            get_files_from_folder.return_value = [{"name" : "01-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": 1}, {"name" : "01-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": 2},{"name" : "01-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": 3}]
+            delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
+            delete_execute.return_value = True
+            self.assertTrue(google_drive_api.delete_all_backups("creds"))
+            delete_execute.assert_called()
+    
+        def test_delete_all_backups_no_folder(self):
+            get_service = patch("Oauth.google_drive_api.get_drive_service").start()
+            get_service.return_value = self.drive
+            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder.return_value = None
+            self.assertTrue(google_drive_api.delete_all_backups("creds"))
+
         
