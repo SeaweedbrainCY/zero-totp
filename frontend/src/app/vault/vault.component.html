@@ -48,7 +48,7 @@
                                 </div>
                                 <div [hidden]="!storageOptionOpen" class="mb-3">
                                     <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
-                                        <button class="button is-outlined is-dark"><fa-icon [icon]="faRotateRight"
+                                        <button class="button is-outlined is-dark" (click)="reload()"><fa-icon [icon]="faRotateRight"
                                                 class="mr-3"></fa-icon> Reload the vault </button>
                                     </div>
                                 </div>

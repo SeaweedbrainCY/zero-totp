@@ -5,6 +5,37 @@
     <span class="tag is-success is-medium">{{imageHash}}</span>
 </div>
 
+<h3 class="is-size-5-mobile  is-size-3-tablet mt-4 has-text-weight-bold " style="border-bottom: 0.5px lightgray solid; width: 100%;">20/11/2023</h3>
+<div class="tags has-addons mt-2">
+    <span class="tag is-dark">version</span>
+    <span class="tag is-info">b1.4</span>
+</div>
+<p class="has-text-weight-bold"><fa-icon [icon]="faTruckMedical" style="color:#FE6847"></fa-icon> We fixed : </p>
+<ul>
+    <li>
+       A bug when opening the vault for the first time, the google drive status was stuck in loading status.
+    </li>
+    <li>
+        We improve the database initialization on app startup.
+     </li>
+     <li>
+        We improve the vault import via a zero-totp backup file.
+     </li>
+     <li>
+        We improve the way we display time, to be more accurate according to your timezone. We fixed a bug when backuping your vault, the last backup up was not displayed.
+     </li>
+     <li>
+       We fixed a bug in the adding a secret section causing the save button to be disabled even if the form was valid.
+     </li>
+     <li>
+       We fixed the "Reload my vault" button in your storage options which wasn't working properly.
+      </li>
+      <li>
+        We improve the userflow when updating your passphrase, showing you multiple options if you have backups in your google drive.
+      </li>
+</ul>
+
+
 <h3 class="is-size-5-mobile  is-size-3-tablet mt-4 has-text-weight-bold " style="border-bottom: 0.5px lightgray solid; width: 100%;">19/11/2023</h3>
 <div class="tags has-addons mt-2">
     <span class="tag is-dark">version</span>

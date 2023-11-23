@@ -66,7 +66,16 @@ export class VaultComponent implements OnInit {
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } else if(this.userService.getIsVaultLocal()){
       this.local_vault_service = this.userService.getLocalVaultService();
-      this.page_title = "Backup from " + this.local_vault_service!.get_date()!.split(".")[0];
+      let vaultDate = "unknown"
+      try{
+        const vaultDateStr = this.local_vault_service!.get_date()!.split(".")[0];
+        vaultDate = String(formatDate(new Date(vaultDateStr), 'dd/MM/yyyy HH:mm:ss O', 'en'));
+      }catch{
+        vaultDate = "error"
+      }
+      
+
+      this.page_title = "Backup from " + vaultDate;
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
       this.reloadSpin = true
@@ -82,9 +91,8 @@ export class VaultComponent implements OnInit {
         });
         const data = JSON.parse(JSON.stringify(response.body))
         this.decrypt_and_display_vault(data.enc_secrets);
-        this.get_google_drive_option();
-        this.get_preferences();
       }, (error) => {
+        this.reloadSpin = true
         if(error.status == 404){
           this.userService.setVault(new Map<string, Map<string,string>>());
         } else {
@@ -111,6 +119,8 @@ export class VaultComponent implements OnInit {
           });
         }
       });
+      this.get_google_drive_option();
+      this.get_preferences();
     }    
   }
 
@@ -375,6 +385,7 @@ export class VaultComponent implements OnInit {
   backup_vault_to_google_drive(){
           this.http.put(ApiService.API_URL+"/google-drive/backup", {}, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
             this.isGoogleDriveSync = "uptodate";
+            this.lastBackupDate =  String(formatDate(new Date(), 'dd/MM/yyyy HH:mm:ss', 'en'));
           }, (error) => {
             this.isGoogleDriveSync = 'error';
             let errorMessage = "";
@@ -399,7 +410,8 @@ export class VaultComponent implements OnInit {
       if(data.status == "ok"){
         if(data.is_up_to_date == true){
           this.isGoogleDriveSync = "uptodate";
-          this.lastBackupDate = data.last_backup_date.split("T")[0] + " " + data.last_backup_date.split("T")[1];
+          const date_str = data.last_backup_date.split("T")[0] + " " + data.last_backup_date.split("T")[1];
+          this.lastBackupDate =  String(formatDate(new Date(date_str), 'dd/MM/yyyy HH:mm:ss', 'en'));
         } else {
           this.backup_vault_to_google_drive();
         }

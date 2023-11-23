@@ -446,7 +446,21 @@ paths:
         "401":
           description: Unauthorized
         "403":
-          description: Access disabled
+          description: Access Forbidden
+        "500":
+          description: Backup failed
+    delete:
+      operationId: controllers.delete_google_drive_backup
+      tags:
+        - Google Drive
+      summary: Delete all backups from Google Drive
+      responses:
+        "200": 
+          description: All backups deleted
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access Forbidden
         "500":
           description: Backup failed
 

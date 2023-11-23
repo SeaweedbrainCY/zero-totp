@@ -159,7 +159,7 @@
             <ul>
                 <li>Re-encrypt your current vault</li>
                 <li>Your old backup will still be encrypted with your former passphrase</li>
-                <li>Your Google Drive backup will be updated. If you have old backup, they will still be encrypted with your former passphrase</li>
+                <li>Your Google Drive backup will be updated. If you have old backup, they will still be encrypted with your former passphrase. If your passphrase is not safe anymore you should delete them without delay</li>
                 <li>If you lose this new passphrase, it is impossible to recover it</li>
                 <li>If you change your passphrase for security reasons, securely delete your backup as soon as possible </li>
             </ul>
@@ -180,35 +180,81 @@
             <strong>We are re encrypting all your data. Closing this tab might definitively corrupt them</strong> <br><br>
             <progress class="progress is-small is-success" max="100"></progress>
             <p class="">
-                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>0" class="has-text-success"></fa-icon > 
-                <fa-icon [icon]="faCog" [spin]="true" *ngIf="step<=0"></fa-icon > 
-                <span [ngClass]="{'has-text-success': step>0}"> Verification of your former passphrase</span><br>
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('verifyOldPassword')" class="has-text-success"></fa-icon > 
+                <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('verifyOldPassword')"></fa-icon > 
+                <span [ngClass]="{'has-text-success': stepsDone.includes('verifyOldPassword')}"> Verification of your former passphrase</span><br>
 
-                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>1"></fa-icon > 
-                <fa-icon *ngIf="step<=1" [icon]="faCog" [spin]="true" ></fa-icon> 
-                <span [ngClass]="{'has-text-success': step>1}"> Download of your encrypted vault</span><br>
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('getVault')"></fa-icon > 
+                <fa-icon *ngIf="!stepsDone.includes('getVault')" [icon]="faCog" [spin]="true" ></fa-icon> 
+                <span [ngClass]="{'has-text-success': stepsDone.includes('getVault')}"> Download of your encrypted vault</span><br>
 
-                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>2"></fa-icon > 
-                <fa-icon *ngIf="step<=2" [icon]="faCog" [spin]="true"></fa-icon > 
-                    <span [ngClass]="{'has-text-success': step>2}"> Decryption of your vault</span><br>
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('getVault')"></fa-icon > 
+                <fa-icon *ngIf="!stepsDone.includes('getVault')" [icon]="faCog" [spin]="true"></fa-icon > 
+                    <span [ngClass]="{'has-text-success': stepsDone.includes('getVault')}"> Decryption of your vault</span><br>
 
-                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>3"></fa-icon > 
-                <fa-icon *ngIf="step<=3" [icon]="faCog" [spin]="true"></fa-icon > 
-                <span [ngClass]="{'has-text-success': step>3}"> Derivation of your new passphrase</span><br>
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('derivation')"></fa-icon > 
+                <fa-icon *ngIf="!stepsDone.includes('derivation')" [icon]="faCog" [spin]="true"></fa-icon > 
+                <span [ngClass]="{'has-text-success': stepsDone.includes('derivation')}"> Derivation of your new passphrase</span><br>
 
-                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>4"></fa-icon > 
-                <fa-icon *ngIf="step<=4" [icon]="faCog" [spin]="true"></fa-icon > 
-                <span [ngClass]="{'has-text-success': step>4}"> Encryption of your vault with your new key</span><br>
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('encryption')"></fa-icon > 
+                <fa-icon *ngIf="!stepsDone.includes('encryption')" [icon]="faCog" [spin]="true"></fa-icon > 
+                <span [ngClass]="{'has-text-success': stepsDone.includes('encryption')}"> Encryption of your vault with your new key</span><br>
 
-                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>5"></fa-icon > 
-                <fa-icon [icon]="faCog" [spin]="true"  *ngIf="step<=5"></fa-icon> 
-                <span [ngClass]="{'has-text-success': step>5}"> Verification of your new encrypted vault</span><br>
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('verification')"></fa-icon > 
+                <fa-icon [icon]="faCog" [spin]="true"  *ngIf="!stepsDone.includes('verification')"></fa-icon> 
+                <span [ngClass]="{'has-text-success': stepsDone.includes('verification')}"> Verification of your new encrypted vault</span><br>
 
-                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="step>6"></fa-icon > 
-                <fa-icon [icon]="faCog" [spin]="true" *ngIf="step<=6"></fa-icon > 
-                <span [ngClass]="{'has-text-success': step>6}"> Upload of your encrypted vault</span><br>
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('upload')"></fa-icon > 
+                <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('upload')"></fa-icon > 
+                <span [ngClass]="{'has-text-success': stepsDone.includes('upload')}"> Upload of your encrypted vault</span><br>
+
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('deleteBackup')"></fa-icon > 
+                    <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('deleteBackup') && deleteGoogleDriveBackup"></fa-icon > 
+                    <span [ngClass]="{'has-text-success': stepsDone.includes('deleteBackup')}" *ngIf="deleteGoogleDriveBackup"> Destroy of your google drive backup  </span><br *ngIf="deleteGoogleDriveBackup">
+
+
+                <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('backup')"></fa-icon > 
+                        <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('backup') && isGoogleDriveBackupEnabled"></fa-icon > 
+                        <span [ngClass]="{'has-text-success': stepsDone.includes('backup')}" *ngIf="isGoogleDriveBackupEnabled">
+                            Upload a new encrypted backup on your google drive    
+                        </span><br>
+                
+                
             </p>
 
         </section>
     </div>
 </div>
+
+
+<div id="passphraseConfirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': googleDriveBackupModaleActive}">
+    <div class="modal-background" (click)="passphraseModal()"></div>
+    <div class="modal-content">
+        <section class="modal-card-body">
+            <h1 class="is-size-3 has-text-info mb-4 has-text-weight-bold">Oh ! You have backups in your google drive</h1>
+            <div class="content">
+            <div class="box is-flex" style="cursor: pointer;" (click)="deleteGoogleDriveBackup=!deleteGoogleDriveBackup;" [ngClass]='{"has-background-danger-light	":deleteGoogleDriveBackup}'>
+                <div class="is-flex is-flex-direction-column is-justify-content-center mr-4">
+                <fa-icon [icon]="faTrash" style="color:red;" *ngIf="deleteGoogleDriveBackup"></fa-icon>
+                <fa-icon [icon]="faTrash" *ngIf="!deleteGoogleDriveBackup"></fa-icon>
+                </div>
+                <div>
+                <strong for="deleteGoogleDriveBackup" [ngClass]="{'has-text-danger':deleteGoogleDriveBackup}">Delete my old backup and make a new one now</strong> <span class="has-text-danger"> (Recommended if your passphrase is not safe anymore)</span>
+            </div>
+            </div>
+            <div class="box is-flex" style="cursor: pointer;" (click)="deleteGoogleDriveBackup=deleteGoogleDriveBackup == false;" [ngClass]='{"has-background-success-light":deleteGoogleDriveBackup == false }'>
+                <div class="is-flex is-flex-direction-column is-justify-content-center mr-4">
+                <fa-icon [icon]="faVault" style="color:green;" *ngIf="deleteGoogleDriveBackup == false"></fa-icon>
+                <fa-icon [icon]="faVault" *ngIf="deleteGoogleDriveBackup != false"></fa-icon>
+                </div>
+                <div>
+                <strong for="deleteGoogleDriveBackup" [ngClass]="{'has-text-success':deleteGoogleDriveBackup == false}">Keep my old backup with my old password and make a new one now</strong>
+                </div>
+            </div>
+        </div>
+        </section>
+        <footer class="modal-card-foot is-flex is-justify-content-right">
+            <button class="button" (click)="googleDriveBackupModaleActive = false; isPassphraseModalActive=false; isDeletionModalActive=false; deleteGoogleDriveBackup=undefined" >Abort</button>
+            <button class="button is-info" (click)=" googleDriveBackupModaleActive=false; updatePassphraseConfirm()" [disabled]="deleteGoogleDriveBackup == undefined">Continue</button>
+        </footer>
+    </div>

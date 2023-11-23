@@ -22,7 +22,7 @@ class TestOauthCallback(unittest.TestCase):
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
-        self.creds = {"secret" : "secret_should_be_encrypted", "expiry": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
+        self.creds = {"secret" : "secret_should_be_encrypted", "expiry": datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
         self.endpoint = "/google-drive/oauth/callback"
         self.setSateSession = "/google-drive/oauth/authorization-flow"
 
@@ -40,7 +40,7 @@ class TestOauthCallback(unittest.TestCase):
         with self.application.app.app_context():
             db.create_all()
             self.user_repo.create(username="user", email="user@test.test", password="password", 
-                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
             db.session.commit()
             
 

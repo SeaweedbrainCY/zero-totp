@@ -42,13 +42,13 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
         self.sse = ServiceSideEncryption()
         self.zke_key = ZKERepo()
         self.secrets_repo = TotpSecretRepo()
-        self.creds = {"creds": "creds", "expiry":datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
+        self.creds = {"creds": "creds", "expiry":datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
         creds_b64 = base64.b64encode(json.dumps(self.creds).encode("utf-8")).decode("utf-8")
         encrypted_creds = self.sse.encrypt(creds_b64)
         with self.application.app.app_context():
             db.create_all()
             self.user_repo.create(username="user", email="user@test.test", password="password", 
-                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
             self.zke_key.create(user_id=1, encrypted_key="encrypted_key")
             self.google_integration.create(user_id=1, google_drive_sync=True)
             self.oauth_token.add(user_id=1, enc_credentials=encrypted_creds["ciphertext"], expires_at=self.creds["expiry"], nonce=encrypted_creds["nonce"], tag=encrypted_creds["tag"])
@@ -61,7 +61,7 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
             export_vault_b64 = tmp_client.get("/vault/export").json().split(",")[0]
             self.exported_vault = json.loads(base64.b64decode(export_vault_b64))
         self.get_checksum = patch("Oauth.google_drive_api.get_last_backup_checksum").start()
-        self.get_checksum.return_value = self.exported_vault["secrets_sha256sum"], datetime.datetime.now().strftime("%Y-%m-%d")
+        self.get_checksum.return_value = self.exported_vault["secrets_sha256sum"], datetime.datetime.utcnow().strftime("%Y-%m-%d")
 
 
     def tearDown(self):
@@ -87,7 +87,7 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["status"], "ok")
-            self.assertEqual(response.json()["last_backup_date"], datetime.datetime.now().strftime("%Y-%m-%d"))
+            self.assertEqual(response.json()["last_backup_date"], datetime.datetime.utcnow().strftime("%Y-%m-%d"))
             self.assertEqual(response.json()["is_up_to_date"], True)
             self.get_checksum.assert_called_once()
             self.google_drive_backup.assert_not_called()
@@ -140,7 +140,7 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
     def test_google_drive_backup_bad_credentials(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": self.jwtCookie}
-            self.oauth_token.update(user_id=1, enc_credentials="bad_credentials", tag="bad_tag", nonce="bad_nonce", expires_at=datetime.datetime.now())
+            self.oauth_token.update(user_id=1, enc_credentials="bad_credentials", tag="bad_tag", nonce="bad_nonce", expires_at=datetime.datetime.utcnow())
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 500)
     

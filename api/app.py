@@ -7,6 +7,8 @@ from asgiref.wsgi import WsgiToAsgi
 from starlette.middleware.cors import CORSMiddleware
 from connexion.middleware import MiddlewarePosition
 from environment import logging
+import contextlib
+
 
 
 
@@ -24,25 +26,31 @@ def create_app():
 
     app = app_instance.app
 
-    #CORS(app, vary_header=True, origins=env.frontend_URI, supports_credentials=True)
-
     app.config["SQLALCHEMY_DATABASE_URI"] = env.db_uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.secret_key = env.flask_secret_key
-    
-
     db.init_app(app)
-
-    with app.app_context():
-        db.create_all()
-        db.session.commit()
+    
 
     return app_instance
 app = create_app()
 
+@app.app.before_request
+def before_request():
+    if not env.are_all_tables_created:
+        with app.app.app_context():
+            db.create_all()
+            db.session.commit()
+            logging.info("✅  Tables created")
+            logging.info(db.metadata.tables.keys())
+            env.are_all_tables_created = True
+
+    
+
+
 if __name__ == "__main__":
-   #app.run(port=env.port,  host="0.0.0.0", reload=True )
    uvicorn.run("app:app", host="0.0.0.0", port=env.port, reload=True)
+   
 
 

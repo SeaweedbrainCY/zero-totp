@@ -36,7 +36,7 @@ def backup(credentials, vault):
             if folder == None:
                 logging.error("Error while creating the backup folder")
                 raise Exception("Error while creating the backup folder")
-        now = datetime.now()
+        now = datetime.utcnow()
         now_str = now.strftime('%d-%m-%Y-%H-%M-%S')
 
         file = create_file(name=f"{now_str}_backup", drive=drive, content=vault, folder_id=folder.get("id"))
@@ -119,7 +119,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
     last_backup_clean_date = google_drive_integration_db.get_last_backup_clean_date(user_id)
     if last_backup_clean_date is not None:
          date = datetime.strptime(last_backup_clean_date, '%Y-%m-%d')
-         if (datetime.now() - date).days < 1:
+         if (datetime.utcnow() - date).days < 1:
                 logging.info("Backup retention already cleaned today")
                 return True
     MINIMUM_NB_BACKUP = 20
@@ -128,13 +128,13 @@ def clean_backup_retention(credentials, user_id) -> bool:
     folder = get_folder(FOLDER_NAME, drive)
     if folder == None:
         logging.info("No backup to clean (no backup folder)")
-        google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.now().strftime('%Y-%m-%d'))
+        google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.utcnow().strftime('%Y-%m-%d'))
         return True
     result = get_files_from_folder(folder.get('id'), drive)
     logging.info("Found " + str(len(result)) + " backups")
     if len(result) <= MINIMUM_NB_BACKUP or len(result) == 0:
         logging.info("No backup to clean (too few backups)")
-        google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.now().strftime('%Y-%m-%d'))
+        google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.utcnow().strftime('%Y-%m-%d'))
         return True
     else :
         logging.info("Looking for backups to clean")
@@ -143,18 +143,18 @@ def clean_backup_retention(credentials, user_id) -> bool:
             logging.info("Found " + str(len(sorted_files)) + " backups")
         except Exception as e:
              logging.info("Error while sorting backup files : " + str(e))
-             google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.now().strftime('%Y-%m-%d'))
+             google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.utcnow().strftime('%Y-%m-%d'))
              return False
         for file in sorted_files[:-MINIMUM_NB_BACKUP]:
             date_str = file.get("name").split("_")[0]
             date = datetime.strptime(date_str, '%d-%m-%Y-%H-%M-%S')
-            logging.info('Inspecting backup file ' + file.get("name") + " created on " + date_str + ". Age : " + str((datetime.now() - date).days) + " days")
+            logging.info('Inspecting backup file ' + file.get("name") + " created on " + date_str + ". Age : " + str((datetime.utcnow() - date).days) + " days")
 
-            if (datetime.now() - date).days > MAXIMUM_BACKUP_AGE:
+            if (datetime.utcnow() - date).days > MAXIMUM_BACKUP_AGE:
                 logging.info("Deleting backup file " + file.get("name"))
                 body_value = {'trashed': True}
                 drive.files().update(fileId=file.get("id"), body=body_value).execute()
-        google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.now().strftime('%Y-%m-%d'))
+        google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.utcnow().strftime('%Y-%m-%d'))
         return True
     
 
@@ -169,4 +169,15 @@ def revoke_credentials(credentials): # pragma: no cover
         return True
     else:
         return False
+
+def delete_all_backups(credentials):
+    drive = get_drive_service(credentials)
+    folder = get_folder(FOLDER_NAME, drive)
+    if folder == None:
+        return True
+    result = get_files_from_folder(folder.get('id'), drive)
+    for file in result:
+        body_value = {'trashed': True}
+        drive.files().update(fileId=file.get("id"), body=body_value).execute()
+    return True
     

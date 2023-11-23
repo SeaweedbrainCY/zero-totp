@@ -34,19 +34,22 @@ class TestGoogleDriveBackup(unittest.TestCase):
         self.google_drive_clean = patch("Oauth.google_drive_api.clean_backup_retention").start()
         self.google_drive_clean.return_value = True
 
+        self.delete_all_backups = patch("Oauth.google_drive_api.delete_all_backups").start()
+        self.delete_all_backups.return_value = True
+
         self.user_repo = UserRepo()
         self.google_integration = GoogleDriveIntegrationRepo()
         self.oauth_token = OAuthTokensRepo()
         self.sse = ServiceSideEncryption()
         self.zke_key = ZKERepo()
         self.secrets_repo = TotpSecretRepo()
-        self.creds = {"creds": "creds", "expiry":datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")}
+        self.creds = {"creds": "creds", "expiry":datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
         creds_b64 = base64.b64encode(json.dumps(self.creds).encode("utf-8")).decode("utf-8")
         encrypted_creds = self.sse.encrypt(creds_b64)
         with self.application.app.app_context():
             db.create_all()
             self.user_repo.create(username="user", email="user@test.test", password="password", 
-                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
             self.zke_key.create(user_id=1, encrypted_key="encrypted_key")
             self.google_integration.create(user_id=1, google_drive_sync=True)
             self.oauth_token.add(user_id=1, enc_credentials=encrypted_creds["ciphertext"], expires_at=self.creds["expiry"], nonce=encrypted_creds["nonce"], tag=encrypted_creds["tag"])
@@ -73,6 +76,10 @@ class TestGoogleDriveBackup(unittest.TestCase):
         jwtCookie = jwt.encode(payload, env.jwt_secret, algorithm=jwt_func.ALG)
         return jwtCookie
     
+
+######
+## PUT
+######
     def test_google_drive_backup(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": self.jwtCookie}
@@ -98,7 +105,7 @@ class TestGoogleDriveBackup(unittest.TestCase):
     def test_google_drive_backup_bad_credentials(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": self.jwtCookie}
-            self.oauth_token.update(user_id=1, enc_credentials="bad_credentials", tag="bad_tag", nonce="bad_nonce", expires_at=datetime.datetime.now())
+            self.oauth_token.update(user_id=1, enc_credentials="bad_credentials", tag="bad_tag", nonce="bad_nonce", expires_at=datetime.datetime.utcnow())
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 500)
     
@@ -130,4 +137,73 @@ class TestGoogleDriveBackup(unittest.TestCase):
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 403)
 
-   
+
+
+#########
+## DELETE
+#########
+
+    def test_google_drive_delete_all_backup(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.delete_all_backups.assert_called_once()
+    
+    def test_google_drive_delete_all_failed(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            self.delete_all_backups.return_value = False
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 500)
+        
+    def test_google_drive_delete_all_backup_no_oauth_token(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            self.oauth_token.delete(user_id=1)
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+    
+    def test_google_drive_delete_all_backup_option_disable(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            self.google_integration.update_google_drive_sync(user_id=1, google_drive_sync=False)
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+    
+    def test_google_drive_delete_all_backup_no_option(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            self.get_google_drive_integration = patch("database.google_drive_integration_repo.GoogleDriveIntegration.get_by_user_id").start()
+            self.get_google_drive_integration.return_value = None
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+
+    def test_google_drive_delete_all_backup_bad_credentials(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            self.oauth_token.update(user_id=1, enc_credentials="bad_credentials", tag="bad_tag", nonce="bad_nonce", expires_at=datetime.datetime.utcnow())
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 500)
+    
+    def test_google_drive_delete_all_backup_error_while_deleting(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            backup = patch("Oauth.google_drive_api.delete_all_backups").start()
+            backup.side_effect = Exception("error")
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 500)
+
+    def test_google_drive_delete_all_backup_no_cookie(self):
+        with self.application.app.app_context():
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 401)
+    
+    def test_google_drive_delete_all_backup_bad_cookie(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": "badcookie"}
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+
+
+    
