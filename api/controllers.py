@@ -640,14 +640,57 @@ def set_preference(user_id, body):
 
 @require_userid
 def delete_google_drive_backup(user_id):
-    return utils.delete_all_backups(user_id)
+    google_integration = GoogleDriveIntegrationDB()
+    token_db = Oauth_tokens_db()
+    oauth_tokens = token_db.get_by_user_id(user_id)
+    google_drive_option =google_integration.get_by_user_id(user_id) 
+    if google_drive_option == None:
+        return {"message": "Google drive sync is not enabled"}, 403
+    if google_drive_option.isEnabled == 0:
+        return {"message": "Google drive sync is not enabled"}, 403
+    if not oauth_tokens:
+        return {"message": "Google drive sync is not enabled"}, 403
+    sse = ServiceSideEncryption()
+    try:
+        creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce,  tag=oauth_tokens.cipher_tag)
+        credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+        status = google_drive_api.delete_all_backups(credentials=credentials)
+        if status :
+            return {"message": "Backups deleted"}, 200
+        else:
+            return {"message": "Error while deleting backups"}, 500
+    except Exception as e:
+        logging.error("Error while deleting backup from google drive " + str(e))
+        token_db.delete(user_id)
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        return {"message": "Error while deleting backups"}, 500
     
 
 @require_passphrase_verification
 def delete_account(user_id):
+    logging.info("Deleting account for user " + str(user_id))
     user_obj = UserDB().getById(user_id)
     if user_obj.role == "admin":
         return {"message": "Admin cannot be deleted"}, 403
+    try: # we try to delete the user backups if possible. If not, this is not a blocking error.
+        context = {"user": user_id}
+        delete_google_drive_backup(context, user_id, context)
+        delete_google_drive_option(context, user_id, context)
+    except Exception as e:
+        logging.warning("Error while deleting backups for user " + str(user_id) + ". Exception : " + str(e))
+    try:
+        utils.delete_user_from_database(user_id)
+        return {"message": "Account deleted"}, 200
+    except Exception as e:
+        logging.warning("Error while deleting user from database for user " + str(user_id) + ". Exception : " + str(e))
+        return {"message": "Error while deleting account"}, 500
+    
+    
+
+    
+
+
+
 
 
 
