@@ -87,6 +87,7 @@ def require_passphrase_verification(func):
             fake_password = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
             bcrypt.checkpw(fake_password)
             return {"message": "Invalid credentials"}, 403
-        if bcrypt.checkpw(user.password):
+        if bcrypt.checkpw(user_obj.password):
             return func(user_id, *args, **kwargs)
         return {"error": "Unauthorized"}, 403
+    return wrapper
