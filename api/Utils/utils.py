@@ -2,12 +2,14 @@ import re
 import html
 from environment import logging
 import datetime
-from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
-from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
-from CryptoClasses.encryption import ServiceSideEncryption
-import json
-import base64
-from Oauth import google_drive_api
+from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
+from database.user_repo import User as User_repo
+from database.totp_secret_repo import TOTP_secret as TOTP_secret_repo
+from database.zke_repo import ZKE as ZKE_encryption_key_repo
+from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
+from database.preferences_repo import Preferences as Preferences_repo
+
+
 
 
 class FileNotFound(Exception):
@@ -56,28 +58,12 @@ def extract_last_backup_from_list(files_list) -> (any, datetime):
         raise FileNotFound("No backup file found")
     return last_backup_file,last_backup_file_date
 
-def delete_all_backups(user_id):
-    google_integration = GoogleDriveIntegrationDB()
-    token_db = Oauth_tokens_db()
-    oauth_tokens = token_db.get_by_user_id(user_id)
-    google_drive_option =google_integration.get_by_user_id(user_id) 
-    if google_drive_option == None:
-        return {"message": "Google drive sync is not enabled"}, 403
-    if google_drive_option.isEnabled == 0:
-        return {"message": "Google drive sync is not enabled"}, 403
-    if not oauth_tokens:
-        return {"message": "Google drive sync is not enabled"}, 403
-    sse = ServiceSideEncryption()
-    try:
-        creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce,  tag=oauth_tokens.cipher_tag)
-        credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
-        status = google_drive_api.delete_all_backups(credentials=credentials)
-        if status :
-            return {"message": "Backups deleted"}, 200
-        else:
-            return {"message": "Error while deleting backups"}, 500
-    except Exception as e:
-        logging.error("Error while deleting backup from google drive " + str(e))
-        token_db.delete(user_id)
-        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
-        return {"message": "Error while deleting backups"}, 500
+ 
+def delete_user_from_database(user_id):
+    Oauth_tokens_repo().delete(user_id)
+    GoogleDriveIntegration_repo().delete(user_id)
+    Preferences_repo().delete(user_id)
+    TOTP_secret_repo().delete_all(user_id)
+    ZKE_encryption_key_repo().delete(user_id)
+    User_repo().delete(user_id)
+    logging.info("User " + str(user_id) + " deleted from database")
