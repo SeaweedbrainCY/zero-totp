@@ -34,8 +34,11 @@
         </a>
       </div>
       <div class="navbar-start"  *ngIf="userService.getId()==null && !this.userService.getIsVaultLocal()">
-        <a class="navbar-item" (click)="changeLocation('#how-it-works')" >
-          How it works
+        <a class="navbar-item" (click)="changeLocation('#totp')" >
+          How TOTP works
+        </a>
+        <a class="navbar-item" (click)="changeLocation('#why-zero-totp')" >
+          Why Zero-TOTP
         </a>
         <a class="navbar-item" (click)="changeLocation('#never-lose-data')">
           Never lose your data
@@ -47,7 +50,7 @@
           Zero-Knowledge Encryption
         </a>
         <a class="navbar-item" (click)="changeLocation('#project')">
-          About the project
+          About
         </a>
       </div>
       <div class="navbar-start"  *ngIf="this.userService.getIsVaultLocal()">
