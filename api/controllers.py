@@ -361,7 +361,8 @@ def get_role(token_info, *args, **kwargs):
 
 
 @require_admin_token
-def get_users_list(*args, **kwargs):
+def get_users_list(user_id, *args, **kwargs):
+    logging.info("Admin " + str(user_id) + " requested users list")
     users = UserDB().get_all()
     if not users:
         return {"message" : "No user found"}, 404
@@ -687,12 +688,23 @@ def delete_account(user_id):
     
     
 
-    
-
-
-
-
-
-
+@require_admin_token
 def delete_account_admin(user_id, account_id_to_delete):
-    pass
+    logging.info("Deleting account for user " + str(account_id_to_delete) + " by admin " + str(user_id))
+    user_obj = UserDB().getById(account_id_to_delete)
+    if user_obj == None:
+        return {"message": "User not found"}, 404
+    if user_obj.role == "admin":
+        return {"message": "Admin cannot be deleted"}, 403
+    try: # we try to delete the user backups if possible. If not, this is not a blocking error.
+        context = {"user": account_id_to_delete}
+        delete_google_drive_backup(context, account_id_to_delete, context)
+        delete_google_drive_option(context, account_id_to_delete, context)
+    except Exception as e:
+        logging.warning("Error while deleting backups for user " + str(account_id_to_delete) + ". Exception : " + str(e))
+    try:
+        utils.delete_user_from_database(account_id_to_delete)
+        return {"message": "Account deleted"}, 200
+    except Exception as e:
+        logging.warning("Error while deleting user from database for user " + str(account_id_to_delete) + ". Exception : " + str(e))
+        return {"message": "Error while deleting account"}, 500
