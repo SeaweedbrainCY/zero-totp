@@ -2,6 +2,15 @@ import re
 import html
 from environment import logging
 import datetime
+from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
+from database.user_repo import User as User_repo
+from database.totp_secret_repo import TOTP_secret as TOTP_secret_repo
+from database.zke_repo import ZKE as ZKE_encryption_key_repo
+from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
+from database.preferences_repo import Preferences as Preferences_repo
+
+
+
 
 class FileNotFound(Exception):
     pass
@@ -48,3 +57,13 @@ def extract_last_backup_from_list(files_list) -> (any, datetime):
         logging.info("No backup file found in the drive (last_backup_file is None)")
         raise FileNotFound("No backup file found")
     return last_backup_file,last_backup_file_date
+
+ 
+def delete_user_from_database(user_id):
+    Oauth_tokens_repo().delete(user_id)
+    GoogleDriveIntegration_repo().delete(user_id)
+    Preferences_repo().delete(user_id)
+    TOTP_secret_repo().delete_all(user_id)
+    ZKE_encryption_key_repo().delete(user_id)
+    User_repo().delete(user_id)
+    logging.info("User " + str(user_id) + " deleted from database")

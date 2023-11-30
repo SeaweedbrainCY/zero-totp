@@ -404,7 +404,7 @@ paths:
                 properties:
                   users:
                     type: array
-                    example: [{"username": "foo", "email":"bar", "role":"user", "createdAt":"01/01/2001", "isBlocked":false}]
+                    example: [{"id":1,"username": "foo", "email":"bar", "role":"user", "createdAt":"01/01/2001", "isBlocked":false}]
 
         "401":
           description: Unauthorized
@@ -584,6 +584,43 @@ paths:
           description: Access disabled
         "404":
           description: No backup found
+        "500":
+          description: Internal server error
+  /account:
+    delete:
+      operationId: controllers.delete_account
+      tags:
+        - User
+      summary: Delete the user's account. WARNING The hashed passphrase is required in x-hash-passphrase header !
+      responses:
+        "200": 
+          description: Account deleted
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access disabled
+        "500":
+          description: Internal server error
+  /admin/account/{account_id_to_delete}:
+    delete:
+      operationId: controllers.delete_account_admin
+      tags:
+        - Admin
+      parameters:
+        - in: path
+          name: account_id_to_delete
+          schema:
+            type: integer
+          required: true
+          description: The account id to delete 
+      summary: Delete the user's account
+      responses:
+        "200": 
+          description: Account deleted
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access disabled
         "500":
           description: Internal server error
 components:

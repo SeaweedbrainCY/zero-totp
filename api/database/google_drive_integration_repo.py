@@ -42,3 +42,8 @@ class GoogleDriveIntegration:
         db.session.add(integration)
         db.session.commit()
         return integration
+    
+    def delete(self, user_id):
+        db.session.query(GoogleDriveIntegrationModel).filter_by(user_id=user_id).delete()
+        db.session.commit()
+        return True

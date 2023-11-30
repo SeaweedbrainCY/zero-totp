@@ -17,3 +17,8 @@ class ZKE:
         zke_key.ZKE_key = encrypted_key
         db.session.commit()
         return zke_key
+    
+    def delete(self, user_id):
+        db.session.query(ZKEModel).filter_by(user_id=user_id).delete()
+        db.session.commit()
+        return True

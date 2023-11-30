@@ -23,6 +23,7 @@ class Oauth_tokens:
         return oauth_tokens
 
     def delete(self, user_id):
-        db.session.query(Oauth_tokens_model).filter_by(user_id=user_id).delete()
+        if db.session.query(Oauth_tokens_model).filter_by(user_id=user_id).first() != None:
+            db.session.query(Oauth_tokens_model).filter_by(user_id=user_id).delete()
         db.session.commit()
         return True

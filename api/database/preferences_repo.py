@@ -49,5 +49,9 @@ class Preferences:
         db.session.commit()
         return pref
     
+    def delete(self, user_id):
+        db.session.query(PreferencesModel).filter_by(user_id=user_id).delete()
+        db.session.commit()
+        return True
 
     

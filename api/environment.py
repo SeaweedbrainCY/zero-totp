@@ -15,6 +15,8 @@ sever_side_encryption_key = os.environ.get('SEVER_SIDE_ENCRYPTION_KEY')
 
 are_all_tables_created = False
 
+admin_can_delete_users = os.environ.get('ADMIN_CAN_DELETE_USERS') == "true"
+
 if environment == "development":
     logging.basicConfig(
         format='%(asctime)s %(levelname)-8s %(message)s',
@@ -42,6 +44,11 @@ if port == None:
     port = 8080
     logging.warning("PORT environment variable not set. Using default value: 8080")
 
+if admin_can_delete_users != True:
+    logging.info("ADMIN_CAN_DELETE_USERS environment variable not set. Using default value: false")
+    admin_can_delete_users = False
+else:
+    logging.warning("ADMIN_CAN_DELETE_USERS environment variable set to true. This should be a TEMPORARY option ONLY.  Please set it to false if you are not sure what you are doing. DISABLE THIS OPTION AS SOON AS NOT NEEDED ANYMORE.")
 
 
 if db_uri == None:

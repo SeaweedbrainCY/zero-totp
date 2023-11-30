@@ -29,3 +29,7 @@ class TOTP_secret:
         db.session.delete(enc_totp_secret)
         db.session.commit()
         return enc_totp_secret
+    
+    def delete_all(self, user_id):
+        db.session.query(TOTP_secret_model).filter_by(user_id=user_id).delete()
+        db.session.commit()
