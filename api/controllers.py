@@ -690,6 +690,9 @@ def delete_account(user_id):
 
 @require_admin_token
 def delete_account_admin(user_id, account_id_to_delete):
+    if not env.admin_can_delete_users:
+        logging.error("Admin " + str(user_id) + " tried to delete user " + str(account_id_to_delete) + " but admin cannot delete users. To enable this feature change the env variable and reload the API.")
+        return {"message": "Admin cannot delete users. To enable this feature change the env variable and reload the API."}, 403
     logging.info("Deleting account for user " + str(account_id_to_delete) + " by admin " + str(user_id))
     user_obj = UserDB().getById(account_id_to_delete)
     if user_obj == None:
