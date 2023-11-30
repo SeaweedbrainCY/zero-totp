@@ -30,6 +30,7 @@
                 <table class="table is-striped mt-6" style="width:80vw">
                     <caption class="is-size-3 has-text-weight-bold">Users</caption>
                     <thead>
+                        <th>id</th>
                         <th>username</th>
                         <th>email</th>
                         <th>created at</th>
@@ -38,6 +39,7 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let user of users">
+                            <td>#{{user.id}}</td>
                             <td>{{user.username}}</td>
                             <td>{{user.email}}</td>
                             <td>{{user.createdAt}}</td>
@@ -45,7 +47,7 @@
                             <td class="is-flex is-justify-content-space-around">
                                 
                                 <button class="button is-rounded" [ngClass]="{'is-warning': !user.isBlocked, 'is-success':user.isBlocked}" ><span *ngIf="user.isDisabled">Unblock</span><span *ngIf="!user.isBlocked">Block</span></button>
-                                <button class="button is-danger is-rounded">Destroy</button></td>
+                                <button class="button is-danger is-rounded" (click)="userToDelete=user;deletionModal()">Destroy</button></td>
                         </tr>
                         </tbody>
                 </table>
@@ -65,3 +67,22 @@
        </div>
     </article>
 </section>
+<div id="confirmation" class="modal modal-fx-fadeInScale is-danger" [ngClass]="{'is-active': isDeletionModalActive}">
+    <div class="modal-background" (click)="deletionModal()"></div>
+    <div class="modal-content">
+        <section class="modal-card-body">
+            <h1 class="is-size-1 has-text-danger has-text-weight-bold">DANGER ZONE</h1>
+            <strong>You won't be able to undo this action. The user will no longer access to your TOTP vault</strong>.<br><br>
+            <strong class="has-text-danger has-text-weight-bold"><fa-icon [icon]="faExclamationTriangle" animation="beat-fade"  size="2xl"></fa-icon> ALL secrets will be lost</strong><br><br>
+            <strong class="has-text-danger has-text-weight-bold"><fa-icon [icon]="faExclamationTriangle" animation="beat-fade"  size="2xl"></fa-icon> ALL the backups on google drive will be DESTROYED</strong><br><br>
+            <strong class="has-text-danger has-text-weight-bold"><fa-icon [icon]="faExclamationTriangle" animation="beat-fade"  size="2xl"></fa-icon> This action will be logged and other admin may be warned. </strong><br><br>
+            <strong class="has-text-danger has-text-weight-bold"><fa-icon [icon]="faExclamationTriangle" animation="beat-fade"  size="2xl"></fa-icon> The user is <span *ngIf="userToDelete != undefined">#{{userToDelete.id }} {{userToDelete.username }} {{userToDelete.email }}</span><span *ngIf="userToDelete == undefined">ERROR ERROR ERROR</span>. Double check this information.</strong><br><br>
+        </section>
+        <footer class="modal-card-foot is-flex is-justify-content-right">
+            <button class="button is-success" (click)="deletionModal()" [disabled]="buttonLoading['deletion']">Return to safety</button>
+            <button class="button is-danger" (click)="deleteAccount()" [ngClass]="{'is-loading': buttonLoading['deletion']}" [disabled]="deleteAccountConfirmationCountdown >0">Destroy the account definitely <span *ngIf="deleteAccountConfirmationCountdown >0"> ({{deleteAccountConfirmationCountdown}} s)</span></button>
+            
+        </footer>
+    </div>
+    <button class="modal-close is-large" aria-label="close" (click)="deletionModal()" *ngIf="!buttonLoading['deletion']"></button>
+</div>

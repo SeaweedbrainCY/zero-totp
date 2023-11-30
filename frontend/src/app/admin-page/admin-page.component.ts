@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
-import { faCircleNotch, faGear } from '@fortawesome/free-solid-svg-icons';
+import { faCircleNotch, faGear, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toast as superToast } from 'bulma-toast'
@@ -19,12 +19,17 @@ export class AdminPageComponent implements OnInit {
   faCircleNotch = faCircleNotch;
   faGear = faGear;
   isChallengeSolved: boolean = false;
+  faExclamationTriangle = faExclamationTriangle;
   isChallengeLoading = false;
   string_challenge: undefined | string = "";
   user_token = "";
   admin_cookie_expiration_s = 600;
   timer = this.admin_cookie_expiration_s;
   interval: any;
+  isDeletionModalActive= false;
+  deleteAccountConfirmationCountdown=5;
+  buttonLoading = {"deletion": false}
+  userToDelete: any;
   
     constructor(
       private http: HttpClient,
@@ -139,5 +144,61 @@ export class AdminPageComponent implements OnInit {
           animate: { in: 'fadeIn', out: 'fadeOut' }
           });
         });
+  }
+
+
+  deletionModal(){
+    if(!this.buttonLoading["deletion"]){
+      this.deleteAccountConfirmationCountdown = 5;
+      if(!this.isDeletionModalActive){
+        this.startTimer();
+      } else {
+        this.pauseTimer();
+      }
+      this.isDeletionModalActive = !this.isDeletionModalActive;
+    }
+  }
+
+  startTimer() {
+    this.deleteAccountConfirmationCountdown = 5;
+    this.interval = setInterval(() => {
+      if(this.deleteAccountConfirmationCountdown > 0) {
+        this.deleteAccountConfirmationCountdown--;
+      } else {
+        clearInterval(this.interval);
+      }
+    },1000)
+  }
+
+  pauseTimer() {
+    clearInterval(this.interval);
+  }
+
+  deleteAccount(){
+    this.http.delete(ApiService.API_URL+"/admin/account/"+this.userToDelete.id,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      this.isDeletionModalActive = false;
+      this.getUsers();
+      superToast({
+        message: "User deleted",
+        type: "is-success",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    }, (error) => {
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+      superToast({
+        message: "Impossible to delete user. "+ errorMessage,
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
   }
 }
