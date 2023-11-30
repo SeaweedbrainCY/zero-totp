@@ -368,7 +368,7 @@ def get_users_list(user_id, *args, **kwargs):
         return {"message" : "No user found"}, 404
     users_list = []
     for user in users:
-        users_list.append({"username": user.username, "email": user.mail, "role": user.role, "createdAt": user.createdAt, "isBlocked": user.isBlocked})
+        users_list.append({"id": user.id,"username": user.username, "email": user.mail, "role": user.role, "createdAt": user.createdAt, "isBlocked": user.isBlocked})
     return {"users": users_list}, 200
 
 
