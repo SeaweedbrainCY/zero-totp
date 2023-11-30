@@ -207,15 +207,15 @@ export class AccountComponent implements OnInit {
           });
         }, error => {
           this.buttonLoading['deletion'] =0
-        this.deletionErrorMessage =  error + ". Operation aborted.";
+        this.deletionErrorMessage =  "Operation aborted.";
         });
       }, error => {
         this.buttonLoading['deletion'] =0
-        this.deletionErrorMessage = "Wrong password." + error + ". Operation aborted.";
+        this.deletionErrorMessage = "Wrong password.Operation aborted.";
       });
     }, error => {
       this.buttonLoading['deletion'] =0
-      this.deletionErrorMessage = error + ". Operation aborted.";
+      this.deletionErrorMessage = "Operation aborted.";
     });
 
   }
@@ -462,7 +462,8 @@ export class AccountComponent implements OnInit {
        superToast({
          message: "Your passphrase is incorrect",
          type: "is-danger",
-         dismissible: true,
+         duration: 20000,
+         dismissible: false,
        animate: { in: 'fadeIn', out: 'fadeOut' }
        });
        this.buttonLoading["passphrase"] = 0
@@ -697,7 +698,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
               dismissible: false,
               duration: 20000,
             });
-            reject(error)
+            reject(error.status)
           } else {
             superToast({
               message: "An error occured while updating your vault. Some information may not be updated\n Contact the support ASAP with the following error code : #9"+error.error.totp +" "+ error.error.zke + error.error.user ,
@@ -705,7 +706,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
               dismissible: false,
               duration: 2000000,
             });
-            reject(error)
+            reject(error.status)
           }
           resolve("ok");
         } else {
@@ -715,7 +716,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
             dismissible: false,
             duration: 20000,
           });
-          reject(error)
+          reject(error.status)
         }
       });
     });
@@ -736,13 +737,13 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
           errorMessage = error.error.detail;
         }
         superToast({
-          message: "Bad credentials !",
+          message: errorMessage,
           type: "is-danger",
           dismissible: false,
           duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
-        reject(error)
+        reject(errorMessage)
       });
     });
 
