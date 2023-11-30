@@ -48,7 +48,7 @@ def require_admin_token(func):
             return {"error": "Unauthorized"}, 403
         if jwt_token["admin"] == True:
             logging.info("Admin token accepted for user " + str(user_id))
-            return func(*args, **kwargs)
+            return func(user_id, *args, **kwargs)
         logging.info("Admin token rejected because of admin cookie admin field is false")
         return {"error": "Unauthorized"}, 403
      return wrapper
