@@ -404,7 +404,7 @@ paths:
                 properties:
                   users:
                     type: array
-                    example: [{"username": "foo", "email":"bar", "role":"user", "createdAt":"01/01/2001", "isBlocked":false}]
+                    example: [{"id":1,"username": "foo", "email":"bar", "role":"user", "createdAt":"01/01/2001", "isBlocked":false}]
 
         "401":
           description: Unauthorized
