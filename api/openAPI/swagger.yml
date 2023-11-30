@@ -610,7 +610,7 @@ paths:
         - in: path
           name: account_id_to_delete
           schema:
-            type: number
+            type: integer
           required: true
           description: The account id to delete 
       summary: Delete the user's account
