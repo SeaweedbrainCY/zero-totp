@@ -16,6 +16,7 @@ from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
 from database.admin_repo import Admin as Admin_repo
 from database.model import Admin as AdminModel, Preferences as PreferencesModel
 from uuid import uuid4
+import environment as env
 
 
 class TestDeleteAccount(unittest.TestCase):
@@ -49,6 +50,11 @@ class TestDeleteAccount(unittest.TestCase):
 
         self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
         self.checkpw.return_value = True
+
+        if env.admin_can_delete_users == True:
+            raise Exception("ADMIN_CAN_DELETE_USERS environment should be false by default")
+        env.admin_can_delete_users = True
+        
 
 
 
@@ -94,6 +100,7 @@ class TestDeleteAccount(unittest.TestCase):
             db.session.remove()
             db.drop_all()
             patch.stopall()
+        env.admin_can_delete_users = False
 
 
 ##############################
@@ -292,3 +299,11 @@ class TestDeleteAccount(unittest.TestCase):
             self.assertEqual(db.session.query(PreferencesModel).filter_by(user_id=self.user_without_google_drive).first() , None)
             self.assertEqual(self.oauth_tokens_repo.get_by_user_id(self.user_without_google_drive), None)
             self.assertNotEqual(self.user_repo.getById(self.user_admin_id), None)
+    
+
+    def test_delete_as_admin_but_admin_are_forbidden(self):
+        env.admin_can_delete_users = False
+        with self.flask_application.app.app_context():
+            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)}
+            response = self.client.delete(self.adminDeleteEndpoint + "/" + str(self.user_without_google_drive))
+            self.assertEqual(response.status_code, 403)
