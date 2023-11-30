@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { toast as superToast } from 'bulma-toast'
-import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash,faVault } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash,faVault, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Utils } from '../common/Utils/utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
+import { interval, timer } from 'rxjs';
 
 @Component({
   selector: 'app-account',
@@ -22,6 +23,7 @@ export class AccountComponent implements OnInit {
   faCircleInfo=faCircleInfo;
   faArrowsRotate=faArrowsRotate;
   faHourglassStart=faHourglassStart;
+  faExclamationTriangle=faExclamationTriangle;
   faCheck=faCheck;
   faCog=faCog;
   faFlask=faFlask;
@@ -41,11 +43,14 @@ export class AccountComponent implements OnInit {
   newPasswordErrorMessage : [string]=[""];
   newPasswordConfirmErrorMessage : [string]=[""];
   stepsDone: Array<String> =[""];
+  deletionErrorMessage=""
   password="";
   hashedOldPassword="";
   isGoogleDriveBackupEnabled: boolean | undefined= undefined;
   deleteGoogleDriveBackup: boolean | undefined= undefined;
   googleDriveBackupModaleActive = false;
+  deleteAccountConfirmationCountdown = 5;
+  interval: any;
   constructor(
     private http: HttpClient,
     public userService: UserService,
@@ -187,6 +192,32 @@ export class AccountComponent implements OnInit {
 
   deleteAccount(){
     this.buttonLoading['deletion'] =1
+    this.deletionErrorMessage = "";
+    this.hashPassword().then(hashed => {
+      this.verifyPassword(hashed).then(_ => {
+        this.hashedOldPassword = hashed;
+        this.sendDeleteAccountRequest().then(_ => {
+          this.router.navigate(["/logout"], {relativeTo:this.route.root});
+          superToast({
+            message: "Thanks for having used our Zero-TOTP. Your account has been deleted. Good bye. 👋",
+            type: "is-success",
+            dismissible: true,
+            duration: 10000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        }, error => {
+          this.buttonLoading['deletion'] =0
+        this.deletionErrorMessage =  error + ". Operation aborted.";
+        });
+      }, error => {
+        this.buttonLoading['deletion'] =0
+        this.deletionErrorMessage = "Wrong password." + error + ". Operation aborted.";
+      });
+    }, error => {
+      this.buttonLoading['deletion'] =0
+      this.deletionErrorMessage = error + ". Operation aborted.";
+    });
+
   }
 
   updatePassphrase(){
@@ -691,6 +722,32 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
   });
   }
 
+  sendDeleteAccountRequest(): Promise<string>{
+    return new Promise<string>((resolve, reject) => {
+      let headers = new HttpHeaders().set('x-hash-passphrase', this.hashedOldPassword);
+      this.http.delete(ApiService.API_URL+"/account",  {headers:headers, withCredentials:true, observe: 'response'}).subscribe((response) => {
+
+       resolve("ok")
+      }, (error) => {
+        let errorMessage = "";
+        if(error.error.message != null){
+          errorMessage = error.error.message;
+        } else if(error.error.detail != null){
+          errorMessage = error.error.detail;
+        }
+        superToast({
+          message: "Bad credentials !",
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+        reject(error)
+      });
+    });
+
+  }
+
 
 
 
@@ -698,8 +755,29 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
 
   deletionModal(){
     if(!this.buttonLoading["deletion"]){
+      this.deleteAccountConfirmationCountdown = 5;
+      if(!this.isDeletionModalActive){
+        this.startTimer();
+      } else {
+        this.pauseTimer();
+      }
       this.isDeletionModalActive = !this.isDeletionModalActive;
     }
+  }
+
+  startTimer() {
+    this.deleteAccountConfirmationCountdown = 5;
+    this.interval = setInterval(() => {
+      if(this.deleteAccountConfirmationCountdown > 0) {
+        this.deleteAccountConfirmationCountdown--;
+      } else {
+        clearInterval(this.interval);
+      }
+    },1000)
+  }
+
+  pauseTimer() {
+    clearInterval(this.interval);
   }
 
   passphraseModal(){

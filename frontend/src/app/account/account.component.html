@@ -137,12 +137,25 @@
     <div class="modal-background" (click)="deletionModal()"></div>
     <div class="modal-content">
         <section class="modal-card-body">
-            <h1 class="is-size-1 has-text-danger">Are you sure ?</h1>
+            <h1 class="is-size-1 has-text-danger has-text-weight-bold">Are you sure ?</h1>
             <strong>You won't be able to undo this action. You will no longer access to your TOTP vault</strong>.<br><br>
+            <strong class="has-text-danger has-text-weight-bold"><fa-icon [icon]="faExclamationTriangle" animation="beat-fade" style="color:red;" size="2xl"></fa-icon> You will lose ALL your secrets</strong><br><br>
+            <strong class="has-text-danger has-text-weight-bold"><fa-icon [icon]="faExclamationTriangle" animation="beat-fade" style="color:red;" size="2xl"></fa-icon> ALL your backups on google drive will be DESTROYED</strong><br><br>
+            <strong>To delete your account, confirm your passphrase : </strong>
+            <div class="field">
+                <div class="control has-icons-left">
+                    <input class="input" type="password" placeholder="Passphrase" name="password" [(ngModel)]="password" >
+                    <span class="help has-text-left is-danger" *ngIf="deletionErrorMessage != ''">{{deletionErrorMessage}}</span>
+                    <span class="icon is-small is-left">
+                        <fa-icon [icon]="faLock"></fa-icon>
+                    </span>
+                </div>
+                </div>
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
-            <button class="button" (click)="deletionModal()" [disabled]="buttonLoading['passphrase']">Cancel</button>
-            <button class="button is-danger" (click)="deleteAccount()" [ngClass]="{'is-loading': buttonLoading['deletion']}">Destroy my account definitely</button>
+            <button class="button is-success" (click)="deletionModal()" [disabled]="buttonLoading['deletion']">Return to safety</button>
+            <button class="button is-danger" (click)="deleteAccount()" [ngClass]="{'is-loading': buttonLoading['deletion']}" [disabled]="deleteAccountConfirmationCountdown >0">Destroy my account definitely <span *ngIf="deleteAccountConfirmationCountdown >0"> ({{deleteAccountConfirmationCountdown}} s)</span></button>
+            
         </footer>
     </div>
     <button class="modal-close is-large" aria-label="close" (click)="deletionModal()" *ngIf="!buttonLoading['deletion']"></button>
