@@ -4,8 +4,9 @@ import {UserService} from '../common/User/user.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { SecurityContext } from '@angular/core';
 import { Utils } from '../common/Utils/utils';
-import { faLock, faEyeSlash, faFingerprint, faUserLock, faHouse, faMobileScreenButton, faCode, faKitMedical, faAngleDown } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faEyeSlash, faFingerprint, faUserLock, faHouse, faMobileScreenButton, faCode, faKitMedical, faAngleDown, faPen, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { toast as superToast } from 'bulma-toast'
 
 @Component({
   selector: 'app-home',
@@ -20,6 +21,8 @@ export class HomeComponent implements OnInit {
   faEyeSlash = faEyeSlash;
   faGithub = faGithub;
   faUserLock = faUserLock;
+  faPen = faPen;
+  faCopy = faCopy;
   faHouse = faHouse;
   faMobileScreenButton = faMobileScreenButton;
   faCode = faCode;
@@ -35,27 +38,61 @@ export class HomeComponent implements OnInit {
   totp = require('totp-generator');
   code = "";
   duration=0;
-  xss = "<script>alert('xss');</script>https://"
+  example_domain=""
+  example_code=""
+  example_title=""
+  remainingTime=0;
+  example_color=""
+  last_random_i = 0;
+  current_color_index = 0;
 
   constructor(
     private userService:UserService, 
     private _sanitizer: DomSanitizer,
     private utils: Utils){
-    this.xss = utils.sanitize(this.xss)!
   }
 
   ngOnInit(){
     const crypto = new Crypto();
     // each second :
-    setInterval(()=> { this.generateCode() }, 500);
+    this.current_color_index = Math.floor(Math.random()*3);
+    this.generateExample();
+    setInterval(()=> { this.generateExample(); }, 5000);
+    setInterval(()=> { this.generateTime() }, 20);
   }
 
-  generateCode(){
-       this.duration = 30 - Math.floor(Date.now() / 1000 % 30);
-      this.code=this.totp("JBSWY3DPEHPK3PXP");
+  generateExample(){
+    const domains = ["facebook.com", "github.com", "google.com", "apple.com", "google.com", "amazon.com", "aws.com", "microsoft.com", "onedrive.com", "gitlab.com"]
+    const titles = ["Facebook", "Github", "Gmail", "Apple", "Google", "Amazon", "AWS", "Microsoft", "OneDrive", "Gitlab"]
+    const colors = [ "info", "success", "danger"]
+    let random_i = Math.floor(Math.random()*(domains.length));
+    if (random_i == this.last_random_i){
+      this.generateExample();
+      return;
+    }
+    this.example_domain = domains[random_i];
+    this.example_title = titles[random_i];
+    this.example_code = (Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000).toString();
+    this.current_color_index = (this.current_color_index+1)%colors.length;
+    this.example_color = colors[this.current_color_index];
   }
 
-  
+  generateTime(){
+    const duration = 30 - Math.floor(Date.now() / 10 % 3000)/100;
+    this.remainingTime = (duration/30)*100  
+    if(this.remainingTime >= 99.99){
+      this.generateExample();
+    }
+  }
+
+  copy(){
+    superToast({
+      message: "Copied !",
+      type: "is-success",
+      dismissible: true,
+    animate: { in: 'fadeIn', out: 'fadeOut' }
+    });
+  }
 
  login(){
     const crypto = new Crypto();
