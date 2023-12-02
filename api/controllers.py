@@ -727,3 +727,23 @@ def send_verification_email(user_id):
     except Exception as e:
         logging.warning("Error while sending verification email to user " + str(user_id) + ". Exception : " + str(e))
         return {"message": "Error while sending verification email"}, 500
+
+@require_userid
+def verify_email(user_id,token):
+    user = UserDB().getById(user_id)
+    if user == None:
+        return {"message": "User not found"}, 404
+    token_db = EmailVerificationToken_db()
+    token_obj = token_db.get_by_user_id(user_id)
+    if token_obj == None:
+        return {"message": "Token not found"}, 403
+    if token_obj.token != token:
+        return {"message": "Invalid token"}, 403
+    if token_obj.expiration < datetime.datetime.utcnow().timestamp():
+        return {"message": "Token expired"}, 403
+    token_db.delete(user_id)
+    user = UserDB().update_email_verification(user_id, True)
+    if user:
+        return {"message": "Email verified"}, 200
+    else:
+        return {"message": "Error while verifying email"}, 500
