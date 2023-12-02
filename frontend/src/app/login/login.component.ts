@@ -377,6 +377,7 @@ export class LoginComponent {
         superToast({
           message: "Error : Impossible ro retrieve information from server",
           type: "is-danger",
+          duration: 20000,
           dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
@@ -385,12 +386,24 @@ export class LoginComponent {
     (error) => {
       console.log(error);
       this.isLoading=false;
-      superToast({
-        message: "Error : "+ error.error.message,
-        type: "is-danger",
-        dismissible: true,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      if(error.error.message == "User is blocked"){
+        superToast({
+          message: "Your account has been blocked for security reasons. Please contact the administrator at developer[at]zero-totp.com to unlock it",
+          type: "is-danger",
+          dismissible: true,
+          duration: 99000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      } else {
+        superToast({
+          message: "Error : "+ error.error.message,
+          type: "is-danger",
+          dismissible: true,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      }
+      
     });
   }
 
@@ -458,7 +471,7 @@ export class LoginComponent {
         const zke_key_encrypted = data.zke_encrypted_key
         resolve(zke_key_encrypted);
       }, (error)=> {
-        reject("Impossible to retrieve your encryption key. Please try again later. " + error);
+        reject("Impossible to retrieve your encryption key. Please try again later. " + error.error.error);
       });
     });
     
