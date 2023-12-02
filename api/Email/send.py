@@ -55,12 +55,10 @@ def send_verification_email(email_reciever:str, token:str):
 
     message.attach(part1)
     message.attach(part2)
-    context = ssl.create_default_context()
     with smtplib.SMTP(environment.email_smtp_server, environment.email_smtp_port) as server:
         server.connect(environment.email_smtp_server, environment.email_smtp_port)
         server.starttls()
         server.login(environment.email_smtp_username, environment.email_sender_password)
-        #server.ehlo()
         server.sendmail(
             environment.email_sender_address, email_reciever, message.as_string()
         )
