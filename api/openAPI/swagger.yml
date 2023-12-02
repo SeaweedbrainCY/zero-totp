@@ -472,7 +472,7 @@ paths:
       summary: Return the user's role
       responses:
         "200": # status code
-          description: Return the user's role
+          description: Return the user's role. It can be "user" or "admin" or "blocked" or "unverified" if the user haven't verified his email yet
           content:
             application/json:
               schema:
@@ -628,7 +628,7 @@ paths:
       operationId: controllers.verify_email
       tags:
         - User
-      summary: Get the email verification token
+      summary: Verify the user token
       requestBody:
         required: true
         content:
