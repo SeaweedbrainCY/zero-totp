@@ -22,6 +22,9 @@ class TestAllSecret(unittest.TestCase):
         self.get_all_secret = patch("database.totp_secret_repo.TOTP_secret.get_all_enc_secret_by_user_id").start()
         self.get_all_secret.return_value = [TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret"), TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret2")]
 
+        self.getUserById = patch("database.user_repo.User.getById").start()
+        self.getUserById.return_value = User(id=1, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+
 
     def tearDown(self):
         patch.stopall()
@@ -63,3 +66,18 @@ class TestAllSecret(unittest.TestCase):
         self.get_all_secret.return_value = []
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 404)
+
+    
+    def test_get_all_secret_blocked_user(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.getUserById.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password", role="user", username="username", createdAt="01/01/2001")
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], "User is blocked")
+    
+    def test_get_all_secret_unverified_user(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.getUserById.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], "Not verified")

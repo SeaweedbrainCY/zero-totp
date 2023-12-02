@@ -9,6 +9,8 @@ import jwt
 import datetime
 
 class TestEncryptedSecretController(unittest.TestCase):
+    USER_NOT_VERIFIED_ERROR_MESSAGE = "Not verified"
+    USER_BLOCKED_ERROR_MESSAGE = "User is blocked"
 
     def setUp(self):
         if env.db_uri != "sqlite:///:memory:":
@@ -31,6 +33,9 @@ class TestEncryptedSecretController(unittest.TestCase):
         self.deleteTOTPSecret = patch("database.totp_secret_repo.TOTP_secret.delete").start()
         self.deleteTOTPSecret.return_value = TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret")
 
+        self.get_user_by_id = patch("database.user_repo.User.getById").start()
+        self.get_user_by_id.return_value = User(id=1, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+
 
         self.json_payload = {"enc_secret": "enc_secret"}
 
@@ -48,6 +53,10 @@ class TestEncryptedSecretController(unittest.TestCase):
         jwtCookie = jwt.encode(payload, env.jwt_secret, algorithm=jwt_func.ALG)
         return jwtCookie
     
+######
+## GET
+######
+
 
     def test_get_encrypted_secret(self):
         self.client.cookies = {"api-key": self.jwtCookie}
@@ -82,7 +91,25 @@ class TestEncryptedSecretController(unittest.TestCase):
         self.getEncSecretByUUID.return_value =  TOTP_secret(uuid="uuid", user_id=2, secret_enc = "enc_secret")
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 403)
-        
+
+    def test_get_encrypted_secret_user_blocked(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.get_user_by_id.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
+    
+    def test_get_encrypted_secret_user_unverified(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.get_user_by_id.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)
+
+
+#######
+## POST
+#######
 
     def test_post_encrypted_secret(self):
          self.client.cookies = {"api-key": self.jwtCookie}
@@ -117,6 +144,24 @@ class TestEncryptedSecretController(unittest.TestCase):
         response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 500)
     
+    def test_post_encrypted_secret_user_blocked(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.get_user_by_id.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        response = self.client.post(self.endpoint, json=self.json_payload)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
+    
+    def test_post_encrypted_secret_user_unverified(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.get_user_by_id.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        response = self.client.post(self.endpoint, json=self.json_payload)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)
+
+######
+## PUT
+######
+
 
     def test_update_encrypted_secret(self):
         self.client.cookies = {"api-key": self.jwtCookie}
@@ -155,7 +200,28 @@ class TestEncryptedSecretController(unittest.TestCase):
         self.updateTOTPSecret.return_value = None
         response = self.client.put(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 500)
+
+    def test_update_encrypted_secret_user_blocked(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.get_user_by_id.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        response = self.client.put(self.endpoint, json=self.json_payload)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
     
+    def test_update_encrypted_secret_user_unverified(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.get_user_by_id.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        response = self.client.put(self.endpoint, json=self.json_payload)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)
+
+
+#########
+## DELETE
+#########
+
+
+
     def test_delete_encrypted_secret(self):
         self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.delete(self.endpoint)
@@ -195,4 +261,16 @@ class TestEncryptedSecretController(unittest.TestCase):
         response = self.client.delete(self.endpoint)
         self.assertEqual(response.status_code, 500)
     
-
+    def test_delete_encrypted_secret_user_blocked(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.get_user_by_id.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        response = self.client.delete(self.endpoint)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
+    
+    def test_delete_encrypted_secret_user_unverified(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.get_user_by_id.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        response = self.client.delete(self.endpoint)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)

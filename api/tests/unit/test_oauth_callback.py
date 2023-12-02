@@ -25,6 +25,8 @@ class TestOauthCallback(unittest.TestCase):
         self.creds = {"secret" : "secret_should_be_encrypted", "expiry": datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
         self.endpoint = "/google-drive/oauth/callback"
         self.setSateSession = "/google-drive/oauth/authorization-flow"
+        self.blocked_user_id = 2
+        self.unverified_user_id = 3
 
         self.get_auth_url = patch("Oauth.oauth_flow.get_authorization_url").start()
         self.get_auth_url.return_value = "auth_url", 'state'
@@ -41,6 +43,10 @@ class TestOauthCallback(unittest.TestCase):
             db.create_all()
             self.user_repo.create(username="user", email="user@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
+            self.user_repo.create(username="user", email="user@test.test", password="password", 
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow(),isBlocked=True)
+            self.user_repo.create(username="user", email="user@test.test", password="password", 
+                    randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.utcnow())
             db.session.commit()
             
 
@@ -175,3 +181,21 @@ class TestOauthCallback(unittest.TestCase):
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 401)
             self.assertEqual(self.google_integration_repo.is_google_drive_enabled(1), 0)
+    
+    def test_oauth_callback_unverified_user(self):
+        self.client.cookies = {"api-key": jwt_func.generate_jwt(self.unverified_user_id)}
+        with self.application.app.app_context():
+            self.client.get(self.setSateSession)
+            self.client.follow_redirects = False
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(self.google_integration_repo.is_google_drive_enabled(self.unverified_user_id), 0)
+    
+    def test_oauth_callback_blocked_user(self):
+        self.client.cookies = {"api-key": jwt_func.generate_jwt(self.blocked_user_id)}
+        with self.application.app.app_context():
+            self.client.get(self.setSateSession)
+            self.client.follow_redirects = False
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(self.google_integration_repo.is_google_drive_enabled(self.blocked_user_id), 0)

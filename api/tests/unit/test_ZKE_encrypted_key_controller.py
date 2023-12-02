@@ -2,11 +2,12 @@ import unittest
 import controllers
 from app import app
 from unittest.mock import patch
-from database.model import ZKE_encryption_key
+from database.model import ZKE_encryption_key, User
 import environment as env
 from CryptoClasses import jwt_func
 import jwt
 import datetime
+
 
 class TestZKEEncryptedKey(unittest.TestCase):
 
@@ -21,6 +22,9 @@ class TestZKEEncryptedKey(unittest.TestCase):
 
         self.get_zke_enc = patch("database.zke_repo.ZKE.getByUserId").start()
         self.get_zke_enc.return_value = ZKE_encryption_key(id=1, user_id=1, ZKE_key="encrypted_key")
+
+        self.getUserByID = patch("database.user_repo.User.getById").start()
+        self.getUserByID.return_value = User(id=1, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
 
 
     def tearDown(self):
@@ -64,3 +68,16 @@ class TestZKEEncryptedKey(unittest.TestCase):
         self.get_zke_enc.return_value = None
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 404)
+    
+
+    def test_get_ZKE_blocked_user(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.getUserByID.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 403)
+    
+    def test_get_ZKE_unverified_user(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        self.getUserByID.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 403)

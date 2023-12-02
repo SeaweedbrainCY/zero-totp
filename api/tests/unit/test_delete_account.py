@@ -34,6 +34,8 @@ class TestDeleteAccount(unittest.TestCase):
         self.user_without_google_drive = 2
         self.user_admin_id = 3
         self.user_admin_id2 = 4
+        self.user_blocked = 5
+        self.user_not_verified = 6
 
         self.user_repo = User_repo()
         self.totp_secret_repo = TOTP_secret_repo()
@@ -60,10 +62,12 @@ class TestDeleteAccount(unittest.TestCase):
 
         with self.flask_application.app.app_context():
             db.create_all()
-            self.user_repo.create("user1", "user1@test.com", "password", "salt", True, "salt", "01/01/2001")
-            self.user_repo.create("user2", "user2@test.com", "password", "salt", True, "salt", "01/01/2001")
-            self.user_repo.create("user3", "user3@test.com", "password", "salt", True, "salt", "01/01/2001")
-            self.user_repo.create("user4", "user3@test.com", "password", "salt", True, "salt", "01/01/2001")
+            self.user_repo.create("user1", "user1@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
+            self.user_repo.create("user2", "user2@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
+            self.user_repo.create("user3", "user3@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
+            self.user_repo.create("user4", "user3@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
+            self.user_repo.create("user5", "user5@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=True)
+            self.user_repo.create("user6", "user6@test.com", "password", "salt", "salt", "01/01/2001", isVerified=False, isBlocked=False)
 
             # User 1 :
             self.totp_secret_repo.add(self.full_user_id, "secret1", str(uuid4()))
@@ -186,7 +190,7 @@ class TestDeleteAccount(unittest.TestCase):
             self.client.cookies= {"api-key" :generate_jwt(10)}
             self.client.headers = {"x-hash-passphrase": "badPassphrase"}
             response = self.client.delete(self.deleteEndpoint)
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
             self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
     
     def test_delete_user_error_with_google_drive(self):
@@ -212,6 +216,22 @@ class TestDeleteAccount(unittest.TestCase):
             self.secrets_delete_all.side_effect = Exception("error")
             response = self.client.delete(self.deleteEndpoint)
             self.assertEqual(response.status_code, 500)
+    
+    def test_delete_user_not_verified(self):
+        with self.flask_application.app.app_context():
+            self.client.cookies= {"api-key" :generate_jwt(self.user_not_verified)}
+            self.client.headers = {"x-hash-passphrase": "passphrase"}
+            response = self.client.delete(self.deleteEndpoint)
+            self.assertEqual(response.status_code, 403)
+            self.assertNotEqual(self.user_repo.getById(self.user_not_verified), None)
+    
+    def test_delete_user_blocked(self):
+        with self.flask_application.app.app_context():
+            self.client.cookies= {"api-key" :generate_jwt(self.user_blocked)}
+            self.client.headers = {"x-hash-passphrase": "passphrase"}
+            response = self.client.delete(self.deleteEndpoint)
+            self.assertEqual(response.status_code, 403)
+            self.assertNotEqual(self.user_repo.getById(self.user_blocked), None)
 
 ##############################
 ## delete account an admin  ##
