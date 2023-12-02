@@ -16,6 +16,8 @@ from Oauth import google_drive_api
 import environment as env
 import random
 import string
+from Email import send as send_email
+from database.email_verification_repo import EmailVerificationToken as EmailVerificationToken_db
 import CryptoClasses.jwt_func as jwt_auth
 from CryptoClasses.sign_func import API_signature
 import CryptoClasses.jwt_func as jwt_auth
@@ -711,3 +713,17 @@ def delete_account_admin(user_id, account_id_to_delete):
     except Exception as e:
         logging.warning("Error while deleting user from database for user " + str(account_id_to_delete) + ". Exception : " + str(e))
         return {"message": "Error while deleting account"}, 500
+
+
+@require_userid
+def send_verification_email(user_id):
+    user = UserDB().getById(user_id)
+    if user == None:
+        return {"message": "User not found"}, 404
+    token = utils.generate_new_email_verification_token(user_id=user_id)
+    try:
+        send_email.send_verification_email(user.mail, token)
+        return {"message": "Verification email sent"}, 200
+    except Exception as e:
+        logging.warning("Error while sending verification email to user " + str(user_id) + ". Exception : " + str(e))
+        return {"message": "Error while sending verification email"}, 500
