@@ -1,0 +1,12 @@
+ul {
+    list-style-type: circle;
+    list-style-position: inside;
+}
+
+li{
+    padding-left: 5%;
+}
+
+.indent { 
+    text-indent: 30px;
+ }
