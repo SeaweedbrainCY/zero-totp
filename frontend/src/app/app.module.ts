@@ -34,6 +34,7 @@ import { CallbackComponent } from './callback/callback.component';
 import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 import { PreferencesComponent } from './preferences/preferences.component';
 import { OpenSourceLibraryComponent } from './open-source-library/open-source-library.component';
+import { EmailVerificationComponent } from './email-verification/email-verification.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { OpenSourceLibraryComponent } from './open-source-library/open-source-li
     CallbackComponent,
     OauthSyncComponent,
     PreferencesComponent,
-    OpenSourceLibraryComponent
+    OpenSourceLibraryComponent,
+    EmailVerificationComponent
   ],
   imports: [
     BrowserModule,
