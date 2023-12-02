@@ -113,7 +113,6 @@ def login():
     userDB = UserDB()
 
     user = userDB.getByEmail(email)
-    logging.info(user)
     bcrypt = Bcrypt(passphrase)
     if not user:
         logging.info("User " + str(email) + " tried to login but does not exist. A fake password is checked to avoid timing attacks")
@@ -123,6 +122,8 @@ def login():
     checked = bcrypt.checkpw(user.password)
     if not checked:
         return {"message": "Invalid credentials"}, 403
+    if user.isBlocked: # only authenticated users can see the blocked status
+        return {"message": "User is blocked"}, 403
         
 
 
