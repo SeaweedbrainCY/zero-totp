@@ -10,8 +10,8 @@ class User:
     def getById(self, user_id):
         return db.session.query(UserModel).filter_by(id=user_id).first()
     
-    def create(self, username, email, password, randomSalt, isVerified, passphraseSalt, today):
-        user = UserModel(username=username, mail=email, password=password, derivedKeySalt=randomSalt, isVerified = isVerified, passphraseSalt = passphraseSalt, createdAt=today)
+    def create(self, username, email, password, randomSalt, passphraseSalt, today, isVerified=False, isBlocked=False):
+        user = UserModel(username=username, mail=email, password=password, derivedKeySalt=randomSalt, isVerified = isVerified, passphraseSalt = passphraseSalt, createdAt=today, role="user", isBlocked=isBlocked)
         db.session.add(user)
         db.session.commit()
         return user
