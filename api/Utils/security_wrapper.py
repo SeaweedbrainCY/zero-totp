@@ -53,6 +53,8 @@ def require_admin_token(func):
         return {"error": "Unauthorized"}, 403
      return wrapper
 
+
+# only the user id is required. The request is not rejected even if the user is blocked or not verified.
 def require_userid(func):
     def wrapper(context_, user, token_info, *args, **kwargs):
         try:
@@ -64,6 +66,19 @@ def require_userid(func):
         return func(user_id, *args, **kwargs)
     return wrapper
 
+# Check that the user is verified and not blocked
+def require_valid_user(func):
+    @require_userid
+    def wrapper(user_id, *args, **kwargs):
+        user = UserDB().getById(user_id)
+        if user == None:
+            return {"error": "Unauthorized"}, 401
+        if not user.isVerified:
+            return {"error": "Not verified"}, 403
+        if user.isBlocked:
+            return {"error": "User is blocked"}, 403
+        return func(user_id, *args, **kwargs)
+    return wrapper
 
 # By design, the user id is required and checked before the user token.
 # Require x-hash-passphrase header and check it against the user's hashed passphrase
