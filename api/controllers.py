@@ -26,7 +26,7 @@ import Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import require_admin_token, require_admin_role, require_userid, require_passphrase_verification
+from Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user
 import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
@@ -149,7 +149,7 @@ def get_login_specs(username):
     
     
 #GET /encrypted_secret/{uuid}
-@require_userid
+@require_valid_user
 def get_encrypted_secret(user_id, uuid):
     totp_secretDB =  TOTP_secretDB()
     enc_secret = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
@@ -163,7 +163,7 @@ def get_encrypted_secret(user_id, uuid):
             return {"message": "Forbidden"}, 403
         
 #POST /encrypted_secret/{uuid}
-@require_userid
+@require_valid_user
 def add_encrypted_secret(user_id,uuid, body):
     enc_secret = utils.sanitize_input(body["enc_secret"]).strip()
     if(uuid == ""):
@@ -179,7 +179,7 @@ def add_encrypted_secret(user_id,uuid, body):
             return {"message": "Unknown error while adding encrypted secret"}, 500
 
 #PUT /encrypted_secret/{uuid}
-@require_userid
+@require_valid_user
 def update_encrypted_secret(user_id,uuid, body):
     enc_secret = body["enc_secret"]
     
@@ -200,7 +200,7 @@ def update_encrypted_secret(user_id,uuid, body):
                 return {"message": "Encrypted secret updated"}, 201
 
 #DELETE /encrypted_secret/{uuid}
-@require_userid
+@require_valid_user
 def delete_encrypted_secret(user_id,uuid):
     if(uuid == ""):
         return {"message": "Invalid request"}, 400
@@ -221,7 +221,7 @@ def delete_encrypted_secret(user_id,uuid):
         
 
 #GET /all_secrets
-@require_userid
+@require_valid_user
 def get_all_secrets(user_id):
     totp_secretDB =  TOTP_secretDB()
     enc_secrets = totp_secretDB.get_all_enc_secret_by_user_id(user_id)
@@ -236,7 +236,7 @@ def get_all_secrets(user_id):
 
 
 #GET /zke_encrypted_key
-@require_userid
+@require_valid_user
 def get_ZKE_encrypted_key(user_id):
         logging.info(user_id)
         zke_db = ZKE_DB()
@@ -267,7 +267,7 @@ def update_email(user_id,body):
 
    
 #PUT /update/vault 
-@require_userid
+@require_valid_user
 def update_vault(user_id, body):
     returnJson = {"message": "Internal server error", "hashing":-1, "totp":-1, "user":-1, "zke":-1}
     try:
@@ -334,7 +334,7 @@ def update_vault(user_id, body):
         return returnJson, 500
 
 
-@require_userid
+@require_valid_user
 def export_vault(user_id):
     
     vault = {"version":1, "date": str(datetime.datetime.utcnow())}
@@ -354,11 +354,15 @@ def export_vault(user_id):
     vault = vault_b64 + "," + signature
     return vault, 200
 
-def get_role(token_info, *args, **kwargs):
-    user_id = token_info["sub"]
+@require_userid
+def get_role(user_id, *args, **kwargs):
     user = UserDB().getById(user_id=user_id)
     if not user:
         return {"message" : "User not found"}, 404
+    if user.isBlocked:
+        return {"message" : "blocked"}, 200
+    elif not user.isVerified:
+        return {"message" : "not_verified"}, 200
     return {"role": user.role}, 200
 
 
@@ -408,7 +412,7 @@ def get_authorization_flow():
     return {"authorization_url": authorization_url, "state":state}, 200
 
 # GET /google-drive/oauth/callback
-@require_userid
+@require_valid_user
 def oauth_callback(user_id):
     frontend_URI = env.frontend_URI[0] # keep the default URI, not regionized. 
     try: 
@@ -457,7 +461,7 @@ def oauth_callback(user_id):
 
 
 #GET /google-drive/option
-@require_userid
+@require_valid_user
 def get_google_drive_option(user_id):
     google_drive_integrations = GoogleDriveIntegrationDB()
     status = google_drive_integrations.is_google_drive_enabled(user_id)
@@ -467,7 +471,7 @@ def get_google_drive_option(user_id):
         return {"status": "disabled"}, 200
     
 #PUT /google-drive/backup
-@require_userid
+@require_valid_user
 def backup_to_google_drive(user_id, *args, **kwargs):
     
     token_db = Oauth_tokens_db()
@@ -492,7 +496,7 @@ def backup_to_google_drive(user_id, *args, **kwargs):
         return {"message": "Error while backing up to google drive"}, 500
 
 
-@require_userid
+@require_valid_user
 def verify_last_backup(user_id):
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
@@ -525,7 +529,7 @@ def verify_last_backup(user_id):
         return {"status": "ok", "is_up_to_date": False, "last_backup_date": "" }, 200
 
 
-@require_userid
+@require_valid_user
 def delete_google_drive_option(user_id):
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
@@ -554,7 +558,7 @@ def delete_google_drive_option(user_id):
         GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
         return {"message": "Error while revoking credentials"}, 200
 
-@require_userid
+@require_valid_user
 def get_preferences(user_id,fields):
     valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
     all_field = fields == "all" 
@@ -584,7 +588,7 @@ def get_preferences(user_id,fields):
     return user_preferences, 200
 
 
-@require_userid
+@require_valid_user
 def set_preference(user_id, body):
     field = body["id"]
     value = body["value"]
@@ -641,7 +645,7 @@ def set_preference(user_id, body):
         return {"message": "Invalid request"}, 400
 
 
-@require_userid
+@require_valid_user
 def delete_google_drive_backup(user_id):
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
