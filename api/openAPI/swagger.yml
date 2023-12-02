@@ -623,6 +623,48 @@ paths:
           description: Access disabled
         "500":
           description: Internal server error
+  /email/verify:
+    put:
+      operationId: controllers.verify_email
+      tags:
+        - User
+      summary: Get the email verification token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+              properties:
+                token:
+                  type: string
+      responses:
+        "200": 
+          description: Return the email verification token
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access disabled
+        "500":
+          description: Internal server error
+  /email/send_verification:
+    get:
+      operationId: controllers.send_verification_email
+      tags:
+        - User
+      summary: Send the email verification email
+      responses:
+        "200": 
+          description: Email sent
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access disabled
+        "500":
+          description: Internal server error
+
 components:
   securitySchemes:
     JWTAuth:
