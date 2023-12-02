@@ -57,3 +57,11 @@ class User:
         user.googleDriveSync = google_drive_sync
         db.session.commit()
         return user
+    
+    def update_email_verification(self, user_id, isVerified):
+        user = db.session.query(UserModel).filter_by(id=user_id).first()
+        if user == None:
+            return None
+        user.isVerified = isVerified
+        db.session.commit()
+        return user
