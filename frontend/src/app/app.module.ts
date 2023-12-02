@@ -33,6 +33,7 @@ import { AdminPageComponent } from './admin-page/admin-page.component';
 import { CallbackComponent } from './callback/callback.component';
 import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 import { PreferencesComponent } from './preferences/preferences.component';
+import { OpenSourceLibraryComponent } from './open-source-library/open-source-library.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import { PreferencesComponent } from './preferences/preferences.component';
     AdminPageComponent,
     CallbackComponent,
     OauthSyncComponent,
-    PreferencesComponent
+    PreferencesComponent,
+    OpenSourceLibraryComponent
   ],
   imports: [
     BrowserModule,
