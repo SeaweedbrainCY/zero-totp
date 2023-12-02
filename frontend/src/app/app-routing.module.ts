@@ -16,6 +16,7 @@ import { AdminPageComponent } from './admin-page/admin-page.component';
 import { CallbackComponent } from './callback/callback.component';
 import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 import { PreferencesComponent } from './preferences/preferences.component';
+import { OpenSourceLibraryComponent } from './open-source-library/open-source-library.component';
 
 const routes: Routes = [
   {path:'', component: HomeComponent},
@@ -35,6 +36,7 @@ const routes: Routes = [
   {path:"oauth/callback", component: CallbackComponent},
   {path:"oauth/synchronize", component: OauthSyncComponent},
   {path: "preferences", component: PreferencesComponent},
+  {path: "opensource", component: OpenSourceLibraryComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 
