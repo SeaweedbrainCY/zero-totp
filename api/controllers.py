@@ -26,7 +26,7 @@ import Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user
+from Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user, require_userid
 import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
@@ -359,10 +359,8 @@ def get_role(user_id, *args, **kwargs):
     user = UserDB().getById(user_id=user_id)
     if not user:
         return {"message" : "User not found"}, 404
-    if user.isBlocked:
-        return {"message" : "blocked"}, 200
     elif not user.isVerified:
-        return {"message" : "not_verified"}, 200
+        return {"role" : "not_verified"}, 200
     return {"role": user.role}, 200
 
 
