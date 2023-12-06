@@ -21,11 +21,12 @@ class User:
         db.session.commit()
         return True
     
-    def update_email(self, user_id, email):
+    def update_email(self, user_id, email, isVerified=False):
         user = db.session.query(UserModel).filter_by(id=user_id).first()
         if user == None:
             return None
         user.mail = email
+        user.isVerified = isVerified
         db.session.commit()
         return user
     

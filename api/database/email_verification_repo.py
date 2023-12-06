@@ -8,7 +8,7 @@ class EmailVerificationToken:
         return db.session.query(EmailVerificationToken_model).filter_by(user_id=user_id).first()
 
     def add(self, user_id, token, expires_at):
-        email_verification_token = EmailVerificationToken_model(user_id=user_id, token=token, expires_at=expires_at)
+        email_verification_token = EmailVerificationToken_model(user_id=user_id, token=token, expiration=expires_at)
         db.session.add(email_verification_token)
         db.session.commit()
         return email_verification_token

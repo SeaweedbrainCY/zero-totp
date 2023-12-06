@@ -270,8 +270,12 @@ def update_email(user_id,body):
     userDb = UserDB()
     if userDb.getByEmail(email):
         return {"message": "email already used"}, 403
-    user = userDb.update_email(user_id=user_id, email=email)
+    user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
     if user:
+        try:
+           send_verification_email(user=user_id, context_={"user":user_id}, token_info={"user":user_id})
+        except Exception as e:
+            logging.error("Unknown error while sending verification email" + str(e))
         return {"message":user.mail},201
     else :
         logging.warning("An error occured while updating email of user " + str(user_id))
