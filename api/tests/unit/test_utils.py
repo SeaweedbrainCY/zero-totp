@@ -1,15 +1,21 @@
 import unittest
 from CryptoClasses.hash_func import Bcrypt
-from Utils.utils import check_email, sanitize_input, extract_last_backup_from_list, FileNotFound, get_all_secrets_sorted
+from Utils.utils import check_email, sanitize_input, extract_last_backup_from_list, FileNotFound, get_all_secrets_sorted, generate_new_email_verification_token
 import datetime
 from uuid import uuid4
 from random import shuffle
 from database.model import TOTP_secret
+from unittest.mock import patch
+import logging
 
 class TestBcrypt(unittest.TestCase):
     
     def setUp(self):
-        pass
+        self.delete_email_token = patch("database.email_verification_repo.EmailVerificationToken.delete").start()
+        self.delete_email_token.return_value = True
+
+        self.add_email_token = patch("database.email_verification_repo.EmailVerificationToken.add").start()
+        self.add_email_token.return_value = True
 
 #####################
 ### check_email tests
@@ -206,3 +212,15 @@ class TestBcrypt(unittest.TestCase):
         shuffle(secrets)
         secrets_sorted = get_all_secrets_sorted(secrets)
         self.assertEqual(secrets_sorted, already_sorted_secrets)
+
+
+
+########################################
+## generate_new_email_verification_token
+########################################
+
+    def test_generate_new_email_verification_token(self):
+        token = generate_new_email_verification_token(1)
+        self.delete_email_token.assert_called_once_with(1)
+        self.add_email_token.assert_called_once()
+        self.assertIsNotNone(token)
