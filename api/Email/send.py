@@ -6,6 +6,9 @@ from email.mime.multipart import MIMEMultipart
 
 
 def send_verification_email(email_reciever:str, token:str):
+    if environment.email_smtp_server == "" or environment.email_smtp_port == "" or environment.email_smtp_username == "" or environment.email_sender_password == "" or environment.email_sender_address == "":
+        logging.error("Email configuration is not set. Please set the email configuration in the environment file.")
+        raise Exception("Email configuration is not set. Please set the email configuration in the environment file.")
     message = MIMEMultipart("alternative")
     message["Subject"] = "Verify your email address"
     message["From"] = environment.email_sender_address
