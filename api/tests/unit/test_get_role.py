@@ -9,7 +9,7 @@ import datetime
 import jwt
 
 
-class TestJWT(unittest.TestCase):
+class TestGetRole(unittest.TestCase):
 
     def setUp(self):
         if env.db_uri != "sqlite:///:memory:":
