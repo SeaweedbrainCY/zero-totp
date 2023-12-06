@@ -7,13 +7,17 @@
         <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info">Verify your email address <fa-icon [icon]="faPaperPlane"></fa-icon></h1>
         <p class="is-size-6 has-text-centered has-text-weight-bold has-text-grey">We have sent you an email with a <code class="is-family-code">code</code> to verify your email address.</p>
         <div class="is-flex">
-        <input class="input mt-6" type="password" placeholder="Enter the code here">
+        <input class="input mt-6" type="password" name="code" [(ngModel)]="code" placeholder="Enter the code here">
         
-            <button class="button is-info  is-outlined mt-6 ml-2">Verify</button>
+            <button class="button is-info  is-outlined mt-6 ml-2" (click)="verify()">Verify</button>
         </div>
         <div>
+            <span *ngIf="errorMessage != ''" class="has-text-danger is-light">{{errorMessage}}</span>
             <p class="has-text-grey has-text-centered mt-6">
                 The code is valid for 10 minutes. If you don't receive the email, check your spam folder or <a class="has-text-info" >ask for a new code <fa-icon [icon]="faArrowRotateLeft"></fa-icon></a>
+            </p><br>
+            <p class="has-text-grey has-text-centered">
+                The email has been sent to <span class="has-text-weight-bold">{{emailAddress}}</span>. If you want to change your email address, you can <a class="has-text-info" >change it here <fa-icon [icon]="faPen"></fa-icon></a>
             </p>
             </div>
     </div>
