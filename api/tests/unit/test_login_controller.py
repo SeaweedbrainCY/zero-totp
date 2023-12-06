@@ -40,12 +40,22 @@ class TestLoginController(unittest.TestCase):
         self.assertIn("username", response.json())
         self.assertIn("id", response.json())
         self.assertIn("derivedKeySalt", response.json())
+        self.assertIn("isGoogleDriveSync", response.json())
+        self.assertIn("role", response.json())
+        self.assertIn("isVerified", response.json())
         self.assertIn("Set-Cookie", response.headers)
         self.assertIn("api-key", response.headers["Set-Cookie"])
         self.assertIn("HttpOnly", response.headers["Set-Cookie"])
         self.assertIn("Secure", response.headers["Set-Cookie"])
         self.assertIn("SameSite=Lax", response.headers["Set-Cookie"])
         self.assertIn("Expires", response.headers["Set-Cookie"])
+    
+    def test_login_not_verified_user(self):
+        response = self.client.post(self.loginEndpoint, json=self.json_payload)
+        self.getByEmailMocked.return_value = User(id=1, username="username", derivedKeySalt="randomSalt", password="hashed", isVerified=0, passphraseSalt="salt", isBlocked=False)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("isVerified", response.json())
+        self.assertIn("Set-Cookie", response.headers)
 
     def test_login_missing_parameters(self):
         for key in self.json_payload.keys():
@@ -116,5 +126,7 @@ class TestLoginController(unittest.TestCase):
         response = self.client.get(self.specsEndpoint)
         self.assertEqual(response.status_code, 200)
         self.assertIn("passphrase_salt", response.json())
+    
+
     
     
