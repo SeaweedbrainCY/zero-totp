@@ -73,7 +73,7 @@ def signup():
         return {"message": "Unknown error while hashing your password"}, 500
     try:
         today = datetime.datetime.now().strftime("%d/%m/%Y")
-        user = userDB.create(username, email, hashedpw, derivedKeySalt, 0, passphraseSalt, today)
+        user = userDB.create(username=username, email=email, password=hashedpw, randomSalt=derivedKeySalt, isVerified=0,isBlocked=0, passphraseSalt=passphraseSalt, today=today)
     except Exception as e:
         logging.error("Unknown error while creating user" + str(e))
         return {"message": "Unknown error while creating user"}, 500
@@ -84,7 +84,15 @@ def signup():
         except Exception as e:
            zke_key = None
         if zke_key:
-            return {"message": "User created"}, 201
+            jwt_token = jwt_auth.generate_jwt(user.id)
+            try:
+                send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
+            except Exception as e:
+                logging.error("Unknown error while sending verification email" + str(e))
+
+            response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created"}))
+            response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
+            return response
         else :
             userDB.delete(user.id)
             logging.error("Unknown error while storing user ZKE keys" + str(username))
