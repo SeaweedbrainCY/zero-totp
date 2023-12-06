@@ -366,11 +366,17 @@ export class LoginComponent {
         this.userService.setId(data.id);
         this.userService.setEmail(this.email);
         this.userService.setDerivedKeySalt(data.derivedKeySalt);
+        if(data.isVerified == false){
+          this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
+        } else {
+
+        
         if(data.role == "admin"){
           this.userService.setIsAdmin(true);
         }
         this.userService.setGoogleDriveSync(data.isGoogleDriveSync);
         this.final_zke_flow();
+        }
       } catch(e){
         this.isLoading=false;
         console.log(e);
@@ -382,6 +388,7 @@ export class LoginComponent {
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
       }
+      
     },
     (error) => {
       console.log(error);
