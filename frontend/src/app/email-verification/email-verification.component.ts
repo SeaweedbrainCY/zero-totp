@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane, faArrowRotateLeft } from '@fortawesome/free-solid-svg-icons';
 @Component({
   selector: 'app-email-verification',
   templateUrl: './email-verification.component.html',
@@ -7,6 +7,7 @@ import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 })
 export class EmailVerificationComponent {
   faPaperPlane = faPaperPlane;
+  faArrowRotateLeft = faArrowRotateLeft;
   constructor() { }
 
 }
