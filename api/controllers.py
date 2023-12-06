@@ -137,7 +137,10 @@ def login():
 
     jwt_token = jwt_auth.generate_jwt(user.id)
 
-    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role}))
+    if user.isVerified:
+        response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":user.isVerified}))
+    else:
+        response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
 
