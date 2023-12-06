@@ -126,6 +126,7 @@ export class AccountComponent implements OnInit {
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
       this.userService.setEmail(JSON.parse(JSON.stringify(response.body))["message"])
+      this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
     }, error =>{
       this.buttonLoading["email"] = 0
       if(error.error.message == undefined){
