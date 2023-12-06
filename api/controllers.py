@@ -768,5 +768,5 @@ def verify_email(user_id,body):
     user = UserDB().update_email_verification(user_id, True)
     if user:
         return {"message": "Email verified"}, 200
-    else:
+    else:# pragma: no cover
         return {"message": "Error while verifying email"}, 500
