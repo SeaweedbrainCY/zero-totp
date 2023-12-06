@@ -731,29 +731,34 @@ def delete_account_admin(user_id, account_id_to_delete):
 
 @require_userid
 def send_verification_email(user_id):
+    logging.info("Sending verification email to user " + str(user_id))
     user = UserDB().getById(user_id)
     if user == None:
         return {"message": "User not found"}, 404
     token = utils.generate_new_email_verification_token(user_id=user_id)
     try:
         send_email.send_verification_email(user.mail, token)
+        logging.info("Verification email sent to user " + str(user_id))
         return {"message": "Verification email sent"}, 200
     except Exception as e:
-        logging.warning("Error while sending verification email to user " + str(user_id) + ". Exception : " + str(e))
+        logging.error("Error while sending verification email to user " + str(user_id) + ". Exception : " + str(e))
         return {"message": "Error while sending verification email"}, 500
 
 @require_userid
-def verify_email(user_id,token):
+def verify_email(user_id,body):
     user = UserDB().getById(user_id)
     if user == None:
         return {"message": "User not found"}, 404
+    if user.isVerified:
+        return {"message": "Email already verified"}, 200
     token_db = EmailVerificationToken_db()
     token_obj = token_db.get_by_user_id(user_id)
     if token_obj == None:
         return {"message": "Token not found"}, 403
-    if token_obj.token != token:
+    if token_obj.token != body["token"]:
         return {"message": "Invalid token"}, 403
-    if token_obj.expiration < datetime.datetime.utcnow().timestamp():
+    if float(token_obj.expiration) < datetime.datetime.utcnow().timestamp():
+        token_db.delete(user_id)
         return {"message": "Token expired"}, 403
     token_db.delete(user_id)
     user = UserDB().update_email_verification(user_id, True)
