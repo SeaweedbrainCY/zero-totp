@@ -33,6 +33,9 @@ class TestSignupController(unittest.TestCase):
         self.check_email.return_value = True 
 
         self.json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py", "derivedKeySalt": "randomSalt", "ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
+        
+        self.send_verification_email = patch("controllers.send_verification_email").start()
+        self.send_verification_email.return_value = True
 
     def tearDown(self):
         patch.stopall()
@@ -40,6 +43,18 @@ class TestSignupController(unittest.TestCase):
     
 
     def test_signup(self):
+        response = self.client.post("/signup", json=self.json_payload)
+        self.assertEqual(response.status_code, 201)
+        self.assertIn("Set-Cookie", response.headers)
+        self.assertIn("api-key", response.headers["Set-Cookie"])
+        self.assertIn("HttpOnly", response.headers["Set-Cookie"])
+        self.assertIn("Secure", response.headers["Set-Cookie"])
+        self.assertIn("SameSite=Lax", response.headers["Set-Cookie"])
+        self.assertIn("Expires", response.headers["Set-Cookie"])
+        self.send_verification_email.assert_called_once()
+    
+    def test_signup_error_while_sending_verification_email(self):
+        self.send_verification_email.side_effect = Exception("error")
         response = self.client.post("/signup", json=self.json_payload)
         self.assertEqual(response.status_code, 201)
     

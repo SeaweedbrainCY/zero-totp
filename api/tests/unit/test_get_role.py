@@ -9,7 +9,7 @@ import datetime
 import jwt
 
 
-class TestJWT(unittest.TestCase):
+class TestGetRole(unittest.TestCase):
 
     def setUp(self):
         if env.db_uri != "sqlite:///:memory:":
@@ -20,15 +20,22 @@ class TestJWT(unittest.TestCase):
         self.admin_user_id = 1
         self.not_admin_user_id = 2
         self.user_without_role_id = 3
+        self.user_blocked_id = 4
+        self.user_unverified_id = 5
 
         admin_user = UserModel(id=self.admin_user_id,username="admin", mail="admin@admin.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="admin")
         not_admin_user = UserModel(id=self.not_admin_user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="user")
         user_without_role = UserModel(id=self.user_without_role_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None)
+        user_blocked = UserModel(id=self.user_blocked_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None, isBlocked=True)
+        user_unverified = UserModel(id=self.user_unverified_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None, isBlocked=False)
+
         with self.flask_application.app.app_context():
             db.create_all()
             db.session.add(admin_user)
             db.session.add(not_admin_user)
             db.session.add(user_without_role)
+            db.session.add(user_blocked)
+            db.session.add(user_unverified)
             db.session.commit()
     
        
@@ -83,7 +90,20 @@ class TestJWT(unittest.TestCase):
         with self.flask_application.app.app_context():
             self.client.cookies= {"api-key" :generate_jwt(-1)}
             response = self.client.get(self.roleEndpoint)
-            self.assertEqual(response.status_code, 404)
+            self.assertEqual(response.status_code, 401)
+    
+    def test_get_role_blocked_user(self):
+        with self.flask_application.app.app_context():
+            self.client.cookies= {"api-key" :generate_jwt(self.user_blocked_id)}
+            response = self.client.get(self.roleEndpoint)
+            self.assertEqual(response.status_code, 403)
+    
+    def test_get_role_unverified_user(self):
+        with self.flask_application.app.app_context():
+            self.client.cookies= {"api-key" :generate_jwt(self.user_unverified_id)}
+            response = self.client.get(self.roleEndpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json()["role"], "not_verified")
 
     
 

@@ -59,3 +59,10 @@ class Preferences(db.Model):
     derivation_iteration = db.Column(db.Integer, nullable=True, default=700000)
     minimum_backup_kept = db.Column(db.Integer, nullable=True, default=20)
     backup_lifetime = db.Column(db.Integer, nullable=True, default=30)
+
+class EmailVerificationToken(db.Model):
+    __tablename__ = "email_verification_token"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
+    token = db.Column(db.String(256), nullable=False)
+    expiration = db.Column(db.String(256), nullable=False)

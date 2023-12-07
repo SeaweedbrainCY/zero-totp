@@ -8,6 +8,7 @@ from starlette.middleware.cors import CORSMiddleware
 from connexion.middleware import MiddlewarePosition
 from environment import logging
 import contextlib
+from flask_apscheduler import APScheduler
 
 
 
@@ -30,11 +31,30 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.secret_key = env.flask_secret_key
+
+    
     db.init_app(app)
     
 
     return app_instance
 app = create_app()
+scheduler = APScheduler()
+scheduler.init_app(app.app)
+scheduler.start()
+
+@scheduler.task('interval', id='clean_email_verification_token_from_db', hours=12, misfire_grace_time=900)
+def clean_email_verification_token_from_db():
+    with app.app.app_context():
+        logging.info("🧹  Cleaning email verification tokens from database")
+        from database.model import EmailVerificationToken
+        from datetime import datetime
+        tokens = db.session.query(EmailVerificationToken).all()
+        for token in tokens:
+            if float(token.expiration) < datetime.now().timestamp():
+                db.session.delete(token)
+                db.session.commit()
+                logging.info(f"❌  Deleted token for user {token.user_id} at {datetime.now()}")
+
 
 @app.app.before_request
 def before_request():

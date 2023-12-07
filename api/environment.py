@@ -7,15 +7,16 @@ environment = "production" if os.environ.get('ENVIRONMENT') == "production" else
 jwt_secret = os.environ.get('JWT_SECRET')
 private_key_path = os.environ.get('PRIVATE_KEY_PATH')
 public_key_path = os.environ.get('PUBLIC_KEY_PATH')
-
 oauth_client_secret_file = os.environ.get('OAUTH_CLIENT_SECRET_FILE')
 flask_secret_key = os.environ.get('FLASK_SECRET_KEY')
-
 sever_side_encryption_key = os.environ.get('SEVER_SIDE_ENCRYPTION_KEY')
-
 are_all_tables_created = False
-
 admin_can_delete_users = os.environ.get('ADMIN_CAN_DELETE_USERS') == "true"
+email_sender_address = os.environ.get('EMAIL_SENDER_ADDRESS')
+email_sender_password = os.environ.get('EMAIL_SENDER_PASSWORD')
+email_smtp_server = os.environ.get('EMAIL_SMTP_SERVER')
+email_smtp_port = os.environ.get('EMAIL_SMTP_PORT')
+email_smtp_username = os.environ.get('EMAIL_SMTP_USERNAME')
 
 if environment == "development":
     logging.basicConfig(
@@ -83,3 +84,7 @@ if flask_secret_key == None:
 if sever_side_encryption_key == None:
     logging.error("SEVER_SIDE_ENCRYPTION_KEY environment variable not set. Please set it to a valid secret key. Aborting...")
     raise Exception("SEVER_SIDE_ENCRYPTION_KEY environment variable not set. Please set it to a valid secret key.")
+
+
+if email_sender_address == None or email_sender_password == None or email_smtp_server == None or email_smtp_port == None or email_smtp_username == None:
+    logging.error("EMAIL_SENDER_ADDRESS, EMAIL_SENDER_PASSWORD, EMAIL_SMTP_SERVER, EMAIL_SMTP_USERNAME or EMAIL_SMTP_PORT environment variable not set. Email verification will not work.")

@@ -21,7 +21,7 @@ class TestUpdateVault(unittest.TestCase):
         
 
         self.getById = patch("database.user_repo.User.getById").start()
-        self.getById.return_value = User(id=1)
+        self.getById.return_value = User(id=1, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001", isBlocked=False)
 
         self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
         self.checkpw.return_value = True
@@ -164,6 +164,20 @@ class TestUpdateVault(unittest.TestCase):
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json()["user"], 0)
+    
+    def test_update_vault_unverified_user(self):
+        self.getById.return_value = User(id=1, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001", isBlocked=False)
+        self.client.cookies = {"api-key": self.jwtCookie}
+        response = self.client.put(self.endpoint, json=self.payload)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], "Not verified")
+    
+    def test_update_vault_blocked_user(self):
+        self.getById.return_value = User(id=1, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001", isBlocked=True)
+        self.client.cookies = {"api-key": self.jwtCookie}
+        response = self.client.put(self.endpoint, json=self.payload)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], "User is blocked")
 
 
 

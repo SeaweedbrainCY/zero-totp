@@ -27,6 +27,10 @@ class TestPreferences(unittest.TestCase):
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
         self.endpoint = "/preferences"
+        self.user_id =1
+        self.new_user_id = 2
+        self.blocked_user_id = 3
+        self.unverified_user_id = 4
 
         self.google_api_revoke_creds = patch("Oauth.google_drive_api.revoke_credentials").start()
         self.google_api_revoke_creds.return_value = True
@@ -40,6 +44,11 @@ class TestPreferences(unittest.TestCase):
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
             self.user_repo.create(username="user", email="user@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+            self.user_repo.create(username="user", email="user@test.test", password="password", 
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(), isBlocked=True)
+            self.user_repo.create(username="user", email="user@test.test", password="password", 
+                    randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.now())
+            
             self.preferences_repo.create_default_preferences(user_id=1)
 
             
@@ -150,7 +159,7 @@ class TestPreferences(unittest.TestCase):
     
     def test_get_preference_new_user(self):
         with self.application.app.app_context():
-            self.client.cookies = {"api-key": jwt_func.generate_jwt(2)}
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(self.new_user_id)}
             response = self.client.get(self.endpoint+"?fields=all")
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["favicon_policy"], self.favicon_policy_default_value)
@@ -158,6 +167,20 @@ class TestPreferences(unittest.TestCase):
             self.assertEqual(response.json()["backup_lifetime"], self.backup_lifetime_default_value)
             self.assertEqual(response.json()["backup_minimum"], self.minimum_backup_kept_default_value)
             self.assertEqual(len(response.json()), 4)
+    
+    def test_get_preference_blocked_user(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(self.blocked_user_id)}
+            response = self.client.get(self.endpoint+"?fields=all")
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["message"], "User is blocked")
+    
+    def test_get_preference_unverified_user(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(self.unverified_user_id)}
+            response = self.client.get(self.endpoint+"?fields=all")
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["message"], "Not verified")
 
 
 ##########
@@ -286,3 +309,17 @@ class TestPreferences(unittest.TestCase):
             self.assertEqual(response.status_code, 400)
             response = self.client.put(self.endpoint, json={"id": "backup_minimum", "value": 0})
             self.assertEqual(response.status_code, 400)
+
+    def test_get_preference_blocked_user(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(self.blocked_user_id)}
+            response = self.client.put(self.endpoint, json={"id": "backup_minimum" , "value": "10", "id": "backup_lifetime" , "value": "10"})
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], "User is blocked")
+    
+    def test_get_preference_unverified_user(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(self.unverified_user_id)}
+            response = self.client.put(self.endpoint, json={"id": "backup_minimum" , "value": "10", "id": "backup_lifetime" , "value": "10"})
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], "Not verified")

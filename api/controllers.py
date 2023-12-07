@@ -16,6 +16,8 @@ from Oauth import google_drive_api
 import environment as env
 import random
 import string
+from Email import send as send_email
+from database.email_verification_repo import EmailVerificationToken as EmailVerificationToken_db
 import CryptoClasses.jwt_func as jwt_auth
 from CryptoClasses.sign_func import API_signature
 import CryptoClasses.jwt_func as jwt_auth
@@ -24,7 +26,7 @@ import Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import require_admin_token, require_admin_role, require_userid, require_passphrase_verification
+from Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user, require_userid
 import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
@@ -71,7 +73,7 @@ def signup():
         return {"message": "Unknown error while hashing your password"}, 500
     try:
         today = datetime.datetime.now().strftime("%d/%m/%Y")
-        user = userDB.create(username, email, hashedpw, derivedKeySalt, 0, passphraseSalt, today)
+        user = userDB.create(username=username, email=email, password=hashedpw, randomSalt=derivedKeySalt, isVerified=0,isBlocked=0, passphraseSalt=passphraseSalt, today=today)
     except Exception as e:
         logging.error("Unknown error while creating user" + str(e))
         return {"message": "Unknown error while creating user"}, 500
@@ -82,7 +84,15 @@ def signup():
         except Exception as e:
            zke_key = None
         if zke_key:
-            return {"message": "User created"}, 201
+            jwt_token = jwt_auth.generate_jwt(user.id)
+            try:
+                send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
+            except Exception as e:
+                logging.error("Unknown error while sending verification email" + str(e))
+
+            response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created"}))
+            response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
+            return response
         else :
             userDB.delete(user.id)
             logging.error("Unknown error while storing user ZKE keys" + str(username))
@@ -111,7 +121,6 @@ def login():
     userDB = UserDB()
 
     user = userDB.getByEmail(email)
-    logging.info(user)
     bcrypt = Bcrypt(passphrase)
     if not user:
         logging.info("User " + str(email) + " tried to login but does not exist. A fake password is checked to avoid timing attacks")
@@ -121,12 +130,17 @@ def login():
     checked = bcrypt.checkpw(user.password)
     if not checked:
         return {"message": "Invalid credentials"}, 403
+    if user.isBlocked: # only authenticated users can see the blocked status
+        return {"message": "User is blocked"}, 403
         
 
 
     jwt_token = jwt_auth.generate_jwt(user.id)
 
-    response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role}))
+    if user.isVerified:
+        response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":user.isVerified}))
+    else:
+        response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
 
@@ -147,7 +161,7 @@ def get_login_specs(username):
     
     
 #GET /encrypted_secret/{uuid}
-@require_userid
+@require_valid_user
 def get_encrypted_secret(user_id, uuid):
     totp_secretDB =  TOTP_secretDB()
     enc_secret = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
@@ -161,7 +175,7 @@ def get_encrypted_secret(user_id, uuid):
             return {"message": "Forbidden"}, 403
         
 #POST /encrypted_secret/{uuid}
-@require_userid
+@require_valid_user
 def add_encrypted_secret(user_id,uuid, body):
     enc_secret = utils.sanitize_input(body["enc_secret"]).strip()
     if(uuid == ""):
@@ -177,7 +191,7 @@ def add_encrypted_secret(user_id,uuid, body):
             return {"message": "Unknown error while adding encrypted secret"}, 500
 
 #PUT /encrypted_secret/{uuid}
-@require_userid
+@require_valid_user
 def update_encrypted_secret(user_id,uuid, body):
     enc_secret = body["enc_secret"]
     
@@ -198,7 +212,7 @@ def update_encrypted_secret(user_id,uuid, body):
                 return {"message": "Encrypted secret updated"}, 201
 
 #DELETE /encrypted_secret/{uuid}
-@require_userid
+@require_valid_user
 def delete_encrypted_secret(user_id,uuid):
     if(uuid == ""):
         return {"message": "Invalid request"}, 400
@@ -219,7 +233,7 @@ def delete_encrypted_secret(user_id,uuid):
         
 
 #GET /all_secrets
-@require_userid
+@require_valid_user
 def get_all_secrets(user_id):
     totp_secretDB =  TOTP_secretDB()
     enc_secrets = totp_secretDB.get_all_enc_secret_by_user_id(user_id)
@@ -234,7 +248,7 @@ def get_all_secrets(user_id):
 
 
 #GET /zke_encrypted_key
-@require_userid
+@require_valid_user
 def get_ZKE_encrypted_key(user_id):
         logging.info(user_id)
         zke_db = ZKE_DB()
@@ -256,8 +270,12 @@ def update_email(user_id,body):
     userDb = UserDB()
     if userDb.getByEmail(email):
         return {"message": "email already used"}, 403
-    user = userDb.update_email(user_id=user_id, email=email)
+    user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
     if user:
+        try:
+           send_verification_email(user=user_id, context_={"user":user_id}, token_info={"user":user_id})
+        except Exception as e:
+            logging.error("Unknown error while sending verification email" + str(e))
         return {"message":user.mail},201
     else :
         logging.warning("An error occured while updating email of user " + str(user_id))
@@ -265,7 +283,7 @@ def update_email(user_id,body):
 
    
 #PUT /update/vault 
-@require_userid
+@require_valid_user
 def update_vault(user_id, body):
     returnJson = {"message": "Internal server error", "hashing":-1, "totp":-1, "user":-1, "zke":-1}
     try:
@@ -332,7 +350,7 @@ def update_vault(user_id, body):
         return returnJson, 500
 
 
-@require_userid
+@require_valid_user
 def export_vault(user_id):
     
     vault = {"version":1, "date": str(datetime.datetime.utcnow())}
@@ -352,11 +370,13 @@ def export_vault(user_id):
     vault = vault_b64 + "," + signature
     return vault, 200
 
-def get_role(token_info, *args, **kwargs):
-    user_id = token_info["sub"]
+@require_userid
+def get_role(user_id, *args, **kwargs):
     user = UserDB().getById(user_id=user_id)
     if not user:
         return {"message" : "User not found"}, 404
+    elif not user.isVerified:
+        return {"role" : "not_verified"}, 200
     return {"role": user.role}, 200
 
 
@@ -406,7 +426,7 @@ def get_authorization_flow():
     return {"authorization_url": authorization_url, "state":state}, 200
 
 # GET /google-drive/oauth/callback
-@require_userid
+@require_valid_user
 def oauth_callback(user_id):
     frontend_URI = env.frontend_URI[0] # keep the default URI, not regionized. 
     try: 
@@ -455,7 +475,7 @@ def oauth_callback(user_id):
 
 
 #GET /google-drive/option
-@require_userid
+@require_valid_user
 def get_google_drive_option(user_id):
     google_drive_integrations = GoogleDriveIntegrationDB()
     status = google_drive_integrations.is_google_drive_enabled(user_id)
@@ -465,7 +485,7 @@ def get_google_drive_option(user_id):
         return {"status": "disabled"}, 200
     
 #PUT /google-drive/backup
-@require_userid
+@require_valid_user
 def backup_to_google_drive(user_id, *args, **kwargs):
     
     token_db = Oauth_tokens_db()
@@ -490,7 +510,7 @@ def backup_to_google_drive(user_id, *args, **kwargs):
         return {"message": "Error while backing up to google drive"}, 500
 
 
-@require_userid
+@require_valid_user
 def verify_last_backup(user_id):
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
@@ -523,7 +543,7 @@ def verify_last_backup(user_id):
         return {"status": "ok", "is_up_to_date": False, "last_backup_date": "" }, 200
 
 
-@require_userid
+@require_valid_user
 def delete_google_drive_option(user_id):
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
@@ -552,7 +572,7 @@ def delete_google_drive_option(user_id):
         GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
         return {"message": "Error while revoking credentials"}, 200
 
-@require_userid
+@require_valid_user
 def get_preferences(user_id,fields):
     valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
     all_field = fields == "all" 
@@ -582,7 +602,7 @@ def get_preferences(user_id,fields):
     return user_preferences, 200
 
 
-@require_userid
+@require_valid_user
 def set_preference(user_id, body):
     field = body["id"]
     value = body["value"]
@@ -639,7 +659,7 @@ def set_preference(user_id, body):
         return {"message": "Invalid request"}, 400
 
 
-@require_userid
+@require_valid_user
 def delete_google_drive_backup(user_id):
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
@@ -711,3 +731,42 @@ def delete_account_admin(user_id, account_id_to_delete):
     except Exception as e:
         logging.warning("Error while deleting user from database for user " + str(account_id_to_delete) + ". Exception : " + str(e))
         return {"message": "Error while deleting account"}, 500
+
+
+@require_userid
+def send_verification_email(user_id):
+    logging.info("Sending verification email to user " + str(user_id))
+    user = UserDB().getById(user_id)
+    if user == None:
+        return {"message": "User not found"}, 404
+    token = utils.generate_new_email_verification_token(user_id=user_id)
+    try:
+        send_email.send_verification_email(user.mail, token)
+        logging.info("Verification email sent to user " + str(user_id))
+        return {"message": "Verification email sent"}, 200
+    except Exception as e:
+        logging.error("Error while sending verification email to user " + str(user_id) + ". Exception : " + str(e))
+        return {"message": "Error while sending verification email"}, 500
+
+@require_userid
+def verify_email(user_id,body):
+    user = UserDB().getById(user_id)
+    if user == None:
+        return {"message": "User not found"}, 404
+    if user.isVerified:
+        return {"message": "Email already verified"}, 200
+    token_db = EmailVerificationToken_db()
+    token_obj = token_db.get_by_user_id(user_id)
+    if token_obj == None:
+        return {"message": "Token not found"}, 403
+    if token_obj.token != body["token"]:
+        return {"message": "Invalid token"}, 403
+    if float(token_obj.expiration) < datetime.datetime.utcnow().timestamp():
+        token_db.delete(user_id)
+        return {"message": "Token expired"}, 403
+    token_db.delete(user_id)
+    user = UserDB().update_email_verification(user_id, True)
+    if user:
+        return {"message": "Email verified"}, 200
+    else:# pragma: no cover
+        return {"message": "Error while verifying email"}, 500

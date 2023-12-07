@@ -24,6 +24,8 @@ class TestGoogleDriveOption(unittest.TestCase):
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
         self.endpoint = "/google-drive/option"
+        self.blocked_user_id = 2
+        self.not_blocked_user_id = 3
 
         self.google_api_revoke_creds = patch("Oauth.google_drive_api.revoke_credentials").start()
         self.google_api_revoke_creds.return_value = True
@@ -40,6 +42,10 @@ class TestGoogleDriveOption(unittest.TestCase):
             db.create_all()
             self.user_repo.create(username="user", email="user@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
+            self.user_repo.create(username="user", email="user@test.test", password="password", 
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow(), isBlocked=True)
+            self.user_repo.create(username="user", email="user@test.test", password="password", 
+                    randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.utcnow())
 
             
             self.oauth_token.add(user_id=1, enc_credentials=encrypted_creds["ciphertext"], expires_at=self.creds["expiry"], nonce=encrypted_creds["nonce"], tag=encrypted_creds["tag"])
@@ -101,6 +107,20 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.client.cookies = {"api-key": "badcookie"}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
+    
+    def test_google_drive_blocked_user(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(self.blocked_user_id)}
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], "User is blocked")
+    
+    def test_google_drive_unverified_user(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(self.not_blocked_user_id)}
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], "Not verified")
 
    
 ############
@@ -185,3 +205,17 @@ class TestGoogleDriveOption(unittest.TestCase):
             self.client.cookies = {"api-key": "badcookie"}
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 403)
+    
+    def test_google_drive_option_delete_blocked_user(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(self.blocked_user_id)}
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], "User is blocked")
+    
+    def test_google_drive_option_delete_unverified_user(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(self.not_blocked_user_id)}
+            response = self.client.delete(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], "Not verified")

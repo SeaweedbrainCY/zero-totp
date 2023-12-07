@@ -192,12 +192,12 @@ this.closeModal()
     this.http.post(ApiService.API_URL+"/signup", data, {observe: 'response'}).subscribe((response) => {
       this.isLoading=false;
       superToast({
-        message: "Account created successfully. You can now log in",
+        message: "Account created successfully 🎉🎉",
         type: "is-success",
         dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
-      this.router.navigate(["/login"], {relativeTo:this.route.root});
+      this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
 
     },
     (error) => {

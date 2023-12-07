@@ -53,28 +53,41 @@ def require_admin_token(func):
         return {"error": "Unauthorized"}, 403
      return wrapper
 
+
+# only the user id is required. The request is not rejected even if the user is not verified.
 def require_userid(func):
     def wrapper(context_, user, token_info, *args, **kwargs):
         try:
             user_id = context_["user"]
             if user_id == None:
                 return {"error": "Unauthorized"}, 401
+            user = UserDB().getById(user_id)
+            if user == None:
+                return {"error": "Unauthorized"}, 401
+            if user.isBlocked:
+                return {"error": "User is blocked"}, 403
         except:
             return {"error": "Unauthorized"}, 401
         return func(user_id, *args, **kwargs)
     return wrapper
 
+# Check that the user is verified
+def require_valid_user(func):
+    @require_userid
+    def wrapper(user_id, *args, **kwargs):
+        user = UserDB().getById(user_id)
+        if user == None:
+            return {"error": "Unauthorized"}, 401
+        if not user.isVerified:
+            return {"error": "Not verified"}, 403
+        return func(user_id, *args, **kwargs)
+    return wrapper
 
 # By design, the user id is required and checked before the user token.
 # Require x-hash-passphrase header and check it against the user's hashed passphrase
 def require_passphrase_verification(func):
-    def wrapper(context_, user, token_info, *args, **kwargs):
-        try:
-            user_id = context_["user"]
-            if user_id == None:
-                return {"error": "Unauthorized"}, 401
-        except:
-            return {"error": "Unauthorized"}, 401
+    @require_valid_user
+    def wrapper(user_id, *args, **kwargs):
         try:
             passphrase = connexion.request.headers["x-hash-passphrase"]
         except:

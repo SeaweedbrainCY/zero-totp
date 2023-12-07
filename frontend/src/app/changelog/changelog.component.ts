@@ -14,6 +14,14 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "06/12/2023",
+      version: "b1.7",
+      added: [
+        "We added a new layer of security : the email verification. It is now mandatory for every user to verify their email address. This process will limit the creation of automatic accounts and will improve the security of the application. In case of some critical actions, such as changing the master passphrase or the email address, this contact can be used in the future as a second factor of authentication.",
+      ],
+      fixed:[]
+    },
+    {
       date: "01/12/2023",
       version: "b1.6",
       added: [

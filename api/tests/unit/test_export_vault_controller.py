@@ -22,13 +22,14 @@ class TestAllSecret(unittest.TestCase):
         self.endpoint = "/vault/export"
 
         self.get_user = patch("database.user_repo.User.getById").start()
-        self.get_user.return_value = User(id=1, derivedKeySalt="salt")
+        self.get_user.return_value = User(id=1, derivedKeySalt="salt", isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
 
         self.get_zke_key = patch("database.zke_repo.ZKE.getByUserId").start()
         self.get_zke_key.return_value = ZKE_encryption_key(ZKE_key="key")
 
         self.get_all_secret = patch("database.totp_secret_repo.TOTP_secret.get_all_enc_secret_by_user_id").start()
         self.get_all_secret.return_value = [TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret"), TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret2")]
+        
         
     def tearDown(self):
         patch.stopall()
@@ -49,7 +50,7 @@ class TestAllSecret(unittest.TestCase):
         self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 200)
-        self.get_user.assert_called_once()
+        self.get_user.assert_called()
         self.get_zke_key.assert_called_once()
         self.get_all_secret.assert_called_once()
         export_data = response.json()
@@ -87,12 +88,27 @@ class TestAllSecret(unittest.TestCase):
         self.get_user.return_value = None
         self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 401)
     
     def test_export_vault_no_zke_key(self):
         self.get_zke_key.return_value = None
         self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.get(self.endpoint)
         self.assertEqual(response.status_code, 404)
+    
+    def test_export_vault_user_blocked(self):
+        self.get_user.return_value = User(id=1, derivedKeySalt="salt", isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        self.client.cookies = {"api-key": self.jwtCookie}
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], "User is blocked")
+    
+    def test_export_vault_user_not_verified(self):
+        self.get_user.return_value = User(id=1, derivedKeySalt="salt", isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        self.client.cookies = {"api-key": self.jwtCookie}
+        response = self.client.get(self.endpoint)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json()["error"], "Not verified")
+
 
 

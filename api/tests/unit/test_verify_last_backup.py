@@ -27,6 +27,9 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
         self.endpoint = "/google-drive/last-backup/verify"
+        self.user_id = 1
+        self.blocked_user_id = 2
+        self.unverified_user_id = 3
 
 
         self.google_drive_backup = patch("Oauth.google_drive_api.backup").start()
@@ -49,6 +52,10 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
             db.create_all()
             self.user_repo.create(username="user", email="user@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
+            self.user_repo.create(username="user", email="user@test.test", password="password", 
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow(), isBlocked=True)
+            self.user_repo.create(username="user", email="user@test.test", password="password", 
+                    randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.utcnow())
             self.zke_key.create(user_id=1, encrypted_key="encrypted_key")
             self.google_integration.create(user_id=1, google_drive_sync=True)
             self.oauth_token.add(user_id=1, enc_credentials=encrypted_creds["ciphertext"], expires_at=self.creds["expiry"], nonce=encrypted_creds["nonce"], tag=encrypted_creds["tag"])
@@ -157,4 +164,15 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
 
+    def test_google_drive_verify_blocked(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(self.blocked_user_id)}
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+    
+    def test_google_drive_verify_unverified(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": jwt_func.generate_jwt(self.unverified_user_id)}
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
    

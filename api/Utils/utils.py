@@ -8,8 +8,10 @@ from database.totp_secret_repo import TOTP_secret as TOTP_secret_repo
 from database.zke_repo import ZKE as ZKE_encryption_key_repo
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
 from database.preferences_repo import Preferences as Preferences_repo
-
-
+from database.email_verification_repo import EmailVerificationToken
+import os
+from hashlib import sha256
+from base64 import b64encode
 
 
 class FileNotFound(Exception):
@@ -67,3 +69,12 @@ def delete_user_from_database(user_id):
     ZKE_encryption_key_repo().delete(user_id)
     User_repo().delete(user_id)
     logging.info("User " + str(user_id) + " deleted from database")
+
+
+def generate_new_email_verification_token(user_id):
+    email_verification_token_repo = EmailVerificationToken()
+    email_verification_token_repo.delete(user_id)
+    token = b64encode(os.urandom(20)).decode()
+    expiration = datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
+    email_verification_token_repo.add(user_id, token,expiration.timestamp())
+    return token
