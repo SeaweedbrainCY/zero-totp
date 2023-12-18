@@ -66,3 +66,11 @@ class User:
         user.isVerified = isVerified
         db.session.commit()
         return user
+    
+    def update_block_status(self, user_id, block_status):
+        user = db.session.query(UserModel).filter_by(id=user_id).first()
+        if user == None:
+            return None
+        user.isBlocked = block_status
+        db.session.commit()
+        return user
