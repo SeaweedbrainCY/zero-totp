@@ -25,33 +25,30 @@
             <p class="is-family-monospace	has-text-danger has-text-right	pt-6">Session will expire in {{timer/60-((timer%60)/60)}}m{{timer%60}}s</p>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-danger">Admin section</h1>
             
-            <article>
-                <div class="is-flex is-justify-content-center">
-                <table class="table is-striped mt-6" style="width:80vw">
-                    <caption class="is-size-3 has-text-weight-bold">Users</caption>
-                    <thead>
-                        <th>id</th>
-                        <th>username</th>
-                        <th>email</th>
-                        <th>created at</th>
-                        <th>role</th>
-                        <th></th>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let user of users">
-                            <td>#{{user.id}}</td>
-                            <td>{{user.username}}</td>
-                            <td>{{user.email}}</td>
-                            <td>{{user.createdAt}}</td>
-                            <td>{{user.role}}</td>
-                            <td class="is-flex is-justify-content-space-around">
-                                
-                                <button class="button is-rounded" [ngClass]="{'is-warning': !user.isBlocked, 'is-success':user.isBlocked}" ><span *ngIf="user.isDisabled">Unblock</span><span *ngIf="!user.isBlocked">Block</span></button>
-                                <button class="button is-danger is-rounded" (click)="userToDelete=user;deletionModal()">Destroy</button></td>
-                        </tr>
-                        </tbody>
-                </table>
-            </div>
+           <p>
+                <strong>Number of users :</strong> {{users.length}}
+           </p>
+            <article class="is-flex is-flex-wrap-wrap is-justify-content-space-around">
+                <div class="card m-4" *ngFor="let user of users">
+                    <div class="card-content">
+                      <div class="media">
+                        <div class="media-content">
+                          <p class="title is-4">{{user.username}}#{{user.id}}</p>
+                          <p class="subtitle is-6">{{user.email}}</p>
+                        </div>
+                      </div>
+                      <div class="content">
+                        <ul>    
+                            <li><strong>Role :</strong>{{user.role}}</li>
+                            <li><strong>Created at :</strong>{{user.createdAt}}</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <footer class="card-footer">
+                        <a  class="card-footer-item has-text-warning has-text-weight-bold">Block</a>
+                        <a (click)="userToDelete=user;deletionModal()" class="card-footer-item has-text-danger has-text-weight-bold">Destroy</a>
+                      </footer>
+                  </div>
             </article>
         </div>
     </div>
