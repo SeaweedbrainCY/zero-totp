@@ -31,6 +31,8 @@ import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
 from database.db import db
+import threading
+
 
 
 
@@ -277,9 +279,9 @@ def update_email(user_id,body):
     user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
     if user:
         try:
-            date = str(datetime.datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")) + " UTC"
-            ip = request.environ.get('X_FORWARDED_FOR ', "UNKNOWN")
-            send_email.send_information_email(old_mail, reason="Your email address has been updated", date=date, ip=ip)
+            ip = request.environ.get('X_FORWARDED_FOR ', request.remote_addr)
+            thread = threading.Thread(target=utils.send_information_email,args=(ip, old_mail, "Your email address has been updated"))
+            thread.start()
         except Exception as e:
             logging.error("Unknown error while sending information email" + str(e))
         if env.require_email_validation:
