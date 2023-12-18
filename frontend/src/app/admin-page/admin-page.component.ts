@@ -30,6 +30,7 @@ export class AdminPageComponent implements OnInit {
   deleteAccountConfirmationCountdown=5;
   buttonLoading = {"deletion": false}
   userToDelete: any;
+  userToBlock:any;
   
     constructor(
       private http: HttpClient,
@@ -194,6 +195,60 @@ export class AdminPageComponent implements OnInit {
       }
       superToast({
         message: "Impossible to delete user. "+ errorMessage,
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
+  }
+
+  blockAccount(){
+    this.http.put(ApiService.API_URL+"/admin/account/"+this.userToBlock.id+"/block", {}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      this.getUsers();
+      superToast({
+        message: "User blocked",
+        type: "is-success",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    }, (error) => {
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+      superToast({
+        message: "Impossible to block user. "+ errorMessage,
+        type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    });
+  }
+
+  unblockAccount(){
+    this.http.put(ApiService.API_URL+"/admin/account/"+this.userToBlock.id+"/unblock", {}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      this.getUsers();
+      superToast({
+        message: "User unblocked",
+        type: "is-success",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
+    }, (error) => {
+      let errorMessage = "";
+      if(error.error.message != null){
+        errorMessage = error.error.message;
+      } else if(error.error.detail != null){
+        errorMessage = error.error.detail;
+      }
+      superToast({
+        message: "Impossible to unblock user. "+ errorMessage,
         type: "is-danger",
         dismissible: false,
         duration: 20000,
