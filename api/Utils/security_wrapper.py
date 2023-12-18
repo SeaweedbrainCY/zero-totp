@@ -64,7 +64,7 @@ def require_userid(func):
             user = UserDB().getById(user_id)
             if user == None :
                 return {"error": "Unauthorized"}, 401
-            if user.isBlocked and require_email_validation:
+            if user.isBlocked :
                 return {"error": "User is blocked"}, 403
         except:
             return {"error": "Unauthorized"}, 401
