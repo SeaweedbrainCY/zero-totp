@@ -31,6 +31,8 @@ import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
 from database.db import db
+import threading
+
 
 
 
@@ -85,11 +87,12 @@ def signup():
            zke_key = None
         if zke_key:
             jwt_token = jwt_auth.generate_jwt(user.id)
-            try:
-                send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
-            except Exception as e:
-                logging.error("Unknown error while sending verification email" + str(e))
+            if env.require_email_validation:
+                try:
 
+                    send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
+                except Exception as e:
+                    logging.error("Unknown error while sending verification email" + str(e))
             response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created"}))
             response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
             return response
@@ -264,6 +267,7 @@ def get_ZKE_encrypted_key(user_id):
 #PUT /email
 @require_userid
 def update_email(user_id,body):
+   
     email = utils.sanitize_input(body["email"]).strip()
     if not utils.check_email(email):
         return {"message": "Bad email format"}, 400
@@ -271,13 +275,24 @@ def update_email(user_id,body):
     userDb = UserDB()
     if userDb.getByEmail(email):
         return {"message": "email already used"}, 403
+    old_mail = userDb.getById(user_id).mail
     user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
     if user:
         try:
-           send_verification_email(user=user_id, context_={"user":user_id}, token_info={"user":user_id})
+            ip = request.environ.get('X_FORWARDED_FOR ', request.remote_addr)
+            thread = threading.Thread(target=utils.send_information_email,args=(ip, old_mail, "Your email address has been updated"))
+            thread.start()
         except Exception as e:
-            logging.error("Unknown error while sending verification email" + str(e))
-        return {"message":user.mail},201
+            logging.error("Unknown error while sending information email" + str(e))
+        if env.require_email_validation:
+            try:
+           
+                send_verification_email(user=user_id, context_={"user":user_id}, token_info={"user":user_id})
+            except Exception as e:
+                logging.error("Unknown error while sending verification email" + str(e))
+            return {"message":user.mail},201
+        else:
+            return {"message":user.mail},201
     else :
         logging.warning("An error occured while updating email of user " + str(user_id))
         return {"message": "Unknown error while updating email"}, 500
@@ -345,6 +360,12 @@ def update_vault(user_id, body):
     returnJson["user"]=1 if userUpdated else 0
     returnJson["zke"]=1 if zke else 0
     if errors == 0 and userUpdated and zke:
+        try:
+            ip = request.environ.get('X_FORWARDED_FOR ', request.remote_addr)
+            thread = threading.Thread(target=utils.send_information_email,args=(ip, user.mail, "Your vault passphrase has been updated"))
+            thread.start()
+        except Exception as e:
+            logging.error("Unknown error while sending information email" + str(e))
         return {"message": "Vault updated"}, 201
     else:
         logging.warning("An error occured while updating passphrase of user " + str(user_id))
@@ -736,6 +757,8 @@ def delete_account_admin(user_id, account_id_to_delete):
 
 @require_userid
 def send_verification_email(user_id):
+    if not env.require_email_validation:
+        return {"message": "not implemented"}, 501
     logging.info("Sending verification email to user " + str(user_id))
     user = UserDB().getById(user_id)
     if user == None:
