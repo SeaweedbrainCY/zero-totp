@@ -12,6 +12,9 @@ from database.email_verification_repo import EmailVerificationToken
 import os
 from hashlib import sha256
 from base64 import b64encode
+import requests
+from Email import send as send_email
+
 
 
 class FileNotFound(Exception):
@@ -78,3 +81,28 @@ def generate_new_email_verification_token(user_id):
     expiration = datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
     email_verification_token_repo.add(user_id, token,expiration.timestamp())
     return token
+
+def send_information_email(ip, email, reason):
+    logging.info(str(reason)+ str(ip) + str(email))
+    date = str(datetime.datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")) + " UTC"
+    ip_and_geo = get_geolocation(ip)
+    try:
+        send_email.send_information_email(email, reason=reason, date=date, ip=ip_and_geo)
+    except Exception as e:
+        logging.error("Unknown error while sending information email" + str(e))
+
+# Return format : ip (city region name zip country)
+# If the IP address is private it is set to unknow to not leak information
+def get_geolocation(ip):
+    try:
+        logging.info("Getting geolocation for ip " + str(ip))  
+        r = requests.get("https://ipinfo.io/json" + str(ip) )
+        if r.status_code != 200:
+            return "unknown (unknown, unknown)"
+        json = r.json()
+        if json["status"] != "success":
+            return "unknown (unknown, unknown)"
+        return f"{ip} ({json['city']} {json['regionName']} {json['zip']} {json['country']})"
+    except Exception as e:
+        logging.error("Error while getting geolocation : " + str(e))
+        return "unknown (unknown, unknown)"
