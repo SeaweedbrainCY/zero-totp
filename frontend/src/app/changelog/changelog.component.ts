@@ -14,6 +14,14 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "18/12/2023",
+      version: "b1.8",
+      added: [
+        "We now send security information by mail for security events such as password change, email change.",
+      ],
+      fixed:[]
+    },
+    {
       date: "06/12/2023",
       version: "b1.7",
       added: [
