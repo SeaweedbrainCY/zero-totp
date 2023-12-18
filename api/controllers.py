@@ -360,6 +360,12 @@ def update_vault(user_id, body):
     returnJson["user"]=1 if userUpdated else 0
     returnJson["zke"]=1 if zke else 0
     if errors == 0 and userUpdated and zke:
+        try:
+            ip = request.environ.get('X_FORWARDED_FOR ', request.remote_addr)
+            thread = threading.Thread(target=utils.send_information_email,args=(ip, user.mail, "Your vault passphrase has been updated"))
+            thread.start()
+        except Exception as e:
+            logging.error("Unknown error while sending information email" + str(e))
         return {"message": "Vault updated"}, 201
     else:
         logging.warning("An error occured while updating passphrase of user " + str(user_id))
