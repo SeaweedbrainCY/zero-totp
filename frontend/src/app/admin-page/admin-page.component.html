@@ -28,25 +28,33 @@
            <p>
                 <strong>Number of users :</strong> {{users.length}}
            </p>
-            <article class="is-flex is-flex-wrap-wrap is-justify-content-space-around">
+            <article class="is-flex is-flex-wrap-wrap is-justify-content-space-around is-align-items-center	">
                 <div class="card m-4" *ngFor="let user of users">
+                    <div class="card-header">
+                        <p class="card-header-title is-size-5 has-text-info">  {{user.username}} #{{user.id}} <span class="tag is-danger ml-4" *ngIf="user.isBlocked">Blocked</span></p>
+                    </div>
                     <div class="card-content">
-                      <div class="media">
-                        <div class="media-content">
-                          <p class="title is-4">{{user.username}}#{{user.id}}</p>
-                          <p class="subtitle is-6">{{user.email}}</p>
-                        </div>
-                      </div>
                       <div class="content">
                         <ul>    
-                            <li><strong>Role :</strong>{{user.role}}</li>
-                            <li><strong>Created at :</strong>{{user.createdAt}}</li>
+                            <li>Email : <strong>{{user.email}}</strong></li>
+                            <li>Role : 
+                                <span class="tag is-light" *ngIf="user.role != 'admin'">{{user.role}}</span>
+                                <span class="tag is-info" *ngIf="user.role == 'admin'">{{user.role}}</span>
+                                </li>
+                            <li>Created at : <strong>{{user.createdAt}}</strong></li>
                         </ul>
                       </div>
                     </div>
                     <footer class="card-footer">
-                        <a  class="card-footer-item has-text-warning has-text-weight-bold">Block</a>
-                        <a (click)="userToDelete=user;deletionModal()" class="card-footer-item has-text-danger has-text-weight-bold">Destroy</a>
+                        <div  class="card-footer-item  " *ngIf="!user.isBlocked" >
+                            <button class="button  is-warning has-text-weight-bold" (click)="userToBlock=user;blockAccount()">Block</button>
+                        </div>
+                        <div  class="card-footer-item " *ngIf="user.isBlocked" >
+                            <button class="button  is-success has-text-weight-bold" (click)="userToBlock=user;unblockAccount()">Unblock</button>
+                        </div>
+                        <div  class="card-footer-item">
+                        <button (click)="userToDelete=user;deletionModal()" class="button is-danger has-text-weight-bold">Destroy</button>
+                        </div>
                       </footer>
                   </div>
             </article>
