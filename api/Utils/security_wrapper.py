@@ -1,7 +1,7 @@
 from database.user_repo import User as UserDB
 from CryptoClasses.jwt_func import verify_jwt
 import connexion
-from environment import logging
+from environment import logging, require_email_validation
 from CryptoClasses.hash_func import Bcrypt
 import random
 import string
@@ -62,9 +62,9 @@ def require_userid(func):
             if user_id == None:
                 return {"error": "Unauthorized"}, 401
             user = UserDB().getById(user_id)
-            if user == None:
+            if user == None :
                 return {"error": "Unauthorized"}, 401
-            if user.isBlocked:
+            if user.isBlocked :
                 return {"error": "User is blocked"}, 403
         except:
             return {"error": "Unauthorized"}, 401
@@ -78,7 +78,7 @@ def require_valid_user(func):
         user = UserDB().getById(user_id)
         if user == None:
             return {"error": "Unauthorized"}, 401
-        if not user.isVerified:
+        if not user.isVerified and require_email_validation:
             return {"error": "Not verified"}, 403
         return func(user_id, *args, **kwargs)
     return wrapper

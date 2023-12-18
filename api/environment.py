@@ -17,6 +17,7 @@ email_sender_password = os.environ.get('EMAIL_SENDER_PASSWORD')
 email_smtp_server = os.environ.get('EMAIL_SMTP_SERVER')
 email_smtp_port = os.environ.get('EMAIL_SMTP_PORT')
 email_smtp_username = os.environ.get('EMAIL_SMTP_USERNAME')
+require_email_validation = os.environ.get('REQUIRE_EMAIL_VALIDATION') == "true"
 
 if environment == "development":
     logging.basicConfig(
@@ -88,3 +89,6 @@ if sever_side_encryption_key == None:
 
 if email_sender_address == None or email_sender_password == None or email_smtp_server == None or email_smtp_port == None or email_smtp_username == None:
     logging.error("EMAIL_SENDER_ADDRESS, EMAIL_SENDER_PASSWORD, EMAIL_SMTP_SERVER, EMAIL_SMTP_USERNAME or EMAIL_SMTP_PORT environment variable not set. Email verification will not work.")
+
+if require_email_validation == False:
+    logging.info("REQUIRE_EMAIL_VALIDATION is disabled. Users will not be asked to verify their email address. You can enable this option by setting the REQUIRE_EMAIL_VALIDATION environment variable to true at any moment.")

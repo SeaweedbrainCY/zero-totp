@@ -136,8 +136,9 @@ def login():
 
 
     jwt_token = jwt_auth.generate_jwt(user.id)
-
-    if user.isVerified:
+    if not env.require_email_validation: # we fake the isVerified status if email validation is not required
+        response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True}))
+    elif user.isVerified:
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":user.isVerified}))
     else:
         response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
@@ -375,7 +376,7 @@ def get_role(user_id, *args, **kwargs):
     user = UserDB().getById(user_id=user_id)
     if not user:
         return {"message" : "User not found"}, 404
-    elif not user.isVerified:
+    elif not user.isVerified and env.require_email_validation:
         return {"role" : "not_verified"}, 200
     return {"role": user.role}, 200
 
