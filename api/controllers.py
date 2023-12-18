@@ -91,8 +91,6 @@ def signup():
                     send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
                 except Exception as e:
                     logging.error("Unknown error while sending verification email" + str(e))
-                    return {"message": "not implemented"}, 501
-
             response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created"}))
             response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
             return response
@@ -290,7 +288,6 @@ def update_email(user_id,body):
                 send_verification_email(user=user_id, context_={"user":user_id}, token_info={"user":user_id})
             except Exception as e:
                 logging.error("Unknown error while sending verification email" + str(e))
-                return {"message": "not implemented"}, 501
             return {"message":user.mail},201
         else:
             return {"message":user.mail},201
