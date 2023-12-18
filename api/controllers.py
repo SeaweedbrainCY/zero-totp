@@ -754,6 +754,30 @@ def delete_account_admin(user_id, account_id_to_delete):
         logging.warning("Error while deleting user from database for user " + str(account_id_to_delete) + ". Exception : " + str(e))
         return {"message": "Error while deleting account"}, 500
 
+@require_admin_token
+def update_blocked_status(user_id, account_id_to_update, action):
+    logging.info("Admin " + str(user_id) + " requested to " + action + " user " + str(account_id_to_update))
+    user_obj = UserDB().getById(account_id_to_update)
+    if user_obj == None:
+        return {"message": "User not found"}, 404
+    if user_obj.role == "admin":
+        return {"message": "Admin cannot be blocked"}, 403
+
+    if action == "block":
+        user = UserDB().update_block_status(account_id_to_update, True)
+        if user:
+            return {"message": "User blocked"}, 200
+        else: # pragma: no cover
+            return {"message": "Unknown error while blocking user"}, 500
+    elif action == "unblock":
+        user = UserDB().update_block_status(account_id_to_update, False)
+        if user:
+            return {"message": "User unblocked"}, 200
+        else:
+            return {"message": "Unknown error while unblocking user"}, 500
+    else:
+        return {"message": "Invalid request"}, 400
+
 
 @require_userid
 def send_verification_email(user_id):
