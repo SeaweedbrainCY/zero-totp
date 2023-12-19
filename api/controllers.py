@@ -766,13 +766,13 @@ def update_blocked_status(user_id, account_id_to_update, action):
     if action == "block":
         user = UserDB().update_block_status(account_id_to_update, True)
         if user:
-            return {"message": "User blocked"}, 200
+            return {"message": "User blocked"}, 201
         else: # pragma: no cover
             return {"message": "Unknown error while blocking user"}, 500
     elif action == "unblock":
         user = UserDB().update_block_status(account_id_to_update, False)
         if user:
-            return {"message": "User unblocked"}, 200
+            return {"message": "User unblocked"}, 201
         else:
             return {"message": "Unknown error while unblocking user"}, 500
     else:
