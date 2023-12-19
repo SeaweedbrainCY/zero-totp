@@ -96,13 +96,13 @@ def send_information_email(ip, email, reason):
 def get_geolocation(ip):
     try:
         logging.info("Getting geolocation for ip " + str(ip))  
-        r = requests.get("http://ip-api.com/json" + str(ip) )
+        r = requests.get("http://ip-api.com/json/" + str(ip) )
         if r.status_code != 200:
             return "unknown (unknown, unknown)"
         json = r.json()
         if json["status"] != "success":
             return "unknown (unknown, unknown)"
-        return f"{ip} ({json['city']} {json['regionName']} {json['zip']} {json['country']})"
+        return f"{ip} ({json['zip']} {json['city']}, {json['regionName']}, {json['country']})"
     except Exception as e:
         logging.error("Error while getting geolocation : " + str(e))
         return "unknown (unknown, unknown)"
