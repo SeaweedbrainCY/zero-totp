@@ -129,7 +129,7 @@ def login():
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fakePassword)
         return {"message": "Invalid credentials"}, 403
-    logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {request.environ.get('X-Forwarded-For', 'None')} ")
+    logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {request.headers.get('X-Forwarded-For', 'None')} ")
     checked = bcrypt.checkpw(user.password)
     if not checked:
         return {"message": "Invalid credentials"}, 403
@@ -279,7 +279,7 @@ def update_email(user_id,body):
     user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
     if user:
         try:
-            ip = request.environ.get('X-Forwarded-For', request.remote_addr)
+            ip = request.headers.get('X-Forwarded-For', request.remote_addr)
             thread = threading.Thread(target=utils.send_information_email,args=(ip, old_mail, "Your email address has been updated"))
             thread.start()
         except Exception as e:
