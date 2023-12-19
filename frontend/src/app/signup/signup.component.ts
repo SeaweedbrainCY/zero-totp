@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faLock,  faCheck, faUser, faXmark, faFlagCheckered } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { toast } from 'bulma-toast';
@@ -15,11 +15,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class SignupComponent implements OnInit {
   faEnvelope=faEnvelope;
-  faLock=faLock;
+  faKey=faKey;
   faCheck=faCheck;
   faUser=faUser;
   faXmark=faXmark;
   faFlagCheckered=faFlagCheckered;
+  faEye=faEye;
+  faEyeSlash=faEyeSlash;
   username="";
   email="";
   password="";
@@ -38,6 +40,9 @@ export class SignupComponent implements OnInit {
   modal_confim_button_diabled=true;
   beta=false;
   isModalSentenceCompleted=false;
+  isPasswordVisible=false;
+  isConfirmPasswordVisible=false;
+
 
   constructor(
     private http: HttpClient,
@@ -56,13 +61,10 @@ export class SignupComponent implements OnInit {
     const special = /[!@#$%^&*()_+\-=[\]{};:\\|,./?~]/;
     const upper = /[A-Z]/;
     const number = /[0-9]/;
-    const forbidden = /["\'<>]/
-    if(this.password.length < 8){
-      this.passwordErrorMessage.push("Your password must be at least 8 characters long");
+    if(this.password.length < 12){
+      this.passwordErrorMessage.push("Your password must be at least 12 characters long");
     }
-    else if(this.password.length > 70){
-      this.passwordErrorMessage.push("Password must be less than 70 characters long");
-    }
+    
     if(!special.test(this.password)){
       this.passwordErrorMessage.push("Your password must contain at least one special character");
     }
@@ -71,9 +73,6 @@ export class SignupComponent implements OnInit {
     }
     if(!number.test(this.password)){
       this.passwordErrorMessage.push("Your password must contain at least one number");
-    }
-    if(forbidden.test(this.password)){
-      this.passwordErrorMessage.push("' \" < > characters are forbidden in passwords");
     }
     if(this.password != this.confirmPassword){
       this.passwordErrorMessage.push("Your passwords do not match");
@@ -90,7 +89,7 @@ export class SignupComponent implements OnInit {
       return;
     }
     if(forbidden.test(this.email)){
-      this.emailErrorMessage = "' \" < > characters are forbidden in passwords";
+      this.emailErrorMessage = "' \" < > characters are forbidden in emails";
       return;
     }
   }

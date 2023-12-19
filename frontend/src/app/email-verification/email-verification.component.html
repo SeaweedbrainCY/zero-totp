@@ -7,7 +7,7 @@
         <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info">Verify your email address <fa-icon [icon]="faPaperPlane"></fa-icon></h1>
         <p class="is-size-6 has-text-centered has-text-weight-bold has-text-grey">We have sent you an email with a <code class="is-family-code">code</code> to verify your email address.</p>
         <div class="is-flex">
-        <input class="input mt-6" type="password" name="code" [(ngModel)]="code" placeholder="Enter the code here">
+        <input class="input mt-6" type="text" name="code" [(ngModel)]="code" placeholder="Enter the code here">
         
             <button class="button is-info  is-outlined mt-6 ml-2" (click)="verify()" [ngClass]="{'is-loading':verifyLoading}">Verify</button>
         </div>

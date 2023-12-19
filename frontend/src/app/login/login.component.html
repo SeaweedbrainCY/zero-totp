@@ -26,15 +26,17 @@
           </p>
          
         </div>
-        <div class="field is-full is-flex is-justify-content-center">
+        <div class="field is-full is-flex is-justify-content-center has-addons">
           <p class="control has-icons-left has-icons-right">
-         <input class="input block" type="password" placeholder="Passphrase" name="password" [(ngModel)]="password" (keyup.enter)="login()">
+         <input class="input block" type="{{isPassphraseVisible ? 'text' : 'password'}}" placeholder="Passphrase" name="password" [(ngModel)]="password" (keyup.enter)="login()">
             <span class="icon is-small is-left">
               <fa-icon [icon]="faLock"></fa-icon>
             </span>
-            <span class="icon is-small is-right">
-              <fa-icon [icon]="faCheck"></fa-icon>
-            </span>
+          </p>
+          <p class="control">
+            <a class="button" (click)="isPassphraseVisible = !isPassphraseVisible">
+              <fa-icon [icon]="faEyeSlash" *ngIf="isPassphraseVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isPassphraseVisible" size="sm"></fa-icon>
+            </a>
           </p>
         </div>
         </div>
