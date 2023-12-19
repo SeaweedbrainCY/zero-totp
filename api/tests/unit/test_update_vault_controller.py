@@ -44,6 +44,9 @@ class TestUpdateVault(unittest.TestCase):
         self.updateUser = patch("database.user_repo.User.update").start()
         self.updateUser.return_vtest_update_vault_new_passphrase_bad_formatalue = True
 
+        self.send_information_email = patch("Utils.utils.send_information_email").start()
+        self.send_information_email.return_value = True
+
        
 
         self.payload = {"new_passphrase" : "new_passphrase", "old_passphrase":"old_passphrase", "enc_vault":"{\"uuid\": \"secret\"}", "zke_enc":"zke_enc", "passphrase_salt": "pasphrase_salt", "derived_key_salt":"derived_key_salt"}
@@ -70,6 +73,7 @@ class TestUpdateVault(unittest.TestCase):
         self.updateUser.assert_called_once()
         self.updateSecret.assert_called_once()
         self.zkeUpdate.assert_called_once()
+        self.send_information_email.assert_called_once()
     
 
     def test_update_vault_no_cookie(self):

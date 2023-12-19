@@ -31,6 +31,9 @@ class TestUpdateEmail(unittest.TestCase):
         self.send_verification_email = patch("controllers.send_verification_email").start()
         self.send_verification_email.return_value = True
 
+        self.send_information_email = patch("Utils.utils.send_information_email").start()
+        self.send_information_email.return_value = True
+
 
         self.check_email = patch("Utils.utils.check_email").start()
         self.check_email.return_value = True
@@ -58,6 +61,7 @@ class TestUpdateEmail(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
         self.update_email.assert_called_with(user_id=1, email='test@test.com', isVerified=0)
         self.send_verification_email.assert_called_once()
+        self.send_information_email.assert_called_once()
 
     def test_update_email_no_cookie(self):
         response = self.client.put(self.endpoint)

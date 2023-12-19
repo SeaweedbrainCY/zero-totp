@@ -1,0 +1,9 @@
+.card {
+    width: 40vw;
+}
+
+@media only screen and (width : 1024px) and (orientation : landscape) {  
+    .card {
+        width: 80vw;
+    }  
+}

@@ -15,6 +15,14 @@ export class ChangelogComponent {
   changelogs = [
     {
       date: "18/12/2023",
+      version: "b1.9",
+      added: [
+        "We added some improvement for the admin panel with the ability to block user and gain more information about them. The information are still limited to the non-discriminent and we will never be able to see your secrets.",
+      ],
+      fixed:[]
+    },
+    {
+      date: "18/12/2023",
       version: "b1.8",
       added: [
         "We now send security information by mail for security events such as password change, email change.",

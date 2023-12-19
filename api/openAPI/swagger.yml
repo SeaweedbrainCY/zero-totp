@@ -664,6 +664,34 @@ paths:
           description: Access disabled
         "500":
           description: Internal server error
+  /admin/account/{account_id_to_update}/{action}:
+    put:
+      operationId: controllers.update_blocked_status
+      tags:
+        - Admin
+      parameters:
+        - in: path
+          name: account_id_to_update
+          schema:
+            type: integer
+          required: true
+          description: The user id to block
+        - in: path
+          name: action
+          schema:
+            type: string
+          required: true
+          description: The action to perform. Can be "block" or "unblock"
+      summary: Block or unblock a user
+      responses:
+        "201": 
+          description: User status updated
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access disabled
+        "500":
+          description: Internal server error
 
 components:
   securitySchemes:
