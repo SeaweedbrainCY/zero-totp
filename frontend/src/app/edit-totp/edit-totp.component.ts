@@ -329,6 +329,13 @@ export class EditTOTPComponent implements OnInit{
     if(this.userService.getId() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
+
+    this.checkName();
+    this.checkSecret();
+    this.checkURI();
+    if(this.nameError != "" || this.secretError != "" || this.uriError != ""){
+      return;
+    }
    
     
     const property = new Map<string,string>();
