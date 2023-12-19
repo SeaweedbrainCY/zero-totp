@@ -410,7 +410,9 @@ def get_users_list(user_id, *args, **kwargs):
         return {"message" : "No user found"}, 404
     users_list = []
     for user in users:
-        users_list.append({"id": user.id,"username": user.username, "email": user.mail, "role": user.role, "createdAt": user.createdAt, "isBlocked": user.isBlocked})
+        isGoogleDriveSync = GoogleDriveIntegrationDB().is_google_drive_enabled(user.id) 
+        nb_codes = len(TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user.id))
+        users_list.append({"id": user.id,"username": user.username, "email": user.mail, "role": user.role, "createdAt": user.createdAt, "isBlocked": user.isBlocked, "isVerified": user.isVerified, "isGoogleDriveSync": isGoogleDriveSync, "nbCodesSaved": nb_codes })
     return {"users": users_list}, 200
 
 

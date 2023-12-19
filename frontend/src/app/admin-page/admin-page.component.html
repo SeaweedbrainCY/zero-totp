@@ -31,7 +31,11 @@
             <article class="is-flex is-flex-wrap-wrap is-justify-content-space-around is-align-items-center	">
                 <div class="card m-4" *ngFor="let user of users">
                     <div class="card-header">
-                        <p class="card-header-title is-size-5 has-text-info">  {{user.username}} #{{user.id}} <span class="tag is-danger ml-4" *ngIf="user.isBlocked">Blocked</span></p>
+                        <p class="card-header-title is-size-5 has-text-info">  {{user.username}} #{{user.id}} 
+                            <span class="tag is-danger ml-4" *ngIf="!user.isVerified">Not verified</span>
+                            <span class="tag is-success ml-4" *ngIf="user.isVerified">Verified</span>
+                            
+                            <span class="tag is-danger ml-4" *ngIf="user.isBlocked">Blocked</span></p>
                     </div>
                     <div class="card-content">
                       <div class="content">
@@ -42,6 +46,10 @@
                                 <span class="tag is-info" *ngIf="user.role == 'admin'">{{user.role}}</span>
                                 </li>
                             <li>Created at : <strong>{{user.createdAt}}</strong></li>
+                            <li>Number of encrypted codes saved : <span class="tag is-light" >{{user.nbCodesSaved}}</span>
+                                </li>
+                            <li>Is google drive enabled : <span class="tag is-success" *ngIf="user.isGoogleDriveSync">Enabled</span>
+                            <span class="tag is-warning" *ngIf="!user.isGoogleDriveSync">Disabled</span></li>
                         </ul>
                       </div>
                     </div>
