@@ -361,7 +361,7 @@ def update_vault(user_id, body):
     returnJson["zke"]=1 if zke else 0
     if errors == 0 and userUpdated and zke:
         try:
-            ip = request.environ.get('X_FORWARDED_FOR ', request.remote_addr)
+            ip = request.headers.get('X-Forwarded-For', request.remote_addr)
             thread = threading.Thread(target=utils.send_information_email,args=(ip, user.mail, "Your vault passphrase has been updated"))
             thread.start()
         except Exception as e:
