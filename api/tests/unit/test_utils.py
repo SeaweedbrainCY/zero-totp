@@ -1,6 +1,6 @@
 import unittest
 from CryptoClasses.hash_func import Bcrypt
-from Utils.utils import check_email, sanitize_input, extract_last_backup_from_list, FileNotFound, get_all_secrets_sorted, generate_new_email_verification_token
+from Utils.utils import check_email, sanitize_input, extract_last_backup_from_list, FileNotFound, get_all_secrets_sorted, generate_new_email_verification_token, get_geolocation, send_information_email
 import datetime
 from uuid import uuid4
 from random import shuffle
@@ -16,6 +16,9 @@ class TestBcrypt(unittest.TestCase):
 
         self.add_email_token = patch("database.email_verification_repo.EmailVerificationToken.add").start()
         self.add_email_token.return_value = True
+    
+    def tearDown(self):
+        patch.stopall()
 
 #####################
 ### check_email tests
@@ -224,3 +227,33 @@ class TestBcrypt(unittest.TestCase):
         self.delete_email_token.assert_called_once_with(1)
         self.add_email_token.assert_called_once()
         self.assertIsNotNone(token)
+
+##################
+## get_geolocation
+##################
+
+    def test_get_geolocation(self):
+        ip = "1.1.1.1"
+        geolocation = get_geolocation(ip)
+        self.assertEqual(geolocation, "1.1.1.1 (4101 South Brisbane, Queensland, Australia)")
+    
+    def test_get_geolocation_with_private_ip(self):
+        ip = "192.168.0.1"
+        geolocation = get_geolocation(ip)
+        self.assertEqual(geolocation, f"unknown (unknown, unknown)")
+    
+
+#########################
+## send_information_email
+#########################
+
+    def test_send_information_email(self):
+        get_geolocation_mock = patch("Utils.utils.get_geolocation").start()
+        get_geolocation_mock.return_value = "IP"
+
+        send_email_mock = patch("Utils.utils.send_email.send_information_email").start()
+        send_email_mock.return_value = True
+
+        send_information_email("IP", "email", "reason")
+        get_geolocation_mock.assert_called_once_with("IP")
+        send_email_mock.assert_called()
