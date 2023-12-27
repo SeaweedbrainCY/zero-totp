@@ -10,10 +10,11 @@
     </div>
     <div class="has-text-centered	is-full is-flex is-flex-direction-column is-justify-content-center">
       <div class="has-text-centered columns p-5" >
-        <div class="notification is-warning column is-6 is-offset-3 ">
-          <strong class="block">Warning : Zero-TOTP is still in development and the beta will be released soon !
+        <div class="notification is-warning column is-6 is-offset-3 is-light">
+          <p>  <fa-icon [icon]="faFlask" size="2xl" ></fa-icon> </p>
+          <strong class="block">This is an early access to Zero-TOTP beta version.
           </strong><br>
-          <span>If you want to become an alpha and beta tester, you can sign up below :</span>
+          <span>If you want to become a beta tester, you can sign up below :</span>
         </div>
       </div>
       <div class="field is-full is-flex is-justify-content-center">
@@ -85,7 +86,7 @@
         <div class="control">
       <label class="checkbox" style="max-width: 50vw;">
         <input type="checkbox" name="beta" [(ngModel)]="beta">
-        I understand this is an alpha version and I accept the risks (and will make backups). I understand that all features are not implemented yet, bugs may occur and I agree to report any issue I find.
+        I understand this is a beta version and I accept the risks. I understand that all features are not implemented yet, bugs may occur and I agree to report any issue I find.
       </label>
     </div>
   </div>

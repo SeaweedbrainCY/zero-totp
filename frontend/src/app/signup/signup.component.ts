@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash , faFlask} from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { toast } from 'bulma-toast';
@@ -22,6 +22,7 @@ export class SignupComponent implements OnInit {
   faFlagCheckered=faFlagCheckered;
   faEye=faEye;
   faEyeSlash=faEyeSlash;
+  faFlask=faFlask;
   username="";
   email="";
   password="";
