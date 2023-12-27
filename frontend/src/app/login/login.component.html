@@ -30,7 +30,7 @@
           <p class="control has-icons-left has-icons-right">
          <input class="input block" type="{{isPassphraseVisible ? 'text' : 'password'}}" placeholder="Passphrase" name="password" [(ngModel)]="password" (keyup.enter)="login()">
             <span class="icon is-small is-left">
-              <fa-icon [icon]="faLock"></fa-icon>
+              <fa-icon [icon]="faKey"></fa-icon>
             </span>
           </p>
           <p class="control">
@@ -115,7 +115,19 @@
   <div class="modal-content">
       <section class="modal-card-body">
           <h1 class="is-size-2 has-text-info">Unlock your vault</h1>
-          <input class="input block" type="password" placeholder="Passphrase" name="password" [(ngModel)]="password" (keyup.enter)="openLocalVault()">
+          <div class="field is-flex-tablet has-addons  mt-3">
+          <div class="control has-icons-left" style="width:90%">
+            <input class="input" type="{{isLocalVaultPassphraseVisible ? 'text' : 'password'}}"   placeholder="Passphrase" name="password" [(ngModel)]="password" (keyup.enter)="openLocalVault()">
+            <span class="icon is-small is-left">
+              <fa-icon [icon]="faKey"></fa-icon>
+          </span>
+          </div>
+          <p class="control">
+            <a class="button" (click)="isLocalVaultPassphraseVisible = !isLocalVaultPassphraseVisible">
+              <fa-icon [icon]="faEyeSlash" *ngIf="isLocalVaultPassphraseVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isLocalVaultPassphraseVisible" size="sm"></fa-icon>
+            </a>
+          </p>
+          </div>
       </section>
       <footer class="modal-card-foot is-flex is-justify-content-right">
           <button class="button" (click)="isPassphraseModalActive = !isPassphraseModalActive">Cancel</button>
