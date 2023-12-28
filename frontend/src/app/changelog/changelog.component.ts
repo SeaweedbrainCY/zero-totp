@@ -24,6 +24,7 @@ export class ChangelogComponent {
       fixed:[
         "We fixed the minimum length of the passphrase to 12 characters.",
         "We fixed a bug in the TOTP editing page form validation causing the saving to be possible even if some data were invalid.",
+        "Fixed a bug in the buy me a coffee page"
       ]
     },
     {
