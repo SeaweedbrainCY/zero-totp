@@ -18,8 +18,13 @@ export class ChangelogComponent {
       version: "b1.9",
       added: [
         "We added some improvement for the admin panel with the ability to block user and gain more information about them. The information are still limited to the non-discriminent and we will never be able to see your secrets.",
+        "You can now visualize your passphrase while typing it in every inputs.",
+        "We added a little tag to feature not yet implemented in the application."
       ],
-      fixed:[]
+      fixed:[
+        "We fixed the minimum length of the passphrase to 12 characters.",
+        "We fixed a bug in the TOTP editing page form validation causing the saving to be possible even if some data were invalid.",
+      ]
     },
     {
       date: "18/12/2023",
