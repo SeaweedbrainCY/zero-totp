@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask } from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -27,6 +27,7 @@ export class VaultComponent implements OnInit {
   faCheckCircle = faCheckCircle;
   faRotateRight = faRotateRight;
   faCircleNotch = faCircleNotch;
+  faFlask = faFlask;
   faDesktop=faDesktop;
   faCircleExclamation=faCircleExclamation;
   faDownload=faDownload;

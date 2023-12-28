@@ -86,7 +86,7 @@
                                             (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
                                                 class="mr-3"></fa-icon> Sync now </button>
                                         <button *ngIf="isGoogleDriveSync == 'false'"
-                                            class="button  is-outlined is-dark mb-3 mr-2 ml-2"><fa-icon
+                                            class="button  is-outlined is-dark mb-3 mr-2 ml-2" disabled><fa-icon
                                                 [icon]="faCircleInfo" class="mr-3"></fa-icon> More info</button>
 
                                         <div *ngIf="isGoogleDriveSync == 'uptodate'" class="has-text-centered">
@@ -164,7 +164,7 @@
                                             <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                                 <div class="dropdown-content">
                                                     <a class="dropdown-item">
-                                                        Restore a backup
+                                                        Restore a backup <span class="tag is-info is-light"><fa-icon [icon]="faFlask"></fa-icon> Available soon !</span>
                                                     </a>
                                                     <a href="/login/#openVault" class="dropdown-item">
                                                         Open a backup locally (read-only)

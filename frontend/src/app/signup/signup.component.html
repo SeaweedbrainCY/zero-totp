@@ -10,67 +10,73 @@
     </div>
     <div class="has-text-centered	is-full is-flex is-flex-direction-column is-justify-content-center">
       <div class="has-text-centered columns p-5" >
-        <div class="notification is-warning column is-6 is-offset-3 ">
-          <strong class="block">Warning : Zero-TOTP is still in development and the beta will be released soon !
+        <div class="notification is-warning column is-6 is-offset-3 is-light">
+          <p>  <fa-icon [icon]="faFlask" size="2xl" ></fa-icon> </p>
+          <strong class="block">This is an early access to Zero-TOTP beta version.
           </strong><br>
-          <span>If you want to become an alpha and beta tester, you can sign up below :</span>
+          <span>If you want to become a beta tester, you can sign up below :</span>
         </div>
       </div>
-      <div class="field is-full is-flex is-justify-content-center">
-        <p class="control has-icons-left has-icons-right">
+      <div class="field is-full is-flex is-justify-content-center has-addons ">
+        <p class="control has-icons-left" style="min-width: 30vw;">
        <input class="input" type="text" placeholder="Username" name="username" [(ngModel)]="username" (keyup)="checkUsername()" [ngClass]="{'is-danger' : usernameErrorMessage != ''}"/>
        <span class="help has-text-left is-danger" *ngIf="usernameErrorMessage!=''">{{usernameErrorMessage}}</span>
           <span class="icon is-small is-left">
             <fa-icon [icon]="faUser"></fa-icon>
           </span>
-          <span class="icon is-small is-right">
+        </p>
+        <p class="control">
+          <a class="button" (click)="isConfirmPasswordVisible = !isConfirmPasswordVisible" (click)="checkUsername()">
             <fa-icon [icon]="faCheck" *ngIf="usernameErrorMessage == ''"></fa-icon>
             <fa-icon [icon]="faXmark" *ngIf="usernameErrorMessage != ''"></fa-icon>
-          </span>
+            </a>
         </p>
-       
+
       </div>
-      <div class="field is-full is-flex is-justify-content-center">
-        <p class="control has-icons-left has-icons-right">
+      <div class="field is-full is-flex is-justify-content-center has-addons">
+        <p class="control has-icons-left"  style="min-width: 30vw;">
            <input class="input" type="email" placeholder="Email" name="email" [(ngModel)]="email" (keyup)="checkEmail()" [ngClass]="{'is-danger' : emailErrorMessage != ''}"/>
            <span class="help has-text-left is-danger" *ngIf="emailErrorMessage!=''">{{emailErrorMessage}}</span>
           <span class="icon is-small is-left">
             <fa-icon [icon]="faEnvelope"></fa-icon>
           </span>
-          <span class="icon is-small is-right">
+        </p>
+        <p class="control">
+          <a class="button" (click)="isConfirmPasswordVisible = !isConfirmPasswordVisible" (click)="checkEmail()">
             <fa-icon [icon]="faCheck" *ngIf="emailErrorMessage == ''"></fa-icon>
             <fa-icon [icon]="faXmark" *ngIf="emailErrorMessage != ''"></fa-icon>
-          </span>
+          </a>
         </p>
-       
       </div>
-      <div class="field is-full is-flex is-justify-content-center">
-        <p class="control has-icons-left has-icons-right">
-       <input class="input" type="password" placeholder="Passphrase" name="password" [(ngModel)]="password"(keyup)="checkPassword()" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" >
+      <div class="field is-full is-flex is-justify-content-center has-addons">
+        <p class="control has-icons-left"  style="min-width: 30vw;">
+       <input class="input" type="{{isPasswordVisible ? 'text' : 'password'}}" placeholder="Passphrase" name="password" [(ngModel)]="password"(keyup)="checkPassword()" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" >
        <span class="help has-text-left is-danger" *ngIf="passwordErrorMessage.length >1">
           <span *ngFor="let error of passwordErrorMessage" >
             <span *ngIf="error!=''">{{error}}<br></span>
           </span>
         </span>
           <span class="icon is-small is-left">
-            <fa-icon [icon]="faLock"></fa-icon>
-          </span>
-          <span class="icon is-small is-right">
-            <fa-icon [icon]="faCheck" *ngIf="passwordErrorMessage.length == 1"></fa-icon>
-            <fa-icon [icon]="faXmark" *ngIf="passwordErrorMessage.length >1"></fa-icon>
+            <fa-icon [icon]="faKey"></fa-icon>
           </span>
         </p>
+        <p class="control">
+          <a class="button" (click)="isPasswordVisible = !isPasswordVisible">
+            <fa-icon [icon]="faEyeSlash" size="sm"*ngIf="isPasswordVisible"></fa-icon><fa-icon [icon]="faEye" size="sm" *ngIf="!isPasswordVisible"></fa-icon>
+          </a>
+        </p>
       </div>
-      <div class="field is-full is-flex is-justify-content-center">
-        <p class="control has-icons-left has-icons-right">
-       <input class="input" type="password" placeholder="Confirm passphrase" name="confirmPassword" [(ngModel)]="confirmPassword" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" (keyup)="checkPassword()">
+      <div class="field is-full is-flex is-justify-content-center has-addons">
+        <p class="control has-icons-left "  style="min-width: 30vw;">
+       <input class="input"  type="{{isConfirmPasswordVisible ? 'text' : 'password'}}"placeholder="Confirm passphrase" name="confirmPassword" [(ngModel)]="confirmPassword" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" (keyup)="checkPassword()">
           <span class="icon is-small is-left">
-            <fa-icon [icon]="faLock"></fa-icon>
+            <fa-icon [icon]="faKey"></fa-icon>
           </span>
-          <span class="icon is-small is-right">
-            <fa-icon [icon]="faCheck" *ngIf="passwordErrorMessage.length == 1"></fa-icon>
-            <fa-icon [icon]="faXmark" *ngIf="passwordErrorMessage.length >1"></fa-icon>
-          </span>
+        </p>
+        <p class="control">
+          <a class="button" (click)="isConfirmPasswordVisible = !isConfirmPasswordVisible">
+            <fa-icon [icon]="faEyeSlash" *ngIf="isConfirmPasswordVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isConfirmPasswordVisible" size="sm"></fa-icon>
+          </a>
         </p>
       </div>
       <div class="field box">
@@ -83,7 +89,7 @@
         <div class="control">
       <label class="checkbox" style="max-width: 50vw;">
         <input type="checkbox" name="beta" [(ngModel)]="beta">
-        I understand this is an alpha version and I accept the risks (including data loss) . I understand that all features are not implemented yet, bugs may occur and I agree to report any issue I find.
+        I understand this is a beta version and I accept the risks. I understand that all features are not implemented yet, bugs may occur and I agree to report any issue I find.
       </label>
     </div>
   </div>

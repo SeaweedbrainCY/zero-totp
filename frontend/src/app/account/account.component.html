@@ -16,8 +16,8 @@
                         <div style="border-bottom: 1px solid silver"></div>
                         <p class="has-text-grey pb-3">Your current username is:</p>
                         <label class="label">New username</label>
-                        <div class="field is-flex-tablet">
-                            <div class="control has-icons-left mb-3">
+                        <div class="field is-flex-tablet mb-3">
+                            <div class="control has-icons-left ">
                                 <input class="input" type="text" placeholder="Username" name="username" [(ngModel)]="username" (keyup)="checkUsername()" [ngClass]="{'is-danger' : usernameErrorMessage != ''}">
                                 <span class="help has-text-left is-danger" *ngIf="usernameErrorMessage != ''">{{usernameErrorMessage}}</span>
                                 <span class="icon is-small is-left">
@@ -27,6 +27,9 @@
                             <div class="has-text-centered">
                                 <button class="button is-info is-outlined is-centered ml-3">Change</button>
                             </div>
+                            <div class="is-flex is-align-content-center is-flex-wrap-wrap ml-3">
+                                <span class="  is-medium tag is-info is-light"><fa-icon [icon]="faFlask" class="mr-2"></fa-icon> Available soon !</span>
+                                </div>
                         </div>
                     </div>
 
@@ -70,18 +73,23 @@
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
                         <label class="label mt-3">Your current passphrase</label>
-                        <div class="field is-flex-tablet">
-                            <div class="control has-icons-left">
-                                <input class="input" type="password" placeholder="Passphrase" name="password" [(ngModel)]="password">
+                        <div class="field is-flex-tablet has-addons">
+                            <div class="control has-icons-left ">
+                                <input class="input" type="{{isPassphraseVisible ? 'text' : 'password'}}" placeholder="Passphrase" name="password" [(ngModel)]="password">
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faLock"></fa-icon>
                                 </span>
                             </div>
+                            <p class="control">
+                                <a class="button" (click)="isPassphraseVisible = !isPassphraseVisible">
+                                  <fa-icon [icon]="faEyeSlash" *ngIf="isPassphraseVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isPassphraseVisible" size="sm"></fa-icon>
+                                </a>
+                              </p>
                         </div>
                         <label class="label mt-3">New passphrase</label>
-                        <div class="field is-flex-tablet">
+                        <div class="field is-flex-tablet has-addons">
                             <div class="control has-icons-left">
-                                <input class="input" type="password" placeholder="New passphrase" name="newPassword" [(ngModel)]="newPassword"(keyup)="checkNewPassword()" [ngClass]="{'is-danger' : newPasswordErrorMessage.length >1 || newPasswordConfirmErrorMessage.length >1 }">
+                                <input class="input" type="{{isNewPassphraseVisible ? 'text' : 'password'}}"  placeholder="New passphrase" name="newPassword" [(ngModel)]="newPassword"(keyup)="checkNewPassword()"  [ngClass]="{'is-danger' : newPasswordErrorMessage.length >1 || newPasswordConfirmErrorMessage.length >1 }">
                                 <span class="help has-text-left is-danger" *ngIf="newPasswordErrorMessage.length >1">
                                     <span *ngFor="let error of newPasswordErrorMessage" >
                                         <span *ngIf="error!=''">{{error}}<br></span>
@@ -91,10 +99,15 @@
                                     <fa-icon [icon]="faLock"></fa-icon>
                                 </span>
                             </div>
+                            <p class="control">
+                                <a class="button" (click)="isNewPassphraseVisible = !isNewPassphraseVisible">
+                                  <fa-icon [icon]="faEyeSlash" *ngIf="isNewPassphraseVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isNewPassphraseVisible" size="sm"></fa-icon>
+                                </a>
+                              </p>
                         </div>
-                        <div class="field is-flex-tablet">
+                        <div class="field is-flex-tablet has-addons">
                             <div class="control has-icons-left mb-3">
-                                <input class="input" type="password" placeholder="Confirm Passphrase" name="confirmNewPassword" [(ngModel)]="confirmNewPassword" [ngClass]="{'is-danger' : newPasswordConfirmErrorMessage.length >1}" (keyup)="checkNewPassword()">
+                                <input class="input"  type="{{isNewConfirmPassphraseVisible ? 'text' : 'password'}}"  placeholder="Confirm Passphrase" name="confirmNewPassword" [(ngModel)]="confirmNewPassword" [ngClass]="{'is-danger' : newPasswordConfirmErrorMessage.length >1}" (keyup)="checkNewPassword()">
                                <span class="help has-text-left is-danger" *ngIf="newPasswordConfirmErrorMessage.length >1">
                                     <span *ngFor="let error of newPasswordConfirmErrorMessage" >
                                         <span *ngIf="error!=''">{{error}}<br></span>
@@ -104,6 +117,11 @@
                                     <fa-icon [icon]="faLock"></fa-icon>
                                 </span>
                             </div>
+                            <p class="control">
+                                <a class="button" (click)="isNewConfirmPassphraseVisible = !isNewConfirmPassphraseVisible">
+                                  <fa-icon [icon]="faEyeSlash" *ngIf="isNewConfirmPassphraseVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isNewConfirmPassphraseVisible" size="sm"></fa-icon>
+                                </a>
+                              </p>
                             <div class="has-text-centered">
                                 <button class="button is-info is-outlined ml-3" (click)="updatePassphrase()">Update</button>
                             </div>

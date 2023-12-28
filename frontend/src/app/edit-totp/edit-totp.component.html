@@ -126,7 +126,7 @@
           </div>
           <div class="control">
             <button class="button is-info block" (click)="save()"
-              [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != ''">Save</button>
+              [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != '' || uriError != ''">Save</button>
           </div>
         </div>
       </div>

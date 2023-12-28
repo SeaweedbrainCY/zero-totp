@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { toast as superToast } from 'bulma-toast'
-import { faEnvelope, faLock,  faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock,  faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -18,8 +18,11 @@ export class LoginComponent {
   faLock=faLock;
   faCheck=faCheck;
   faXmark=faXmark;
+  faKey=faKey;
   faFlagCheckered=faFlagCheckered;
   faCloudArrowUp=faCloudArrowUp;
+  faEye=faEye;
+  faEyeSlash=faEyeSlash;
   email:string = "";
   faBriefcaseMedical=faBriefcaseMedical;
   password:string = "";
@@ -33,6 +36,8 @@ export class LoginComponent {
   local_vault_service: LocalVaultV1Service | null = null;
   is_oauth_flow=false;
   login_button="Open my vault"
+  isPassphraseVisible=false;
+  isLocalVaultPassphraseVisible=false;
 
   constructor(
     private http: HttpClient,

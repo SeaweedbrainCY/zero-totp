@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { toast as superToast } from 'bulma-toast'
-import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash,faVault, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash,faVault, faExclamationTriangle, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -28,6 +28,11 @@ export class AccountComponent implements OnInit {
   faCog=faCog;
   faFlask=faFlask;
   faTrash=faTrash;
+  faEye=faEye;
+  faEyeSlash=faEyeSlash;
+  isNewConfirmPassphraseVisible = false;
+  isNewPassphraseVisible = false;
+  isPassphraseVisible = false;
   faVault=faVault;
   isDeletionModalActive=false;
   isPassphraseModalActive=false;

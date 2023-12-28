@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faLock,  faCheck, faUser, faXmark, faFlagCheckered } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash , faFlask} from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { toast } from 'bulma-toast';
@@ -15,11 +15,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class SignupComponent implements OnInit {
   faEnvelope=faEnvelope;
-  faLock=faLock;
+  faKey=faKey;
   faCheck=faCheck;
   faUser=faUser;
   faXmark=faXmark;
   faFlagCheckered=faFlagCheckered;
+  faEye=faEye;
+  faEyeSlash=faEyeSlash;
+  faFlask=faFlask;
   username="";
   email="";
   password="";
@@ -38,6 +41,9 @@ export class SignupComponent implements OnInit {
   modal_confim_button_diabled=true;
   beta=false;
   isModalSentenceCompleted=false;
+  isPasswordVisible=false;
+  isConfirmPasswordVisible=false;
+
 
   constructor(
     private http: HttpClient,
@@ -56,13 +62,10 @@ export class SignupComponent implements OnInit {
     const special = /[!@#$%^&*()_+\-=[\]{};:\\|,./?~]/;
     const upper = /[A-Z]/;
     const number = /[0-9]/;
-    const forbidden = /["\'<>]/
-    if(this.password.length < 8){
-      this.passwordErrorMessage.push("Your password must be at least 8 characters long");
+    if(this.password.length < 12){
+      this.passwordErrorMessage.push("Your password must be at least 12 characters long");
     }
-    else if(this.password.length > 70){
-      this.passwordErrorMessage.push("Password must be less than 70 characters long");
-    }
+    
     if(!special.test(this.password)){
       this.passwordErrorMessage.push("Your password must contain at least one special character");
     }
@@ -71,9 +74,6 @@ export class SignupComponent implements OnInit {
     }
     if(!number.test(this.password)){
       this.passwordErrorMessage.push("Your password must contain at least one number");
-    }
-    if(forbidden.test(this.password)){
-      this.passwordErrorMessage.push("' \" < > characters are forbidden in passwords");
     }
     if(this.password != this.confirmPassword){
       this.passwordErrorMessage.push("Your passwords do not match");
@@ -84,13 +84,17 @@ export class SignupComponent implements OnInit {
   checkEmail(){
     const forbidden = /["\'<>]/
     this.emailErrorMessage = "";
+    if(this.email == "" ){
+      this.emailErrorMessage = " ";
+      return;
+    }
     const emailRegex = /\S+@\S+\.\S+/;
     if(!emailRegex.test(this.email)){
       this.emailErrorMessage = "Your email is not valid";
       return;
     }
     if(forbidden.test(this.email)){
-      this.emailErrorMessage = "' \" < > characters are forbidden in passwords";
+      this.emailErrorMessage = "' \" < > characters are forbidden in emails";
       return;
     }
   }
@@ -99,7 +103,7 @@ export class SignupComponent implements OnInit {
     const forbidden = /["\'<>]/
     this.usernameErrorMessage = "";
     if(this.username == "" ){
-      this.usernameErrorMessage = "Your username cannot be empty";
+      this.usernameErrorMessage = " ";
       return;
     }
     if(forbidden.test(this.username)){
@@ -120,8 +124,9 @@ this.closeModal()
     if(!this.terms){
       superToast({
         message: "Dont forget to accept terms & conditions !",
-        type: "is-link",
+        type: "is-danger",
         dismissible: true,
+        duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
       return;
@@ -129,18 +134,21 @@ this.closeModal()
     if(!this.beta){
       superToast({
         message: "Dont forget to accept the beta conditions !",
-        type: "is-link",
+        type: "is-danger",
         dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
+        duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' },
       });
       return;
     }
     if(this.username == "" || this.email == "" || this.password == ""){
       superToast({
-        message: "Did you forget to fill something ?",
-        type: "is-link",
+        message: 'Did you forget to fill something ?',
+        type: "is-danger",
         dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
+        duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' },
+        extraClasses: "has-text-weight-bold "
       });
       return;
     }

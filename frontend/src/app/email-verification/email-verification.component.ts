@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faPaperPlane, faArrowRotateLeft, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane, faArrowRotateLeft, faPen, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
