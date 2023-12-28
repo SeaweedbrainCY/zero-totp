@@ -84,6 +84,10 @@ export class SignupComponent implements OnInit {
   checkEmail(){
     const forbidden = /["\'<>]/
     this.emailErrorMessage = "";
+    if(this.email == "" ){
+      this.emailErrorMessage = " ";
+      return;
+    }
     const emailRegex = /\S+@\S+\.\S+/;
     if(!emailRegex.test(this.email)){
       this.emailErrorMessage = "Your email is not valid";
@@ -99,7 +103,7 @@ export class SignupComponent implements OnInit {
     const forbidden = /["\'<>]/
     this.usernameErrorMessage = "";
     if(this.username == "" ){
-      this.usernameErrorMessage = "Your username cannot be empty";
+      this.usernameErrorMessage = " ";
       return;
     }
     if(forbidden.test(this.username)){
@@ -120,8 +124,9 @@ this.closeModal()
     if(!this.terms){
       superToast({
         message: "Dont forget to accept terms & conditions !",
-        type: "is-link",
+        type: "is-danger",
         dismissible: true,
+        duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
       return;
@@ -129,18 +134,21 @@ this.closeModal()
     if(!this.beta){
       superToast({
         message: "Dont forget to accept the beta conditions !",
-        type: "is-link",
+        type: "is-danger",
         dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
+        duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' },
       });
       return;
     }
     if(this.username == "" || this.email == "" || this.password == ""){
       superToast({
-        message: "Did you forget to fill something ?",
-        type: "is-link",
+        message: 'Did you forget to fill something ?',
+        type: "is-danger",
         dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
+        duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' },
+        extraClasses: "has-text-weight-bold "
       });
       return;
     }
