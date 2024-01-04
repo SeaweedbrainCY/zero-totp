@@ -28,4 +28,5 @@ for ((i=0; i<${#tracked_array[@]}; i++)); do
     echo '</url>' >> sitemap.xml
 done
 echo '</urlset>' >> sitemap.xml
+mv sitemap.xml src/
 exit 0
