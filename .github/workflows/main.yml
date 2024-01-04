@@ -25,6 +25,9 @@ jobs:
         - name: Create environment file
           working-directory: ./frontend
           run: bash generate-env.sh '${{ github.ref_name }}' '${{secrets.RSA_PUBLIC_KEY}}'
+        - name: Generate sitemap.xml
+          working-directory: ./frontend
+          run: bash generate_sitemap.sh 
         - name: Build Docker image
           working-directory: ./frontend
           run: current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/') && docker build -t $REPO:latest -t $REPO:$current_version . 
