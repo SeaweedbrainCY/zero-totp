@@ -148,12 +148,12 @@ export class EditTOTPComponent implements OnInit{
 
   generateCode(){
    this.code=this.totp(this.secret);
-  
    }
    
 
   checkSecret(){
     this.secretError = "";
+    this.secret = this.secret.replace(/\s/g, "");
     if(this.secret == ""){
       this.secretError = "Secret cannot be empty";
       return;
