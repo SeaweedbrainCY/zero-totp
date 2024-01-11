@@ -20,6 +20,7 @@ export class ChangelogComponent {
        
       ],
       fixed:[
+        "We fixed a bug in the TOTP editing page causing the saving to be impossible if the secret contained one or multiple whitespaces.",
         "We fixed 3 moderate vulnerabilities in our dependencies.",
       ]
     },
