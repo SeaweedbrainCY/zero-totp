@@ -17,7 +17,7 @@ export class ChangelogComponent {
       date: "11/01/2024",
       version: "b1.10",
       added: [
-       
+       "We added a warning page for browsers that doesn't support javascript. Without javascript, Zero-TOTP is not usable.",
       ],
       fixed:[
         "We fixed a bug in the TOTP editing page causing the saving to be impossible if the secret contained one or multiple whitespaces.",
