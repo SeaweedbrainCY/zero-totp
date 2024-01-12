@@ -82,10 +82,14 @@ export class EmailVerificationComponent implements OnInit {
     }, (error) => {
       this.verifyLoading = false;
       if(error.status == 403){
-        this.errorMessage = "Invalid or expired code";
+        if(error.error.message != undefined){
+          this.errorMessage = error.error.message;
+        } else {
+          this.errorMessage = "Invalid or expired code";
+        }
       } else {
         superToast({
-          message: "An error occured ! ❌",
+          message: "An error occured ! Please logout and login again ❌",
           type: "is-danger",
           dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }

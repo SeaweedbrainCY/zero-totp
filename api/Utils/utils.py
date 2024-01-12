@@ -77,7 +77,7 @@ def delete_user_from_database(user_id):
 def generate_new_email_verification_token(user_id):
     email_verification_token_repo = EmailVerificationToken()
     email_verification_token_repo.delete(user_id)
-    token = b64encode(os.urandom(20)).decode()
+    token = b64encode(os.urandom(5)).decode()
     expiration = datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
     email_verification_token_repo.add(user_id, token,expiration.timestamp())
     return token
