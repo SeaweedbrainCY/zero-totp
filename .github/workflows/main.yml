@@ -51,6 +51,9 @@ jobs:
     deploy-production-eu:
        needs: [docker-frontend, docker-api] 
        name: Deploy on production server (EUROPE)
+       environment: 
+        name: Production (EUROPE)
+        url: https://eu.zero-totp.com
        runs-on: ubuntu-latest
        steps:
          - name: EU deployment
@@ -60,6 +63,9 @@ jobs:
     deploy-production-ca:
         needs: [docker-frontend, docker-api] 
         name: Deploy on production server (CANADA)
+        environment: 
+           name: Production (CANADA)
+           url: https://ca.zero-totp.com
         runs-on: ubuntu-latest
         steps:
           - name: CA deployment
