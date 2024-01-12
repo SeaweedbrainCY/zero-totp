@@ -63,6 +63,7 @@ class Preferences(db.Model):
 class EmailVerificationToken(db.Model):
     __tablename__ = "email_verification_token"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False, unique=True)
     token = db.Column(db.String(256), nullable=False)
     expiration = db.Column(db.String(256), nullable=False)
+    failed_attempts = db.Column(db.Integer, nullable=False, default=0)
