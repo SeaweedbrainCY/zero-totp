@@ -808,12 +808,17 @@ def verify_email(user_id,body):
     token_db = EmailVerificationToken_db()
     token_obj = token_db.get_by_user_id(user_id)
     if token_obj == None:
-        return {"message": "Token not found"}, 403
-    if token_obj.token != body["token"]:
-        return {"message": "Invalid token"}, 403
+        return {"message": "You don't have active verification code. To verify you email address, ask for a new one."}, 403
     if float(token_obj.expiration) < datetime.datetime.utcnow().timestamp():
         token_db.delete(user_id)
-        return {"message": "Token expired"}, 403
+        return {"message": "Your verification code is expired. Please ask for a new one."}, 403
+    if int(token_obj.failed_attempts >= 5):
+        logging.warning("User " + str(user_id) + " denied verification because of too many failed attempts.")
+        return {"message": "Too many failed attempts. Please ask for a new verification code."}, 403
+    if token_obj.token != body["token"]:
+        token_db.increase_fail_attempts(user_id)
+        logging.warning("User " + str(user_id) + " tried to verify email with wrong token.")
+        return {"message": f"Wrong verification code. You have { 5-(int(token_obj.failed_attempts))} attempt(s) left before invaliding your verification code."}, 403
     token_db.delete(user_id)
     user = UserDB().update_email_verification(user_id, True)
     if user:
