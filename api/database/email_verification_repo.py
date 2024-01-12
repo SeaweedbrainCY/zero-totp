@@ -18,3 +18,9 @@ class EmailVerificationToken:
             db.session.query(EmailVerificationToken_model).filter_by(user_id=user_id).delete()
         db.session.commit()
         return True
+
+    def increase_fail_attempts(self, user_id):
+        email_verification_token = db.session.query(EmailVerificationToken_model).filter_by(user_id=user_id).first()
+        email_verification_token.failed_attempts += 1
+        db.session.commit()
+        return email_verification_token
