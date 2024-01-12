@@ -22,6 +22,7 @@ export class ChangelogComponent {
       fixed:[
         "We fixed a bug in the TOTP editing page causing the saving to be impossible if the secret contained one or multiple whitespaces.",
         "We fixed 3 moderate vulnerabilities in our dependencies.",
+        "We improved the security of the email verification process with a shorter code to be more easy to type with a limit of time and a new limit of attempts.",
       ]
     },
     {
