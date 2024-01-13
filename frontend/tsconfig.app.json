@@ -3,7 +3,10 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": ["node"],
+    "types": [
+      "node",
+      "@angular/localize"
+    ],
     "typeRoots": ["node_modules/@types"]
   },
   "files": [
