@@ -35,6 +35,8 @@ import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 import { PreferencesComponent } from './preferences/preferences.component';
 import { OpenSourceLibraryComponent } from './open-source-library/open-source-library.component';
 import { EmailVerificationComponent } from './email-verification/email-verification.component';
+import { TranslateModule } from '@ngx-translate/core';
+
 
 @NgModule({
   declarations: [
@@ -68,6 +70,7 @@ import { EmailVerificationComponent } from './email-verification/email-verificat
     HttpClientModule, 
     ClipboardModule,
     ZXingScannerModule,
+    TranslateModule.forRoot()
   ],
   providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, BnNgIdleService, {
     provide: CSP_NONCE,
