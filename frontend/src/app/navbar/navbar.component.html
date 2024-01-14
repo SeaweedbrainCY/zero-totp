@@ -57,6 +57,22 @@
       </div>
   
       <div class="navbar-end">
+        <div class="navbar-item has-dropdown is-hoverable lang-dropdown">
+          <a class="navbar-link is-arrowless">
+            <img src="{{get_current_language_info().image}}" alt="">
+          </a>
+  
+          <div class="navbar-dropdown is-boxed is-right">
+            <a class="navbar-item" *ngFor="let lang of languages" (click)="changeLanguage(lang.code)">
+              <img src="{{lang.image}}" alt="{{lang.name}}">
+              <span>{{lang.name}}</span>
+            </a>
+            <hr class="navbar-divider">
+            <a class="navbar-item" href="https://github.com/SeaweedbrainCY/zero-totp/issues?q=is%3Aopen+is%3Aissue+label%3Alocalization">
+              <small>Suggest Others</small>
+            </a>
+          </div>
+        </div>
         <div class="navbar-item">
           <div class="buttons">
             <a class="button is-info" *ngIf="userService.getId() == null" href="/signup">
