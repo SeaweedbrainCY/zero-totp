@@ -2,7 +2,9 @@
   "home": {
     "button": {
       "learnMore": "Learn more",
-      "openVault": "Open my vault"
+      "openVault": "Open my vault",
+      "github_project": "Follow the project on github",
+      "buy_me_a_coffee": "buying me a coffee"
     },
     "subtitle": "Zero-TOTP is a",
     "subtitle.and": "and a",
@@ -34,8 +36,69 @@
         "l2": "Only you can decrypt your data with your password."
       },
       "zke": {
-        "title": "Zero-Knowledge Encryption"
+        "title": "Zero-Knowledge Encryption",
+        "desc": {
+          "1": "Zero-TOTP use zero-knowledge encryption with means than",
+          "2": "except you. Even the server administrator can't access your data. You and only you are able to decrypt your vault.",
+          "strong": "no one can access your data"
+        }
+      },
+      "key": {
+        "title": "Your are the key holder",
+        "desc1": "Only your passphrase can decrypt your vault.",
+        "desc2": "All the encryption is performed in your             browser, and your data is safe before it has even left your device !"
+      },
+      "opensource": {
+        "title": "100% open-source",
+        "desc1": "Zero-TOTP is 100% open source and 100% free. Never trust anyone but you. ",
+        "desc2": "We are 100% transparent and anyone can access to the source code"
       }
+    },
+    "data": {
+      "title": "Never lose your data",
+      "subtitle": "You choose where to store your encrypted vault",
+      "zero_totp": {
+        "title": "Store your encrypted vault on Zero-TOTP's servers",
+        "desc": "This is the default and mandatory option. Your encrypted vault is stored on our servers, hosted in France 🇫🇷 and Canada 🇨🇦. Nobody has access to your data, except you. This option is the one used when your log in to your account on <a href=\"https://zero-totp.com\">zero-totp.com</a>. You cannot disable this option, but you can backup your vault on your computer or on your google drive."
+      },
+      "google": {
+        "title": "Back up your encrypted vault in your google drive",
+        "desc": "You can synchronize your encrypted vault with your google drive. This option is not mandatory, but it is highly recommended. In case of a server crash, you will be able to recover your encrypted vault from your google drive.<br>Your vault is still encrypted and only your passphrase can decrypt it. This passphrase is never stored anywhere."
+      },
+      "local": {
+        "title": "Back up your encrypted vault in your computer",
+        "desc": "You can download your encrypted vault and store it in your computer (or anywhere else). This option is not mandatory, but it is highly recommended. In case of a server crash, you will be able to recover your encrypted vault from your computer.<br>As always, your vault is still encrypted and only your passphrase can decrypt it. This passphrase is never stored anywhere."
+      }
+    },
+    "backup": {
+      "title": "And always have a",
+      "title_strong": "backup plan",
+      "desc": "You should always be able to access your TOTP code. That's why ",
+      "desc_strong": "Zero-TOTP has 4 independant platform where you can decrypt your vault.",
+      "option": {
+        "zero_totp": "The complete version of Zero-TOTP, up to date with all its features.",
+        "beta": "Available in beta",
+        "rescue": "A very simple, minimal and ULTRA stable frontend, hosted on github pages where you can upload a backup your vault and decrypt it. In case of zero-totp's servers failure, your backup vaults can still be opened",
+        "available": "Available now",
+        "mobile": "To retrieve all your codes directly in your pocket.",
+        "soon": "Coming soon",
+        "cli": "To retrieve all your codes form your terminal (CLI unix only)."
+      }
+    },
+    "about": {
+      "title": "About Zero-Knowledge Encryption",
+      "zke_def": "Zero Knowledge Encryption (ZKE) refers to a robust security measure that ensures the utmost protection of your data. With ZKE, your information is encrypted locally on your device before being uploaded to the cloud, and only you hold the encryption keys, guaranteeing that no one, including the service provider, can access your data without your explicit permission. This empowers you with complete control over your sensitive information while enjoying the convenience and flexibility of cloud storage."
+    },
+    "project": {
+      "title": "The project",
+      "desc": {
+        "part1": "Zero-TOTP was first launched in 2023 by",
+        "part2": "with the aim to provide a 100% open-source, safe and reliable alternative to proprietary totp clients. The project is still in development and is currently in beta.",
+        "contributions": "All contribution is welcome !"
+      }
+    },
+    "buyMeCoffee": {
+      "desc": "Open source & self hosted applications are possible thanks to your support. If you like this project, please consider"
     }
   },
   "seconds": "seconds"
