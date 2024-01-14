@@ -1,0 +1,18 @@
+{
+    "home":
+    {
+        "title": "Store your TOTP codes in a",
+        "title.strong" : "safe place",
+        "subtitle": "Zero-TOTP is a",
+        "subtitle.opensource": "100% open-source",
+        "subtitle.and": "and a",
+        "subtitle.zke":"Zero-Knowledge Infrastructure",
+        "subtitle.platform": "platform",
+        "trust.no.one": "Trust no one, except YOU",
+        "button":
+        {
+            "openVault": "Open my vault",
+            "learnMore": "Learn more"
+        }
+    }
+}

@@ -37,6 +37,7 @@ import { OpenSourceLibraryComponent } from './open-source-library/open-source-li
 import { EmailVerificationComponent } from './email-verification/email-verification.component';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TranslateService } from '@ngx-translate/core';
 
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -90,4 +91,11 @@ export function HttpLoaderFactory(http: HttpClient) {
   }],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+
+  constructor(translate: TranslateService) {
+    translate.addLangs(['en', 'fr']);
+    translate.setDefaultLang('en');
+    translate.use('en');
+  }
+}
