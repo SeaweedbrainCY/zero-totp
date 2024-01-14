@@ -94,8 +94,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 export class AppModule { 
 
   constructor(translate: TranslateService) {
-    translate.addLangs(['en', 'fr']);
-    translate.setDefaultLang('en');
-    translate.use('en');
+    translate.addLangs(['en-uk', 'fr-fr']);
+    translate.setDefaultLang('en-uk');
+    translate.use('en-uk');
   }
 }
