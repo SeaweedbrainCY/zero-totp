@@ -101,5 +101,25 @@
       "desc": "Open source & self hosted applications are possible thanks to your support. If you like this project, please consider"
     }
   },
-  "seconds": "seconds"
+  "seconds": "seconds",
+  "my_vault": "My vault",
+  "navbar": {
+    "add": "Add a new code",
+    "preferences": "Preferences",
+    "account": "Account",
+    "admin": "Admin",
+    "how": " How TOTP works",
+    "why": "Why Zero-TOTP",
+    "lose": "Never lose your data",
+    "backup": "Backup plan",
+    "about": "About",
+    "vault_backup": "Vault backup",
+    "lang": {
+      "suggest": "Suggest Others"
+    }
+  },
+  "logout": "Logout",
+  "close": "Close",
+  "sign_up": "Sign up",
+  "log_in": "Log in"
 }

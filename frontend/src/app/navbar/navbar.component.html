@@ -18,41 +18,38 @@
     <div id="navbarBasicExample" class="navbar-menu" [ngClass]="{'is-active': isNavbarExpanded}" >
       <div class="navbar-start"  *ngIf="userService.getId()!=null">
         <a class="navbar-item" (click)="navigateToRoute('vault')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault'}">
-          My vault
+          {{ 'my_vault' | translate }}
         </a>
         <a class="navbar-item" (click)="navigateToRoute('vault/add')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault/add'}">
-          Add a new code
+          {{ 'navbar.add' | translate }}
         </a>
         <a class="navbar-item" (click)="navigateToRoute('preferences')" [ngClass]="{'has-text-weight-bold':currentUrl == '/preferences'}">
-          Preferences
+          {{ 'navbar.preferences' | translate }}
         </a>
         <a class="navbar-item" (click)="navigateToRoute('account')" [ngClass]="{'has-text-weight-bold':currentUrl == '/account'}">
-          Account
+          {{ 'navbar.account' | translate }}
         </a>
         <a class="navbar-item" (click)="navigateToRoute('admin')" [ngClass]="{'has-text-weight-bold':currentUrl == '/admin'}" *ngIf="userService.getIsAdmin()! == true">
-          Admin
+          {{ 'navbar.admin' | translate }}
         </a>
       </div>
       <div class="navbar-start"  *ngIf="userService.getId()==null && !this.userService.getIsVaultLocal()">
         <a class="navbar-item" (click)="changeLocation('#totp')" >
-          How TOTP works
+         {{ 'navbar.how' | translate }}
         </a>
         <a class="navbar-item" (click)="changeLocation('#why-zero-totp')" >
-          Why Zero-TOTP
+          {{ 'navbar.why' | translate }}
         </a>
         <a class="navbar-item" (click)="changeLocation('#never-lose-data')">
-          Never lose your data
+          {{ 'navbar.lose' | translate }}
         </a>
         <a class="navbar-item" (click)="changeLocation('#backup-plan')">
-          Backup plan
-        </a>
-        <a class="navbar-item" (click)="changeLocation('#project')">
-          About
+          {{ 'navbar.backup' | translate }}
         </a>
       </div>
       <div class="navbar-start"  *ngIf="this.userService.getIsVaultLocal()">
         <a class="navbar-item"  (click)="navigateToRoute('vault')">
-          Vault backup
+          {{ 'navbar.vault_backup' | translate }}
         </a>
       </div>
   
@@ -69,24 +66,24 @@
             </a>
             <hr class="navbar-divider">
             <a class="navbar-item" href="https://github.com/SeaweedbrainCY/zero-totp/issues?q=is%3Aopen+is%3Aissue+label%3Alocalization">
-              <small>Suggest Others</small>
+              <small>{{ 'navbar.lang.suggest' | translate }}</small>
             </a>
           </div>
         </div>
         <div class="navbar-item">
           <div class="buttons">
             <a class="button is-info" *ngIf="userService.getId() == null" href="/signup">
-              <span [ngClass]="{'has-text-weight-bold':currentUrl == '/signup'}">Sign up</span>
+              <span [ngClass]="{'has-text-weight-bold':currentUrl == '/signup'}">{{ 'sign_up' | translate }}</span>
             </a>
             <a class="button is-light" *ngIf="userService.getId()== null" href="/login">
-              <span [ngClass]="{'has-text-weight-bold':currentUrl == '/login'}">Log in</span>
+              <span [ngClass]="{'has-text-weight-bold':currentUrl == '/login'}">{{ 'log_in' | translate }}</span>
             </a>
 
             <a class="button is-light" *ngIf="userService.getId() != null" href="/logout">
-                <span>Logout</span>
+                <span>{{ 'logout' | translate }}</span>
             </a>
             <a class="button is-light" *ngIf="this.userService.getIsVaultLocal()" href="/login">
-              <span>Close</span>
+              <span>{{ 'close' | translate }}</span>
             </a>
           </div>
         </div>

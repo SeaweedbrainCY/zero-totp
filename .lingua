@@ -1,12 +1,12 @@
 {
   "translationFiles": [
     {
-      "lang": "fr-fr",
-      "uri": "frontend/src/assets/i18n/fr-fr.json"
-    },
-    {
       "lang": "en-uk",
       "uri": "frontend/src/assets/i18n/en-uk.json"
+    },
+    {
+      "lang": "fr-fr",
+      "uri": "frontend/src/assets/i18n/fr-fr.json"
     }
   ]
 }
