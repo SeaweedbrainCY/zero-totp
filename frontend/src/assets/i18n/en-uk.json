@@ -127,5 +127,68 @@
   "footer": {
     "bug": "Report a bug",
     "opensource": "Open-Source Component"
-  }
+  },
+  "signup": {
+    "welcome": "Welcome aboard",
+    "subtitle": "Have a safe and pleasant zero-trip",
+    "beta": {
+      "warning": {
+        "title": "This is an early access to Zero-TOTP beta version.",
+        "desc": "If you want to become a beta tester, you can sign up below :"
+      }
+    },
+    "checkbox": {
+      "privacy_policy": "I agree to the",
+      "beta": "I understand this is a beta version and I accept the risks. I understand that all features are not implemented yet, bugs may occur and I agree to report any issue I find."
+    },
+    "button": {
+      "start": "Start my zero-trip ",
+      "create": "Create my vault"
+    },
+    "popup": {
+      "title": "Are you sure ?",
+      "subtitle": {
+        "part1": "Zero-TOTP uses Zero Knowledge Encryption, which means that ",
+        "strong": "you won't be able to recover your password if you lose it !"
+      },
+      "subititle": {
+        "part2": "You and only you can open your vault."
+      },
+      "instruction": "To create your vault type the following sentence :",
+      "phrase": "My passphrase is strong and I won't forget it"
+    },
+    "passphrase": {
+      "error": {
+        "special_char": "Your password must contain at least one special character",
+        "char": "Your password must be at least 12 characters long",
+        "upper": "Your password must contain at least one uppercase character",
+        "number": "Your password must contain at least one number",
+        "match": "Your passwords do not match"
+      },
+      "confirmation": "Confirm passphrase"
+    },
+    "email": {
+      "error": {
+        "invalid": "Your email is not valid",
+        "forbidden": "' \" < > characters are forbidden in emails"
+      }
+    },
+    "username": {
+      "error": {
+        "forbidden": "' \" < > characters are forbidden in usernames"
+      }
+    },
+    "errors": {
+      "terms": "Dont forget to accept terms & conditions !",
+      "beta": "Dont forget to accept the beta conditions !",
+      "missing_fields": "Did you forget to fill something ?",
+      "hashing": "An error occured while hashing your password. Please, try again",
+      "unknown": "Something went wrong. Please try again later"
+    },
+    "success": "Account created successfully 🎉🎉"
+  },
+  "username": "Username",
+  "email": "Email",
+  "passphrase": "Passphrase",
+  "cancel": "Cancel"
 }

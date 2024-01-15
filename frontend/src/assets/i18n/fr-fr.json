@@ -1,1 +1,194 @@
-{"about":"À propos","changelog":"Changelog","close":"Fermer","logout":"Déconnexion","log_in":"Se connecter","my_vault":"Mon coffre","privacy_policy":"Politique de confidentialité","seconds":"secondes","sign_up":"S'inscrire","footer":{"bug":"Signaler un bug","opensource":"Composants open-source"},"home":{"subtitle":"Zero-TOTP est une plateforme","subtitle.and":"et basée sur une","subtitle.opensource":"100% open-source","subtitle.platform":"","subtitle.zke":"Zero-Knowledge Infrastructure.","title":"Garde tes codes TOTP dans un ","title.strong":"endroit sûr","trust.no.one":"N'ai confiance en personne, sauf en TOI.","about":{"title":"À propos de la Zero-Knowledge Encryption","zke_def":"Le chiffrement à connaissance nulle (ZKE) désigne une mesure de sécurité robuste qui garantit une protection maximale de tes données. Avec le ZKE, tes informations sont chiffrées localement sur ton appareil avant d'être envoyées vers nos serveurs, et seul toi détiens les clés de chiffrement, assurant ainsi que personne, y compris le fournisseur de services (nous), ne peut accéder à tes données. Cela te donne un contrôle total sur tes informations sensibles tout en profitant de la commodité et de la flexibilité du stockage dans le cloud."},"backup":{"desc":"On devrait toujours pouvoir accéder à nos codes TOTP. C'est pourquoi","desc_strong":"Zero-TOTP est disponible sur 4 plateformes indépendantes via lesquelles tu peux déchiffrer ton coffre","title":"Toujours avoir un ","title_strong":"plan de secours","option":{"available":"Déjà disponible !","beta":"Disponible en beta","cli":"Pour récupérer tous tes codes TOTP depuis ton terminal (CLI unix seulement).","mobile":"Pour récupérer tous tes codes TOTP depuis ta .","rescue":"Un site web très simple, minimaliste et ULTRA stable, hébergé sur github pages où tu pourras upload une backup de ton coffre et le déchiffrer. Ainsi, même si les serveurs de Zero-TOTP rencontrent un problème, tu pourras toujours ouvrir les backups de ton coffre.","soon":"Arrive bientôt","zero_totp":"La version complète de Zero-TOTP  avec toutes ses fonctionnalités."}},"button":{"buy_me_a_coffee":"m'offrir un café","github_project":"Suis mon projet sur GitHub","learnMore":"En savoir +","openVault":"Ouvrir mon coffre"},"buyMeCoffee":{"desc":"Les application open source & auto-hébergés sont possible grâce à ton support. Si tu aimes ce projet, tu peux"},"data":{"subtitle":"Choisis où stocker ton coffre chiffré","title":"Ne perds jamais tes données","google":{"desc":"Tu peux synchroniser ton coffre chiffré avec Google Drive. Cette option n'est pas obligatoire mais vivement recommandée. Si jamais nos serveurs ont un problèmes, tu pourras quand même récupérer ton coffre chiffré depuis Google Drive.<br>Dans tous les cas, ton coffre est toujours chiffré et seule ta passphrase peut le déchiffrer. Cette passphrase n'est jamais stockée quelque part.","title":"Backup ton coffre chiffré sur Google Drive"},"local":{"desc":"Tu peux télécharger ton coffre chiffré et le stocker sur ton ordinateur (ou n'importe où ailleurs). Cette option n'est pas obligatoire mais vivement recommandée. Si nos serveurs rencontrent un problème, tu pourras récupérer ton coffre chiffrée depuis ton ordinateur.<br>Comme toujours, ton coffre reste chiffré et seule ta passphrase peut le déchiffrer. Cette passphrase n'est jamais stockées quelque part.","title":"Backup ton coffre chiffrée dans ton ordinateur"},"zero_totp":{"desc":"C'est l'option par défaut et obligatoire. Ton coffre chiffré est stocké sur nos servers, hébergés en France 🇫🇷 et au Canada 🇨🇦. Personne ne peut accéder à tes données, sauf toi. C'est cette méthode qui est utilisée quand tu te connecte sur <a href='https://zero-totp.com'>zero-totp.com</a>. Tu ne peux pas désactiver cette option, mais tu peux toujours sauvegarder ton coffre chiffré sur ton ordinateur ou sur Google Drive.","title":"Stock ton coffre chiffré sur les serveur de Zero-TOTP"}},"project":{"title":"Le projet","desc":{"contributions":"Tous les contributions sont les bienvenues !","part1":"Zero-TOTP a été lancé en 2023 par","part2":"avec l'ambition de fournir une alternative 100% open-source, sûre et fiable aux clients TOTP propriétaires. Ce projet est toujours en développement et est actuellement en beta."}},"tuto":{"2FA":"authentification à 2 facteurs","accounts":"pour sécuriser tes comptes (gmail, facebook, twitter, github, etc ...). C'est comme un code de validation SMS, mais plus sécurisé et plus pratique !","title":"Ajoute une couche de sécurité à tes comptes","tmp_codes":"des codes temporaires","totp_are":"Les codes TOTP sont","totp_time":"Un code TOTP est seulement valide ","use_as":"que tu peux utiliser comme","totp_client":{"desc":"À chaque fois que tu te connectes à un de tes comptes, tu devras entrer un nouveau code. Ce code est généré par une application sur ton téléphone ou ton ordinateur. Cette application est un","name":"client TOTP"}},"why":{"title":"Pourquoi Zero-TOTP ?","key":{"desc1":"Seule ta passphrase peut déchiffrer ton coffre.","desc2":"Tous les chiffrements sont effectués dans ton navigateur, et tes données sont protégées avant même qu'elles aient quitté ton appareil !","title":"Tu détiens les clés"},"opensource":{"desc1":"Zero-TOTP est 100% open-source et 100% gratuit. Ne fais jamais confiance à quiconque, sauf toi.","desc2":"Nous sommes 100% transparents et n'importe qui peut accéder au code source","title":"100% open-source"},"strong_enc":{"l1":"avec AES256, un protocole de chiffrement extrêmement robuste.","l2":"Seul toi peut déchiffrer tes données avec ta passphrase.","strong":"Toutes tes données sont chiffrées","title":"Chiffrement robuste"},"zke":{"title":"Zero-Knowledge Encryption","desc":{"1":"Zero-TOTP utilise du chiffrement Zero-Knwoledge ce qui veut dire que ","2":"sauf toi. Même les administrateurs des serveurs n'ont pas accès à tes données. Toi et seulement toi est capable de déchiffrer ton coffre.","strong":"personne ne peut accéder à tes données"}}}},"navbar":{"account":"Compte","add":"Ajouter un code","admin":"Admin","backup":"Plan de secours","how":"Les TOTP ?","lose":"Résilience","preferences":"Préférences","vault_backup":"Backup du coffre","why":"Pourquoi Zero-TOTP","lang":{"suggest":"Suggérer d'autres"}}}
+{
+  "about": "À propos",
+  "changelog": "Changelog",
+  "close": "Fermer",
+  "email": "Email",
+  "logout": "Déconnexion",
+  "log_in": "Se connecter",
+  "my_vault": "Mon coffre",
+  "passphrase": "Passphrase",
+  "privacy_policy": "Politique de confidentialité",
+  "seconds": "secondes",
+  "sign_up": "S'inscrire",
+  "username": "Nom d'utilisateur",
+  "cancel": "Retour",
+  "footer": {
+    "bug": "Signaler un bug",
+    "opensource": "Composants open-source"
+  },
+  "home": {
+    "subtitle": "Zero-TOTP est une plateforme",
+    "subtitle.and": "et basée sur une",
+    "subtitle.opensource": "100% open-source",
+    "subtitle.platform": "",
+    "subtitle.zke": "Zero-Knowledge Infrastructure.",
+    "title": "Garde tes codes TOTP dans un ",
+    "title.strong": "endroit sûr",
+    "trust.no.one": "N'ai confiance en personne, sauf en TOI.",
+    "about": {
+      "title": "À propos de la Zero-Knowledge Encryption",
+      "zke_def": "Le chiffrement à connaissance nulle (ZKE) désigne une mesure de sécurité robuste qui garantit une protection maximale de tes données. Avec le ZKE, tes informations sont chiffrées localement sur ton appareil avant d'être envoyées vers nos serveurs, et seul toi détiens les clés de chiffrement, assurant ainsi que personne, y compris le fournisseur de services (nous), ne peut accéder à tes données. Cela te donne un contrôle total sur tes informations sensibles tout en profitant de la commodité et de la flexibilité du stockage dans le cloud."
+    },
+    "backup": {
+      "desc": "On devrait toujours pouvoir accéder à nos codes TOTP. C'est pourquoi",
+      "desc_strong": "Zero-TOTP est disponible sur 4 plateformes indépendantes via lesquelles tu peux déchiffrer ton coffre",
+      "title": "Toujours avoir un ",
+      "title_strong": "plan de secours",
+      "option": {
+        "available": "Déjà disponible !",
+        "beta": "Disponible en beta",
+        "cli": "Pour récupérer tous tes codes TOTP depuis ton terminal (CLI unix seulement).",
+        "mobile": "Pour récupérer tous tes codes TOTP depuis ta .",
+        "rescue": "Un site web très simple, minimaliste et ULTRA stable, hébergé sur github pages où tu pourras upload une backup de ton coffre et le déchiffrer. Ainsi, même si les serveurs de Zero-TOTP rencontrent un problème, tu pourras toujours ouvrir les backups de ton coffre.",
+        "soon": "Arrive bientôt",
+        "zero_totp": "La version complète de Zero-TOTP  avec toutes ses fonctionnalités."
+      }
+    },
+    "button": {
+      "buy_me_a_coffee": "m'offrir un café",
+      "github_project": "Suis mon projet sur GitHub",
+      "learnMore": "En savoir +",
+      "openVault": "Ouvrir mon coffre"
+    },
+    "buyMeCoffee": {
+      "desc": "Les application open source & auto-hébergés sont possible grâce à ton support. Si tu aimes ce projet, tu peux"
+    },
+    "data": {
+      "subtitle": "Choisis où stocker ton coffre chiffré",
+      "title": "Ne perds jamais tes données",
+      "google": {
+        "desc": "Tu peux synchroniser ton coffre chiffré avec Google Drive. Cette option n'est pas obligatoire mais vivement recommandée. Si jamais nos serveurs ont un problèmes, tu pourras quand même récupérer ton coffre chiffré depuis Google Drive.<br>Dans tous les cas, ton coffre est toujours chiffré et seule ta passphrase peut le déchiffrer. Cette passphrase n'est jamais stockée quelque part.",
+        "title": "Backup ton coffre chiffré sur Google Drive"
+      },
+      "local": {
+        "desc": "Tu peux télécharger ton coffre chiffré et le stocker sur ton ordinateur (ou n'importe où ailleurs). Cette option n'est pas obligatoire mais vivement recommandée. Si nos serveurs rencontrent un problème, tu pourras récupérer ton coffre chiffrée depuis ton ordinateur.<br>Comme toujours, ton coffre reste chiffré et seule ta passphrase peut le déchiffrer. Cette passphrase n'est jamais stockées quelque part.",
+        "title": "Backup ton coffre chiffrée dans ton ordinateur"
+      },
+      "zero_totp": {
+        "desc": "C'est l'option par défaut et obligatoire. Ton coffre chiffré est stocké sur nos servers, hébergés en France 🇫🇷 et au Canada 🇨🇦. Personne ne peut accéder à tes données, sauf toi. C'est cette méthode qui est utilisée quand tu te connecte sur <a href='https://zero-totp.com'>zero-totp.com</a>. Tu ne peux pas désactiver cette option, mais tu peux toujours sauvegarder ton coffre chiffré sur ton ordinateur ou sur Google Drive.",
+        "title": "Stock ton coffre chiffré sur les serveur de Zero-TOTP"
+      }
+    },
+    "project": {
+      "title": "Le projet",
+      "desc": {
+        "contributions": "Tous les contributions sont les bienvenues !",
+        "part1": "Zero-TOTP a été lancé en 2023 par",
+        "part2": "avec l'ambition de fournir une alternative 100% open-source, sûre et fiable aux clients TOTP propriétaires. Ce projet est toujours en développement et est actuellement en beta."
+      }
+    },
+    "tuto": {
+      "2FA": "authentification à 2 facteurs",
+      "accounts": "pour sécuriser tes comptes (gmail, facebook, twitter, github, etc ...). C'est comme un code de validation SMS, mais plus sécurisé et plus pratique !",
+      "title": "Ajoute une couche de sécurité à tes comptes",
+      "tmp_codes": "des codes temporaires",
+      "totp_are": "Les codes TOTP sont",
+      "totp_time": "Un code TOTP est seulement valide ",
+      "use_as": "que tu peux utiliser comme",
+      "totp_client": {
+        "desc": "À chaque fois que tu te connectes à un de tes comptes, tu devras entrer un nouveau code. Ce code est généré par une application sur ton téléphone ou ton ordinateur. Cette application est un",
+        "name": "client TOTP"
+      }
+    },
+    "why": {
+      "title": "Pourquoi Zero-TOTP ?",
+      "key": {
+        "desc1": "Seule ta passphrase peut déchiffrer ton coffre.",
+        "desc2": "Tous les chiffrements sont effectués dans ton navigateur, et tes données sont protégées avant même qu'elles aient quitté ton appareil !",
+        "title": "Tu détiens les clés"
+      },
+      "opensource": {
+        "desc1": "Zero-TOTP est 100% open-source et 100% gratuit. Ne fais jamais confiance à quiconque, sauf toi.",
+        "desc2": "Nous sommes 100% transparents et n'importe qui peut accéder au code source",
+        "title": "100% open-source"
+      },
+      "strong_enc": {
+        "l1": "avec AES256, un protocole de chiffrement extrêmement robuste.",
+        "l2": "Seul toi peut déchiffrer tes données avec ta passphrase.",
+        "strong": "Toutes tes données sont chiffrées",
+        "title": "Chiffrement robuste"
+      },
+      "zke": {
+        "title": "Zero-Knowledge Encryption",
+        "desc": {
+          "1": "Zero-TOTP utilise du chiffrement Zero-Knwoledge ce qui veut dire que ",
+          "2": "sauf toi. Même les administrateurs des serveurs n'ont pas accès à tes données. Toi et seulement toi est capable de déchiffrer ton coffre.",
+          "strong": "personne ne peut accéder à tes données"
+        }
+      }
+    }
+  },
+  "navbar": {
+    "account": "Compte",
+    "add": "Ajouter un code",
+    "admin": "Admin",
+    "backup": "Plan de secours",
+    "how": "Les TOTP ?",
+    "lose": "Résilience",
+    "preferences": "Préférences",
+    "vault_backup": "Backup du coffre",
+    "why": "Pourquoi Zero-TOTP",
+    "lang": {
+      "suggest": "Suggérer d'autres"
+    }
+  },
+  "signup": {
+    "subtitle": "Un voyage sûr et fiable",
+    "success": "Compte créé avec succès 🎉🎉",
+    "welcome": "Bienvenue à bord",
+    "beta": {
+      "warning": {
+        "desc": "Si tu veux devenir un beta-testeur, tu peux t'inscrire ci-dessous",
+        "title": "Il s'agit d'un accès anticipé à la version beta de Zero-TOTP"
+      }
+    },
+    "button": {
+      "start": "C'est parti !",
+      "create": "Créer mon coffre"
+    },
+    "checkbox": {
+      "beta": "Je comprends qu'il s'agit d'une version beta et j'en accepte les risques. Je comprends que toutes les fonctionnalités ne sont pas encore implémentées et que des bugs peuvent apparaître. Je m'engage à signaler tout problème que je pourrais trouver.",
+      "privacy_policy": "J'ai lu et j'accepte la"
+    },
+    "email": {
+      "error": {
+        "forbidden": "Les caractères ' \" < > sont interdits dans des emails",
+        "invalid": "Ton email n'est pas valide"
+      }
+    },
+    "errors": {
+      "beta": "N'oublie pas d'accepter les conditions de la Beta !",
+      "hashing": "Une erreur est survenue en hachant ta passphrase. Réessaye plus tard",
+      "missing_fields": "Tu n'as pas oublié quelque chose ?",
+      "terms": "N'oublie pas d'accepter les termes et conditions !",
+      "unknown": "Quelque chose s'est mal passé. Réessaye plus tard"
+    },
+    "passphrase": {
+      "confirmation": "Confirme ta passphrase",
+      "error": {
+        "char": "Ta passphrase doit contenir au moins 12 caractères",
+        "match": "Tes passphrases ne correspondent pas",
+        "number": "Ta passphrase doit contenir au moins un chiffre",
+        "special_char": "Ta passphrase doit contenir au moins un caractère spécial",
+        "upper": "Ta passphrase doit contenir au moins une majuscule"
+      }
+    },
+    "popup": {
+      "instruction": "Pour créer ton coffre, recopie la phrase suivante",
+      "phrase": "Ma passphrase est forte et je ne l'oublierai pas",
+      "title": "Es-tu sûr ?",
+      "subititle": {
+        "part2": "Toi et seulement toi peut ouvrir ton coffre."
+      },
+      "subtitle": {
+        "part1": "Zero-TOTP utilise du chiffrement dit \"Zero-Knowledge\" ce qui veut dire qu'il sera",
+        "strong": "impossible de récupérer ta passphrase si tu la perds !"
+      }
+    },
+    "username": {
+      "error": {
+        "forbidden": "Les caractères ' \" < > sont interdits dans des noms d'utilisateur"
+      }
+    }
+  }
+}
