@@ -112,7 +112,6 @@
     "why": "Why Zero-TOTP",
     "lose": "Never lose your data",
     "backup": "Backup plan",
-    "about": "About",
     "vault_backup": "Vault backup",
     "lang": {
       "suggest": "Suggest Others"
@@ -121,5 +120,12 @@
   "logout": "Logout",
   "close": "Close",
   "sign_up": "Sign up",
-  "log_in": "Log in"
+  "log_in": "Log in",
+  "about": "About",
+  "privacy_policy": "Privacy Policy",
+  "changelog": "Changelog",
+  "footer": {
+    "bug": "Report a bug",
+    "opensource": "Open-Source Component"
+  }
 }
