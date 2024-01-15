@@ -57,12 +57,12 @@
       </div>
   
       <div class="navbar-end">
-        <div class="navbar-item has-dropdown is-hoverable lang-dropdown">
-          <a class="navbar-link is-arrowless">
-            <img src="{{get_current_language_info().image}}" alt="">
+        <div class="navbar-item has-dropdown lang-dropdown" [ngClass]="{'is-active': isLangDropdownExpanded}">
+          <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded = !isLangDropdownExpanded">
+            <img src="{{get_current_language_info().image}}" alt="{{get_current_language_info().name}}">
           </a>
   
-          <div class="navbar-dropdown is-boxed is-right">
+          <div class="navbar-dropdown is-boxed is-right" [ngClass]="{'is-active': isLangDropdownExpanded}">
             <a class="navbar-item" *ngFor="let lang of languages" (click)="changeLanguage(lang.code)">
               <img src="{{lang.image}}" alt="{{lang.name}}">
               <span>{{lang.name}}</span>

@@ -25,4 +25,11 @@
       }
     }
   }
+
+.navbar-dropdown:not(.is-active) {
+  display: none;
+}
+.navbar-dropdown .is-active{
+  display: block;
+}
   

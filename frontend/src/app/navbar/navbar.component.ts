@@ -12,6 +12,7 @@ export class NavbarComponent implements OnInit{
   currentUrl:string = "";
   isNavbarExpanded = false;
   current_language:string = localStorage.getItem('language') || 'en-uk';
+  isLangDropdownExpanded = false;
   languages = [
     {
       name:"English", // default one
@@ -55,6 +56,7 @@ export class NavbarComponent implements OnInit{
   }
 
   changeLanguage(language:string){
+    this.isLangDropdownExpanded = false;
     if(language == 'fr-fr'){
       localStorage.setItem('language','fr-fr');
       this.current_language = 'fr-fr';
