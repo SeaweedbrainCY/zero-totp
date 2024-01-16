@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { toast as superToast } from 'bulma-toast'
 import { faEnvelope, faLock,  faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
@@ -8,12 +8,14 @@ import { UserService } from '../common/User/user.service';
 import {Crypto} from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
 import { LocalVaultV1Service, UploadVaultStatus } from '../common/upload-vault/LocalVaultv1Service.service';
+import { TranslateService } from '@ngx-translate/core';
+import { error } from 'console';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   faEnvelope=faEnvelope;
   faLock=faLock;
   faCheck=faCheck;
@@ -35,7 +37,7 @@ export class LoginComponent {
   isPassphraseModalActive = false;
   local_vault_service: LocalVaultV1Service | null = null;
   is_oauth_flow=false;
-  login_button="Open my vault"
+  login_button="login.open_button"
   isPassphraseVisible=false;
   isLocalVaultPassphraseVisible=false;
 
@@ -46,6 +48,7 @@ export class LoginComponent {
     private userService: UserService,
     private crypto:Crypto,
     private localVaultv1: LocalVaultV1Service,
+    private translate: TranslateService
     ) {
     }
 
@@ -56,34 +59,34 @@ export class LoginComponent {
           break;
         }
         case 'sessionKilled':{
-          this.warning_message = "For your safety, you have been disconnected because you have reloaded or closed the tab";
+            this.warning_message = 'login.errors.session_killed';
           this.email = this.userService.getEmail() || "";
           this.userService.clear();
           break;
         }
         case 'sessionTimeout':{
-          this.warning_message = "For your safety, you have been disconnected after 10min of inactivity"
+            this.warning_message = 'login.errors.session_timeout';
           this.email = this.userService.getEmail() || "";
           this.userService.clear();
           break;
         }
 
         case 'sessionEnd':{
-          this.warning_message = "For your safety, your session must be renewed every hour."
+            this.warning_message = 'login.errors.session_end';
           this.email = this.userService.getEmail() || "";
           break;
         }
         case 'oauth':{
-          this.warning_message = "One last step, please confirm your password to complete the synchronization"
+          this.warning_message = 'login.errors.oauth'
           this.email = this.userService.getEmail() || "";
           this.warning_message_color="is-success";
           this.userService.clear();
           this.is_oauth_flow=true;
-          this.login_button="Authorize"
+          this.login_button="login.authorize" 
           break;
         }
         case 'confirmPassphrase':{
-          this.warning_message = "To continue, please confirm your passphrase"
+            this.warning_message = 'login.errors.confirm_passphrase';
           this.email = this.userService.getEmail() || "";
           this.warning_message_color="is-success";
           this.userService.clear();
@@ -93,6 +96,8 @@ export class LoginComponent {
       }
       
     }
+
+    
 
   
   

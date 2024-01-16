@@ -311,5 +311,47 @@
       "title": "Contact Us",
       "desc1": "If you have any questions or concerns about this Privacy Policy or your data, please contact us at"
     }
-  }
+  },
+  "login": {
+    "title": "It's time to open your vault !",
+    "subtitle": "This time, you do the magic 🪄",
+    "authorize": "Authorize",
+    "open_button": "Open my vault",
+    "rescue": {
+      "part1": "🛟 Troubles logging to your account ? Open a backup on our ",
+      "strong": "ultra stable plateform",
+      "part2": "Rescue Zero-TOTP"
+    },
+    "backup": {
+      "open_button": "Open a backup",
+      "subtitle": "You can open a Zero-TOTP vault saved on your laptop 💻",
+      "vault_backup": " Vault backup",
+      "unsecure": {
+        "popup": {
+          "title": "You backup may be not secure",
+          "strong": "The verification of the authenticity of your vault failed",
+          "desc": "Your vault may have been modified by someone else or it does not come from Zero-TOTP.",
+          "strong2": "Importing an unsecure backup may lead to security issues and should not be trusted",
+          "button": {
+            "cancel": "Return to safety"
+          },
+          "continue": "I trust this backup"
+        }
+      },
+      "open": {
+        "popup": {
+          "title": "Unlock your vault"
+        }
+      }
+    },
+    "errors":{
+      "session_killed":"For your safety, you have been disconnected because you have reloaded or closed the tab",
+      "session_timeout":"For your safety, you have been disconnected after 10min of inactivity",
+      "session_end":"For your safety, your session must be renewed every hour.",
+      "oauth":"One last step, please confirm your password to complete the synchronization",
+      "confirm_passphrase":"To continue, please confirm your passphrase"
+
+    }
+  },
+  "unlock": "Unlock"
 }
