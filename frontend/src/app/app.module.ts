@@ -47,7 +47,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 
 export class MissingTranslationHelper implements MissingTranslationHandler {
   handle(params: MissingTranslationHandlerParams) {
-    return '|•••| <-- this is a missing translation. Sorry about that !';
+    return params.key;
   }
 }
 
