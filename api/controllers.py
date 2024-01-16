@@ -115,12 +115,12 @@ def login():
         email = utils.sanitize_input(data["email"]).strip()
     except Exception as e:
         logging.info(e)
-        return {"message": "Invalid request"}, 400
+        return {"message": "generic_errors.invalid_request"}, 400
     
     if not passphrase or not email:
-        return {"message": "Missing parameters"}, 400
+        return {"message": "generic_errors.missing_params"}, 400
     if(not utils.check_email(email) ):
-        return {"message": "Bad email format"}, 403
+        return {"message": "generic_errors.bad_email"}, 403
     userDB = UserDB()
     user = userDB.getByEmail(email)
     bcrypt = Bcrypt(passphrase)
@@ -128,13 +128,13 @@ def login():
         logging.info("User " + str(email) + " tried to login but does not exist. A fake password is checked to avoid timing attacks")
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fakePassword)
-        return {"message": "Invalid credentials"}, 403
+        return {"message": "generic_errors.invalid_creds"}, 403
     logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {request.headers.get('X-Forwarded-For', 'None')} ")
     checked = bcrypt.checkpw(user.password)
     if not checked:
-        return {"message": "Invalid credentials"}, 403
+        return {"message": "generic_errors.invalid_creds"}, 403
     if user.isBlocked: # only authenticated users can see the blocked status
-        return {"message": "User is blocked"}, 403
+        return {"message": "blocked"}, 403
         
 
 
