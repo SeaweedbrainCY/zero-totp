@@ -37,12 +37,21 @@ import { OpenSourceLibraryComponent } from './open-source-library/open-source-li
 import { EmailVerificationComponent } from './email-verification/email-verification.component';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, MissingTranslationHandler, MissingTranslationHandlerParams, } from '@ngx-translate/core';
+import defaultLanguage from "./../assets/i18n/en-uk.json";
 
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
+
+export class MissingTranslationHelper implements MissingTranslationHandler {
+  handle(params: MissingTranslationHandlerParams) {
+    return '|•••| <-- this is a missing translation. Sorry about that !';
+  }
+}
+
+
 
 @NgModule({
   declarations: [
@@ -80,8 +89,12 @@ export function HttpLoaderFactory(http: HttpClient) {
       loader: {
         provide: TranslateLoader,
           useFactory: HttpLoaderFactory,
-          deps: [HttpClient]
-      }
+          deps: [HttpClient],
+      },
+      missingTranslationHandler: {
+        provide: MissingTranslationHandler,
+        useClass: MissingTranslationHelper
+      },
     }),
     HttpClientModule,
   ],
@@ -94,8 +107,30 @@ export function HttpLoaderFactory(http: HttpClient) {
 export class AppModule { 
 
   constructor(translate: TranslateService) {
-    translate.addLangs(['en-uk', 'fr-fr']);
+    translate.addLangs(['fr-fr']);
+    translate.setTranslation('en-uk', defaultLanguage);
     translate.setDefaultLang('en-uk');
+    if(localStorage.getItem('language') == null){
+      const browserLang = translate.getBrowserLang();
+      if(browserLang == undefined){
+        localStorage.setItem('language','en-uk');
+        translate.use('en-uk');
+      } else if(browserLang.match(/fr/)){
+        localStorage.setItem('language','fr-fr');
+        translate.use('fr-fr');
+      } else { // default + en
+        localStorage.setItem('language','en-uk');
+        translate.use('en-uk');
+      }
+    } else {
+      if(localStorage.getItem('language') == 'fr-fr'){
+        translate.use('fr-fr');
+      } else { // default + en
+        translate.use('en-uk');
+      }
+    }
     translate.use('en-uk');
   }
 }
+
+
