@@ -4,20 +4,20 @@
             <p class="has-text-centered">
         <img src="assets/logo_zero_totp_dark.png" alt="logo" width="200" height="200"/>
     </p>
-        <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info">Verify your email address <fa-icon [icon]="faPaperPlane"></fa-icon></h1>
-        <p class="is-size-6 has-text-centered has-text-weight-bold has-text-grey">We have sent you an email with a <code class="is-family-code">code</code> to verify your email address.</p>
+        <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info">{{ 'email_verif.title' | translate }}<fa-icon [icon]="faPaperPlane"></fa-icon></h1>
+        <p class="is-size-6 has-text-centered has-text-weight-bold has-text-grey">{{ 'email_verif.subtitle.part1' | translate }}<code class="is-family-code">code</code> {{ 'email_verif.subtitle.part2' | translate }}</p>
         <div class="is-flex">
-        <input class="input mt-6" type="text" name="code" [(ngModel)]="code" placeholder="Enter the code here">
+        <input class="input mt-6" type="text" name="code" [(ngModel)]="code" placeholder="{{ 'email_verif.code.placeholder' | translate }}">
         
-            <button class="button is-info  is-outlined mt-6 ml-2" (click)="verify()" [ngClass]="{'is-loading':verifyLoading}">Verify</button>
+            <button class="button is-info  is-outlined mt-6 ml-2" (click)="verify()" [ngClass]="{'is-loading':verifyLoading}">{{ 'verify' | translate }}</button>
         </div>
         <div>
-            <span *ngIf="errorMessage != ''" class="has-text-danger is-light">{{errorMessage}}</span>
+            <span *ngIf="errorMessage != ''" class="has-text-danger is-light">{{errorMessage | translate:{left_attempts:this.left_attempts} }}</span>
             <p class="has-text-grey has-text-centered mt-6">
-                The code is valid for 10 minutes. If you don't receive the email, check your spam folder or <a class="has-text-info" (click)="resend()" >ask for a new code <fa-icon [icon]="faArrowRotateLeft"></fa-icon></a>
+                {{ 'email_verif.desc1.text' | translate }} <a class="has-text-info" (click)="resend()" >{{ 'email_verif.desc1.link' | translate }} <fa-icon [icon]="faArrowRotateLeft"></fa-icon></a>
             </p><br>
             <p class="has-text-grey has-text-centered">
-                The email has been sent to <span class="has-text-weight-bold">{{emailAddress}}</span>. If you want to change your email address, you can <a class="has-text-info" (click)="isEmailModalActive =true">change it here <fa-icon [icon]="faPen"></fa-icon></a>
+                {{ 'email_verif.desc2.text.part1' | translate }} <span class="has-text-weight-bold">{{emailAddress}}</span>. {{ 'email_verif.desc2.part2' | translate }} <a class="has-text-info" (click)="isEmailModalActive =true">{{ 'email_verif.desc2.link' | translate }} <fa-icon [icon]="faPen"></fa-icon></a>
             </p>
             </div>
     </div>
@@ -29,13 +29,13 @@
   <div class="modal-background" (click)="isEmailModalActive = !isEmailModalActive"></div>
   <div class="modal-content">
       <section class="modal-card-body">
-          <h1 class="is-size-4 has-text-info">Update your email address</h1><br>
+          <h1 class="is-size-4 has-text-info">{{ 'email_verif.popup.button.update' | translate }}</h1><br>
           <input class="input block" type="text" placeholder="you@example.com" name="emailAddressUpdated" [(ngModel)]="emailAddressUpdated">
-          <span *ngIf="emailErrorMessage != ''" class="has-text-danger is-light ">{{emailErrorMessage}}</span>
+          <span *ngIf="emailErrorMessage != ''" class="has-text-danger is-light ">{{emailErrorMessage | translate}}</span>
       </section>
       <footer class="modal-card-foot is-flex is-justify-content-right">
-          <button class="button" (click)="isEmailModalActive = !isEmailModalActive">Cancel</button>
-          <button class="button is-success" (click)="updateEmail();" [ngClass]="{'is-loading':emailLoading}" >Update</button>
+          <button class="button" (click)="isEmailModalActive = !isEmailModalActive">{{"cancel" | translate}}</button>
+          <button class="button is-success" (click)="updateEmail();" [ngClass]="{'is-loading':emailLoading}" >{{ 'update' | translate }}</button>
       </footer>
   </div>
   <button class="modal-close is-large" aria-label="close" (click)="isEmailModalActive = !isEmailModalActive" ></button>

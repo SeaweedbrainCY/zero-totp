@@ -351,32 +351,79 @@
       "oauth": "One last step, please confirm your password to complete the synchronization",
       "confirm_passphrase": "To continue, please confirm your passphrase",
       "email": "Are your sure about your email ?",
-      "empty":"Did you forget to fill something ?",
+      "empty": "Did you forget to fill something ?",
       "hashing": "An error occured while hashing your password. Please, try again",
       "no_connection": "Impossible to chat with the server ! \nCheck your internet connection or status.zero-totp.com",
-      "server_error":"Error : Impossible ro retrieve information from the server",
+      "server_error": "Error : Impossible ro retrieve information from the server",
       "account_blocked": "Your account has been blocked for security reasons. Please contact the administrator at developer[at]zero-totp.com to unlock it",
-      "import_vault":{
-          "invalid_file":"Error : Impossible to import your vault. Impossible to read it",
-          "invalid_type": "Error : Invalid file type",
-          "invalid_version":"Error : Impossible to import your vault. Unsupported version",
-          "no_signature":"Error : Impossible to import your vault. No signature found",
-          "missing_arg":"Error : Impossible to import your vault. It seems to not be    complete",
-          "invalid_arg":"Error : Impossible to import your vault. It seems to be    corrupted",
-          "error_unknown":"Error : Impossible to import your vault. Unknown error",
-          "parse_fail":"Error : Impossible to parse your file",
-          "wrong_passphrase":"Wrong passphrase",
-          "key_dec":"Impossible to decrypt your key."
+      "import_vault": {
+        "invalid_file": "Error : Impossible to import your vault. Impossible to read it",
+        "invalid_type": "Error : Invalid file type",
+        "invalid_version": "Error : Impossible to import your vault. Unsupported version",
+        "no_signature": "Error : Impossible to import your vault. No signature found",
+        "missing_arg": "Error : Impossible to import your vault. It seems to not be    complete",
+        "invalid_arg": "Error : Impossible to import your vault. It seems to be    corrupted",
+        "error_unknown": "Error : Impossible to import your vault. Unknown error",
+        "parse_fail": "Error : Impossible to parse your file",
+        "wrong_passphrase": "Wrong passphrase",
+        "key_dec": "Impossible to decrypt your key."
       }
     }
   },
   "unlock": "Unlock",
-  "generic_errors":{
+  "generic_errors": {
     "invalid_request": "Invalid request",
     "invalid_creds": "Invalid credentials",
     "bad_email": "Invalid email",
     "missing_params": "Missing parameters",
-    "error": "Error"
-  }
-  
+    "email_exists": "Email already exists",
+    "error": "Error",
+    "user_not_found": "User not found"
+  },
+  "email_verif": {
+    "title": "Verify your email address ",
+    "subtitle": {
+      "part1": "We have sent you an email with a ",
+      "part2": "to verify your email address."
+    },
+    "desc1": {
+      "text": "The code is valid for 10 minutes. If you don't receive the email, check your spam folder or",
+      "link": "ask for a new code"
+    },
+    "desc2": {
+      "text": {
+        "part1": "The email has been sent to"
+      },
+      "part2": "If you want to change your email address, you can",
+      "link": "change it here"
+    },
+    "popup": {
+      "button": {
+        "update": "Update your email address"
+      },
+      "success":  "Email updated with success. You should receive a verification email soon ! ✅",
+      "error":"Something went wrong. Please try again later"
+    },
+    "code": {
+      "placeholder": "Enter the code here"
+    },
+    "resend":{
+      "success": "Email sent ! ✅",
+      "error":"An error occured ! ❌"
+    },
+    "error":{
+      "already_verified":"Email already verified",
+      "no_active_code":"You don't have active verification code. To verify you email address, ask for a new one.",
+      "expired":"Your verification code is expired. Please ask for a new one.",
+      "too_many_failed":"Too many failed attempts. Please ask for a new verification code.",
+      "failed":"Wrong verification code. You have {{ left_attempts }} attempt(s) left before invaliding your verification code.",
+      "generic":"Invalid or expired code",
+      "unknown":"An error occured ! Please logout and login again ❌"
+    },
+    "verify":{
+      "success":"Your email is verified ! ✅"
+    }
+  },
+  "verify": "Verify",
+  "update": "Update"
 }
