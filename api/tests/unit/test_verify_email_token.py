@@ -85,7 +85,7 @@ class TestVerifyEmailTokan(unittest.TestCase):
             self.client.cookies = {"api-key": generate_jwt(self.user_expired_token_id)}
             response = self.client.put(self.endpoint, json=body)
             self.assertEqual(response.status_code, 403)
-            self.assertEqual(response.json()["message"], "Your verification code is expired. Please ask for a new one.")
+            self.assertEqual(response.json()["message"], "email_verif.error.expired")
             user = UserModel.query.filter_by(id=self.user_expired_token_id).first()
             self.assertFalse(user.isVerified)
             token = EmailVerificationToken_model.query.filter_by(user_id=self.user_expired_token_id).first()
@@ -97,7 +97,8 @@ class TestVerifyEmailTokan(unittest.TestCase):
             self.client.cookies = {"api-key": generate_jwt(self.user_wrong_token_id)}
             response = self.client.put(self.endpoint, json=body)
             self.assertEqual(response.status_code, 403)
-            self.assertIn(response.json()["message"], "Wrong verification code. You have 4 attempt(s) left before invaliding your verification code.")
+            self.assertIn(response.json()["message"],  "email_verif.error.failed")
+            self.assertIn(response.json()["attempt_left"], 4)
             user = UserModel.query.filter_by(id=self.user_wrong_token_id).first()
             self.assertFalse(user.isVerified)
             token = EmailVerificationToken_model.query.filter_by(user_id=self.user_wrong_token_id).first()
@@ -109,7 +110,7 @@ class TestVerifyEmailTokan(unittest.TestCase):
             self.client.cookies = {"api-key": generate_jwt(self.user_without_token_id)}
             response = self.client.put(self.endpoint, json=body)
             self.assertEqual(response.status_code, 403)
-            self.assertEqual(response.json()["message"], "You don't have active verification code. To verify you email address, ask for a new one.")
+            self.assertEqual(response.json()["message"], "email_verif.error.no_active_code")
             user = UserModel.query.filter_by(id=self.user_without_token_id).first()
             self.assertFalse(user.isVerified)
     
@@ -120,7 +121,8 @@ class TestVerifyEmailTokan(unittest.TestCase):
             for i in range(5):
                 response = self.client.put(self.endpoint, json=body)
                 self.assertEqual(response.status_code, 403)
-                self.assertIn(response.json()["message"], "Wrong verification code. You have " + str(4-i) + " attempt(s) left before invaliding your verification code.")
+                self.assertEqual(response.json()["message"],  "email_verif.error.failed")
+                self.assertEqual(response.json()["attempt_left"], str(4-i))
             response = self.client.put(self.endpoint, json=body)
             self.assertEqual(response.status_code, 403)
             self.assertEqual(response.json()["message"], "Too many failed attempts. Please ask for a new verification code.")
