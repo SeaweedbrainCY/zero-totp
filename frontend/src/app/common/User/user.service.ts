@@ -119,7 +119,7 @@ export class UserService {
     this.isVaultLocal = false;
     this.local_vault_service = null;
     this.isAdmin = false;
-    localStorage.clear();
+    localStorage.removeItem("email");
    }
 
 }
