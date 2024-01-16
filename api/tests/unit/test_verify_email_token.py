@@ -125,7 +125,7 @@ class TestVerifyEmailToken(unittest.TestCase):
                 self.assertEqual(response.json()["attempt_left"], 4-i)
             response = self.client.put(self.endpoint, json=body)
             self.assertEqual(response.status_code, 403)
-            self.assertEqual(response.json()["message"], "Too many failed attempts. Please ask for a new verification code.")
+            self.assertEqual(response.json()["message"],"email_verif.error.too_many_failed")
 
     
     def test_verify_without_cookie(self):
