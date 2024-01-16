@@ -122,6 +122,7 @@
   "sign_up": "Sign up",
   "log_in": "Log in",
   "about": "About",
+  "loading": "Loading ...",
   "privacy_policy": "Privacy Policy",
   "changelog": "Changelog",
   "footer": {
@@ -401,29 +402,84 @@
       "button": {
         "update": "Update your email address"
       },
-      "success":  "Email updated with success. You should receive a verification email soon ! ✅",
-      "error":"Something went wrong. Please try again later"
+      "success": "Email updated with success. You should receive a verification email soon ! ✅",
+      "error": "Something went wrong. Please try again later"
     },
     "code": {
       "placeholder": "Enter the code here"
     },
-    "resend":{
+    "resend": {
       "success": "Email sent ! ✅",
-      "error":"An error occured ! ❌"
+      "error": "An error occured ! ❌"
     },
-    "error":{
-      "already_verified":"Email already verified",
-      "no_active_code":"You don't have active verification code. To verify you email address, ask for a new one.",
-      "expired":"Your verification code is expired. Please ask for a new one.",
-      "too_many_failed":"Too many failed attempts. Please ask for a new verification code.",
-      "failed":"Wrong verification code. You have {{ left_attempts }} attempt(s) left before invaliding your verification code.",
-      "generic":"Invalid or expired code",
-      "unknown":"An error occured ! Please logout and login again ❌"
+    "error": {
+      "already_verified": "Email already verified",
+      "no_active_code": "You don't have active verification code. To verify you email address, ask for a new one.",
+      "expired": "Your verification code is expired. Please ask for a new one.",
+      "too_many_failed": "Too many failed attempts. Please ask for a new verification code.",
+      "failed": "Wrong verification code. You have {{ left_attempts }} attempt(s) left before invaliding your verification code.",
+      "generic": "Invalid or expired code",
+      "unknown": "An error occured ! Please logout and login again ❌"
     },
-    "verify":{
-      "success":"Your email is verified ! ✅"
+    "verify": {
+      "success": "Your email is verified ! ✅"
     }
   },
   "verify": "Verify",
-  "update": "Update"
+  "update": "Update",
+  "vault": {
+    "subtitle": "You and only you can access to this data. All the magic is done on your computer.",
+    "title": {
+      "backup": "Backup from",
+      "main": "Here is your TOTP vault"
+    },
+    "local": {
+      "desc": {
+        "part1": "This is a vault stored locally on your computer. You can't sync it with other devices, nor with\n                    zero-totp servers. You don't need internet to open it.",
+        "part2": "To restore this backup and sync it on all your devices, log in and then choose",
+        "code": "restore a backup",
+        "part3": " in the storage options"
+      }
+    },
+    "storage": {
+      "title": "Your storage options",
+      "zero_totp": {
+        "title": "Zero-TOTP servers",
+        "reload": "Reload the vault "
+      },
+      "google": {
+        "sync": "Sync now",
+        "info": "More info",
+        "last_backup": "Last backed-up modification :",
+        "about": {
+          "desc1": "A backup is made every time a modification is made to your vault.",
+          "desc2": "You can change you backup policy in your settings."
+        },
+        "stop_sync": "Stop sync",
+        "error": {
+          "check": "An error occured while checking your\n                                                backup"
+        },
+        "resync": "Try to re-sync"
+      },
+      "local": {
+        "title": "Backup locally",
+        "save": " Save a backup",
+        "open": " Open a local\n                                                    Vault",
+        "restore": "Restore a backup",
+        "open_ro": "Open a backup locally (read-only)"
+      }
+    },
+    "button": {
+      "reload": "Reload my vault",
+      "add": "Add a new TOTP code"
+    },
+    "add": {
+      "title": "Choose a method to add a new TOTP code ",
+      "scan": "Scan a QRCode",
+      "manual": "Enter it manually"
+    }
+  },
+  "less": "Less",
+  "more": "More",
+  "available_soon": "Available soon !"
 }

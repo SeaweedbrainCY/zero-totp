@@ -46,7 +46,8 @@ export class VaultComponent implements OnInit {
   reloadSpin = false
   storageOptionOpen = false
   local_vault_service :LocalVaultV1Service | null  = null;
-  page_title="Here is your TOTP vault";
+  page_title="vault.title.main";
+  vault_date :string | undefined = undefined; // for local vault
   isRestoreBackupModaleActive=false;
   isGoogleDriveEnabled = true;
   isGoogleDriveSync = "loading"; // uptodate, loading, error, false
@@ -76,7 +77,8 @@ export class VaultComponent implements OnInit {
       }
       
 
-      this.page_title = "Backup from " + vaultDate;
+      this.page_title = "vault.title.backup";
+      this.vault_date = vaultDate;
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
       this.reloadSpin = true
