@@ -1,19 +1,26 @@
 {
   "about": "À propos",
   "available_soon": "Disponible bientôt !",
+  "blue": "Bleu",
   "cancel": "Retour",
   "changelog": "Changelog",
   "close": "Fermer",
   "copied": "Copié !",
+  "delete": "Supprimer",
   "email": "Email",
+  "green": "Vert",
   "less": "Moins",
   "loading": "Chargement ...",
   "logout": "Déconnexion",
   "log_in": "Connexion",
   "more": "Plus",
   "my_vault": "Mon coffre",
+  "name": "Nom",
+  "orange": "Orange",
   "passphrase": "Passphrase",
   "privacy_policy": "Politique de confidentialité",
+  "red": "Rouge",
+  "save": "Sauvegarder",
   "seconds": "secondes",
   "sign_up": "Inscription",
   "start": "Commencer",
@@ -458,6 +465,57 @@
     "username": {
       "error": {
         "forbidden": "Les caractères ' \" < > sont interdits dans des noms d'utilisateur"
+      }
+    }
+  },
+  "totp": {
+    "delete": {
+      "popup": {
+        "corps": "Il ne sera pas possible d'annuler cette action",
+        "destroy": "Détruire ce secret",
+        "title": "Es-tu sûr ?"
+      }
+    },
+    "error": {
+      "char": "<, >, \\\" et ' sont interdits",
+      "decryption": "Une erreur est survenue en déchiffrant ton secret",
+      "deleting": "Une erreur est survenue en supprimant ton secret.",
+      "encryption": "Une erreur est survenue en chiffrant ton secret",
+      "fav_empty": "L'URI ne peut pas être vide",
+      "fetch_secret": "Une erreur est survenue en récupérant le secret",
+      "fetch_secret_server": "Une erreur est survenue en récupérant le secret depuis le serveur",
+      "invalid_uri": "URI invalide",
+      "missing_https": "http(s):// manquant",
+      "name_empty": "Le nom ne peut pas être vide",
+      "no_fav": "Aucune favicon trouvée pour ce domaine",
+      "preferences": "Une erreur est survenue en récupérant tes préférences",
+      "ro": "Tu en mode lecture-seulement. Tu ne peux rien modifier sur un coffre local.",
+      "secret_empty": "Un secret ne peut pas être vide",
+      "update": "Une erreur est survenue en ajoutant un nouveau code à ton coffre.",
+      "update_pref": "Impossible de mettre à jour tes préférences."
+    },
+    "favicon": {
+      "label": "Afficher la favicon",
+      "add": {
+        "label": "Ajouter le logo favicon du site web.",
+        "desc": {
+          "part2": "Tu peux configurer cette politique globale dans tes préférences. La politique globale remplace ce paramètre.",
+          "strong": "Le nom de domaine ou l'URI n'est jamais transmis aux serveurs de Zero-TOTP. Votre navigateur utilise l'API DuckDuckGo pour récupérer le favicon. Aucune autre information que l'URI n'est transmise par Zero-TOTP à DuckDuckGo ou au site web cible."
+        }
+      },
+      "policy": {
+        "always": "Politique globale : Toujours",
+        "never": "Politique globale : Jamais"
+      }
+    },
+    "secret": {
+      "add": {
+        "added": "Nouveau code TOTP ajouté !",
+        "label": "Secret TOTP",
+        "success": "Code TOTP mis à jour !"
+      },
+      "delete": {
+        "success": "Code TOTP supprimé !"
       }
     }
   },

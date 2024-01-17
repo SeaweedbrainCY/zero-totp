@@ -28,7 +28,7 @@
         is-one-third-desktop
         is-one-third-widescreen
         is-one-third-fullhd mr-2 ml-2">
-            <label class="label">Name</label>
+            <label class="label">{{ 'name' | translate }}</label>
             <div class="control has-icons-left has-icons-right">
               <input class="input" type="text" placeholder="github.com" name="name" [(ngModel)]="name"
                 (keyup)="checkName()"
@@ -38,7 +38,7 @@
                 <fa-icon [icon]="faPassport"></fa-icon>
               </span>
             </div>
-            <p class="help is-danger" *ngIf="nameError != ''">{{nameError}}</p>
+            <p class="help is-danger" *ngIf="nameError != ''">{{nameError | translate}}</p>
           </div>
           <div class="field column is-two-thirds-mobile
         is-one-third-tablet
@@ -55,14 +55,14 @@
                 <fa-icon [icon]="faGlobe"></fa-icon>
               </span>
             </div>
-            <p class="help is-danger" *ngIf="uriError != ''">{{uriError}}</p>
+            <p class="help is-danger" *ngIf="uriError != ''">{{uriError | translate}}</p>
           </div>
           <div class="field column is-two-thirds-mobile
           is-one-third-tablet
           is-one-third-desktop
           is-one-third-widescreen
           is-one-third-fullhd mr-2 ml-2">
-            <label class="label">TOTP secret</label>
+            <label class="label">{{ 'totp.secret.add.label' | translate }}</label>
             <div class="control has-icons-left has-icons-right">
               <input class="input" type="text" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret"
                 (keyup)="checkSecret()"
@@ -72,20 +72,20 @@
                 <fa-icon [icon]="faKey"></fa-icon>
               </span>
             </div>
-            <p class="help is-danger" *ngIf="secretError != ''">{{secretError}}</p>
+            <p class="help is-danger" *ngIf="secretError != ''">{{secretError | translate}}</p>
           </div>
         </div>
         <div class="notification is-warning" *ngIf="this.userService.getIsVaultLocal()!">
-          Your are in read-only mode. You can't modify anything in a local vault.
+          {{ 'totp.error.ro' | translate }}
         </div>
         <div class="field p-5 is-flex is-justify-content-center">
           
           <label class="checkbox">
             <input type="checkbox" name="favicon" [(ngModel)]="favicon" (change)="loadFavicon()" class="mr-3">
-            <strong class="mr-1">Display favicon</strong>  
+            <strong class="mr-1">{{ 'totp.favicon.label' | translate }}</strong>  
               
-            <span class="tag is-success is-light ml-1" *ngIf="faviconPolicy == 'always'">Global policy: Always</span>
-            <span class="tag is-warning is-light ml-1" *ngIf="faviconPolicy == 'never'">Global policy: Never</span>
+            <span class="tag is-success is-light ml-1" *ngIf="faviconPolicy == 'always'">{{ 'totp.favicon.policy.always' | translate }}</span>
+            <span class="tag is-warning is-light ml-1" *ngIf="faviconPolicy == 'never'">{{ 'totp.favicon.policy.never' | translate }}</span>
           <div class="dropdown is-hoverable" style="margin-top: 2px;">
             <div class="dropdown-trigger">
               <a  aria-haspopup="true" aria-controls="dropdown-menu4">
@@ -96,8 +96,8 @@
             <div class="dropdown-menu" id="dropdown-menu4" role="menu" style="width:40vw">
               <div class="dropdown-content">
                 <div class="dropdown-item">
-                  <span class="has-text-left">Add the favicon logo of the related website.<br>
-                    <strong>The URI or domain name is never transmitted to zero-totp servers. Your browser uses DuckDuckGo API to fetch the favicon. No information is transmitted by Zero-TOTP to DuckDuckGo or the target website.</strong><br> You can configure a global policy in your settings. The global policy overrides this setting.</span>
+                  <span class="has-text-left">{{ 'totp.favicon.add.label' | translate }}<br>
+                    <strong>{{ 'totp.favicon.add.desc.strong' | translate }}</strong><br> {{ 'totp.favicon.add.desc.part2' | translate }}</span>
                 </div>
               </div>
             </div>
@@ -109,24 +109,24 @@
             <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color"
               (keyup)="changeColor(colorSelected.value)" (change)="changeColor(colorSelected.value)"
               *ngIf="!this.userService.getIsVaultLocal()!">
-              <option default>Blue</option>
-              <option>Green</option>
-              <option>Orange</option>
-              <option>Red</option>
+              <option default>{{ 'blue' | translate }}</option>
+              <option>{{ 'green' | translate }}</option>
+              <option>{{ 'orange' | translate }}</option>
+              <option>{{ 'red' | translate }}</option>
             </select>
           </div>
         </div>
         <div class="field is-grouped is-flex is-justify-content-center">
           <div class="control">
-            <button class="button is-info is-light block" (click)="cancel()">Cancel</button>
+            <button class="button is-info is-light block" (click)="cancel()">{{"cancel" | translate }}</button>
           </div>
           <div class="control" *ngIf="secret_uuid != '' && secret_uuid != null ">
             <button class="button is-danger block" (click)="modal()" data-target="confirmation"
-              [disabled]="this.userService.getIsVaultLocal()!">Delete</button>
+              [disabled]="this.userService.getIsVaultLocal()!">{{ 'delete' | translate }}</button>
           </div>
           <div class="control">
             <button class="button is-info block" (click)="save()"
-              [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != '' || uriError != ''">Save</button>
+              [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != '' || uriError != ''">{{ 'save' | translate }}</button>
           </div>
         </div>
       </div>
@@ -138,13 +138,12 @@
   <div class="modal-background" (click)="modal()"></div>
   <div class="modal-content">
     <section class="modal-card-body">
-      <h1 class="is-size-1 has-text-danger">Are you sure ?</h1>
-      <strong>You won't be able to undo this action</strong>.<br><br>
+      <h1 class="is-size-1 has-text-danger">{{ 'totp.delete.popup.title' | translate }}</h1>
+      <strong>{{ 'totp.delete.popup.corps' | translate }}</strong>.<br><br>
     </section>
     <footer class="modal-card-foot is-flex is-justify-content-right">
-      <button class="button" (click)="modal()" [disabled]="isDestroying">Cancel</button>
-      <button class="button is-danger" (click)="delete()" [ngClass]="{'is-loading': isDestroying}">Destroy this
-        secret</button>
+      <button class="button" (click)="modal()" [disabled]="isDestroying">{{'cancel' | translate}}</button>
+      <button class="button is-danger" (click)="delete()" [ngClass]="{'is-loading': isDestroying}">{{ 'totp.delete.popup.destroy' | translate }}</button>
     </footer>
   </div>
   <button class="modal-close is-large" aria-label="close" (click)="modal()" *ngIf="!isDestroying"></button>

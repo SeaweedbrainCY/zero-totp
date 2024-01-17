@@ -529,11 +529,69 @@
     "add": {
       "manually": "Add the TOTP code manually"
     },
-    "error":{
-      "pattern_invalid":  "This is not a TOTP QR code or it contains error.",
+    "error": {
+      "pattern_invalid": "This is not a TOTP QR code or it contains error.",
       "read_error": "An error occured while reading the QR code information"
     }
   },
   "stop": "Stop",
-  "start": "Start"
+  "start": "Start",
+  "name": "Name",
+  "totp": {
+    "secret": {
+      "add": {
+        "label": "TOTP secret",
+        "success":"TOTP code updated !",
+        "added":"New TOTP code added ! "
+      },
+      "delete":{
+        "success":"TOTP code deleted !"
+      }
+    },
+    "error": {
+      "ro": "Your are in read-only mode. You can't modify anything in a local vault.",
+      "name_empty":"Name cannot be empty",
+      "char":"<, >, \" and ' are forbidden",
+      "fav_empty":"URI cannot be empty",
+      "secret_empty":"Secret cannot be empty",
+      "preferences": "An error occured while retrieving your preferences",
+      "update_pref":"Error : Impossible to update your preferences. ",
+      "decryption": "An error occured while decrypting your secret",
+      "fetch_secret":"An error occured while getting your secret",
+      "fetch_secret_server":"An error occured while getting your secret from the server",
+      "encryption":"An error happened while encrypting your secret",
+      "update":"An error occured while updating your vault with a new code. ",
+      "deleting":"An error occured while deleting your secret.",
+      "missing_https":"Missing http(s)://",
+      "invalid_uri":"Invalid URI",
+      "no_fav":"No favicon found for this domain"
+    },
+    "favicon": {
+      "label": "Display favicon",
+      "policy": {
+        "always": "Global policy: Always",
+        "never": "Global policy: Never"
+      },
+      "add": {
+        "label": "Add the favicon logo of the related website.",
+        "desc": {
+          "strong": "The URI or domain name is never transmitted to zero-totp servers. Your browser uses DuckDuckGo API to fetch the favicon. No other information than the URI is transmitted by Zero-TOTP to DuckDuckGo or the target website.",
+          "part2": "You can configure a global policy in your settings. The global policy overrides this setting."
+        }
+      }
+    },
+    "delete": {
+      "popup": {
+        "title": "Are you sure ?",
+        "corps": "You won't be able to undo this action",
+        "destroy": "Destroy this secret"
+      }
+    }
+  },
+  "blue": "Blue",
+  "green": "Green",
+  "orange": "Orange",
+  "red": "Red",
+  "delete": "Delete",
+  "save": "Save"
 }
