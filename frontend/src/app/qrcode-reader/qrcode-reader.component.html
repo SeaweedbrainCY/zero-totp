@@ -1,40 +1,40 @@
 <section class="is-flex is-justify-content-center">
     <div style="width:90vw">
-<h1 class="has-text-centered is-size-2 mt-6 pt-6">Scan the QR code from the website your are activating TOTP 2FA on</h1>
+<h1 class="has-text-centered is-size-2 mt-6 pt-6">{{ 'qrcode.title' | translate }}</h1>
 <div class="is-flex is-justify-content-center">
     <article class="message is-primary" style="width:60vw" *ngIf="hasPermission != false && hasDevices != false && !scannerStarted">
     <div class="message-header">
-      <p>The QR scanner is starting ....</p>
+      <p>{{ 'qrcode.starting' | translate }}</p>
     </div>
     <div class="message-body">
-        <p>Make sure you have given the browser permission to use your camera</p><br>
-        <strong>Any trouble ?</strong> It's not a big deal ! Just copy the secret from the website and enter it manually 
+        <p>{{ 'qrcode.permission.part1' | translate }}</p><br>
+        <strong>{{ 'qrcode.permission.strong' | translate }}</strong> {{ 'qrcode.permission.bigdeal' | translate }}
         <p class="has-text-centered"><br>
-            <button class="button is-success">Configure manually</button>
+            <button class="button is-success">{{ 'qrcode.configure.manually' | translate }}</button>
         </p>
     </div>
   </article>
   <article class="message is-danger" style="width:60vw" *ngIf="hasPermission == false">
     <div class="message-header">
-      <p>You refused Zero-TOTP to access to your camera</p>
+      <p>{{ 'qrcode.permission.refused' | translate }}</p>
     </div>
     <div class="message-body">
-        <strong>Give the permission to use the camera to be able to scan the QR code</strong><br><br>
-        <strong>Not possible ?</strong> It's not a big deal ! Just copy the secret from the website and enter it manually 
+        <strong>{{ 'qrcode.permission.part2' | translate }}</strong><br><br>
+        <strong>{{ 'qrcode.permission.not_possible' | translate }}</strong> {{ 'qrcode.permission.bigdeal' | translate }}
         <p class="has-text-centered"><br>
-            <button class="button is-success">Configure manually</button>
+            <button class="button is-success">{{ 'qrcode.configure.manually' | translate }}</button>
         </p>
     </div>
   </article>
   <article class="message is-danger" style="width:60vw" *ngIf="hasDevices == false">
     <div class="message-header">
-      <p>We can't detect any camera</p>
+      <p>{{ 'qrcode.permission.no_camera' | translate }}</p>
     </div>
     <div class="message-body">
-        <strong>A camera is required to scan a QR code</strong><br><br>
-        <strong>Not possible ?</strong> It's not a big deal ! Just copy the secret from the website and enter it manually 
+        <strong>{{ 'qrcode.permission.part3' | translate }}</strong><br><br>
+        <strong>{{ 'qrcode.permission.not_possible' | translate }}</strong>  {{ 'qrcode.permission.bigdeal' | translate }}
         <p class="has-text-centered"><br>
-            <button class="button is-success">Configure manually</button>
+            <button class="button is-success">{{ 'qrcode.configure.manually' | translate }}</button>
         </p>
     </div>
   </article>
@@ -47,12 +47,12 @@
     <div class="box block">
     <div class="select is-info m-2">
     <select class="block" #deviceSelected (keyup)="changeDevice(deviceSelected.value)">
-        <option value="" [selected]="!currentDevice">No Device Selected</option>
+        <option value="" [selected]="!currentDevice">{{ 'qrcode.device.no_selected' | translate }}</option>
         <option *ngFor="let device of availableDevices" [value]="device.deviceId"
           [selected]="currentDevice && device.deviceId === currentDevice.deviceId">{{device.label}}</option>
       </select>
     </div>
-      <button class="button m-2" [ngClass]="{'is-success' : !scannerEnabled, 'is-danger': scannerEnabled}" (click)="scannerEnabled = !scannerEnabled"><span *ngIf="scannerEnabled">Stop</span><span *ngIf="!scannerEnabled">Start</span></button>
+      <button class="button m-2" [ngClass]="{'is-success' : !scannerEnabled, 'is-danger': scannerEnabled}" (click)="scannerEnabled = !scannerEnabled"><span *ngIf="scannerEnabled">{{ 'stop' | translate }}</span><span *ngIf="!scannerEnabled">{{ 'start' | translate }}</span></button>
     </div>
 </article>
 
@@ -63,8 +63,8 @@
 </article>
 <article class="is-flex is-justify-content-center is-grouped m-4">
     <div class="box block">
-        <button class="button m-2" (click)="navigate('/vault')">Go back</button> 
-      <button class="button m-2 is-info" (click)="navigate('/vault/add')">Add the TOTP code manually</button>
+        <button class="button m-2" (click)="navigate('/vault')">{{ 'qrcode.back' | translate }}</button> 
+      <button class="button m-2 is-info" (click)="navigate('/vault/add')">{{ 'qrcode.add.manually' | translate }}</button>
     </div>
 </article>
 
