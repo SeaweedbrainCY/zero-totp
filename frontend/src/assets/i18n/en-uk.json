@@ -477,9 +477,33 @@
       "title": "Choose a method to add a new TOTP code ",
       "scan": "Scan a QRCode",
       "manual": "Enter it manually"
+    },
+    "error":{
+      "server": "Error : Impossible to retrieve your vault from the server.",
+      "server_unreachable":"Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session.",
+      "preferences":"An error occured while retrieving your preferences",
+      "wrong_key" : "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
+      "decryption": "An error occurred while decrypting your secrets.",
+      "wrong_key_vault":  "Wrong key. You cannot decrypt this vault.",
+      "decryption_vault": "Impossible to decrypt your vault. Please log out and log in again.",
+      "retrieve_vault": "Error : Impossible to retrieve your vault from the server",
+      "backup":{
+        "part1": "Error : Impossible to backup your vault.",
+        "part2": "Please, try to re-sync your Google Drive account."
+      },
+      "google":{
+        "unreadable":"Error : Your vault backup is unreadable. Please, try to re-backup your Google Drive account.",
+        "verify":"Error : Impossible to verify your vault backups.",
+        "disable":"Error : Impossible to disable Google Drive. "
+      }
+    },
+    "downloaded":"Encrypted vault downloaded ! 🧳\nKeep it in a safe place 🔒",
+    "google":{
+      "disabled": "Google Drive disabled ! ✅"
     }
   },
   "less": "Less",
   "more": "More",
-  "available_soon": "Available soon !"
+  "available_soon": "Available soon !",
+  "copied": "Copied !"
 }
