@@ -541,30 +541,30 @@
     "secret": {
       "add": {
         "label": "TOTP secret",
-        "success":"TOTP code updated !",
-        "added":"New TOTP code added ! "
+        "success": "TOTP code updated !",
+        "added": "New TOTP code added ! "
       },
-      "delete":{
-        "success":"TOTP code deleted !"
+      "delete": {
+        "success": "TOTP code deleted !"
       }
     },
     "error": {
       "ro": "Your are in read-only mode. You can't modify anything in a local vault.",
-      "name_empty":"Name cannot be empty",
-      "char":"<, >, \" and ' are forbidden",
-      "fav_empty":"URI cannot be empty",
-      "secret_empty":"Secret cannot be empty",
+      "name_empty": "Name cannot be empty",
+      "char": "<, >, \" and ' are forbidden",
+      "fav_empty": "URI cannot be empty",
+      "secret_empty": "Secret cannot be empty",
       "preferences": "An error occured while retrieving your preferences",
-      "update_pref":"Error : Impossible to update your preferences. ",
+      "update_pref": "Error : Impossible to update your preferences. ",
       "decryption": "An error occured while decrypting your secret",
-      "fetch_secret":"An error occured while getting your secret",
-      "fetch_secret_server":"An error occured while getting your secret from the server",
-      "encryption":"An error happened while encrypting your secret",
-      "update":"An error occured while updating your vault with a new code. ",
-      "deleting":"An error occured while deleting your secret.",
-      "missing_https":"Missing http(s)://",
-      "invalid_uri":"Invalid URI",
-      "no_fav":"No favicon found for this domain"
+      "fetch_secret": "An error occured while getting your secret",
+      "fetch_secret_server": "An error occured while getting your secret from the server",
+      "encryption": "An error happened while encrypting your secret",
+      "update": "An error occured while updating your vault with a new code. ",
+      "deleting": "An error occured while deleting your secret.",
+      "missing_https": "Missing http(s)://",
+      "invalid_uri": "Invalid URI",
+      "no_fav": "No favicon found for this domain"
     },
     "favicon": {
       "label": "Display favicon",
@@ -593,5 +593,118 @@
   "orange": "Orange",
   "red": "Red",
   "delete": "Delete",
-  "save": "Save"
+  "save": "Save",
+  "account": {
+    "title": "Edit your account ⚙️",
+    "username": {
+      "title": "Update username",
+      "current": "Your current username is:",
+      "new": {
+        "label": "New username"
+      }
+    },
+    "email": {
+      "title": "Update email",
+      "current": "Your current email is",
+      "update": {
+        "label": "New email",
+        "confirm": "Confirm email"
+      },
+      "success" :"Email updated with success",
+      "error": "Something went wrong. Please try again later"
+    },
+    "passphrase": {
+      "title": "Update passphrase",
+      "current": "Your current passphrase",
+      "new": "New passphrase",
+      "confirm": "Confirm Passphrase",
+      "no_former_passphrase":"We need your former passphrase to update your passphrase",
+      "error":{
+        "char":"' \" < > characters are forbidden in passphrase",
+        "length":"Your passphrase must be at least 12 characters long",
+        "special":"Your passphrase must contain at least one special character",
+        "upper":"Your passphrase must contain at least one uppercase character",
+        "number":"Your passphrase must contain at least one number",
+        "match":"Your passphrases do not match",
+        "full_abort":"An error occured. No update has been made. Update aborted. Report the error code ",
+        "hashing":"An error occured while hashing your password. Please, try again",
+        "incorrect":"Your passphrase is incorrect",
+        "wrong_key":"Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
+        "decrypt_one_secret":"Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.",
+        "wrong_key_vault":"Wrong key. You cannot decrypt this vault.",
+        "expired":"Impossible to decrypt your vault, you're decryption key has expired. Please log out and log in again.",
+        "fetch_vault": "Error : Impossible to retrieve your vault from the server",
+        "network":"Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session.",
+        "derive":"Error : Impossible to derive your new passphrase",
+        "decrypt": "Error : Impossible to encrypt your vault",
+        "hash_new" : "An error occured while hashing your new passphrase. The vault and your passphrase have not been updated. Please, try again.",
+        "fatal":"An error occured while updating your vault. Some information may not be updated\n Contact the support ASAP with the following error code : #9",
+        "fatal_light":"Operation aborted. Nothing have been updated. "
+      },
+      "popup": {
+        "warning": {
+          "title": "Be careful",
+          "subtitle": "Changing your passphrase will :",
+          "warn1": "Re-encrypt your current vault",
+          "warn2": "Your old backup will still be encrypted with your former passphrase",
+          "warn3": "Your Google Drive backup will be updated. If you have old backup, they will still be encrypted with your former passphrase. If your passphrase is not safe anymore you should delete them without delay",
+          "warn4": "If you lose this new passphrase, it is impossible to recover it",
+          "warn5": "If you change your passphrase for security reasons, securely delete your backup as soon as possible",
+          "continue": "I'm sure"
+        },
+        "updating": {
+          "title": "Do not close this page",
+          "subititle": "We are re encrypting all your data. Closing this tab might definitively corrupt them",
+          "verif": "Verification of your former passphrase",
+          "download": "Download of your encrypted vault",
+          "descryption": "Decryption of your vault",
+          "derivation": "Derivation of your new passphrase",
+          "encryption": "Encryption of your vault with your new key",
+          "verif_new": "Verification of your new encrypted vault",
+          "upload": "Upload of your encrypted vault",
+          "destroy": "estroy of your google drive backup  ",
+          "upload_google": "Upload a new encrypted backup on your google drive   ",
+          "success":"Your passphrase is updated ! You can now log in with your new passphrase 🎉"
+        },
+        "google": {
+          "title": "Oh ! You have backups in your google drive",
+          "option": {
+            "delete": {
+              "strong": "Delete my old backup and make a new one now",
+              "info": "(Recommended if your passphrase is not safe anymore)"
+            },
+            "keep": {
+              "strong": "Keep my old backup with my old password and make a new one now"
+            }
+          },
+          "fetch_error" :"Error : Impossible to check your google drive option. ",
+          "delete_error":"Error : Impossible to delete your google drive backup. ",
+          "backup_error":"Error : Impossible to backup your vault to google drive. "
+        }
+      }
+    },
+    "delete": {
+      "title": " Delete account",
+      "warning": "Once you delete your account, there is no going\n                            back. Please be certain.",
+      "button": "Delete\n                                your account",
+      "popup": {
+        "title": "Are you sure ?",
+        "warn1": "You won't be able to undo this action. You will no longer access to your TOTP vault",
+        "warn2": "You will lose ALL your secrets",
+        "warn3": "ALL your backups on google drive will be DESTROYED",
+        "confirm": "To delete your account, confirm your passphrase : ",
+        "button": {
+          "return": "Return to safety",
+          "destroy": "Destroy my account definitely "
+        }
+      },
+      "success": "Thanks for having used our Zero-TOTP. Your account has been deleted. Good bye. 👋",
+      "error":{
+        "aborted":"Operation aborted.",
+        "wrong_passphrase":"Wrong passphrase. Operation aborted."
+      }
+    }
+  },
+  "abort": "Abort",
+  "continue": "Continue"
 }

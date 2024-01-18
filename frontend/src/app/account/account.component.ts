@@ -8,7 +8,7 @@ import { Utils } from '../common/Utils/utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
-import { interval, timer } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-account',
@@ -62,7 +62,8 @@ export class AccountComponent implements OnInit {
     private utils: Utils,
     private router: Router,
     private route: ActivatedRoute,
-    private crypto:Crypto
+    private crypto:Crypto,
+    public translate: TranslateService
     ){}
 
   
@@ -125,7 +126,7 @@ export class AccountComponent implements OnInit {
     this.http.put(ApiService.API_URL+"/update/email",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
       this.buttonLoading["email"] = 0
       superToast({
-        message: "Email updated with success",
+        message: this.translate.instant('account.email.success'),
         type: "is-success",
         dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -135,7 +136,7 @@ export class AccountComponent implements OnInit {
     }, error =>{
       this.buttonLoading["email"] = 0
       if(error.error.message == undefined){
-        error.error.message = "Something went wrong. Please try again later";
+        error.error.message = this.translate.instant('account.email.error');
       }
       superToast({
         message: "Error : "+ error.error.message,
@@ -155,41 +156,39 @@ export class AccountComponent implements OnInit {
     const forbidden = /["\'<>]/
     let isOk = true;
     if(this.password == ""){
+      this.translate.get("account.passphrase.no_former_passphrase").subscribe((translation: string) => {
       superToast({
-        message: "We need your former passphrase to update your passphrase",
+        message: translation,
         type: "is-danger",
         dismissible: false,
         duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    });
       isOk = false;
     }
     if(forbidden.test(this.newPassword)){
-      this.newPasswordErrorMessage.push("' \" < > characters are forbidden in passwords");
+      this.newPasswordErrorMessage.push("account.passphrase.error.char");
       isOk = false;
     }
-    if(this.newPassword.length < 8){
-      this.newPasswordErrorMessage.push("Your password must be at least 8 characters long");
-      isOk = false;
-    }
-    else if(this.newPassword.length > 70){
-      this.newPasswordErrorMessage.push("Password must be less than 70 characters long");
+    if(this.newPassword.length < 12){
+      this.newPasswordErrorMessage.push("account.passphrase.error.length");
       isOk = false;
     }
     if(!special.test(this.newPassword)){
-      this.newPasswordErrorMessage.push("Your password must contain at least one special character");
+      this.newPasswordErrorMessage.push("account.passphrase.error.special");
       isOk = false;
     }
     if(!upper.test(this.newPassword)){
-      this.newPasswordErrorMessage.push("Your password must contain at least one uppercase character");
+      this.newPasswordErrorMessage.push("account.passphrase.error.upper");
       isOk = false;
     }
     if(!number.test(this.newPassword)){
-      this.newPasswordErrorMessage.push("Your password must contain at least one number");
+      this.newPasswordErrorMessage.push("account.passphrase.error.number");
       isOk = false;
     }
     if(this.newPassword != "" && this.confirmNewPassword != "" && this.newPassword != this.confirmNewPassword){
-      this.newPasswordConfirmErrorMessage.push("Your passwords do not match");
+      this.newPasswordConfirmErrorMessage.push("account.passphrase.error.match");
       isOk = false;
     }
     return isOk;
@@ -205,7 +204,7 @@ export class AccountComponent implements OnInit {
         this.sendDeleteAccountRequest().then(_ => {
           this.router.navigate(["/logout"], {relativeTo:this.route.root});
           superToast({
-            message: "Thanks for having used our Zero-TOTP. Your account has been deleted. Good bye. 👋",
+            message: this.translate.instant("account.delete.success"),
             type: "is-success",
             dismissible: true,
             duration: 10000,
@@ -213,15 +212,15 @@ export class AccountComponent implements OnInit {
           });
         }, error => {
           this.buttonLoading['deletion'] =0
-        this.deletionErrorMessage =  "Operation aborted.";
+        this.deletionErrorMessage = this.translate.instant("account.delete.error.aborted") ;
         });
       }, error => {
         this.buttonLoading['deletion'] =0
-        this.deletionErrorMessage = "Wrong password.Operation aborted.";
+        this.deletionErrorMessage = this.translate.instant("account.delete.error.wrong_passphrase") ;
       });
     }, error => {
       this.buttonLoading['deletion'] =0
-      this.deletionErrorMessage = "Operation aborted.";
+      this.deletionErrorMessage = this.translate.instant("account.delete.error.aborted") ;
     });
 
   }
@@ -254,13 +253,15 @@ export class AccountComponent implements OnInit {
             errorMessage = error.error.detail;
           }
           this.isGoogleDriveBackupEnabled = false;
+          this.translate.get("account.passphrase.popup.google.fetch_error").subscribe((translation: string) => {
           superToast({
-            message: "Error : Impossible to check your google drive option. "+ errorMessage,
+            message: translation + " " + errorMessage,
             type: "is-danger",
             dismissible: false,
             duration: 20000,
           animate: { in: 'fadeIn', out: 'fadeOut' }
           });
+        });
       });
   }
 
@@ -277,7 +278,7 @@ export class AccountComponent implements OnInit {
           errorMessage = error.error.detail;
         }
         superToast({
-          message: "Error : Impossible to delete your google drive backup. "+ errorMessage,
+          message: this.translate.instant("account.passphrase.popup.google.delete_error") + " " + errorMessage,
           type: "is-danger",
           dismissible: false,
           duration: 20000,
@@ -300,7 +301,7 @@ export class AccountComponent implements OnInit {
           errorMessage = error.error.detail;
         }
         superToast({
-          message: "Error : Impossible to backup your vault to google drive. "+ errorMessage,
+          message: this.translate.instant("account.passphrase.popup.google.backup_error") + " "+ errorMessage,
           type: "is-danger",
           dismissible: false,
           duration: 20000,
@@ -345,7 +346,7 @@ export class AccountComponent implements OnInit {
                                   this.backup().then(_ => {
                                     this.stepsDone.push("backup");
                                     superToast({
-                                      message: "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
+                                      message: this.translate.instant("account.passphrase.popup.updating.success") ,
                                       type: "is-success",
                                       dismissible: true,
                                       duration: 10000,
@@ -357,7 +358,7 @@ export class AccountComponent implements OnInit {
                                   });
                                 }
                                 superToast({
-                                  message: "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
+                                  message: this.translate.instant("account.passphrase.popup.updating.success") ,
                                   type: "is-success",
                                   dismissible: true,
                                   duration: 10000,
@@ -372,7 +373,7 @@ export class AccountComponent implements OnInit {
                                 this.backup().then(_ => {
                                   this.stepsDone.push("backup");
                                   superToast({
-                                    message: "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
+                                    message: this.translate.instant("account.passphrase.popup.updating.success") ,
                                     type: "is-success",
                                     dismissible: true,
                                     duration: 10000,
@@ -384,7 +385,7 @@ export class AccountComponent implements OnInit {
                                 });
                               } else {
                                 superToast({
-                                  message: "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
+                                  message: this.translate.instant("account.passphrase.popup.updating.success") ,
                                   type: "is-success",
                                   dismissible: true,
                                   duration: 10000,
@@ -421,7 +422,7 @@ export class AccountComponent implements OnInit {
   updateAborted(errorCode: string){
     this.buttonLoading["passphrase"] = 0
     superToast({
-      message: "An error occured. No update has been made. Update aborted. Report the error code " + errorCode,
+      message: this.translate.instant("account.passphrase.error.full_abort") + " " + errorCode,
       type: "is-danger",
       dismissible: false,
       duration: 20000,
@@ -442,7 +443,7 @@ export class AccountComponent implements OnInit {
             resolve(hashed);
         } else {
           superToast({
-            message: "An error occured while hashing your password. Please, try again",
+            message: this.translate.instant("account.passphrase.error.hashing"),
             type: "is-danger",
             dismissible: false,
             duration: 20000,
@@ -466,7 +467,7 @@ export class AccountComponent implements OnInit {
       },
      (error) => {
        superToast({
-         message: "Your passphrase is incorrect",
+         message: this.translate.instant("account.passphrase.error.incorrect"),
          type: "is-danger",
          duration: 20000,
          dismissible: false,
@@ -491,7 +492,7 @@ export class AccountComponent implements OnInit {
               this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
                 if(dec_secret == null){
                   superToast({
-                    message: "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
+                    message: this.translate.instant("account.passphrase.error.wrong_key"),
                     type: "is-danger",
                     dismissible: false,
                     duration: 20000,
@@ -503,7 +504,7 @@ export class AccountComponent implements OnInit {
                       vault.set(secret.uuid, this.utils.mapFromJson(dec_secret));
                     } catch(e) {
                       superToast({
-                        message: "Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.   ",
+                        message:this.translate.instant("account.passphrase.error.decrypt_one_secret"), 
                         type: "is-danger",
                         dismissible: false,
                         duration: 20000,
@@ -517,7 +518,7 @@ export class AccountComponent implements OnInit {
             resolve(vault)
           } catch(e) {
             superToast({
-              message: "Wrong key. You cannot decrypt this vault.",
+              message: this.translate.instant("account.passphrase.error.wrong_key_vault"),
               type: "is-danger",
               dismissible: false,
               duration: 20000,
@@ -527,7 +528,7 @@ export class AccountComponent implements OnInit {
           }
         } else {
           superToast({
-            message: "Impossible to decrypt your vault, you're decryption key has expired. Please log out and log in again.",
+            message: this.translate.instant("account.passphrase.error.expired") ,
             type: "is-danger",
             dismissible: false,
             duration: 20000,
@@ -537,7 +538,7 @@ export class AccountComponent implements OnInit {
         }
         } catch(e){
           superToast({
-            message: "Error : Impossible to retrieve your vault from the server",
+            message: this.translate.instant("account.passphrase.error.fetch_vault"),
             type: "is-danger",
             dismissible: false,
             duration: 20000,
@@ -556,7 +557,7 @@ export class AccountComponent implements OnInit {
             errorMessage = error.error.detail;
           }
           if(error.status == 0){
-            errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+            errorMessage = this.translate.instant("account.passphrase.error.network");
           } else if (error.status == 401){
             this.userService.clear();
             this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
@@ -564,7 +565,7 @@ export class AccountComponent implements OnInit {
           }
 
           superToast({
-            message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
+            message: this.translate.instant("account.passphrase.error.fetch_vault") + " "+ errorMessage,
             type: "is-danger",
             dismissible: false,
             duration: 20000,
@@ -581,8 +582,9 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
     this.crypto.deriveKey(newDerivedKeySalt, this.newPassword).then((derivedKey) => {
       resolve(derivedKey);
     }, error => {
+      this.translate.get("account.passphrase.error.derive").subscribe((translation: string) => {
       superToast({
-        message: "Error : Impossible to derive your new passphrase",
+        message: translation,
         type: "is-danger",
         dismissible: false,
         duration: 20000,
@@ -591,6 +593,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
       reject(error)
     });
   });
+    });
 }
 
   encryptVault(vault:Map<string, Map<string,string>>, zkeKey_str: string):Promise<Map<string, string>>{
@@ -612,7 +615,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
           });
         } catch(e) {
           superToast({
-            message: "Error : Impossible to encrypt your vault",
+            message: this.translate.instant("account.passphrase.error.decrypt"),
             type: "is-danger",
             dismissible: false,
             duration: 20000,
@@ -699,25 +702,27 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
         if(error.status == 500){
           if (error.error.hashing == 1){
             superToast({
-              message: "An error occured while hashing your new passphrase. The vault and your passphrase have not been updated. Please, try again.",
+              message: this.translate.instant('account.passphrase.error.hash_new') ,
               type: "is-danger",
               dismissible: false,
               duration: 20000,
             });
             reject(error.status)
           } else {
+            this.translate.get("account.passphrase.error.fatal").subscribe((translation: string) => {
             superToast({
-              message: "An error occured while updating your vault. Some information may not be updated\n Contact the support ASAP with the following error code : #9"+error.error.totp +" "+ error.error.zke + error.error.user ,
+              message: translation +error.error.totp +" "+ error.error.zke + error.error.user ,
               type: "is-danger",
               dismissible: false,
               duration: 2000000,
             });
+          });
             reject(error.status)
           }
           resolve("ok");
         } else {
           superToast({
-            message: "Operation aborted. Nothing have been updated. "+ error.status +" "+ error.error.message,
+            message: this.translate.instant("account.passphrase.error.fatal_light") + error.status +" "+ error.error.message,
             type: "is-danger",
             dismissible: false,
             duration: 20000,

@@ -2,7 +2,7 @@
     <div class="container is-fluid ">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6"
-                style="line-height: normal;">Edit your account ⚙️
+                style="line-height: normal;">{{ 'account.title' | translate }}
             </h1>
 
 
@@ -11,24 +11,24 @@
 
                     <div class="form-container">
                         <h1 class="has-text-info has-text-weight-bold is-size-3">
-                            Change username
+                            {{ 'account.username.title' | translate }}
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
-                        <p class="has-text-grey pb-3">Your current username is:</p>
-                        <label class="label">New username</label>
+                        <p class="has-text-grey pb-3">{{ 'account.username.current' | translate }}</p>
+                        <label class="label">{{ 'account.username.new.label' | translate }}</label>
                         <div class="field is-flex-tablet mb-3">
                             <div class="control has-icons-left ">
-                                <input class="input" type="text" placeholder="Username" name="username" [(ngModel)]="username" (keyup)="checkUsername()" [ngClass]="{'is-danger' : usernameErrorMessage != ''}">
-                                <span class="help has-text-left is-danger" *ngIf="usernameErrorMessage != ''">{{usernameErrorMessage}}</span>
+                                <input class="input" type="text" placeholder="{{ 'username' | translate }}" name="username" [(ngModel)]="username" (keyup)="checkUsername()" [ngClass]="{'is-danger' : usernameErrorMessage != ''}">
+                                <span class="help has-text-left is-danger" *ngIf="usernameErrorMessage != ''">{{usernameErrorMessage | translate}}</span>
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faUser"></fa-icon>
                                 </span>
                             </div>
                             <div class="has-text-centered">
-                                <button class="button is-info is-outlined is-centered ml-3">Change</button>
+                                <button class="button is-info is-outlined is-centered ml-3">{{"update" | translate}}</button>
                             </div>
                             <div class="is-flex is-align-content-center is-flex-wrap-wrap ml-3">
-                                <span class="  is-medium tag is-info is-light"><fa-icon [icon]="faFlask" class="mr-2"></fa-icon> Available soon !</span>
+                                <span class="  is-medium tag is-info is-light"><fa-icon [icon]="faFlask" class="mr-2"></fa-icon> {{"available_soon" | translate}}</span>
                                 </div>
                         </div>
                     </div>
@@ -37,15 +37,15 @@
 
                     <div class="mt-6">
                         <h1 class="has-text-info has-text-weight-bold is-size-3">
-                            Update email
+                            {{ 'account.email.title' | translate }}
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
-                        <p class="has-text-grey pb-3">Your current email is : {{userService.getEmail()}}</p>
-                        <label class="label">New email</label>
+                        <p class="has-text-grey pb-3">{{ 'account.email.current' | translate }} : {{userService.getEmail()}}</p>
+                        <label class="label">{{ 'account.email.update.label' | translate }}</label>
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left">
-                                <input class="input" type="email" placeholder="Email" name="email" [(ngModel)]="email" (keyup)="checkEmail()" [ngClass]="{'is-danger' : emailErrorMessage != '' || emailConfirmErrorMessage != ''}">
-                                <span class="help has-text-left is-danger" *ngIf="emailErrorMessage != ''">{{emailErrorMessage}}</span>
+                                <input class="input" type="email" placeholder="{{'email' | translate}}" name="email" [(ngModel)]="email" (keyup)="checkEmail()" [ngClass]="{'is-danger' : emailErrorMessage != '' || emailConfirmErrorMessage != ''}">
+                                <span class="help has-text-left is-danger" *ngIf="emailErrorMessage != ''">{{emailErrorMessage | translate}}</span>
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faEnvelope"></fa-icon>
                                 </span>
@@ -53,14 +53,14 @@
                         </div>
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left mb-3">
-                                <input class="input" type="email" placeholder="Confirm email" name="confirmEmail" [(ngModel)]="confirmEmail" (keyup)="checkEmail()" [ngClass]="{'is-danger' : emailConfirmErrorMessage != ''}">
-                                <span class="help has-text-left is-danger" *ngIf="emailConfirmErrorMessage != ''">{{emailConfirmErrorMessage}}</span>
+                                <input class="input" type="email" placeholder="{{ 'account.email.update.confirm' | translate }}" name="confirmEmail" [(ngModel)]="confirmEmail" (keyup)="checkEmail()" [ngClass]="{'is-danger' : emailConfirmErrorMessage != ''}">
+                                <span class="help has-text-left is-danger" *ngIf="emailConfirmErrorMessage != ''">{{emailConfirmErrorMessage | translate}}</span>
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faEnvelope"></fa-icon>
                                 </span>
                             </div>
                             <div class="has-text-centered">
-                                <button class="button is-info is-outlined ml-3" (click)="updateEmail()" [ngClass]="{'is-loading': this.buttonLoading['email']}">Update</button>
+                                <button class="button is-info is-outlined ml-3" (click)="updateEmail()" [ngClass]="{'is-loading': this.buttonLoading['email']}">{{"update" | translate}}</button>
                             </div>
                         </div>
                     </div>
@@ -69,13 +69,13 @@
 
                     <div class="mt-6">
                         <h1 class="has-text-info has-text-weight-bold is-size-3">
-                            Update passphrase
+                            {{ 'account.passphrase.title' | translate }}
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
-                        <label class="label mt-3">Your current passphrase</label>
+                        <label class="label mt-3">{{ 'account.passphrase.current' | translate }}</label>
                         <div class="field is-flex-tablet has-addons">
                             <div class="control has-icons-left ">
-                                <input class="input" type="{{isPassphraseVisible ? 'text' : 'password'}}" placeholder="Passphrase" name="password" [(ngModel)]="password">
+                                <input class="input" type="{{isPassphraseVisible ? 'text' : 'password'}}" placeholder="{{'passphrase' | translate}}" name="password" [(ngModel)]="password">
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faLock"></fa-icon>
                                 </span>
@@ -86,13 +86,13 @@
                                 </a>
                               </p>
                         </div>
-                        <label class="label mt-3">New passphrase</label>
+                        <label class="label mt-3">{{ 'account.passphrase.new' | translate }}</label>
                         <div class="field is-flex-tablet has-addons">
                             <div class="control has-icons-left">
-                                <input class="input" type="{{isNewPassphraseVisible ? 'text' : 'password'}}"  placeholder="New passphrase" name="newPassword" [(ngModel)]="newPassword"(keyup)="checkNewPassword()"  [ngClass]="{'is-danger' : newPasswordErrorMessage.length >1 || newPasswordConfirmErrorMessage.length >1 }">
+                                <input class="input" type="{{isNewPassphraseVisible ? 'text' : 'password'}}"  placeholder="{{ 'account.passphrase.new' | translate }}" name="newPassword" [(ngModel)]="newPassword"(keyup)="checkNewPassword()"  [ngClass]="{'is-danger' : newPasswordErrorMessage.length >1 || newPasswordConfirmErrorMessage.length >1 }">
                                 <span class="help has-text-left is-danger" *ngIf="newPasswordErrorMessage.length >1">
                                     <span *ngFor="let error of newPasswordErrorMessage" >
-                                        <span *ngIf="error!=''">{{error}}<br></span>
+                                        <span *ngIf="error!=''">{{error | translate}}<br></span>
                                     </span>
                                 </span>
                                 <span class="icon is-small is-left">
@@ -107,7 +107,7 @@
                         </div>
                         <div class="field is-flex-tablet has-addons">
                             <div class="control has-icons-left mb-3">
-                                <input class="input"  type="{{isNewConfirmPassphraseVisible ? 'text' : 'password'}}"  placeholder="Confirm Passphrase" name="confirmNewPassword" [(ngModel)]="confirmNewPassword" [ngClass]="{'is-danger' : newPasswordConfirmErrorMessage.length >1}" (keyup)="checkNewPassword()">
+                                <input class="input"  type="{{isNewConfirmPassphraseVisible ? 'text' : 'password'}}"  placeholder="{{ 'account.passphrase.confirm' | translate }}" name="confirmNewPassword" [(ngModel)]="confirmNewPassword" [ngClass]="{'is-danger' : newPasswordConfirmErrorMessage.length >1}" (keyup)="checkNewPassword()">
                                <span class="help has-text-left is-danger" *ngIf="newPasswordConfirmErrorMessage.length >1">
                                     <span *ngFor="let error of newPasswordConfirmErrorMessage" >
                                         <span *ngIf="error!=''">{{error}}<br></span>
@@ -123,7 +123,7 @@
                                 </a>
                               </p>
                             <div class="has-text-centered">
-                                <button class="button is-info is-outlined ml-3" (click)="updatePassphrase()">Update</button>
+                                <button class="button is-info is-outlined ml-3" (click)="updatePassphrase()">{{"update" | translate}}</button>
                             </div>
                         </div>
                     </div>
@@ -132,15 +132,13 @@
 
                     <div class="mt-6">
                         <h1 class="has-text-danger has-text-weight-bold is-size-3">
-                            Delete account
+                           {{ 'account.delete.title' | translate }}
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
-                        <p class="has-text-grey pb-3">Once you delete your account, there is no going
-                            back. Please be certain.</p>
+                        <p class="has-text-grey pb-3">{{ 'account.delete.warning' | translate }}</p>
                         <div class="control">
                             <button class="button is-danger is-outlined" (click)="deletionModal()"
-                                data-target="confirmation">Delete
-                                your account</button>
+                                data-target="confirmation">{{ 'account.delete.button' | translate }}</button>
                         </div>
                     </div>
 
@@ -155,15 +153,15 @@
     <div class="modal-background" (click)="deletionModal()"></div>
     <div class="modal-content">
         <section class="modal-card-body">
-            <h1 class="is-size-1 has-text-danger has-text-weight-bold">Are you sure ?</h1>
-            <strong>You won't be able to undo this action. You will no longer access to your TOTP vault</strong>.<br><br>
-            <strong class="has-text-danger has-text-weight-bold"><fa-icon [icon]="faExclamationTriangle" animation="beat-fade" style="color:red;" size="2xl"></fa-icon> You will lose ALL your secrets</strong><br><br>
-            <strong class="has-text-danger has-text-weight-bold"><fa-icon [icon]="faExclamationTriangle" animation="beat-fade" style="color:red;" size="2xl"></fa-icon> ALL your backups on google drive will be DESTROYED</strong><br><br>
-            <strong>To delete your account, confirm your passphrase : </strong>
+            <h1 class="is-size-1 has-text-danger has-text-weight-bold">{{ 'account.delete.popup.title' | translate }}</h1>
+            <strong>{{ 'account.delete.popup.warn1' | translate }}</strong>.<br><br>
+            <strong class="has-text-danger has-text-weight-bold"><fa-icon [icon]="faExclamationTriangle" animation="beat-fade" style="color:red;" size="2xl"></fa-icon> {{ 'account.delete.popup.warn2' | translate }}</strong><br><br>
+            <strong class="has-text-danger has-text-weight-bold"><fa-icon [icon]="faExclamationTriangle" animation="beat-fade" style="color:red;" size="2xl"></fa-icon> {{ 'account.delete.popup.warn3' | translate }}</strong><br><br>
+            <strong>{{ 'account.delete.popup.confirm' | translate }}</strong>
             <div class="field">
                 <div class="control has-icons-left">
                     <input class="input" type="password" placeholder="Passphrase" name="password" [(ngModel)]="password" >
-                    <span class="help has-text-left is-danger" *ngIf="deletionErrorMessage != ''">{{deletionErrorMessage}}</span>
+                    <span class="help has-text-left is-danger" *ngIf="deletionErrorMessage != ''">{{deletionErrorMessage | translate }}</span>
                     <span class="icon is-small is-left">
                         <fa-icon [icon]="faLock"></fa-icon>
                     </span>
@@ -171,8 +169,8 @@
                 </div>
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
-            <button class="button is-success" (click)="deletionModal()" [disabled]="buttonLoading['deletion']">Return to safety</button>
-            <button class="button is-danger" (click)="deleteAccount()" [ngClass]="{'is-loading': buttonLoading['deletion']}" [disabled]="deleteAccountConfirmationCountdown >0">Destroy my account definitely <span *ngIf="deleteAccountConfirmationCountdown >0"> ({{deleteAccountConfirmationCountdown}} s)</span></button>
+            <button class="button is-success" (click)="deletionModal()" [disabled]="buttonLoading['deletion']">{{ 'account.delete.popup.button.return' | translate }}</button>
+            <button class="button is-danger" (click)="deleteAccount()" [ngClass]="{'is-loading': buttonLoading['deletion']}" [disabled]="deleteAccountConfirmationCountdown >0">{{ 'account.delete.popup.button.destroy' | translate }}<span *ngIf="deleteAccountConfirmationCountdown >0"> ({{deleteAccountConfirmationCountdown}} s)</span></button>
             
         </footer>
     </div>
@@ -184,21 +182,21 @@
     <div class="modal-background" (click)="passphraseModal()"></div>
     <div class="modal-content">
         <section class="modal-card-body">
-            <h1 class="is-size-1 has-text-info">Be careful </h1>
+            <h1 class="is-size-1 has-text-info">{{ 'account.passphrase.popup.warning.title' | translate }} </h1>
             <div class="content">
-            <strong>Changing your passphrase will :</strong> 
+            <strong>{{ 'account.passphrase.popup.warning.subtitle' | translate }}</strong> 
             <ul>
-                <li>Re-encrypt your current vault</li>
-                <li>Your old backup will still be encrypted with your former passphrase</li>
-                <li>Your Google Drive backup will be updated. If you have old backup, they will still be encrypted with your former passphrase. If your passphrase is not safe anymore you should delete them without delay</li>
-                <li>If you lose this new passphrase, it is impossible to recover it</li>
-                <li>If you change your passphrase for security reasons, securely delete your backup as soon as possible </li>
+                <li>{{ 'account.passphrase.popup.warning.warn1' | translate }}</li>
+                <li>{{ 'account.passphrase.popup.warning.warn2' | translate }}</li>
+                <li>{{ 'account.passphrase.popup.warning.warn3' | translate }}</li>
+                <li>{{ 'account.passphrase.popup.warning.warn4' | translate }}</li>
+                <li>{{ 'account.passphrase.popup.warning.warn5' | translate }} </li>
             </ul>
         </div>
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
-            <button class="button" (click)="passphraseModal()" [disabled]="buttonLoading['passphrase']">Cancel</button>
-            <button class="button is-info" (click)="updatePassphraseConfirm()" [ngClass]="{'is-loading': buttonLoading['passphrase']}">I'm sure</button>
+            <button class="button" (click)="passphraseModal()" [disabled]="buttonLoading['passphrase']">{{"cancel" | translate}}</button>
+            <button class="button is-info" (click)="updatePassphraseConfirm()" [ngClass]="{'is-loading': buttonLoading['passphrase']}">{{ 'account.passphrase.popup.warning.continue' | translate }}</button>
         </footer>
     </div>
     <button class="modal-close is-large" aria-label="close" (click)="passphraseModal()" *ngIf="!buttonLoading['passphrase']"></button>
@@ -207,47 +205,47 @@
     <div class="modal-background"></div>
     <div class="modal-content">
         <section class="modal-card-body">
-            <h1 class="is-size-1 has-text-danger">Do not close this page</h1>
-            <strong>We are re encrypting all your data. Closing this tab might definitively corrupt them</strong> <br><br>
+            <h1 class="is-size-1 has-text-danger">{{ 'account.passphrase.popup.updating.title' | translate }}</h1>
+            <strong>{{ 'account.passphrase.popup.updating.subititle' | translate }}</strong> <br><br>
             <progress class="progress is-small is-success" max="100"></progress>
             <p class="">
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('verifyOldPassword')" class="has-text-success"></fa-icon > 
                 <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('verifyOldPassword')"></fa-icon > 
-                <span [ngClass]="{'has-text-success': stepsDone.includes('verifyOldPassword')}"> Verification of your former passphrase</span><br>
+                <span [ngClass]="{'has-text-success': stepsDone.includes('verifyOldPassword')}"> {{ 'account.passphrase.popup.updating.verif' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('getVault')"></fa-icon > 
                 <fa-icon *ngIf="!stepsDone.includes('getVault')" [icon]="faCog" [spin]="true" ></fa-icon> 
-                <span [ngClass]="{'has-text-success': stepsDone.includes('getVault')}"> Download of your encrypted vault</span><br>
+                <span [ngClass]="{'has-text-success': stepsDone.includes('getVault')}"> {{ 'account.passphrase.popup.updating.download' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('getVault')"></fa-icon > 
                 <fa-icon *ngIf="!stepsDone.includes('getVault')" [icon]="faCog" [spin]="true"></fa-icon > 
-                    <span [ngClass]="{'has-text-success': stepsDone.includes('getVault')}"> Decryption of your vault</span><br>
+                    <span [ngClass]="{'has-text-success': stepsDone.includes('getVault')}"> {{ 'account.passphrase.popup.updating.descryption' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('derivation')"></fa-icon > 
                 <fa-icon *ngIf="!stepsDone.includes('derivation')" [icon]="faCog" [spin]="true"></fa-icon > 
-                <span [ngClass]="{'has-text-success': stepsDone.includes('derivation')}"> Derivation of your new passphrase</span><br>
+                <span [ngClass]="{'has-text-success': stepsDone.includes('derivation')}"> {{ 'account.passphrase.popup.updating.derivation' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('encryption')"></fa-icon > 
                 <fa-icon *ngIf="!stepsDone.includes('encryption')" [icon]="faCog" [spin]="true"></fa-icon > 
-                <span [ngClass]="{'has-text-success': stepsDone.includes('encryption')}"> Encryption of your vault with your new key</span><br>
+                <span [ngClass]="{'has-text-success': stepsDone.includes('encryption')}"> {{ 'account.passphrase.popup.updating.encryption' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('verification')"></fa-icon > 
                 <fa-icon [icon]="faCog" [spin]="true"  *ngIf="!stepsDone.includes('verification')"></fa-icon> 
-                <span [ngClass]="{'has-text-success': stepsDone.includes('verification')}"> Verification of your new encrypted vault</span><br>
+                <span [ngClass]="{'has-text-success': stepsDone.includes('verification')}"> {{ 'account.passphrase.popup.updating.verif_new' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('upload')"></fa-icon > 
                 <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('upload')"></fa-icon > 
-                <span [ngClass]="{'has-text-success': stepsDone.includes('upload')}"> Upload of your encrypted vault</span><br>
+                <span [ngClass]="{'has-text-success': stepsDone.includes('upload')}"> {{ 'account.passphrase.popup.updating.upload' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('deleteBackup')"></fa-icon > 
                     <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('deleteBackup') && deleteGoogleDriveBackup"></fa-icon > 
-                    <span [ngClass]="{'has-text-success': stepsDone.includes('deleteBackup')}" *ngIf="deleteGoogleDriveBackup"> Destroy of your google drive backup  </span><br *ngIf="deleteGoogleDriveBackup">
+                    <span [ngClass]="{'has-text-success': stepsDone.includes('deleteBackup')}" *ngIf="deleteGoogleDriveBackup"> D{{ 'account.passphrase.popup.updating.destroy' | translate }}</span><br *ngIf="deleteGoogleDriveBackup">
 
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('backup')"></fa-icon > 
                         <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('backup') && isGoogleDriveBackupEnabled"></fa-icon > 
                         <span [ngClass]="{'has-text-success': stepsDone.includes('backup')}" *ngIf="isGoogleDriveBackupEnabled">
-                            Upload a new encrypted backup on your google drive    
+                            {{   
                         </span><br>
                 
                 
@@ -262,7 +260,7 @@
     <div class="modal-background" (click)="passphraseModal()"></div>
     <div class="modal-content">
         <section class="modal-card-body">
-            <h1 class="is-size-3 has-text-info mb-4 has-text-weight-bold">Oh ! You have backups in your google drive</h1>
+            <h1 class="is-size-3 has-text-info mb-4 has-text-weight-bold">{{ 'account.passphrase.popup.google.title' | translate }}</h1>
             <div class="content">
             <div class="box is-flex" style="cursor: pointer;" (click)="deleteGoogleDriveBackup=!deleteGoogleDriveBackup;" [ngClass]='{"has-background-danger-light	":deleteGoogleDriveBackup}'>
                 <div class="is-flex is-flex-direction-column is-justify-content-center mr-4">
@@ -270,7 +268,7 @@
                 <fa-icon [icon]="faTrash" *ngIf="!deleteGoogleDriveBackup"></fa-icon>
                 </div>
                 <div>
-                <strong for="deleteGoogleDriveBackup" [ngClass]="{'has-text-danger':deleteGoogleDriveBackup}">Delete my old backup and make a new one now</strong> <span class="has-text-danger"> (Recommended if your passphrase is not safe anymore)</span>
+                <strong for="deleteGoogleDriveBackup" [ngClass]="{'has-text-danger':deleteGoogleDriveBackup}">{{ 'account.passphrase.popup.google.option.delete.strong' | translate }}</strong> <span class="has-text-danger"> {{ 'account.passphrase.popup.google.option.delete.info' | translate }}</span>
             </div>
             </div>
             <div class="box is-flex" style="cursor: pointer;" (click)="deleteGoogleDriveBackup=deleteGoogleDriveBackup == false;" [ngClass]='{"has-background-success-light":deleteGoogleDriveBackup == false }'>
@@ -279,13 +277,13 @@
                 <fa-icon [icon]="faVault" *ngIf="deleteGoogleDriveBackup != false"></fa-icon>
                 </div>
                 <div>
-                <strong for="deleteGoogleDriveBackup" [ngClass]="{'has-text-success':deleteGoogleDriveBackup == false}">Keep my old backup with my old password and make a new one now</strong>
+                <strong for="deleteGoogleDriveBackup" [ngClass]="{'has-text-success':deleteGoogleDriveBackup == false}">{{ 'account.passphrase.popup.google.option.keep.strong' | translate }}</strong>
                 </div>
             </div>
         </div>
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
-            <button class="button" (click)="googleDriveBackupModaleActive = false; isPassphraseModalActive=false; isDeletionModalActive=false; deleteGoogleDriveBackup=undefined" >Abort</button>
-            <button class="button is-info" (click)=" googleDriveBackupModaleActive=false; updatePassphraseConfirm()" [disabled]="deleteGoogleDriveBackup == undefined">Continue</button>
+            <button class="button" (click)="googleDriveBackupModaleActive = false; isPassphraseModalActive=false; isDeletionModalActive=false; deleteGoogleDriveBackup=undefined" >{{ 'abort' | translate }}</button>
+            <button class="button is-info" (click)=" googleDriveBackupModaleActive=false; updatePassphraseConfirm()" [disabled]="deleteGoogleDriveBackup == undefined">{{ 'continue' | translate }}</button>
         </footer>
     </div>
