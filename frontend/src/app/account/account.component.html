@@ -245,10 +245,8 @@
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('backup')"></fa-icon > 
                         <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('backup') && isGoogleDriveBackupEnabled"></fa-icon > 
                         <span [ngClass]="{'has-text-success': stepsDone.includes('backup')}" *ngIf="isGoogleDriveBackupEnabled">
-                            {{   
+                            {{  "account.passphrase.popup.updating.upload_google" | translate}} 
                         </span><br>
-                
-                
             </p>
 
         </section>

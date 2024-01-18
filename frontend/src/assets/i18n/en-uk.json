@@ -601,6 +601,9 @@
       "current": "Your current username is:",
       "new": {
         "label": "New username"
+      },
+      "error":{
+        "char":"&, <, >, \" and ' are forbidden"
       }
     },
     "email": {
@@ -609,6 +612,11 @@
       "update": {
         "label": "New email",
         "confirm": "Confirm email"
+      },
+      "errors":{
+        "invalid":"Are your sure about your email ?",
+        "char": "&, <, >, \" and ' are forbidden",
+        "match" : "Your emails do not match !"
       },
       "success" :"Email updated with success",
       "error": "Something went wrong. Please try again later"

@@ -79,7 +79,7 @@ export class AccountComponent implements OnInit {
   checkUsername(){
   this.usernameErrorMessage = "";
   if(this.username != this.utils.sanitize(this.username)){
-    this.usernameErrorMessage = "&, <, >, \" and ' are forbidden";
+    this.usernameErrorMessage = "account.username.error.char";
       return;
     }
   }
@@ -93,13 +93,13 @@ export class AccountComponent implements OnInit {
     this.emailConfirmErrorMessage="";
     const emailRegex = /\S+@\S+\.\S+/;
     if(!emailRegex.test(this.email)){
-      this.emailErrorMessage = "Are your sure about your email ?";
+      this.emailErrorMessage = "account.email.errors.invalid" ;
       return;
     } if(this.email != this.utils.sanitize(this.email)) {
-      this.emailErrorMessage = "&, <, >, \" and ' are forbidden";
+      this.emailErrorMessage ="account.email.errors.char";
       return;
     } if(this.email != "" && this.confirmEmail != "" && this.email != this.confirmEmail) {
-      this.emailConfirmErrorMessage = "Your emails do not match !";
+      this.emailConfirmErrorMessage = "account.email.errors.match";
       return;
     } else {
       return true;
@@ -108,12 +108,14 @@ export class AccountComponent implements OnInit {
 
   updateEmail(){
     if(this.email == ""){
+      this.translate.get("signup.errors.missing_fields").subscribe((translation: string) => {
       superToast({
-        message: "Did you forget to fill something ?",
+        message: translation,
         type: "is-danger",
         dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    });
       return;
     }
     if(!this.checkEmail()){
