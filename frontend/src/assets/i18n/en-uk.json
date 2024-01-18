@@ -1,4 +1,10 @@
 {
+  "404": {
+    "oops": "Oops!",
+    "not_found": "Page not found.",
+    "desc": "The page you’re looking for doesn’t exist.",
+    "go_home": "Go Home"
+  },
   "home": {
     "button": {
       "learnMore": "Learn more",
@@ -602,8 +608,8 @@
       "new": {
         "label": "New username"
       },
-      "error":{
-        "char":"&, <, >, \" and ' are forbidden"
+      "error": {
+        "char": "&, <, >, \" and ' are forbidden"
       }
     },
     "email": {
@@ -613,12 +619,12 @@
         "label": "New email",
         "confirm": "Confirm email"
       },
-      "errors":{
-        "invalid":"Are your sure about your email ?",
+      "errors": {
+        "invalid": "Are your sure about your email ?",
         "char": "&, <, >, \" and ' are forbidden",
-        "match" : "Your emails do not match !"
+        "match": "Your emails do not match !"
       },
-      "success" :"Email updated with success",
+      "success": "Email updated with success",
       "error": "Something went wrong. Please try again later"
     },
     "passphrase": {
@@ -626,28 +632,28 @@
       "current": "Your current passphrase",
       "new": "New passphrase",
       "confirm": "Confirm Passphrase",
-      "no_former_passphrase":"We need your former passphrase to update your passphrase",
-      "error":{
-        "char":"' \" < > characters are forbidden in passphrase",
-        "length":"Your passphrase must be at least 12 characters long",
-        "special":"Your passphrase must contain at least one special character",
-        "upper":"Your passphrase must contain at least one uppercase character",
-        "number":"Your passphrase must contain at least one number",
-        "match":"Your passphrases do not match",
-        "full_abort":"An error occured. No update has been made. Update aborted. Report the error code ",
-        "hashing":"An error occured while hashing your password. Please, try again",
-        "incorrect":"Your passphrase is incorrect",
-        "wrong_key":"Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
-        "decrypt_one_secret":"Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.",
-        "wrong_key_vault":"Wrong key. You cannot decrypt this vault.",
-        "expired":"Impossible to decrypt your vault, you're decryption key has expired. Please log out and log in again.",
+      "no_former_passphrase": "We need your former passphrase to update your passphrase",
+      "error": {
+        "char": "' \" < > characters are forbidden in passphrase",
+        "length": "Your passphrase must be at least 12 characters long",
+        "special": "Your passphrase must contain at least one special character",
+        "upper": "Your passphrase must contain at least one uppercase character",
+        "number": "Your passphrase must contain at least one number",
+        "match": "Your passphrases do not match",
+        "full_abort": "An error occured. No update has been made. Update aborted. Report the error code ",
+        "hashing": "An error occured while hashing your password. Please, try again",
+        "incorrect": "Your passphrase is incorrect",
+        "wrong_key": "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
+        "decrypt_one_secret": "Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.",
+        "wrong_key_vault": "Wrong key. You cannot decrypt this vault.",
+        "expired": "Impossible to decrypt your vault, you're decryption key has expired. Please log out and log in again.",
         "fetch_vault": "Error : Impossible to retrieve your vault from the server",
-        "network":"Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session.",
-        "derive":"Error : Impossible to derive your new passphrase",
+        "network": "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session.",
+        "derive": "Error : Impossible to derive your new passphrase",
         "decrypt": "Error : Impossible to encrypt your vault",
-        "hash_new" : "An error occured while hashing your new passphrase. The vault and your passphrase have not been updated. Please, try again.",
-        "fatal":"An error occured while updating your vault. Some information may not be updated\n Contact the support ASAP with the following error code : #9",
-        "fatal_light":"Operation aborted. Nothing have been updated. "
+        "hash_new": "An error occured while hashing your new passphrase. The vault and your passphrase have not been updated. Please, try again.",
+        "fatal": "An error occured while updating your vault. Some information may not be updated\n Contact the support ASAP with the following error code : #9",
+        "fatal_light": "Operation aborted. Nothing have been updated. "
       },
       "popup": {
         "warning": {
@@ -672,7 +678,7 @@
           "upload": "Upload of your encrypted vault",
           "destroy": "Destroying your google drive backup  ",
           "upload_google": "Upload a new encrypted backup on your google drive   ",
-          "success":"Your passphrase is updated ! You can now log in with your new passphrase 🎉"
+          "success": "Your passphrase is updated ! You can now log in with your new passphrase 🎉"
         },
         "google": {
           "title": "Oh ! You have backups in your google drive",
@@ -685,9 +691,9 @@
               "strong": "Keep my old backup with my old password and make a new one now"
             }
           },
-          "fetch_error" :"Error : Impossible to check your google drive option. ",
-          "delete_error":"Error : Impossible to delete your google drive backup. ",
-          "backup_error":"Error : Impossible to backup your vault to google drive. "
+          "fetch_error": "Error : Impossible to check your google drive option. ",
+          "delete_error": "Error : Impossible to delete your google drive backup. ",
+          "backup_error": "Error : Impossible to backup your vault to google drive. "
         }
       }
     },
@@ -707,12 +713,20 @@
         }
       },
       "success": "Thanks for having used Zero-TOTP. Your account has been deleted. Good bye. 👋",
-      "error":{
-        "aborted":"Operation aborted.",
-        "wrong_passphrase":"Wrong passphrase. Operation aborted."
+      "error": {
+        "aborted": "Operation aborted.",
+        "wrong_passphrase": "Wrong passphrase. Operation aborted."
       }
     }
   },
   "abort": "Abort",
-  "continue": "Continue"
+  "continue": "Continue",
+  "oauth": {
+    "sync": {
+      "loading": "Synchronizing, do not close your browser..."
+    },
+    "error": {
+      "impossible": "Error : Impossible to backup your vault. Please, try to re-sync your Google Drive account."
+    }
+  }
 }
