@@ -728,5 +728,57 @@
     "error": {
       "impossible": "Error : Impossible to backup your vault. Please, try to re-sync your Google Drive account."
     }
-  }
+  },
+  "preference": {
+    "loading": "Retrieving your favorite ice-cream flavor ...",
+    "title": "Your preferences 🔧",
+    "vault": {
+      "display": {
+        "title": " Vault display settings",
+        "subtitle": "Global settings on how your vault is displayed.",
+        "favicon": {
+          "title": "Display website's favicon beside its name",
+          "option": {
+            "enabled": "If enabled only"
+          },
+          "info1": "When enabled, your browser will try to fetch the favicon of the website you are adding to your vault when displaying it. If it fails, it will display a default icon.",
+          "info2": " The favicon is fetched by your browser using DuckDuckGo API (a privacy friendly search engine). Zero-TOTP does not transmit any information to DuckDuckGo or the target website. The URI or domain name is never transmitted to zero-totp servers. ",
+          "info3": " You can disable this feature globally, enable it globally, or use each secrets' setting."
+        }
+      }
+    },
+    "tag": {
+      "global": "Global setting",
+      "sync_only": "Synched account only"
+    },
+    "more_info": "More info",
+    "advanced": {
+      "title": "Advanced settings",
+      "subtitle": "Settings to manage more precisely your Zero-TOTP account.",
+      "button": "Display advanced settings"
+    },
+    "iteration": {
+      "title": "Number of iterations used in the PBKDF2 derivation function"
+    },
+    "warning": {
+      "beta": " Zero-TOTP is still in beta. This value will be customizable in the future."
+    },
+    "backup": {
+      "minimum": {
+        "title": "Minimum of backup kept in Google Drive",
+        "desc1": " This is the minimum number of backup that Zero-TOTP will keep above all in your Google Drive.",
+        "desc2": " This paramater overrides any other parameter."
+      },
+      "eol": {
+        "title": "Backups end of life (in days)",
+        "desc1": "This is the number of days after which a backup will be deleted (only if your minimum backup setting is reached). This parameter is overridden by your minimum backup setting."
+      }
+    },
+    "error":{
+      "fetch": "An error occured while retrieving your preferences",
+      "update": "Error : Impossible to update your preferences. "
+    }
+  },
+  "always": "Always",
+  "never": "Never"
 }
