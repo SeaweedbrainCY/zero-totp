@@ -662,7 +662,7 @@
           "encryption": "Encryption of your vault with your new key",
           "verif_new": "Verification of your new encrypted vault",
           "upload": "Upload of your encrypted vault",
-          "destroy": "estroy of your google drive backup  ",
+          "destroy": "Destroying your google drive backup  ",
           "upload_google": "Upload a new encrypted backup on your google drive   ",
           "success":"Your passphrase is updated ! You can now log in with your new passphrase 🎉"
         },
@@ -698,7 +698,7 @@
           "destroy": "Destroy my account definitely "
         }
       },
-      "success": "Thanks for having used our Zero-TOTP. Your account has been deleted. Good bye. 👋",
+      "success": "Thanks for having used Zero-TOTP. Your account has been deleted. Good bye. 👋",
       "error":{
         "aborted":"Operation aborted.",
         "wrong_passphrase":"Wrong passphrase. Operation aborted."
