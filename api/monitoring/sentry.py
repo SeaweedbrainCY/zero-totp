@@ -1,4 +1,8 @@
 import sentry_sdk
+from opentelemetry import trace
+from opentelemetry.propagate import set_global_textmap
+from opentelemetry.sdk.trace import TracerProvider
+from sentry_sdk.integrations.opentelemetry import SentrySpanProcessor, SentryPropagator
 import environment as env
 from environment import logging
 
@@ -16,6 +20,11 @@ def sentry_configuration():
             # of sampled transactions.
             # We recommend adjusting this value in production.
             profiles_sample_rate=1.0,
+                instrumenter="otel",
 
         )
+        provider = TracerProvider()
+        provider.add_span_processor(SentrySpanProcessor())
+        trace.set_tracer_provider(provider)
+        set_global_textmap(SentryPropagator())
     
