@@ -14,6 +14,16 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "19/01/2024",
+      version: "b2.0",
+      added: [
+       "We added the support of french language in the application. You can now switch between english and french in the preferences page.",
+       "We improved our app structure to facilitate the integration of new languages in the future.",
+      ],
+      fixed:[
+      ]
+    },
+    {
       date: "11/01/2024",
       version: "b1.10",
       added: [
