@@ -452,7 +452,7 @@ export class LoginComponent implements OnInit {
       } else {
         this.translate.get("generic_errors.error").subscribe((trans)=>{
           superToast({
-            message: trans + " : "+ this.translate.instant(error.error.message),
+            message: trans + " : "+ this.translate.instant((error.message) ? error.message : ""),
             type: "is-danger",
             dismissible: true,
             duration: 20000,
