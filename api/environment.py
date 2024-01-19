@@ -18,6 +18,7 @@ email_smtp_server = os.environ.get('EMAIL_SMTP_SERVER')
 email_smtp_port = os.environ.get('EMAIL_SMTP_PORT')
 email_smtp_username = os.environ.get('EMAIL_SMTP_USERNAME')
 require_email_validation = os.environ.get('REQUIRE_EMAIL_VALIDATION') == "true"
+sentry_dsn = os.environ.get('SENTRY_DSN')
 
 if environment == "development":
     logging.basicConfig(
