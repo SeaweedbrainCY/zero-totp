@@ -9,6 +9,7 @@ from connexion.middleware import MiddlewarePosition
 from environment import logging
 import contextlib
 from flask_apscheduler import APScheduler
+from monitoring.sentry import sentry_configuration
 
 
 
@@ -34,6 +35,7 @@ def create_app():
 
     
     db.init_app(app)
+    sentry_configuration() #optional
     
 
     return app_instance
@@ -66,7 +68,7 @@ def before_request():
             logging.info(db.metadata.tables.keys())
             env.are_all_tables_created = True
 
-    
+
 
 
 if __name__ == "__main__":
