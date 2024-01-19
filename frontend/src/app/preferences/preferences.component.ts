@@ -7,8 +7,7 @@ import { ApiService } from '../common/ApiService/api-service';
 import { Utils } from '../common/Utils/utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
-import { Buffer } from 'buffer';
-import { json } from 'stream/consumers';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-preferences',
@@ -40,7 +39,8 @@ export class PreferencesComponent implements OnInit{
     private utils: Utils,
     private router: Router,
     private route: ActivatedRoute,
-    private crypto:Crypto
+    private crypto:Crypto,
+    private translate: TranslateService
     ){}
 
   
@@ -61,13 +61,15 @@ export class PreferencesComponent implements OnInit{
         } else {
           this.loadingPreferencesError = true;
           this.faviconPolicy = "enabledOnly";
+          this.translate.get('preference.error.fetch').subscribe((translation: string) => {
           superToast({
-            message: "An error occured while retrieving your preferences",
+            message: translation,
             type: "is-danger",
             dismissible: false,
             duration: 20000,
           animate: { in: 'fadeIn', out: 'fadeOut' }
           });
+        });
         }
       }
     }, (error) => {
@@ -80,20 +82,21 @@ export class PreferencesComponent implements OnInit{
             errorMessage = error.error.detail;
           }
           if(error.status == 0){
-            errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+            errorMessage = "vault.error.server_unreachable"
           } else if (error.status == 401){
             this.userService.clear();
             this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
             return;
           }
-
+          this.translate.get('preference.error.update').subscribe((translation: string) => {
           superToast({
-            message: "Error : Impossible to update your preferences. "+ errorMessage,
+            message: translation + " " + this.translate.instant(errorMessage),
             type: "is-danger",
             dismissible: false,
             duration: 20000,
           animate: { in: 'fadeIn', out: 'fadeOut' }
           });
+        });
     });
   }
 
@@ -114,19 +117,21 @@ export class PreferencesComponent implements OnInit{
             errorMessage = error.error.detail;
           }
           if(error.status == 0){
-            errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+            errorMessage = "vault.error.server_unreachable"
           } else if (error.status == 401){
             this.userService.clear();
             this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
             return;
           }
 
-          superToast({
-            message: "Error : Impossible to update your preferences. "+ errorMessage,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
+          this.translate.get('preference.error.update').subscribe((translation: string) => {
+            superToast({
+              message: translation + " " + this.translate.instant(errorMessage),
+              type: "is-danger",
+              dismissible: false,
+              duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+            });
           });
     });
   }

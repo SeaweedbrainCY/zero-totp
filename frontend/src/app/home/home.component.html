@@ -4,15 +4,13 @@
     <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center	">
       <div class="is-flex is-justify-content-space-around is-flex-wrap-wrap columns" id="homeFirstHero">
         <div class="is-one-third column">
-          <h1 class="is-size-1 has-text-weight-bold is-family-secondary	" style="line-height: normal;">Store your TOTP
-            codes in a <strong class="has-text-danger">safe place</strong> </h1><br>
-          <h3>Zero-TOTP is a <strong class="has-text-danger">100% open-source</strong> and a <strong
-              class="has-text-danger">zero-knowledge infrastructure</strong> platform</h3><br>
-          <h2><strong class="has-text-weight-semibold is-size-5 ">Trust no one, except YOU</strong></h2><br><br>
+          <h1 class="is-size-1 has-text-weight-bold is-family-secondary	" style="line-height: normal;" translate>home.title <strong class="has-text-danger" translate>home.title.strong</strong> </h1><br>
+          <h3 translate>home.subtitle <strong class="has-text-danger" translate>home.subtitle.opensource</strong> home.subtitle.and <strong
+              class="has-text-danger" translate>home.subtitle.zke</strong> home.subtitle.platform</h3><br>
+          <h2><strong class="has-text-weight-semibold is-size-5" translate>home.trust.no.one</strong></h2><br><br>
           <div class="buttons">
-            <a class="button is-info  is-medium has-text-weight-semibold block" href="/login">Open my vault</a>
-            <a class="button is-info is-light is-medium has-text-weight-semibold block" href="#totp">Learn
-              more</a>
+            <a class="button is-info  is-medium has-text-weight-semibold block" href="/login" translate>home.button.openVault</a>
+            <a class="button is-info is-light is-medium has-text-weight-semibold block" href="#totp" translate>home.button.learnMore</a>
             </div>
         </div>
         <div class="is-half column is-flex is-flex-direction-column is-justify-content-center">
@@ -27,26 +25,25 @@
       <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP" />
     </div>
     <div class="column has-text-centered">
-      <h1 class="is-size-2 has-text-weight-bold is-family-secondary" style="line-height: normal;">Store your TOTP codes
-        in a <span class="has-text-danger">safe place</span> </h1><br>
-      <h3>Zero-TOTP is a <strong class="has-text-danger">100% open-source</strong> and a <strong
-          class="has-text-danger">zero-knowledge infrastructure</strong> platform</h3><br>
-      <h2><strong class="has-text-weight-semibold is-size-5 ">Trust no one, except YOU</strong></h2><br><br>
+      <h1 class="is-size-2 has-text-weight-bold is-family-secondary" style="line-height: normal;" translate>home.title <span class="has-text-danger" translate>home.title.strong</span> </h1><br>
+      <h3 translate>home.subtitle <strong class="has-text-danger" translate>home.subtitle.opensource</strong> home.subtitle.and <strong
+          class="has-text-danger" translate>home.subtitle.zke</strong> home.subtitle.platform</h3><br>
+      <h2><strong class="has-text-weight-semibold is-size-5 " translate>home.trust.no.one</strong></h2><br><br>
       <div class="has-text-centered">
-        <a class="button is-info  is-medium has-text-weight-semibold block" href="/login">Open my vault</a><br>
-        <a class="button is-info is-light is-medium has-text-weight-semibold block" href="#how-it-works">Learn more</a>
+        <a class="button is-info  is-medium has-text-weight-semibold block" href="/login" translate>home.button.openVault</a><br>
+        <a class="button is-info is-light is-medium has-text-weight-semibold block" href="#how-it-works" translate>home.button.learnMore</a>
       </div>
     </div>
   </article>
 
   <article class="hero is-half has-text-dark" id="totp">
-    <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 has-text-dark mr-4 ml-4">Add an extra layer of security to your accounts</h1>
+    <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 has-text-dark mr-4 ml-4">{{"home.tuto.title" | translate}}</h1>
     <div class="is-flex is-justify-content-space-around is-flex-wrap-wrap columns mt-6">
       <div class="column  is-half-fullhd is-half-widescreen is-half-desktop is-two-thirds-tablet is-two-thirds-mobile is-flex is-flex-direction-column is-justify-content-center ">
         <div class="message is-medium is-info">
           <div class="message-body">
-        TOTP are <strong class="has-text-info">temporary codes</strong> that you can use as a <strong class="has-text-danger">second factor of authentication</strong> to secure your accounts (gmail, facebook, twitter, github, etc ...). It's like a SMS code, but it's more secure and more convenient !<br><br>
-        A TOTP code is only valid for <strong class="has-text-danger">30 seconds</strong>. Each time you log in to an account, you will have to enter a new code. This code is generated by an application on your phone or computer. This application is called a <strong class="has-text-info">TOTP client</strong>.<br><br>
+         {{ 'home.tuto.totp_are' | translate }} <strong class="has-text-info">{{ 'home.tuto.tmp_codes' | translate }}</strong> {{ 'home.tuto.use_as' | translate }} <strong class="has-text-danger">{{ 'home.tuto.2FA' | translate }}</strong> {{ 'home.tuto.accounts' | translate }}<br><br>
+        {{ 'home.tuto.totp_time' | translate }} <strong class="has-text-danger">30 {{ 'seconds' | translate }}</strong>. {{ 'home.tuto.totp_client.desc' | translate }} <strong class="has-text-info">{{ 'home.tuto.totp_client.name' | translate }}</strong>.<br><br>
       </div>
     </div>
       </div>
@@ -86,7 +83,7 @@
     </div>
   </article>
   <article class="hero is-half has-text-dark" id="why-zero-totp">
-    <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 has-text-dark mt-6">Why Zero-TOTP ?</h1>
+    <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 has-text-dark mt-6">{{ 'home.why.title' | translate }}</h1>
     <div class="is-flex is-justify-content-center is-flex-wrap-wrap columns ">
       <div
         class="card column  is-one-third-fullhd is-one-third-widescreen is-one-third-desktop is-two-thirds-tablet is-two-thirds-mobile m-6">
@@ -97,9 +94,8 @@
         </header>
         <div class="card-content">
           <div class="content">
-            <h1 class="has-text-weight-bold is-size-3">Strong encryption</h1>
-            <strong>All your data is encrypted</strong> with AES256, a very strong encryption standard.<br><br>Only you
-            can decrypt your data with your password.
+            <h1 class="has-text-weight-bold is-size-3">{{ 'home.why.strong_enc.title' | translate }}</h1>
+            <strong>{{ 'home.why.strong_enc.strong' | translate }}</strong> {{ 'home.why.strong_enc.l1' | translate }}<br><br>{{ 'home.why.strong_enc.l2' | translate }}
           </div>
         </div>
       </div>
@@ -112,9 +108,8 @@
         </header>
         <div class="card-content">
           <div class="content">
-            <h1 class="has-text-weight-bold is-size-3">Zero-knowledge encryption</h1>
-            Zero-TOTP use zero-knowledge encryption with means than <strong>no one can access your data</strong> except
-            you. Even the server administrator can't access your data. You and only you are able to decrypt your vault.
+            <h1 class="has-text-weight-bold is-size-3">{{ 'home.why.zke.title' | translate }}</h1>
+            {{ 'home.why.zke.desc.1' | translate }} <strong>{{ 'home.why.zke.desc.strong' | translate }}</strong> {{ 'home.why.zke.desc.2' | translate }}
           </div>
         </div>
       </div>
@@ -127,9 +122,8 @@
         </header>
         <div class="card-content">
           <div class="content">
-            <h1 class="has-text-weight-bold is-size-3">Your are the key holder</h1>
-            <strong>Only your passphrase can decrypt your vault</strong>. All the encryption is performed in your
-            browser, and your data is safe before it has even left your device !
+            <h1 class="has-text-weight-bold is-size-3">{{ 'home.why.key.title' | translate }}</h1>
+            <strong>{{ 'home.why.key.desc1' | translate }}</strong> {{ 'home.why.key.desc2' | translate }}
           </div>
         </div>
       </div>
@@ -142,9 +136,8 @@
         </header>
         <div class="card-content">
           <div class="content">
-            <h1 class="has-text-weight-bold is-size-3">100% open-source</h1>
-            Zero-TOTP is 100% open source and 100% free. Never trust anyone but you. <strong>We are 100% transparent and
-              anyone can access to the source code</strong>
+            <h1 class="has-text-weight-bold is-size-3">{{ 'home.why.opensource.title' | translate }}</h1>
+            {{ 'home.why.opensource.desc1' | translate }}<strong> {{ 'home.why.opensource.desc2' | translate }}</strong>
           </div>
         </div>
       </div>
@@ -153,8 +146,8 @@
   <article class="hero is-halfheight is-info has-text-white " id="never-lose-data">
     <div class="is-hidden-mobile is-hidden-tablet-only">
     <header>
-      <h1 class="is-size-1 has-text-centered has-text-weight-bold p-3 mt-6">Never lose your data</h1>
-      <h2 class="is-size-5 has-text-centered subtitle has-text-lightgray">You choose where to store your encrypted vault
+      <h1 class="is-size-1 has-text-centered has-text-weight-bold p-3 mt-6">{{ 'home.data.title' | translate }}</h1>
+      <h2 class="is-size-5 has-text-centered subtitle has-text-lightgray">{{ 'home.data.subtitle' | translate }}
       </h2>
     </header>
     <div class=" hero-body is-flex is-flex-direction-column" style="align-items: normal;">
@@ -163,8 +156,8 @@
           <img src="assets/logo_zero_totp_dark.png" class="box" alt="Logo of Zero TOTP" />
         </div>
         <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center ">
-          <strong class="is-size-4">Store your encrypted vault on Zero-TOTP's servers</strong>
-          <p>This is the default and mandatory option. Your encrypted vault is stored on our servers, hosted in France 🇫🇷 and Canada 🇨🇦. Nobody has access to your data, except you. This option is the one used when your log in to your account on <a href="https://zero-totp.com">zero-totp.com</a>. You cannot disable this option, but you can backup your vault on your computer or on your google drive.</p>
+          <strong class="is-size-4">{{ 'home.data.zero_totp.title' | translate }}</strong>
+          <p [innerHTML]="'home.data.zero_totp.desc' | translate "></p>
         </div>
       </div>
       <div class="is-flex is-justify-content-center columns mb-5">
@@ -172,8 +165,8 @@
             <img src="assets/google_drive_logo.png" class="box" alt="Logo of Google Drive" />
           </div>
           <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
-            <strong class="is-size-4">Back up your encrypted vault in your google drive</strong>
-            <p>You can synchronize your encrypted vault with your google drive. This option is not mandatory, but it is highly recommended. In case of a server crash, you will be able to recover your encrypted vault from your google drive.<br>Your vault is still encrypted and only your passphrase can decrypt it. This passphrase is never stored anywhere.</p>
+            <strong class="is-size-4">{{ 'home.data.google.title' | translate }}</strong>
+            <p [innerHTML]="'home.data.google.desc' | translate"></p>
           </div>
         </div>
         <div class="is-flex is-justify-content-center columns mb-5">
@@ -181,10 +174,8 @@
             <img src="assets/download.png" class="box" alt="Download icon" />
           </div>
           <div class="column is-two-thirds is-flex is-flex-direction-column is-justify-content-center">
-            <strong class="is-size-4">Back up your encrypted vault in your computer</strong>
-            <p>
-              You can download your encrypted vault and store it in your computer (or anywhere else). This option is not mandatory, but it is highly recommended. In case of a server crash, you will be able to recover your encrypted vault from your computer.<br>As always, your vault is still encrypted and only your passphrase can decrypt it. This passphrase is never stored anywhere.
-            </p>
+            <strong class="is-size-4">{{ 'home.data.local.title' | translate }}</strong>
+            <p [innerHTML]=" 'home.data.local.desc' | translate"></p>
           </div>
         </div>
       </div>
@@ -193,8 +184,8 @@
   
     <div class="is-hidden-desktop">
     <header>
-      <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 p-3">Never lose your data</h1>
-      <h2 class="is-size-5 has-text-centered subtitle has-text-lightgray">You choose where to store your encrypted vault
+      <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 p-3">{{ 'home.data.title' | translate }}</h1>
+      <h2 class="is-size-5 has-text-centered subtitle has-text-lightgray">{{ 'home.data.subtitle' | translate }}
       </h2>
     </header>
     <div class=" hero-body is-flex is-flex-direction-column has-text-centered">
@@ -203,8 +194,8 @@
           <img src="assets/logo_zero_totp_dark.png" class="box" alt="Logo of Zero TOTP" />
         </div>
         <div class="column is-11">
-          <strong class="is-size-4">Store your encrypted vault on Zero-TOTP's servers</strong>
-          <p>This is the default and mandatory option. Your encrypted vault is stored on our servers, hosted in France 🇫🇷 and Canada 🇨🇦. Nobody has access to your data, except you. This option is the one used when your log in to your account on <a href="https://zero-totp.com">zero-totp.com</a>. You cannot disable this option, but you can backup your vault on your computer or on your google drive.</p>
+          <strong class="is-size-4">{{ 'home.data.zero_totp.title' | translate }}</strong>
+          <p [innerHTML]="'home.data.zero_totp.desc' | translate "></p>
         </div>
       </div>
       <div class="columns is-flex is-flex-wrap-wrap is-justify-content-center is-mobile  mb-6">
@@ -212,8 +203,8 @@
             <img src="assets/google_drive_logo.png" class="box" alt="Logo of Google Drive" />
           </div>
           <div class="column is-11">
-          <strong class="is-size-4">Back up your encrypted vault in your google drive</strong>
-            <p>You can synchronize your encrypted vault with your google drive. This option is not mandatory, but it is highly recommended. In case of a server crash, you will be able to recover your encrypted vault from your google drive.<br>Your vault is still encrypted and only your passphrase can decrypt it. This passphrase is never stored anywhere.</p>
+          <strong class="is-size-4">{{ 'home.data.google.title' | translate }}</strong>
+          <p [innerHTML]="'home.data.google.desc' | translate"></p>
           </div>
         </div>
         <div class="columns is-flex is-flex-wrap-wrap is-justify-content-center is-mobile  mb-6">
@@ -221,10 +212,8 @@
             <img src="assets/download.png" class="box" alt="Download icon" />
           </div>
           <div class="column is-11">
-            <strong class="is-size-4">Back up your encrypted vault in your computer</strong>
-            <p>
-              You can download your encrypted vault and store it in your computer (or anywhere else). This option is not mandatory, but it is highly recommended. In case of a server crash, you will be able to recover your encrypted vault from your computer.<br>As always, your vault is still encrypted and only your passphrase can decrypt it. This passphrase is never stored anywhere.
-            </p>
+            <strong class="is-size-4">{{ 'home.data.local.title' | translate }}</strong>
+              <p [innerHTML]=" 'home.data.local.desc' | translate"></p>
           </div>
         </div>
       </div>
@@ -232,17 +221,17 @@
   </article>
   <article class="hero is-halfheight" id="backup-plan">
     <header>
-      <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 p-3" >And always have a <span
-          class="has-text-danger">backup plan</span></h1>
+      <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 p-3" >{{ 'home.backup.title' | translate }} <span
+          class="has-text-danger">{{ 'home.backup.title_strong' | translate }}</span></h1>
           <div class="hero-body  is-flex is-flex-direction-column has-text-left is-size-6" style="align-items: normal;">
-            <p>You should always be able to access your TOTP code. That's why <strong>Zero-TOTP has 4 independant platform where you can decrypt your vault.</strong></p><br><br>
+            <p>{{ 'home.backup.desc' | translate }} <strong>{{ 'home.backup.desc_strong' | translate }}</strong></p><br><br>
             <div><ul class="fa-ul">
-              <li class="mt-4"><span class="fa-li"><fa-icon [icon]="faHouse" size="lg" class="has-text-success"></fa-icon></span><strong><a href="https://zero-totp.com" class="has-text-success"> zero-totp.com</a></strong>. The complete version of Zero-TOTP, up to date with all its features.<br><span class="tag is-warning is-light">Available in beta</span></li>
-              <li class="mt-4"><span class="fa-li"><fa-icon [icon]="faMobileScreenButton" size="lg" class="has-text-info"></fa-icon></span><strong class="has-text-info">Zero-TOTP mobile app</strong>. To retrieve all your codes directly in your pocket.<br><span class="tag is-warning is-light">Coming soon</span>
+              <li class="mt-4"><span class="fa-li"><fa-icon [icon]="faHouse" size="lg" class="has-text-success"></fa-icon></span><strong><a href="https://zero-totp.com" class="has-text-success"> zero-totp.com</a></strong>. {{ 'home.backup.option.zero_totp' | translate }}<br><span class="tag is-warning is-light">{{ 'home.backup.option.beta' | translate }}</span></li>
+              <li class="mt-4"><span class="fa-li"><fa-icon [icon]="faKitMedical" size="lg" class="has-text-danger"></fa-icon></span><strong ><a href="https://rescue.zero-totp.com" class="has-text-danger">rescue.zero-totp.com</a></strong>. {{ 'home.backup.option.rescue' | translate }}<br><span class="tag is-success is-light" >{{ 'home.backup.option.available' | translate }}</span>
               </li>
-              <li class="mt-4"><span class="fa-li"><fa-icon [icon]="faCode" size="lg" class="has-text-dark"></fa-icon></span><strong class="has-text-dark">The Command Line Interface client</strong>. To retrieve all your codes form your terminal (CLI unix only).<br><span class="tag is-warning is-light">Coming soon</span>
+              <li class="mt-4"><span class="fa-li"><fa-icon [icon]="faMobileScreenButton" size="lg" class="has-text-info"></fa-icon></span><strong class="has-text-info">Zero-TOTP mobile app</strong>. {{ 'home.backup.option.mobile' | translate }}<br><span class="tag is-warning is-light">{{ 'home.backup.option.soon' | translate }}</span>
               </li>
-              <li class="mt-4"><span class="fa-li"><fa-icon [icon]="faKitMedical" size="lg" class="has-text-danger"></fa-icon></span><strong ><a href="https://rescue.zero-totp.com" class="has-text-danger">rescue.zero-totp.com</a></strong>. A very simple, minimal and ULTRA stable frontend, hosted on github pages where you can upload a backup your vault and decrypt it. In case of zero-totp's servers failure, your backup vaults can still be opened<br><span class="tag is-success is-light" >Available now</span>
+              <li class="mt-4"><span class="fa-li"><fa-icon [icon]="faCode" size="lg" class="has-text-dark"></fa-icon></span><strong class="has-text-dark">The Command Line Interface client</strong>. {{ 'home.backup.option.cli' | translate }}<br><span class="tag is-warning is-light">{{ 'home.backup.option.soon' | translate }}</span>
               </li>
             </ul></div>
           </div>
@@ -252,27 +241,27 @@
   </article>
   <article class="hero is-halfheight is-danger has-text-white" id="ZKE">
     <header>
-      <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 p-3">About Zero-Knowledge Encryption</h1>
+      <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 p-3">{{ 'home.about.title' | translate }}</h1>
     </header>
     <div class="hero-body">
     <p class="box is-italic" >
-      Zero Knowledge Encryption (ZKE) refers to a robust security measure that ensures the utmost protection of your data. With ZKE, your information is encrypted locally on your device before being uploaded to the cloud, and only you hold the encryption keys, guaranteeing that no one, including the service provider, can access your data without your explicit permission. This empowers you with complete control over your sensitive information while enjoying the convenience and flexibility of cloud storage.
+      {{ 'home.about.zke_def' | translate }}
     </p></div>
   </article>
   <article class="hero is-halfheight" id="project">
     <header>
-      <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 p-3" >The project</h1>
+      <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 p-3" >{{ 'home.project.title' | translate }}</h1>
     </header>
     <div class="hero-body is-flex is-flex-direction-column">
     <p class="has-text-centered has-text-weight-semibold mb-4">
-      Zero-TOTP was first launched in 2023 by <a href="https://nathan.stchepinsky.net">Nathan Stchepinsky</a> with the aim to provide a 100% open-source, safe and reliable alternative to proprietary totp clients. The project is still in development and is currently in beta.<br>
-      All contribution is welcome !
+      {{ 'home.project.desc.part1' | translate }} <a href="https://nathan.stchepinsky.net">Nathan Stchepinsky</a> {{ 'home.project.desc.part2' | translate }}<br>
+      {{ 'home.project.desc.contributions' | translate }}
     </p>
     <p>
-      <a class="button is-light is-info mb-4" href="https://github.com/SeaweedbrainCY/zero-totp"><fa-icon [icon]="faGithub" size="xl" class="mr-1"></fa-icon> Follow the project on github</a>
+      <a class="button is-light is-info mb-4" href="https://github.com/SeaweedbrainCY/zero-totp"><fa-icon [icon]="faGithub" size="xl" class="mr-1"></fa-icon> {{ 'home.button.github_project' | translate }}</a>
     </p>
     <!-- Buy me a coffee link :-->
-    <p class="has-text-danger has-text-weight-bold has-text-centered">Open source & self hosted applications are possible thanks to your support. If you like this project, please consider <a href="https://www.buymeacoffee.com/nathanstchepinsky" class="has-text-danger">buying me a coffee</a> !</p><br>
+    <p class="has-text-danger has-text-weight-bold has-text-centered">{{ 'home.buyMeCoffee.desc' | translate }} <a href="https://www.buymeacoffee.com/nathanstchepinsky" class="has-text-danger">{{ 'home.button.buy_me_a_coffee' | translate }}</a> !</p><br>
     <p class="has-text-centered mt-2">
       <a href="https://www.buymeacoffee.com/seaweedbrainCY" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
     </p>

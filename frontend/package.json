@@ -24,6 +24,8 @@
     "@fortawesome/free-brands-svg-icons": "^6.4.2",
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^8.0.0",
     "@types/node": "^20.8.4",
     "@zxing/browser": "^0.1.4",
     "@zxing/library": "^0.20.0",

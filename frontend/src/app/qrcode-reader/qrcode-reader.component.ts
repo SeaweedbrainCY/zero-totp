@@ -5,7 +5,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 import { BnNgIdleService } from 'bn-ng-idle';
-
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-qrcode-reader',
   templateUrl: './qrcode-reader.component.html',
@@ -29,6 +29,7 @@ export class QrcodeReaderComponent implements OnInit {
     private userService : UserService,
     private qrCode: QrCodeTOTP,
     private bnIdle: BnNgIdleService,
+    public translate: TranslateService
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
@@ -86,13 +87,15 @@ export class QrcodeReaderComponent implements OnInit {
       }
     }
     if(!patternOK){
+      this.translate.get('qrcode.error.pattern_invalid').subscribe((translation: string) => {
       superToast({
-        message: "This is not a TOTP QR code or it contains error.",
+        message: translation,
         type: "is-warning",
         duration: 20000,
         dismissible: false,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    });
     } else {
       const radical = this.qrResultString.split('otpauth://totp/')[1]
       
@@ -107,12 +110,14 @@ export class QrcodeReaderComponent implements OnInit {
         this.qrCode.setSecret(secret)
         this.navigate("/vault/add")
       } catch {
-        superToast({
-          message: "An error occured while reading the QR code information",
-          type: "is-warning",
-          duration: 20000,
-          dismissible: false,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
+        this.translate.get('qrcode.error.read_error').subscribe((translation: string) => {
+          superToast({
+            message: translation,
+            type: "is-warning",
+            duration: 20000,
+            dismissible: false,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
         });
       }
 

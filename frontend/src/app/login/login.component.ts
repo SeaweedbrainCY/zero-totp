@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { toast as superToast } from 'bulma-toast'
 import { faEnvelope, faLock,  faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
@@ -8,12 +8,14 @@ import { UserService } from '../common/User/user.service';
 import {Crypto} from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
 import { LocalVaultV1Service, UploadVaultStatus } from '../common/upload-vault/LocalVaultv1Service.service';
+import { TranslateService } from '@ngx-translate/core';
+import { error } from 'console';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   faEnvelope=faEnvelope;
   faLock=faLock;
   faCheck=faCheck;
@@ -35,7 +37,7 @@ export class LoginComponent {
   isPassphraseModalActive = false;
   local_vault_service: LocalVaultV1Service | null = null;
   is_oauth_flow=false;
-  login_button="Open my vault"
+  login_button="login.open_button"
   isPassphraseVisible=false;
   isLocalVaultPassphraseVisible=false;
 
@@ -46,6 +48,7 @@ export class LoginComponent {
     private userService: UserService,
     private crypto:Crypto,
     private localVaultv1: LocalVaultV1Service,
+    private translate: TranslateService
     ) {
     }
 
@@ -56,34 +59,34 @@ export class LoginComponent {
           break;
         }
         case 'sessionKilled':{
-          this.warning_message = "For your safety, you have been disconnected because you have reloaded or closed the tab";
+            this.warning_message = 'login.errors.session_killed';
           this.email = this.userService.getEmail() || "";
           this.userService.clear();
           break;
         }
         case 'sessionTimeout':{
-          this.warning_message = "For your safety, you have been disconnected after 10min of inactivity"
+            this.warning_message = 'login.errors.session_timeout';
           this.email = this.userService.getEmail() || "";
           this.userService.clear();
           break;
         }
 
         case 'sessionEnd':{
-          this.warning_message = "For your safety, your session must be renewed every hour."
+            this.warning_message = 'login.errors.session_end';
           this.email = this.userService.getEmail() || "";
           break;
         }
         case 'oauth':{
-          this.warning_message = "One last step, please confirm your password to complete the synchronization"
+          this.warning_message = 'login.errors.oauth'
           this.email = this.userService.getEmail() || "";
           this.warning_message_color="is-success";
           this.userService.clear();
           this.is_oauth_flow=true;
-          this.login_button="Authorize"
+          this.login_button="login.authorize" 
           break;
         }
         case 'confirmPassphrase':{
-          this.warning_message = "To continue, please confirm your passphrase"
+            this.warning_message = 'login.errors.confirm_passphrase';
           this.email = this.userService.getEmail() || "";
           this.warning_message_color="is-success";
           this.userService.clear();
@@ -94,18 +97,23 @@ export class LoginComponent {
       
     }
 
+    
+
   
   
 
   checkEmail() : boolean{
     const emailRegex = /\S+@\S+\.\S+/;
     if(!emailRegex.test(this.email)){
+      this.translate.get("login.errors.email").subscribe((translation)=>{
       superToast({
-        message: "Are your sure about your email ? ",
+        message:  translation,
         type: "is-danger",
         dismissible: true,
+        duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    });
       return false;
     } else {
       return true;
@@ -115,12 +123,15 @@ export class LoginComponent {
   
   login(){
     if(this.email == "" || this.password == ""){
+      this.translate.get("login.errors.empty").subscribe((translation)=>{
       superToast({
-        message: "Did you forget to fill something ?",
+        message: translation,
         type: "is-danger",
         dismissible: true,
+        duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+     });
       return;
     }
     if(!this.checkEmail()){
@@ -141,13 +152,15 @@ export class LoginComponent {
           const unsecure_context = reader.result.toString();
           const version = this.localVaultv1.extract_version_from_vault(unsecure_context);
           if(version == null){
+            this.translate.get("login.errors.import_vault.invalid_file").subscribe((translation)=>{
             superToast({
-              message: "Error : Impossible to import your vault. Impossible to read it",
+              message: translation,
               type: "is-danger",
               dismissible: false,
               duration: 20000,
               animate: { in: 'fadeIn', out: 'fadeOut' }
             });
+          });
             
           } else if (version == 1){
             this.local_vault_service = this.localVaultv1
@@ -159,35 +172,41 @@ export class LoginComponent {
               break
             }
             case UploadVaultStatus.INVALID_JSON: {
+              this.translate.get("login.errors.import_vault.invalid_type").subscribe((translation)=>{
               superToast({
-                message: "Error : Invalid file type",
+                message: translation,
                 type: "is-danger",
                 dismissible: false,
                 duration: 20000,
                 animate: { in: 'fadeIn', out: 'fadeOut' }
               });
+            });
               
               break;
             }
 
             case UploadVaultStatus.INVALID_VERSION: {
-              superToast({
-                message: "Error : Impossible to import your vault. Unsupported version",
-                type: "is-danger",
-                dismissible: false,
-                duration: 20000,
-                animate: { in: 'fadeIn', out: 'fadeOut' }
+              this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation)=>{
+                superToast({
+                  message: translation,
+                  type: "is-danger",
+                  dismissible: false,
+                  duration: 20000,
+                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                });
               });
               
               break;
             }
             case UploadVaultStatus.NO_SIGNATURE: {
-              superToast({
-                message: "Error : Impossible to import your vault. No signature found",
-                type: "is-danger",
-                dismissible: false,
-                duration: 20000,
-                animate: { in: 'fadeIn', out: 'fadeOut' }
+              this.translate.get("login.errors.import_vault.no_signature").subscribe((translation)=>{
+                superToast({
+                  message: translation,
+                  type: "is-danger",
+                  dismissible: false,
+                  duration: 20000,
+                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                });
               });
               
               break;
@@ -198,47 +217,55 @@ export class LoginComponent {
               break;
             }
             case UploadVaultStatus.MISSING_ARGUMENT: {
-              superToast({
-                message: "Error : Impossible to import your vault. It seems to not be complete",
-                type: "is-danger",
-                dismissible: false,
-                duration: 20000,
-                animate: { in: 'fadeIn', out: 'fadeOut' }
+              this.translate.get("login.errors.import_vault.missing_arg").subscribe((translation)=>{
+                superToast({
+                  message: translation,
+                  type: "is-danger",
+                  dismissible: false,
+                  duration: 20000,
+                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                });
               });
               
               break;
             }
             case UploadVaultStatus.INVALID_ARGUMENT: {
-              superToast({
-                message: "Error : Impossible to import your vault. It seems to be corrupted",
-                type: "is-danger",
-                dismissible: false,
-                duration: 20000,
-                animate: { in: 'fadeIn', out: 'fadeOut' }
+              this.translate.get("login.errors.import_vault.invalid_arg").subscribe((translation)=>{
+                superToast({
+                  message: translation,
+                  type: "is-danger",
+                  dismissible: false,
+                  duration: 20000,
+                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                });
               });
               
               break;
             }
 
               case UploadVaultStatus.UNKNOWN: {
-                superToast({
-                  message: "Error : Impossible to import your vault. Unknown error",
-                  type: "is-danger",
-                  dismissible: false,
-                  duration: 20000,
-                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation)=>{
+                  superToast({
+                    message: translation,
+                    type: "is-danger",
+                    dismissible: false,
+                    duration: 20000,
+                    animate: { in: 'fadeIn', out: 'fadeOut' }
+                  });
                 });
                 
                 break;
               }
 
             default: {
-              superToast({
-                message: "Error : Impossible to import your vault. Unknown error",
-                type: "is-danger",
-                dismissible: false,
-                duration: 20000,
-                animate: { in: 'fadeIn', out: 'fadeOut' }
+              this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation)=>{
+                superToast({
+                  message: translation,
+                  type: "is-danger",
+                  dismissible: false,
+                  duration: 20000,
+                  animate: { in: 'fadeIn', out: 'fadeOut' }
+                });
               });
               
               break;
@@ -247,32 +274,38 @@ export class LoginComponent {
       });
     }
     else {
-      superToast({
-        message: "Error : Impossible to import your vault. Unsupported version",
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
+      this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation)=>{
+        superToast({
+          message: translation,
+          type: "is-danger",
+          dismissible: false,
+          duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
       });
       
     }
       } catch(e){
+        this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation)=>{
           superToast({
-            message: "Error : Impossible to parse your file",
+            message: translation,
             type: "is-danger",
             dismissible: false,
             duration: 20000,
             animate: { in: 'fadeIn', out: 'fadeOut' }
           });
+        });
           
         }
       } else {
-        superToast({
-          message: "Error : Impossible to parse your file",
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
+        this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation)=>{
+          superToast({
+            message: translation,
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
         });
         
       }
@@ -327,33 +360,39 @@ export class LoginComponent {
             this.userService.setPassphraseSalt(salt);
             this.postLoginRequest();
           } else {
+            this.translate.get("login.errors.hashing").subscribe((translation)=>{
             superToast({
-              message: "An error occured while hashing your password. Please, try again",
+              message: translation,
               type: "is-danger",
               dismissible: false,
               duration: 20000,
               animate: { in: 'fadeIn', out: 'fadeOut' }
             });
+          });
             this.isLoading=false;
           }
         });
       } catch {
+        this.translate.get("login.errors.hashing").subscribe((translation)=>{
+          superToast({
+            message: translation,
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+            animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
+        });
+        this.isLoading=false;
+      }
+    }, error => {
+      this.translate.get("login.errors.no_connection").subscribe((translation)=>{
         superToast({
-          message: "An error occured while hashing your password. Please, try again",
+          message: translation,
           type: "is-danger",
           dismissible: false,
           duration: 20000,
           animate: { in: 'fadeIn', out: 'fadeOut' }
         });
-        this.isLoading=false;
-      }
-    }, error => {
-      superToast({
-        message: "Impossible to chat with the server ! \nCheck your internet connection or status.zero-totp.com",
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
       });
       this.isLoading=false;
     });
@@ -385,34 +424,40 @@ export class LoginComponent {
       } catch(e){
         this.isLoading=false;
         console.log(e);
+        this.translate.get("login.errors.server_error").subscribe((translation)=>{
         superToast({
-          message: "Error : Impossible ro retrieve information from server",
+          message: translation ,
           type: "is-danger",
           duration: 20000,
           dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
+      });
       }
       
     },
     (error) => {
       console.log(error);
       this.isLoading=false;
-      if(error.error.message == "User is blocked"){
+      if(error.error.message == "blocked"){
+        this.translate.get("login.errors.account_blocked").subscribe((translation)=>{
         superToast({
-          message: "Your account has been blocked for security reasons. Please contact the administrator at developer[at]zero-totp.com to unlock it",
+          message: translation,
           type: "is-danger",
           dismissible: true,
           duration: 99000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
+      });
       } else {
-        superToast({
-          message: "Error : "+ error.error.message,
-          type: "is-danger",
-          dismissible: true,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
+        this.translate.get("generic_errors.error").subscribe((trans)=>{
+          superToast({
+            message: trans + " : "+ this.translate.instant(error.error.message),
+            type: "is-danger",
+            dismissible: true,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
         });
       }
       
@@ -505,13 +550,19 @@ export class LoginComponent {
           ).then((zke_key)=>{
             resolve(zke_key);
           }, (error)=>{
-            reject("Impossible to decrypt your key. "+ error);
+            this.translate.get("login.errors.import_vault.key_dec").subscribe((translation)=>{
+            reject(translation + " " + error);
+            });
           });;
         } else {
           if(this.userService.getIsVaultLocal()!){
-            reject("Wrong passphrase");
+            this.translate.get("login.errors.import_vault.wrong_passphrase").subscribe((translation)=>{
+            reject(translation);
+            });
           } else {
-            reject("Impossible to decrypt your key");
+            this.translate.get("login.errors.import_vault.key_dec").subscribe((translation)=>{
+            reject(translation);
+            });
           }
           
         }

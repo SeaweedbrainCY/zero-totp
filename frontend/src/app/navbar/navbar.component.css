@@ -1,3 +1,35 @@
 .navbar {
     box-shadow: black 0px 0px 3px;
   }
+
+  .lang-dropdown {
+    .navbar-dropdown {
+      width: 180px;
+  
+      .navbar-item {
+        display: flex;
+        align-items: center;
+  
+        img {
+          display: block;
+          height: 26px;
+          width: 26px;
+          min-width: 26px;
+          border-radius: 50%;
+        }
+  
+        span {
+          display: block;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+.navbar-dropdown:not(.is-active) {
+  display: none;
+}
+.navbar-dropdown .is-active{
+  display: block;
+}
+  

@@ -12,7 +12,7 @@ import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.
 import { BnNgIdleService } from 'bn-ng-idle';
 import  * as URLParse from 'url-parse';
 import { dom } from '@fortawesome/fontawesome-svg-core';
-
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-edit-totp',
   templateUrl: './edit-totp.component.html',
@@ -34,7 +34,7 @@ export class EditTOTPComponent implements OnInit{
   uriError = "";
   secretError = "";
   color="info";
-  selected_color="Blue";
+  selected_color="";
   totp = require('totp-generator');
   code = "";
   time=80;
@@ -54,6 +54,7 @@ export class EditTOTPComponent implements OnInit{
     private utils: Utils,
     private crypto: Crypto,
     private bnIdle: BnNgIdleService,
+    private translate: TranslateService
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
@@ -77,6 +78,10 @@ export class EditTOTPComponent implements OnInit{
           this.secret = this.QRCodeService.getSecret()!
         }
         this.get_preferences()
+        this.translate.get("blue").subscribe((default_color: string) => {
+        this.selected_color = default_color;
+        });
+        
     } else {
       if(!this.userService.getIsVaultLocal()){
         this.getSecretTOTP()
@@ -116,11 +121,11 @@ export class EditTOTPComponent implements OnInit{
   checkName(){
     this.nameError = "";
     if(this.name == ""){
-      this.nameError = "Domain cannot be empty";
+      this.nameError = "totp.error.name_empty";
       return;
     }
     if(this.utils.sanitize(this.name) != this.name){
-      this.nameError = "<, >, \" and ' are forbidden";
+      this.nameError = "totp.error.char";
       return;
     }
   }
@@ -128,12 +133,12 @@ export class EditTOTPComponent implements OnInit{
   checkURI(){
     this.nameError = "";
     if(this.utils.sanitize(this.uri) != this.uri){
-      this.nameError = "<, >, \" and ' are forbidden";
+      this.nameError =  "totp.error.char";
       return;
     }
     if(this.favicon == true){
       if(this.uri == ""){
-        this.uriError = "No favicon found for this domain";
+        this.uriError = "totp.error.fav_empty";
         return;
       } else {
         this.loadFavicon()
@@ -155,32 +160,33 @@ export class EditTOTPComponent implements OnInit{
     this.secretError = "";
     this.secret = this.secret.replace(/\s/g, "");
     if(this.secret == ""){
-      this.secretError = "Secret cannot be empty";
+      this.secretError = "totp.error.secret_empty" ;
       return;
     }
 
     if(this.secret != this.utils.sanitize(this.secret)){
-      this.secretError = "<, >, \" and ' are forbidden";
+      this.secretError = "totp.error.char";
       return;
     }
     this.generateCode();
   }
 
   changeColor(colorSelected:string){
+    this.translate.get("blue").subscribe((translation: string) => {
     switch(colorSelected){
-      case "Blue":{
+      case translation:{
         this.color = "info";
         break;
       }
-      case "Green":{
-        this.color = "primary";
+      case this.translate.instant("green"):{
+        this.color = "success";
         break;
       }
-      case "Orange":{
+      case this.translate.instant("orange"):{
         this.color = "warning";
         break;
       }
-      case "Red":{
+      case this.translate.instant("red"):{
         this.color = "danger";
         break;
       }
@@ -189,6 +195,7 @@ export class EditTOTPComponent implements OnInit{
         break;
       }
     }
+  });
   }
 
   cancel(){
@@ -206,13 +213,15 @@ export class EditTOTPComponent implements OnInit{
           }
         } else {
           this.faviconPolicy = "enabledOnly";
+          this.translate.get("totp.favicon_policy.enabledOnly").subscribe((translation: string) => {
           superToast({
-            message: "An error occured while retrieving your preferences",
+            message:translation,
             type: "is-danger",
             dismissible: false,
             duration: 5000,
           animate: { in: 'fadeIn', out: 'fadeOut' }
           });
+        });
         }
       }
     }, (error) => {
@@ -223,11 +232,11 @@ export class EditTOTPComponent implements OnInit{
             errorMessage = error.error.detail;
           }
           if(error.status == 0){
-            errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+            errorMessage = "vault.error.server_unreachable"
             return;
           } 
           superToast({
-            message: "Error : Impossible to update your preferences. "+ errorMessage,
+            message: this.translate.instant("totp.error.update_pref") + this.translate.instant(errorMessage),
             type: "is-danger",
             dismissible: false,
             duration: 5000,
@@ -243,12 +252,14 @@ export class EditTOTPComponent implements OnInit{
         const data = JSON.parse(JSON.stringify(response.body));
         this.crypto.decrypt(data.enc_secret, this.userService.get_zke_key()!).then((decrypted_secret)=>{
           if(decrypted_secret == null){
+            this.translate.get("totp.error.decryption").subscribe((translation: string) => {
             superToast({
-              message: "An error occured while decrypting your secret",
+              message:translation,
              type: "is-warning",
               dismissible: false,
               duration: 20000,
             animate: { in: 'fadeIn', out: 'fadeOut' }
+            });
             });
           } else {
             const property = this.utils.mapFromJson(decrypted_secret);
@@ -256,28 +267,30 @@ export class EditTOTPComponent implements OnInit{
             this.name = property.get("name")!;
             this.secret = property.get("secret")!;
             this.color = property.get("color")!;
+            this.translate.get("blue").subscribe((blue: string) => {
             switch(this.color){
               case "info":{
-                this.selected_color = "Blue";
+                this.selected_color = blue;
                 break;
               }
-              case "primary":{
-                this.selected_color = "Green";
+              case "success":{
+                this.selected_color = this.translate.instant("green");
                 break;
               }
               case "warning":{
-                this.selected_color = "Orange";
+                this.selected_color = this.translate.instant("orange");
                 break;
               }
               case "danger":{
-                this.selected_color = "Red";
+                this.selected_color = this.translate.instant("red");
                 break;
               }
               default:{
-                this.selected_color = "Blue";
+                this.selected_color = blue;
                 break;
               }
             }
+          });
             if(property!.has("uri")){
               this.uri = property!.get("uri")!;
             }
@@ -291,13 +304,15 @@ export class EditTOTPComponent implements OnInit{
           }
         });
       } catch {
+        this.translate.get("totp.error.fetch_secret").subscribe((translation: string) => {
         superToast({
-          message: "An error occured while getting your secret",
+          message: translation,
          type: "is-warning",
           dismissible: false,
           duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
+      });
       }
     }, (error) => {
       let errorMessage = "";
@@ -308,19 +323,20 @@ export class EditTOTPComponent implements OnInit{
       }
 
       if(error.status == 0){
-        errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+        errorMessage = "vault.error.server_unreachable"
       } else if (error.status == 401){
         this.userService.clear();
         this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
         return;
       }
-      
+      this.translate.get("totp.error.fetch_secret_server").subscribe((translation: string) => {
       superToast({
-        message: "Error : Impossible to retrieve your secret from the server. "+ errorMessage,
+        message: translation  + " " +this.translate.instant(errorMessage),
         type: "is-danger",
         dismissible: false,
         duration: 20000,
       animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
       });
     });
   }
@@ -362,13 +378,15 @@ export class EditTOTPComponent implements OnInit{
         }
       });
     } catch {
+      this.translate.get("totp.error.encryption").subscribe((translation: string) => {
       superToast({
-        message: "An error happened while encrypting your secret",
+        message: translation ,
        type: "is-warning",
         dismissible: false,
         duration: 20000,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    });
     }
   }
 
@@ -376,7 +394,7 @@ export class EditTOTPComponent implements OnInit{
     this.uuid = window.crypto.randomUUID();
     this.http.post(ApiService.API_URL + "/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
       superToast({
-        message: "TOTP code updated !",
+        message: this.translate.instant("totp.secret.add.added"),
         type: "is-success",
         dismissible: true,
       animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -393,26 +411,28 @@ export class EditTOTPComponent implements OnInit{
       }
 
       if(error.status == 0){
-        errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+        errorMessage = "vault.error.server_unreachable"
       } else if (error.status == 401){
         this.userService.clear();
         this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
         return;
       }
+      this.translate.get("totp.error.update").subscribe((translation: string) => {
       superToast({
-        message: "An error occured while updating your vault with a new code. "+ errorMessage,
+        message: translation  + " " +this.translate.instant(errorMessage),
        type: "is-warning",
         dismissible: false,
         duration: 20000,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
     });
+    });
   }
 
   updateSecret(enc_property:string, property: Map<string,string>){
     this.http.put(ApiService.API_URL + "/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
       superToast({
-        message: "New TOTP code added ! ",
+        message: this.translate.instant("totp.secret.add.success") ,
         type: "is-success",
         dismissible: true,
       animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -427,20 +447,21 @@ export class EditTOTPComponent implements OnInit{
       }
 
       if(error.status == 0){
-        errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+        errorMessage = "vault.error.server_unreachable"
       } else if (error.status == 401){
         this.userService.clear();
         this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
         return;
       }
-
+      this.translate.get("totp.error.update").subscribe((translation: string) => {
       superToast({
-        message: "An error occured while updating your vault with a new code. "+ errorMessage,
+        message: translation + " " + this.translate.instant(errorMessage),
        type: "is-warning",
         dismissible: false,
         duration: 20000,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    });
     });
   }
 
@@ -450,7 +471,7 @@ export class EditTOTPComponent implements OnInit{
       if(response.status == 201){
       this.isDestroying = false;
       superToast({
-        message: "TOTP code deleted !",
+        message: this.translate.instant("totp.secret.delete.success"),
         type: "is-success",
         dismissible: true,
       animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -459,7 +480,7 @@ export class EditTOTPComponent implements OnInit{
     } else {
       this.isDestroying = false;
       superToast({
-        message: "An error occured while deleting your secret.",
+        message: this.translate.instant("totp.error.deleting"),
        type: "is-warning",
         dismissible: false,
         duration: 20000,
@@ -476,7 +497,7 @@ export class EditTOTPComponent implements OnInit{
         errorMessage = error.error.detail;
       }
       superToast({
-        message: "An error occured while deleting your secret. "+ errorMessage,
+        message:  this.translate.instant("totp.error.deleting") + " " + errorMessage,
        type: "is-warning",
         dismissible: false,
         duration: 20000,
@@ -492,7 +513,7 @@ export class EditTOTPComponent implements OnInit{
     if(this.favicon == true){
       if(this.uri != ""){
         if(!this.uri.startsWith("http://") && !this.uri.startsWith("https://")){
-          this.uriError = 'Missing http(s)://';
+          this.uriError = "totp.error.missing_https";
             return;
         }
         try{
@@ -503,17 +524,17 @@ export class EditTOTPComponent implements OnInit{
            if(domain != null && domain != ""){
             this.faviconURL = "https://icons.duckduckgo.com/ip3/" +domain + ".ico";
            } else {
-            this.uriError = "Invalid URI";
+            this.uriError ="totp.error.invalid_uri" ;
             return;
            }
         } catch{
-          this.uriError = "Invalid URI";
+          this.uriError = "totp.error.invalid_uri";
           return;
         }
         
        
       } else {
-        this.uriError = "No favicon found for this domain";
+        this.uriError = "totp.error.no_fav";
       }
     }
   }

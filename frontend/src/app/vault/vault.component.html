@@ -1,16 +1,13 @@
 <section class="hero  is-halfheight mt-6 " style="min-height: 70vh;">
     <div class="container  is-fluid ">
         <div>
-            <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">{{page_title}}</h1>
-            <p class="has-text-centered has-text-grey pb-6">You and only you can access to this data. All the magic is
-                done
-                on your computer.</p>
+            <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">{{page_title | translate}} <span *ngIf="vault_date != undefined">{{vault_date}}</span></h1>
+            <p class="has-text-centered has-text-grey pb-6">{{ 'vault.subtitle' | translate }} </p>
             <article class="message is-info" *ngIf="this.userService.getIsVaultLocal()">
                 <div class="message-body">
-                    This is a vault stored locally on your computer. You can't sync it with other devices, nor with
-                    zero-totp servers. You don't need internet to open it.<br>
-                    <b>To restore this backup and sync it on all your devices, log in and then choose
-                        <code>restore a backup</code> in the storage options</b>.
+                    {{ 'vault.local.desc.part1' | translate }}<br>
+                    <b>{{ 'vault.local.desc.part2' | translate }}
+                        <code>{{ 'vault.local.desc.code' | translate }}</code>{{ 'vault.local.desc.part3' | translate }}</b>.
                 </div>
             </article>
             <div class="message is-success" *ngIf="!this.userService.getIsVaultLocal()">
@@ -18,11 +15,11 @@
                     [ngClass]="{'is-success': isGoogleDriveSync == 'uptodate' ||  isGoogleDriveSync == 'loading', 'is-warning': isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false' }">
                     <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen"
                         style="cursor: pointer;">
-                        <p>Your storage options <span
+                        <p>{{ 'vault.storage.title' | translate }} <span
                                 *ngIf="isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false'"
                                 class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
-                        <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">Less</span>
-                            <span *ngIf="!storageOptionOpen">More</span>
+                        <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">{{ 'less' | translate }}</span>
+                            <span *ngIf="!storageOptionOpen">{{ 'more' | translate }}</span>
                             <fa-icon [icon]="faChevronDown" class="pl-1" *ngIf="!storageOptionOpen"></fa-icon>
                             <fa-icon [icon]="faChevronUp" class="pl-1" *ngIf="storageOptionOpen"></fa-icon>
                         </div>
@@ -40,7 +37,7 @@
                                         aria-controls="dropdown-menu4">
                                         <span class="tag is-medium is-dark has-text-weight-bold " id="totp-tag">🇫🇷
                                             🇨🇦
-                                            Zero-TOTP servers </span>
+                                            {{ 'vault.storage.zero_totp.title' | translate }} </span>
                                         <span class="tag is-success is-medium" id="totp-status-tag"> <fa-icon
                                                 [icon]="faCheckCircle"></fa-icon></span>
                                         <br>
@@ -49,7 +46,7 @@
                                 <div [hidden]="!storageOptionOpen" class="mb-3">
                                     <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
                                         <button class="button is-outlined is-dark" (click)="reload()"><fa-icon [icon]="faRotateRight"
-                                                class="mr-3"></fa-icon> Reload the vault </button>
+                                                class="mr-3"></fa-icon> {{ 'vault.storage.zero_totp.reload' | translate }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -84,13 +81,13 @@
                                         <button *ngIf="isGoogleDriveSync == 'false'"
                                             class="button  is-outlined is-dark mb-3 mr-2 ml-2"
                                             (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
-                                                class="mr-3"></fa-icon> Sync now </button>
+                                                class="mr-3"></fa-icon> {{ 'vault.storage.google.sync' | translate }} </button>
                                         <button *ngIf="isGoogleDriveSync == 'false'"
                                             class="button  is-outlined is-dark mb-3 mr-2 ml-2" disabled><fa-icon
-                                                [icon]="faCircleInfo" class="mr-3"></fa-icon> More info</button>
+                                                [icon]="faCircleInfo" class="mr-3"></fa-icon> {{ 'vault.storage.google.info' | translate }}</button>
 
                                         <div *ngIf="isGoogleDriveSync == 'uptodate'" class="has-text-centered">
-                                            <div class="is-size-7 ">Last backed-up modification : {{lastBackupDate}} 
+                                            <div class="is-size-7 ">{{ 'vault.storage.google.last_backup' | translate }} {{lastBackupDate}} 
                                                 <div class="dropdown is-hoverable">
                                                     <div class="dropdown-trigger">
                                                       <a  aria-haspopup="true" aria-controls="dropdown-menu4">
@@ -101,7 +98,7 @@
                                                     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
                                                       <div class="dropdown-content">
                                                         <div class="dropdown-item">
-                                                          <p class="has-text-left"><strong>A backup is made every time a modification is made to your vault.</strong><br> You can change you backup policy in your settings.</p>
+                                                          <p class="has-text-left"><strong>{{ 'vault.storage.google.about.desc1' | translate }}</strong><br> {{ 'vault.storage.google.about.desc2' | translate }}</p>
                                                         </div>
                                                       </div>
                                                     </div>
@@ -110,20 +107,19 @@
                                             <p class="has-text-centered mt-1">
                                                 <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
                                                     (click)="disable_google_drive()"><fa-icon
-                                                        [icon]="faCircleXmark" class="mr-3"></fa-icon> Stop sync
+                                                        [icon]="faCircleXmark" class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' | translate }}
                                                 </button>
                                             </p>
                                         </div>
                                         <div *ngIf="isGoogleDriveSync == 'error'" class="has-text-centered">
-                                            <p class="has-text-danger is-size-7 ">An error occured while checking your
-                                                backup</p>
+                                            <p class="has-text-danger is-size-7 ">{{ 'vault.storage.google.error.check' | translate }}</p>
                                             <p class="has-text-centered mt-1">
                                                 <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
                                                     (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
-                                                        class="mr-3"></fa-icon> Try to re-sync </button>
+                                                        class="mr-3"></fa-icon> {{ 'vault.storage.google.resync' | translate }} </button>
                                                         <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
                                                     (click)="disable_google_drive()"><fa-icon
-                                                        [icon]="faCircleXmark" class="mr-3"></fa-icon> Stop sync
+                                                        [icon]="faCircleXmark" class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' | translate }}
                                                 </button>
                                             </p>
                                         </div>
@@ -141,7 +137,7 @@
                                     <div class="tags has-addons mb-0" style="align-items: normal;"
                                         (click)="storageOptionOpen = true">
                                         <span class="tag is-medium is-dark has-text-weight-bold" id="download-tag">
-                                            <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>Backup locally
+                                            <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>{{ 'vault.storage.local.title' | translate }}
                                         </span>
                                         <span class="tag is-info is-medium" id="download-status-tag"> <fa-icon
                                                 [icon]="faDownload"></fa-icon></span>
@@ -152,22 +148,21 @@
                                         [hidden]="!storageOptionOpen">
                                         <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
                                             (click)="downloadVault()"><fa-icon [icon]="faDownload"
-                                                class="mr-3 "></fa-icon> Save a backup</button>
+                                                class="mr-3 "></fa-icon>{{ 'vault.storage.local.save' | translate }}</button>
                                         <div class="dropdown" [ngClass]="{'is-active': isRestoreBackupModaleActive}">
                                             <div class="dropdown-trigger">
                                                 <button class="button  is-outlined is-dark mr-2 ml-2 "
                                                     (click)="isRestoreBackupModaleActive = !isRestoreBackupModaleActive"
                                                     ria-haspopup="true" aria-controls="dropdown-menu"><fa-icon
-                                                        [icon]="faUpload" class="mr-3 "></fa-icon> Open a local
-                                                    Vault</button>
+                                                        [icon]="faUpload" class="mr-3 "></fa-icon>{{ 'vault.storage.local.open' | translate }}</button>
                                             </div>
                                             <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                                 <div class="dropdown-content">
                                                     <a class="dropdown-item">
-                                                        Restore a backup <span class="tag is-info is-light"><fa-icon [icon]="faFlask"></fa-icon> Available soon !</span>
+                                                        {{ 'vault.storage.local.restore' | translate }} <span class="tag is-info is-light"><fa-icon [icon]="faFlask"></fa-icon> {{ 'available_soon' | translate }}</span>
                                                     </a>
                                                     <a href="/login/#openVault" class="dropdown-item">
-                                                        Open a backup locally (read-only)
+                                                        {{ 'vault.storage.local.open_ro' | translate }}
                                                     </a>
                                                 </div>
                                             </div>
@@ -180,7 +175,7 @@
                 </div>
             </div>
             <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault"
-                *ngIf="!this.userService.getIsVaultLocal()">Reload my vault <fa-icon [icon]="faRotateRight" class="pl-1"
+                *ngIf="!this.userService.getIsVaultLocal()">{{ 'vault.button.reload' | translate }} <fa-icon [icon]="faRotateRight" class="pl-1"
                     [spin]=reloadSpin></fa-icon></span>
             <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
 
@@ -192,7 +187,7 @@
                     <a (click)="isModalActive = !isModalActive">
                         <div class="card  ">
                             <header class="card-header">
-                                <p class="card-header-title">Add a new TOTP code</p>
+                                <p class="card-header-title">{{ 'vault.button.add' | translate }}</p>
                             </header>
                             <div class="card-content">
                                 <div class="content has-text-centered">
@@ -246,16 +241,16 @@
     <div class="modal-background" (click)="isModalActive = !isModalActive"></div>
     <div class="modal-content">
         <section class="modal-card-body">
-            <h1 class="is-size-3">Choose a method to add a new TOTP code </h1>
+            <h1 class="is-size-3">{{ 'vault.add.title' | translate }}</h1>
             <div class="is-flex is-justify-content-center m-4">
-                <button class="button is-info" (click)="navigate('/qrcode')">Scan a QRCode</button>
+                <button class="button is-info" (click)="navigate('/qrcode')">{{ 'vault.add.scan' | translate }}</button>
             </div>
             <div class="is-flex is-justify-content-center m-4">
-                <button class="button" (click)="navigate('/vault/add')">Enter it manually</button>
+                <button class="button" (click)="navigate('/vault/add')">{{ 'vault.add.manual' | translate }}</button>
             </div>
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
-            <button class="button" (click)="isModalActive = !isModalActive">Cancel</button>
+            <button class="button" (click)="isModalActive = !isModalActive">{{"cancel" | translate}}</button>
         </footer>
         <button class="modal-close is-large" aria-label="close" (click)="isModalActive = !isModalActive"></button>
     </div>

@@ -12,6 +12,7 @@ import { error } from 'console';
 import { formatDate } from '@angular/common';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
 import { BnNgIdleService } from 'bn-ng-idle';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-vault',
@@ -46,7 +47,8 @@ export class VaultComponent implements OnInit {
   reloadSpin = false
   storageOptionOpen = false
   local_vault_service :LocalVaultV1Service | null  = null;
-  page_title="Here is your TOTP vault";
+  page_title="vault.title.main";
+  vault_date :string | undefined = undefined; // for local vault
   isRestoreBackupModaleActive=false;
   isGoogleDriveEnabled = true;
   isGoogleDriveSync = "loading"; // uptodate, loading, error, false
@@ -60,6 +62,7 @@ export class VaultComponent implements OnInit {
     private crypto: Crypto,
     private utils: Utils,
     private bnIdle: BnNgIdleService,
+    private translate: TranslateService
     ) {  }
 
   ngOnInit() {
@@ -76,7 +79,8 @@ export class VaultComponent implements OnInit {
       }
       
 
-      this.page_title = "Backup from " + vaultDate;
+      this.page_title = "vault.title.backup";
+      this.vault_date = vaultDate;
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
       this.reloadSpin = true
@@ -104,20 +108,21 @@ export class VaultComponent implements OnInit {
             errorMessage = error.error.detail;
           }
           if(error.status == 0){
-            errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+            errorMessage = "vault.error.server_unreachable"
           } else if (error.status == 401){
             this.userService.clear();
             this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
             return;
           }
-
+          this.translate.get("vault.error.server").subscribe((translation: string) => {
           superToast({
-            message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
+            message:translation +  " " + this.translate.instant(errorMessage),
             type: "is-danger",
             dismissible: false,
             duration: 20000,
           animate: { in: 'fadeIn', out: 'fadeOut' }
           });
+        });
         }
       });
       this.get_google_drive_option();
@@ -138,13 +143,15 @@ export class VaultComponent implements OnInit {
           this.faviconPolicy = data.favicon_policy;
         } else {
           this.faviconPolicy = "enabledOnly";
+          this.translate.get("vault.error.preferences").subscribe((translation: string) => {
           superToast({
-            message: "An error occured while retrieving your preferences",
+            message: translation ,
             type: "is-danger",
             dismissible: false,
             duration: 5000,
           animate: { in: 'fadeIn', out: 'fadeOut' }
           });
+        });
         }
       }
     }, (error) => {
@@ -155,16 +162,18 @@ export class VaultComponent implements OnInit {
             errorMessage = error.error.detail;
           }
           if(error.status == 0){
-            errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+            errorMessage = "vault.error.server_unreachable"
             return;
           } 
+          this.translate.get("vault.error.server").subscribe((translation: string) => {
           superToast({
-            message: "Error : Impossible to update your preferences. "+ errorMessage,
+            message: "Error : Impossible to update your preferences. "+ this.translate.instant(errorMessage),
             type: "is-danger",
             dismissible: false,
             duration: 5000,
           animate: { in: 'fadeIn', out: 'fadeOut' }
           });
+        });
     });
   }
 
@@ -178,13 +187,15 @@ export class VaultComponent implements OnInit {
         for (let secret of encrypted_vault){
           this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
             if(dec_secret == null){
+              this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
               superToast({
-                message: "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
+                message: translation,
                 type: "is-danger",
                 dismissible: false,
                 duration: 20000,
               animate: { in: 'fadeIn', out: 'fadeOut' }
               });
+            });
               let fakeProperty = new Map<string, string>();
               fakeProperty.set("color","info");
               fakeProperty.set("name", "🔒")
@@ -197,52 +208,62 @@ export class VaultComponent implements OnInit {
                   this.userService.setVault(this.vault!);
                   this.vaultDomain = Array.from(this.vault!.keys()) as string[];
                 } catch {
+                  this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
                   superToast({
-                    message: "Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.   ",
+                    message:"vault.error.wrong_key",
                     type: "is-danger",
                     dismissible: false,
                     duration: 20000,
                   animate: { in: 'fadeIn', out: 'fadeOut' }
                   });
+                });
                 }
               }
           }).catch((error)=>{
+            this.translate.get("vault.error.decryption").subscribe((translation: string) => {
             superToast({
-              message: "An error occurred while decrypting your secrets." + error,
+              message:  translation + " " + error,
               type: "is-danger",
               dismissible: false,
               duration: 20000,
             animate: { in: 'fadeIn', out: 'fadeOut' }
             });
           });
+          });
         }
         this.reloadSpin = false
       } catch {
+        this.translate.get("vault.error.wrong_key_vault").subscribe((translation: string) => {
         superToast({
-          message: "Wrong key. You cannot decrypt this vault.",
+          message:translation,
           type: "is-danger",
           dismissible: false,
           duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
+      });
       }
     } else {
+      this.translate.get("vault.error.decryption_vault").subscribe((translation: string) => {
       superToast({
-        message: "Impossible to decrypt your vault. Please log out and log in again.",
+        message: translation,
         type: "is-danger",
         dismissible: false,
         duration: 20000,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    });
     }
     } catch(e){
+      this.translate.get("vault.error.retrieve_vault").subscribe((translation: string) => {
       superToast({
-        message: "Error : Impossible to retrieve your vault from the server",
+        message: translation,
         type: "is-danger",
         dismissible: false,
         duration: 20000,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    });
     }
   }
 
@@ -278,7 +299,7 @@ export class VaultComponent implements OnInit {
 
   copy(){
     superToast({
-      message: "Copied !",
+      message: this.translate.instant("copied"),
       type: "is-success",
       dismissible: true,
     animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -300,7 +321,7 @@ export class VaultComponent implements OnInit {
         a.click();
         window.URL.revokeObjectURL(url);
       superToast({
-        message: "Encrypted vault downloaded ! 🧳\nKeep it in a safe place 🔒",
+        message: this.translate.instant("vault.downloaded") ,
         type: "is-success",
         dismissible: false,
         duration: 20000,
@@ -315,20 +336,21 @@ export class VaultComponent implements OnInit {
       }
 
       if(error.status == 0){
-        errorMessage = "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session."
+        errorMessage = "vault.error.server_unreachable"
       } else if (error.status == 401){
         this.userService.clear();
         this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
         return;
       }
-      
+      this.translate.get("vault.error.server").subscribe((translation: string) => {
       superToast({
-        message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
+        message: translation + " " + this.translate.instant(errorMessage),
         type: "is-danger",
         dismissible: false,
         duration: 20000,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    });
     });
   }
 
@@ -344,13 +366,15 @@ export class VaultComponent implements OnInit {
         } else if(error.error.detail != null){
           errorMessage = error.error.detail;
         }
+        this.translate.get("vault.error.server").subscribe((translation: string) => {
         superToast({
-          message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
+          message: translation + " "+ errorMessage,
           type: "is-danger",
           dismissible: false,
           duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
+      });
     });
   }
 
@@ -373,12 +397,14 @@ export class VaultComponent implements OnInit {
         } else if(error.error.detail != null){
           errorMessage = error.error.detail;
         }
-        superToast({
-          message: "Error : Impossible to retrieve your vault from the server. "+ errorMessage,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
+        this.translate.get("vault.error.server").subscribe((translation: string) => {
+          superToast({
+            message: translation + " "+ errorMessage,
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
         });
     });
   }
@@ -395,13 +421,15 @@ export class VaultComponent implements OnInit {
             } else if(error.error.detail != null){
               errorMessage = error.error.title;
             }
+            this.translate.get("vault.error.backup.part1").subscribe((translation: string) => {
             superToast({
-              message: "Error : Impossible to backup your vault. "+ errorMessage + ". Please, try to re-sync your Google Drive account.",
+              message: translation + " " + errorMessage + ". " + this.translate.instant("vault.error.backup.part2"),
               type: "is-danger",
               dismissible: false,
               duration: 20000,
             animate: { in: 'fadeIn', out: 'fadeOut' }
             });
+          });
           });
   }
 
@@ -418,21 +446,24 @@ export class VaultComponent implements OnInit {
         }
       } else if (data.status == "corrupted_file"){
         this.isGoogleDriveSync = "error";
+        this.translate.get("vault.error.google.unreadable").subscribe((translation: string) => {
         superToast({
-          message: "Error : Your vault backup is unreadable. Please, try to re-backup your Google Drive account.",
+          message: translation,
           type: "is-danger",
           dismissible: false,
           duration: 20000,
         animate: { in: 'fadeIn', out: 'fadeOut' }
         });
+      });
       } else {
-        this.isGoogleDriveSync = "error";
-        superToast({
-          message: "Error : Your vault backup is unreadable. Please, try to re-backup your Google Drive account.",
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
+        this.translate.get("vault.error.google.unreadable").subscribe((translation: string) => {
+          superToast({
+            message: translation,
+            type: "is-danger",
+            dismissible: false,
+            duration: 20000,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+          });
         });
       }
     }, (error) => {
@@ -446,13 +477,15 @@ export class VaultComponent implements OnInit {
       } else if(error.error.detail != null){
         errorMessage = error.error.detail;
       }
+      this.translate.get("vault.error.google.verify").subscribe((translation: string) => {
       superToast({
-        message: "Error : Impossible to verify your vault backups. "+ errorMessage,
+        message:  translation + ". "+ errorMessage,
         type: "is-danger",
         dismissible: false,
         duration: 20000,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    });
     }
     });
   }
@@ -462,7 +495,7 @@ export class VaultComponent implements OnInit {
       this.isGoogleDriveEnabled = false;
       this.isGoogleDriveSync = "false";
       superToast({
-        message: "Google Drive disabled ! ✅",
+        message: this.translate.instant("vault.google.disabled"),
         type: "is-success",
         dismissible: true,
       animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -476,7 +509,7 @@ export class VaultComponent implements OnInit {
         errorMessage = error.error.detail;
       }
       superToast({
-        message: "Error : Impossible to disable Google Drive. "+ errorMessage,
+        message: this.translate.instant("vault.error.google.disable") + " " + errorMessage,
         type: "is-danger",
         dismissible: false,
         duration: 20000,

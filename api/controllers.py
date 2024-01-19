@@ -115,12 +115,12 @@ def login():
         email = utils.sanitize_input(data["email"]).strip()
     except Exception as e:
         logging.info(e)
-        return {"message": "Invalid request"}, 400
+        return {"message": "generic_errors.invalid_request"}, 400
     
     if not passphrase or not email:
-        return {"message": "Missing parameters"}, 400
+        return {"message": "generic_errors.missing_params"}, 400
     if(not utils.check_email(email) ):
-        return {"message": "Bad email format"}, 403
+        return {"message": "generic_errors.bad_email"}, 403
     userDB = UserDB()
     user = userDB.getByEmail(email)
     bcrypt = Bcrypt(passphrase)
@@ -128,13 +128,13 @@ def login():
         logging.info("User " + str(email) + " tried to login but does not exist. A fake password is checked to avoid timing attacks")
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fakePassword)
-        return {"message": "Invalid credentials"}, 403
+        return {"message": "generic_errors.invalid_creds"}, 403
     logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {request.headers.get('X-Forwarded-For', 'None')} ")
     checked = bcrypt.checkpw(user.password)
     if not checked:
-        return {"message": "Invalid credentials"}, 403
+        return {"message": "generic_errors.invalid_creds"}, 403
     if user.isBlocked: # only authenticated users can see the blocked status
-        return {"message": "User is blocked"}, 403
+        return {"message": "blocked"}, 403
         
 
 
@@ -270,11 +270,11 @@ def update_email(user_id,body):
    
     email = utils.sanitize_input(body["email"]).strip()
     if not utils.check_email(email):
-        return {"message": "Bad email format"}, 400
+        return {"message": "generic_errors.bad_email"}, 400
          
     userDb = UserDB()
     if userDb.getByEmail(email):
-        return {"message": "email already used"}, 403
+        return {"message": "generic_errors.email_exists"}, 403
     old_mail = userDb.getById(user_id).mail
     user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
     if user:
@@ -802,23 +802,23 @@ def send_verification_email(user_id):
 def verify_email(user_id,body):
     user = UserDB().getById(user_id)
     if user == None:
-        return {"message": "User not found"}, 404
+        return {"message": "generic_errors.user_not_found"}, 404
     if user.isVerified:
-        return {"message": "Email already verified"}, 200
+        return {"message": "email_verif.error.already_verified"}, 200
     token_db = EmailVerificationToken_db()
     token_obj = token_db.get_by_user_id(user_id)
     if token_obj == None:
-        return {"message": "You don't have active verification code. To verify you email address, ask for a new one."}, 403
+        return {"message": "email_verif.error.no_active_code"}, 403
     if float(token_obj.expiration) < datetime.datetime.utcnow().timestamp():
         token_db.delete(user_id)
-        return {"message": "Your verification code is expired. Please ask for a new one."}, 403
+        return {"message": "email_verif.error.expired"}, 403
     if int(token_obj.failed_attempts >= 5):
         logging.warning("User " + str(user_id) + " denied verification because of too many failed attempts.")
-        return {"message": "Too many failed attempts. Please ask for a new verification code."}, 403
+        return {"message":  "email_verif.error.too_many_failed"}, 403
     if token_obj.token != body["token"]:
         token_db.increase_fail_attempts(user_id)
         logging.warning("User " + str(user_id) + " tried to verify email with wrong token.")
-        return {"message": f"Wrong verification code. You have { 5-(int(token_obj.failed_attempts))} attempt(s) left before invaliding your verification code."}, 403
+        return {"message": "email_verif.error.failed", "attempt_left":5-(int(token_obj.failed_attempts))}, 403
     token_db.delete(user_id)
     user = UserDB().update_email_verification(user_id, True)
     if user:

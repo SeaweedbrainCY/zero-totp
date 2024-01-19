@@ -81,7 +81,7 @@ class TestLoginController(unittest.TestCase):
         response = self.client.post(self.loginEndpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
         self.checkpw.assert_called_once()
-        self.assertEqual(response.json()["message"], "Invalid credentials")
+        self.assertEqual(response.json()["message"], "generic_errors.invalid_creds") #translation key
     
 
     def test_login_bad_passphrase(self):
@@ -89,13 +89,13 @@ class TestLoginController(unittest.TestCase):
         response = self.client.post(self.loginEndpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
         self.checkpw.assert_called_once()
-        self.assertEqual(response.json()["message"], "Invalid credentials")
+        self.assertEqual(response.json()["message"], "generic_errors.invalid_creds")
     
     def test_login_as_blocked_user(self):
         self.getByEmailMocked.return_value =  User(id=1, username="username", derivedKeySalt="randomSalt", password="hashed", isVerified=1, passphraseSalt="salt", isBlocked=True)
         response = self.client.post(self.loginEndpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["message"], "User is blocked")
+        self.assertEqual(response.json()["message"], "blocked") # key for the frontend
         self.assertNotIn("Set-Cookie", response.headers)
     
     def test_login_as_blocked_user_with_bad_passphrase(self):
@@ -104,7 +104,7 @@ class TestLoginController(unittest.TestCase):
         response = self.client.post(self.loginEndpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 403)
         self.assertNotIn("Set-Cookie", response.headers)
-        self.assertEqual(response.json()["message"], "Invalid credentials")
+        self.assertEqual(response.json()["message"], "generic_errors.invalid_creds")
 
 
     def test_login_specs(self):

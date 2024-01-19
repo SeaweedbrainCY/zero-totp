@@ -15,6 +15,7 @@ import { Utils } from '../common/Utils/utils';
 @Injectable({providedIn: 'root'})
 export class OauthSyncComponent implements OnInit {
   errorMessage = '';
+  errorDetail = "";
   faCircleNotch = faCircleNotch;
   credentials:string|null;
   encrypted_credentials:string|null = null;
@@ -53,7 +54,8 @@ export class OauthSyncComponent implements OnInit {
       } else if(error.error.detail != null){
         errorMessage = error.error.title;
       }
-      this.errorMessage = "Error : Impossible to backup your vault. "+ errorMessage + ". Please, try to re-sync your Google Drive account.";
+      this.errorMessage = 'oauth.error.impossible' ;
+      this.errorDetail = errorMessage;
     });
   }
   

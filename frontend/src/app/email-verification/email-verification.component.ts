@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../common/ApiService/api-service';
 import { toast as superToast } from 'bulma-toast'
-
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-email-verification',
@@ -24,11 +24,13 @@ export class EmailVerificationComponent implements OnInit {
   emailAddressUpdated="";
   isEmailModalActive=false;
   emailLoading  = false;
+  left_attempts = "";
   constructor(
     private userService: UserService,
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
+    private translate: TranslateService
   ) { 
     this.emailAddress = this.userService.getEmail();
     if (this.emailAddress == null) {
@@ -66,7 +68,7 @@ export class EmailVerificationComponent implements OnInit {
       if(response.status == 200){
         this.verifyLoading = false;
         superToast({
-          message: "Your email is verified ! ✅",
+          message: this.translate.instant("email_verif.verify.success") ,
           type: "is-success",
           dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -83,13 +85,17 @@ export class EmailVerificationComponent implements OnInit {
       this.verifyLoading = false;
       if(error.status == 403){
         if(error.error.message != undefined){
+          if(error.error.message == "email_verif.error.failed"){
+            this.left_attempts = error.error.attempt_left;
+            console.log(this.left_attempts)
+          }
           this.errorMessage = error.error.message;
         } else {
-          this.errorMessage = "Invalid or expired code";
+          this.errorMessage = this.translate.instant("email_verif.error.generic");
         }
       } else {
         superToast({
-          message: "An error occured ! Please logout and login again ❌",
+          message:this.translate.instant("email_verif.error.unknown") ,
           type: "is-danger",
           dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -103,7 +109,7 @@ export class EmailVerificationComponent implements OnInit {
     this.http.get(ApiService.API_URL+"/email/send_verification", {withCredentials: true, observe: 'response'}).subscribe((response) => {
       this.verifyLoading = false;
         superToast({
-          message: "Email sent ! ✅",
+          message:this.translate.instant("email_verif.resend.success") ,
           type: "is-success",
           dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -111,7 +117,7 @@ export class EmailVerificationComponent implements OnInit {
     }, (error) => {
       this.verifyLoading = false;
       superToast({
-        message: "An error occured ! ❌",
+        message:this.translate.instant("email_verif.resend.error") ,
         type: "is-danger",
         dismissible: true,
       animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -124,11 +130,11 @@ export class EmailVerificationComponent implements OnInit {
     this.emailErrorMessage = "";
     const emailRegex = /\S+@\S+\.\S+/;
     if(!emailRegex.test(this.emailAddressUpdated)){
-      this.emailErrorMessage = "Your email is not valid";
+      this.emailErrorMessage = "signup.email.error.invalid";
       return false;
     }
     if(forbidden.test(this.emailAddressUpdated)){
-      this.emailErrorMessage = "' \" < > characters are forbidden in passwords";
+      this.emailErrorMessage = "signup.email.error.forbidden";
       return false;
     }
     return true;
@@ -140,7 +146,7 @@ export class EmailVerificationComponent implements OnInit {
       "email": this.emailAddressUpdated
     }
       if(this.emailAddressUpdated == ""){
-        this.emailErrorMessage ="Did you forget to fill something ?";
+        this.emailErrorMessage ="signup.errors.missing_fields";
         return;
       }
       if(!this.checkEmail()){
@@ -149,12 +155,14 @@ export class EmailVerificationComponent implements OnInit {
       this.emailLoading = true;
       this.http.put(ApiService.API_URL+"/update/email",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
         this.emailLoading = false;
+        this.translate.get("email_verif.popup.success").subscribe((translation:string) => {
         superToast({
-          message: "Email updated with success. You should receive a verification email soon ! ✅",
+          message:translation,
           type: "is-success",
           dismissible: true,
           animate: { in: 'fadeIn', out: 'fadeOut' }
         });
+      });
         this.userService.setEmail(JSON.parse(JSON.stringify(response.body))["message"])
         this.emailAddress = this.userService.getEmail();
         this.isEmailModalActive=false;
@@ -162,7 +170,7 @@ export class EmailVerificationComponent implements OnInit {
       }, error =>{
         this.emailLoading = false;
         if(error.error.message == undefined){
-          error.error.message = "Something went wrong. Please try again later";
+          error.error.message = "email_verif.popup.error";
         }
         this.emailErrorMessage = error.error.message;
       });

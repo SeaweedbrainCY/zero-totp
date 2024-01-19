@@ -7,6 +7,8 @@ import { toast as superToast } from 'bulma-toast'
 import { Utils } from '../common/Utils/utils';
 import { Crypto } from '../common/Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-signup',
@@ -50,7 +52,8 @@ export class SignupComponent implements OnInit {
     private utils: Utils,
     private crypto:Crypto,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private translate: TranslateService
     ) { }
 
   ngOnInit(): void {
@@ -63,20 +66,20 @@ export class SignupComponent implements OnInit {
     const upper = /[A-Z]/;
     const number = /[0-9]/;
     if(this.password.length < 12){
-      this.passwordErrorMessage.push("Your password must be at least 12 characters long");
+      this.passwordErrorMessage.push(this.translate.instant("signup.passphrase.error.char"));
     }
     
     if(!special.test(this.password)){
-      this.passwordErrorMessage.push("Your password must contain at least one special character");
+      this.passwordErrorMessage.push(this.translate.instant("signup.passphrase.error.special_char"));
     }
     if(!upper.test(this.password)){
-      this.passwordErrorMessage.push("Your password must contain at least one uppercase character");
+      this.passwordErrorMessage.push(this.translate.instant("signup.passphrase.error.upper"));
     }
     if(!number.test(this.password)){
-      this.passwordErrorMessage.push("Your password must contain at least one number");
+      this.passwordErrorMessage.push(this.translate.instant("signup.passphrase.error.number"));
     }
     if(this.password != this.confirmPassword){
-      this.passwordErrorMessage.push("Your passwords do not match");
+      this.passwordErrorMessage.push(this.translate.instant("signup.passphrase.error.match"));
     }
 
   }
@@ -90,11 +93,11 @@ export class SignupComponent implements OnInit {
     }
     const emailRegex = /\S+@\S+\.\S+/;
     if(!emailRegex.test(this.email)){
-      this.emailErrorMessage = "Your email is not valid";
+      this.emailErrorMessage = this.translate.instant("signup.email.error.invalid");
       return;
     }
     if(forbidden.test(this.email)){
-      this.emailErrorMessage = "' \" < > characters are forbidden in emails";
+      this.emailErrorMessage = this.translate.instant("signup.email.error.forbidden");
       return;
     }
   }
@@ -107,7 +110,7 @@ export class SignupComponent implements OnInit {
       return;
     }
     if(forbidden.test(this.username)){
-      this.usernameErrorMessage = "' \" < > characters are forbidden in usernames";
+      this.usernameErrorMessage =  this.translate.instant("signup.username.error.forbidden");
       return;
     }
   }
@@ -123,7 +126,7 @@ this.closeModal()
     this.passwordErrorMessage = [''];
     if(!this.terms){
       superToast({
-        message: "Dont forget to accept terms & conditions !",
+        message: this.translate.instant("signup.errors.terms"),
         type: "is-danger",
         dismissible: true,
         duration: 20000,
@@ -133,7 +136,7 @@ this.closeModal()
     }
     if(!this.beta){
       superToast({
-        message: "Dont forget to accept the beta conditions !",
+        message: this.translate.instant("signup.errors.beta"),
         type: "is-danger",
         dismissible: true,
         duration: 20000,
@@ -143,7 +146,7 @@ this.closeModal()
     }
     if(this.username == "" || this.email == "" || this.password == ""){
       superToast({
-        message: 'Did you forget to fill something ?',
+        message: this.translate.instant("signup.errors.missing_fields") ,
         type: "is-danger",
         dismissible: true,
         duration: 20000,
@@ -177,7 +180,7 @@ this.closeModal()
             this.signupRequest();
           } else {
             superToast({
-              message: "An error occured while hashing your password. Please, try again",
+              message: this.translate.instant("signup.errors.hashing") ,
               type: "is-danger",
               dismissible: false,
               duration: 20000,
@@ -200,7 +203,7 @@ this.closeModal()
     this.http.post(ApiService.API_URL+"/signup", data, {observe: 'response'}).subscribe((response) => {
       this.isLoading=false;
       superToast({
-        message: "Account created successfully 🎉🎉",
+        message: this.translate.instant("signup.success"),
         type: "is-success",
         dismissible: true,
         animate: { in: 'fadeIn', out: 'fadeOut' }
@@ -212,7 +215,7 @@ this.closeModal()
       console.log(error);
       this.isLoading=false;
       if(error.error.message == undefined){
-        error.error.message = "Something went wrong. Please try again later";
+        error.error.message = this.translate.instant("signup.errors.unknown");
       }
       superToast({
         message: "Error : "+ error.error.message,
@@ -233,7 +236,7 @@ this.closeModal()
   }
 
   confirmSentence(){
-    if(this.input.replace(/[^a-zA-Z]/g, '') == 'MypassphraseisstrongandIwontforgetit'){
+    if(this.input.replace(/[^a-zA-Z]/g, '') == this.translate.instant("signup.popup.phrase").replace(/[^a-zA-Z]/g, '')){
       this.modal_confim_button_diabled = false
       this.isModalSentenceCompleted = true
     }
