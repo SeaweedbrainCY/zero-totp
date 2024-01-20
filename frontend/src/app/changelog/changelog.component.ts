@@ -20,6 +20,7 @@ export class ChangelogComponent {
        "You can now update your username in your account settings.",
       ],
       fixed:[
+        "We fixed the behavior of Google Drive backups if the backup folder is trashed. If you trash the backup folder, Zero-TOTP will create a new one and continue to backup your vault in the new folder. To disable the backup, just tap 'stop sync', below the Google Drive storage option, in your vault page.",
       ]
     },
     {
