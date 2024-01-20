@@ -842,3 +842,11 @@ def verify_email(user_id,body):
         return {"message": "Email verified"}, 200
     else:# pragma: no cover
         return {"message": "Error while verifying email"}, 500
+
+
+@require_valid_user
+def get_whoami(user_id):
+    user = UserDB().getById(user_id)
+    if user == None:
+        return {"message": "User not found"}, 404
+    return {"username": user.username, "email": user.mail, "id":user_id}, 200
