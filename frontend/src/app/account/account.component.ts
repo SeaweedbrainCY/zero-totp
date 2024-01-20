@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { toast as superToast } from 'bulma-toast'
-import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash,faVault, faExclamationTriangle, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash,faVault, faExclamationTriangle, faEye, faEyeSlash, faCircleExclamation, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -23,6 +23,8 @@ export class AccountComponent implements OnInit {
   faCircleInfo=faCircleInfo;
   faArrowsRotate=faArrowsRotate;
   faHourglassStart=faHourglassStart;
+  faCircleExclamation=faCircleExclamation;
+  faCircleNotch=faCircleNotch;
   faExclamationTriangle=faExclamationTriangle;
   faCheck=faCheck;
   faCog=faCog;
@@ -56,6 +58,11 @@ export class AccountComponent implements OnInit {
   googleDriveBackupModaleActive = false;
   deleteAccountConfirmationCountdown = 5;
   interval: any;
+  accountLoadingError="";
+  accountLoadingErrorMessage="";
+  loadingAccount=true;
+  current_email="";
+  current_username="";
   constructor(
     private http: HttpClient,
     public userService: UserService,
@@ -71,21 +78,72 @@ export class AccountComponent implements OnInit {
      if(this.userService.getId() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
        if("email" in this.buttonLoading){
-
        }
-    } 
+    }
+    this.get_whoami();
+  }
+
+  get_whoami(){
+    this.http.get(ApiService.API_URL+"/whoami",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      this.loadingAccount = false;
+      const data = JSON.parse(JSON.stringify(response.body))
+      this.current_username = data.username;
+      this.current_email = data.email;
+    }, (error) => {
+      this.loadingAccount = false;
+      if(error.status == 401){
+        this.userService.clear();
+        this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
+        return;
+      }
+      if(error.status == 0){
+        this.accountLoadingError = "account.errors.network";
+      } else {
+        this.accountLoadingError = "account.errors.unknown";
+        this.accountLoadingErrorMessage = error.status + " "+ error.error.message;
+      }
+    });
   }
 
   checkUsername(){
   this.usernameErrorMessage = "";
+  if(this.username == ""){
+    this.usernameErrorMessage = "account.username.error.missing";
+    return;
+  }
   if(this.username != this.utils.sanitize(this.username)){
     this.usernameErrorMessage = "account.username.error.char";
       return;
     }
   }
 
-  changeUsername(){
-    //TO DO
+  updateUsername(){
+    this.checkUsername();
+    if(this.usernameErrorMessage == ""){
+      this.buttonLoading["username"] = 1
+      this.http.put(ApiService.API_URL+"/update/username",  {username: this.username}, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+        this.buttonLoading["username"] = 0
+        superToast({
+          message: this.translate.instant('account.username.success'),
+          type: "is-success",
+          dismissible: true,
+          animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+        this.get_whoami();
+        
+      }, error =>{
+        this.buttonLoading["username"] = 0
+        if(error.error.message == undefined){
+          error.error.message = 'account.username.error.unknown';
+        }
+        superToast({
+          message: "Error : "+this.translate.instant(error.error.message),
+          type: "is-danger",
+          dismissible: true,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      });
+    }
   }
 
   checkEmail(){
