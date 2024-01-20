@@ -640,6 +640,7 @@ paths:
           description: Access disabled
         "500":
           description: Internal server error
+  /account:
     delete:
       operationId: controllers.delete_account
       tags:
