@@ -7,6 +7,9 @@ class User:
     def getByEmail(self, email):
         return db.session.query(UserModel).filter_by(mail=email).first()
     
+    def getByUsername(self, username):
+        return db.session.query(UserModel).filter_by(username=username).first()
+    
     def getById(self, user_id):
         return db.session.query(UserModel).filter_by(id=user_id).first()
     
@@ -27,6 +30,14 @@ class User:
             return None
         user.mail = email
         user.isVerified = isVerified
+        db.session.commit()
+        return user
+
+    def update_username(self, user_id, username):
+        user = db.session.query(UserModel).filter_by(id=user_id).first()
+        if user == None:
+            return None
+        user.username = username
         db.session.commit()
         return user
     
