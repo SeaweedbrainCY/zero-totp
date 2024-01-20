@@ -611,7 +611,35 @@ paths:
           description: No backup found
         "500":
           description: Internal server error
-  /account:
+  /whoami:
+    get: 
+      operationId: controllers.get_whoami
+      tags:
+        - User
+      summary: Return the user basic account information (id, username, email)
+      responses:
+        "200": 
+          description: Return the user's account
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  username:
+                    type: string
+                    example: "foo"
+                  email:
+                    type: string
+                    example: "bar"
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access disabled
+        "500":
+          description: Internal server error
     delete:
       operationId: controllers.delete_account
       tags:
