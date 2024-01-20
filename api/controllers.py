@@ -307,7 +307,7 @@ def update_username(user_id,body):
         return {"message": "generic_errors.missing_params"}, 400
     userDb = UserDB()
     if userDb.getByUsername(username):
-        return {"message": "generic_errors.username_exists"}, 403
+        return {"message": "generic_errors.username_exists"}, 409
     user = userDb.update_username(user_id=user_id, username=username)
     if user:
         return {"message":user.username},201
