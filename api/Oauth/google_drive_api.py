@@ -51,7 +51,10 @@ def get_folder(name, drive):
     if len(result.get('files')) == 0:
         return None
     elif len(result.get('files')) == 1:
-          return result.get('files')[0]
+          if result.get('files')[0].get('explicitlyTrashed'):
+              return None
+          else:
+            return result.get('files')[0]
     else : 
           for folder in result.get('files'):
               if folder.get('name') == name and not folder.get('explicitlyTrashed'):
