@@ -1,4 +1,22 @@
-<section class="hero is-halfheight mt-6 " style="min-height: 70vh;">
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingAccount">
+    <article class="hero-body is-flex is-justify-content-center" >
+        <div>
+        <p class="is-light has-text-centered">{{ 'account.loading' | translate }}<br>
+            <fa-icon [icon]="faCircleNotch" [spin]="true" style="color:#000000;" size="2xl"></fa-icon > </p>
+        
+        </div>
+    </article>
+</section>
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="accountLoadingError && !loadingAccount">
+    <article class="hero-body is-flex is-justify-content-center" >
+        <div>
+            <p class="is-light has-text-centered has-text-danger">{{ accountLoadingError| translate }}<br><fa-icon [icon]="faCircleExclamation"  style="color:#ff0000;" size="2xl" animation="fade"></fa-icon > </p>
+        </div>
+    </article>
+</section>
+
+
+<section class="hero is-halfheight mt-6 " style="min-height: 70vh;" *ngIf="!accountLoadingError && !loadingAccount">
     <div class="container is-fluid ">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6"
@@ -14,22 +32,20 @@
                             {{ 'account.username.title' | translate }}
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
-                        <p class="has-text-grey pb-3">{{ 'account.username.current' | translate }}</p>
+                        <p class="has-text-grey pb-3">{{ 'account.username.current' | translate }} {{current_username}}</p>
                         <label class="label">{{ 'account.username.new.label' | translate }}</label>
                         <div class="field is-flex-tablet mb-3">
                             <div class="control has-icons-left ">
-                                <input class="input" type="text" placeholder="{{ 'username' | translate }}" name="username" [(ngModel)]="username" (keyup)="checkUsername()" [ngClass]="{'is-danger' : usernameErrorMessage != ''}">
+                                <input class="input" type="text" placeholder="{{ 'username' | translate }}" name="username" [(ngModel)]="username"  [ngClass]="{'is-danger' : usernameErrorMessage != ''}">
                                 <span class="help has-text-left is-danger" *ngIf="usernameErrorMessage != ''">{{usernameErrorMessage | translate}}</span>
                                 <span class="icon is-small is-left">
                                     <fa-icon [icon]="faUser"></fa-icon>
                                 </span>
                             </div>
                             <div class="has-text-centered">
-                                <button class="button is-info is-outlined is-centered ml-3">{{"update" | translate}}</button>
+                                <button class="button is-info is-outlined is-centered ml-3" (click)="updateUsername()" [ngClass]="{'is-loading': this.buttonLoading['username']}">{{"update" | translate}}</button>
                             </div>
-                            <div class="is-flex is-align-content-center is-flex-wrap-wrap ml-3">
-                                <span class="  is-medium tag is-info is-light"><fa-icon [icon]="faFlask" class="mr-2"></fa-icon> {{"available_soon" | translate}}</span>
-                                </div>
+                            
                         </div>
                     </div>
 
@@ -40,7 +56,7 @@
                             {{ 'account.email.title' | translate }}
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
-                        <p class="has-text-grey pb-3">{{ 'account.email.current' | translate }} : {{userService.getEmail()}}</p>
+                        <p class="has-text-grey pb-3">{{ 'account.email.current' | translate }} : {{current_email}}</p>
                         <label class="label">{{ 'account.email.update.label' | translate }}</label>
                         <div class="field is-flex-tablet">
                             <div class="control has-icons-left">

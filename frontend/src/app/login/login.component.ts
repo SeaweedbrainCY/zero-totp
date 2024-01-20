@@ -438,6 +438,7 @@ export class LoginComponent implements OnInit {
     },
     (error) => {
       console.log(error);
+      console.log(error.error.message)
       this.isLoading=false;
       if(error.error.message == "blocked"){
         this.translate.get("login.errors.account_blocked").subscribe((translation)=>{
@@ -452,7 +453,7 @@ export class LoginComponent implements OnInit {
       } else {
         this.translate.get("generic_errors.error").subscribe((trans)=>{
           superToast({
-            message: trans + " : "+ this.translate.instant((error.message) ? error.message : ""),
+            message: trans + " : "+ this.translate.instant((error.error.message) ? error.error.message : ""),
             type: "is-danger",
             dismissible: true,
             duration: 20000,

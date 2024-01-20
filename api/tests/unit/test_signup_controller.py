@@ -17,6 +17,9 @@ class TestSignupController(unittest.TestCase):
         self.getByEmailMocked = patch("database.user_repo.User.getByEmail").start()
         self.getByEmailMocked.return_value = False
 
+        self.getByUsernameMocked = patch("database.user_repo.User.getByUsername").start()
+        self.getByUsernameMocked.return_value = False
+
         self.create_userMocked = patch("database.user_repo.User.create").start()
         self.create_userMocked.return_value = User(id=1)
 
@@ -108,6 +111,12 @@ class TestSignupController(unittest.TestCase):
         response = self.client.post("/signup", json=self.json_payload)
         self.assertEqual(response.status_code, 500)
         self.delete_user.assert_called()
+    
+    def test_signup_username_already_exists(self):
+        self.getByEmailMocked.return_value = True 
+        response = self.client.post("/signup", json=self.json_payload)
+        self.assertEqual(response.status_code, 409)
+
     
 
    

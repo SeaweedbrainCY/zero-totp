@@ -385,7 +385,8 @@
     "missing_params": "Missing parameters",
     "email_exists": "Email already exists",
     "error": "Error",
-    "user_not_found": "User not found"
+    "user_not_found": "User not found",
+    "username_exists": "Username already exists"
   },
   "email_verif": {
     "title": "Verify your email address ",
@@ -609,8 +610,11 @@
         "label": "New username"
       },
       "error": {
-        "char": "&, <, >, \" and ' are forbidden"
-      }
+        "char": "&, <, >, \" and ' are forbidden",
+        "missing": "Oups, cannot be empty !",
+        "unknown": "An error occured while updating your username. Please, try again later"
+      },
+      "success": "Username updated 🎉"
     },
     "email": {
       "title": "Update email",
@@ -717,6 +721,11 @@
         "aborted": "Operation aborted.",
         "wrong_passphrase": "Wrong passphrase. Operation aborted."
       }
+    },
+    "loading": "Retrieving your favorite ice-cream flavor ... ",
+    "errors": {
+      "network": "Impossible to chat with the server. Please check your internet connection and status.zero-totp.com",
+      "unknown": "Oups, an error occured. Answer from the server : "
     }
   },
   "abort": "Abort",
@@ -774,7 +783,7 @@
         "desc1": "This is the number of days after which a backup will be deleted (only if your minimum backup setting is reached). This parameter is overridden by your minimum backup setting."
       }
     },
-    "error":{
+    "error": {
       "fetch": "An error occured while retrieving your preferences",
       "update": "Error : Impossible to update your preferences. "
     }

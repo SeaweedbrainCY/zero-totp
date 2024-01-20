@@ -63,7 +63,9 @@ def signup():
     user = userDB.getByEmail(email)
     if user:
         return {"message": "User already exists"}, 409
-    
+    check_username = userDB.getByUsername(username)
+    if check_username:
+        return {"message": "Username already exists"}, 409
     bcrypt = Bcrypt(passphrase)
     try : 
         hashedpw = bcrypt.hashpw()
@@ -264,7 +266,7 @@ def get_ZKE_encrypted_key(user_id):
 
 
 
-#PUT /email
+#PUT /update/email
 @require_userid
 def update_email(user_id,body):
    
@@ -297,6 +299,21 @@ def update_email(user_id,body):
         logging.warning("An error occured while updating email of user " + str(user_id))
         return {"message": "Unknown error while updating email"}, 500
 
+#PUT /update/username
+@require_valid_user
+def update_username(user_id,body):
+    username = utils.sanitize_input(body["username"].strip())
+    if not username:
+        return {"message": "generic_errors.missing_params"}, 400
+    userDb = UserDB()
+    if userDb.getByUsername(username):
+        return {"message": "generic_errors.username_exists"}, 409
+    user = userDb.update_username(user_id=user_id, username=username)
+    if user:
+        return {"message":user.username},201
+    else :
+        logging.warning("An error occured while updating username of user " + str(user_id))
+        return {"message": "Unknown error while updating username"}, 500
    
 #PUT /update/vault 
 @require_valid_user
@@ -825,3 +842,9 @@ def verify_email(user_id,body):
         return {"message": "Email verified"}, 200
     else:# pragma: no cover
         return {"message": "Error while verifying email"}, 500
+
+
+@require_valid_user
+def get_whoami(user_id):
+    user = UserDB().getById(user_id)
+    return {"username": user.username, "email": user.mail, "id":user_id}, 200
