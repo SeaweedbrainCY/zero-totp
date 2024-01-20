@@ -63,7 +63,9 @@ def signup():
     user = userDB.getByEmail(email)
     if user:
         return {"message": "User already exists"}, 409
-    
+    check_username = userDB.getByUsername(username)
+    if check_username:
+        return {"message": "Username already exists"}, 409
     bcrypt = Bcrypt(passphrase)
     try : 
         hashedpw = bcrypt.hashpw()
