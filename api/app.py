@@ -10,7 +10,7 @@ from environment import logging
 import contextlib
 from flask_apscheduler import APScheduler
 from monitoring.sentry import sentry_configuration
-
+from flask_migrate import Migrate
 
 
 
@@ -32,6 +32,7 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.secret_key = env.flask_secret_key
+    Migrate(app, db)
 
     
     db.init_app(app)
@@ -43,6 +44,8 @@ app = create_app()
 scheduler = APScheduler()
 scheduler.init_app(app.app)
 scheduler.start()
+
+flask_application = app.app
 
 @scheduler.task('interval', id='clean_email_verification_token_from_db', hours=12, misfire_grace_time=900)
 def clean_email_verification_token_from_db():
