@@ -14,6 +14,15 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "20/01/2024",
+      version: "b2.1",
+      added: [
+       "You can now update your username in your account settings.",
+      ],
+      fixed:[
+      ]
+    },
+    {
       date: "19/01/2024",
       version: "b2.0",
       added: [
