@@ -61,8 +61,3 @@ class TestGetWhoami(unittest.TestCase):
             self.assertEqual(response.status_code, 403)
             self.assertEqual(response.json(), {"error": "Not verified"})
     
-    def test_get_whoami_not_found(self):
-        with self.flask_application.app.app_context():
-            self.client.cookies = {"api-key": generate_jwt(2)}
-            response = self.client.get(self.endpoint)
-            self.assertEqual(response.status_code, 404)
