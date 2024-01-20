@@ -98,9 +98,12 @@ export class AccountComponent implements OnInit {
       }
       if(error.status == 0){
         this.accountLoadingError = "account.errors.network";
+      } else if(error.status == 403 && error.error.error =="Not verified"){
+        this.accountLoadingError = "account.errors.not_found";
+        this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
       } else {
         this.accountLoadingError = "account.errors.unknown";
-        this.accountLoadingErrorMessage = error.status + " "+ error.error.message;
+        this.accountLoadingErrorMessage = error.status + " "+ error.message + " "+ error.error.message;
       }
     });
   }
@@ -192,7 +195,7 @@ export class AccountComponent implements OnInit {
         animate: { in: 'fadeIn', out: 'fadeOut' }
       });
       this.userService.setEmail(JSON.parse(JSON.stringify(response.body))["message"])
-      this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
+      this.get_whoami();
     }, error =>{
       this.buttonLoading["email"] = 0
       if(error.error.message == undefined){

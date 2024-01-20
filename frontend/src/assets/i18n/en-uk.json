@@ -724,8 +724,8 @@
     },
     "loading": "Retrieving your favorite ice-cream flavor ... ",
     "errors": {
-      "network": "Impossible to chat with the serveur. Please check your internet connection and status.zero-totp.com",
-      "unknown": "Oups, an error occured. Response from the serveur : "
+      "network": "Impossible to chat with the server. Please check your internet connection and status.zero-totp.com",
+      "unknown": "Oups, an error occured. Answer from the server : "
     }
   },
   "abort": "Abort",
