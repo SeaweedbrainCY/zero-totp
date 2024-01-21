@@ -6,6 +6,8 @@ on:
       - '*'
     tags-ignore:
       - '**'
+    branches-ignore:
+      - 'dev'
   workflow_call:
   
   
