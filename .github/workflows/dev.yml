@@ -20,7 +20,7 @@ jobs:
           run : echo ${{ secrets.TOKEN_GITHUB }} | docker login ghcr.io -u ${{ secrets.USERNAME_GITHUB }} --password-stdin
         - name: Create environment file
           working-directory: ./frontend
-          run: bash generate-env.sh 'dev' '${{secrets.RSA_PUBLIC_KEY}}'
+          run: bash generate-env.sh 'dev' '${{secrets.DEV_RSA_PUBLIC_KEY}}'
         - name: Generate sitemap.xml
           working-directory: ./frontend
           run: bash generate_sitemap.sh 
@@ -44,13 +44,13 @@ jobs:
           run: current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/api:latest . 
         - name: Publish Docker Image
           run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/api:latest
-    #deploy-dev-env:
-    #   needs: [docker-frontend, docker-api] 
-    #   name: Deploy on development environment
-    #   runs-on: ubuntu-latest
-    #   steps:
-    #     - name: Dev env deployment
-    #       uses: distributhor/workflow-webhook@v3
-    #       env:
-    #         webhook_url: ${{ secrets.WEBHOOK_URL_DEV }}
+    deploy-dev-env:
+       needs: [docker-frontend, docker-api] 
+       name: Deploy on development environment
+       runs-on: ubuntu-latest
+       steps:
+         - name: Dev env deployment
+           uses: distributhor/workflow-webhook@v3
+           env:
+             webhook_url: ${{ secrets.WEBHOOK_URL_DEV }}
         
