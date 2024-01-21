@@ -3,7 +3,7 @@ import logging
 
 port = int(os.environ.get('PORT')) if os.environ.get('PORT') != None else None
 db_uri = os.environ.get('DATABASE_URI')
-environment = "production" if os.environ.get('ENVIRONMENT') == "production" else "local"
+environment = os.environ.get('ENVIRONMENT')
 jwt_secret = os.environ.get('JWT_SECRET')
 private_key_path = os.environ.get('PRIVATE_KEY_PATH')
 public_key_path = os.environ.get('PUBLIC_KEY_PATH')
@@ -40,6 +40,7 @@ elif environment == "development":
     frontend_URI = ['https://dev.zero-totp.com']
     callback_URI = "https://dev.zero-totp.com/google-drive/oauth/callback"
 else:
+    environment = "production"
     logging.basicConfig(
         filename="/var/log/api/api.log",
         filemode='a',
