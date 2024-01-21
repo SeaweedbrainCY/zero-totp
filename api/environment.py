@@ -3,7 +3,7 @@ import logging
 
 port = int(os.environ.get('PORT')) if os.environ.get('PORT') != None else None
 db_uri = os.environ.get('DATABASE_URI')
-environment = "production" if os.environ.get('ENVIRONMENT') == "production" else "development"
+environment = "production" if os.environ.get('ENVIRONMENT') == "production" else "local"
 jwt_secret = os.environ.get('JWT_SECRET')
 private_key_path = os.environ.get('PRIVATE_KEY_PATH')
 public_key_path = os.environ.get('PUBLIC_KEY_PATH')
@@ -20,7 +20,7 @@ email_smtp_username = os.environ.get('EMAIL_SMTP_USERNAME')
 require_email_validation = os.environ.get('REQUIRE_EMAIL_VALIDATION') == "true"
 sentry_dsn = os.environ.get('SENTRY_DSN')
 
-if environment == "development":
+if environment == "local":
     logging.basicConfig(
         format='%(asctime)s %(levelname)-8s %(message)s',
         level=logging.DEBUG,
@@ -30,6 +30,15 @@ if environment == "development":
     frontend_URI = ['http://localhost:4200']
     callback_URI = 'http://localhost:8080/google-drive/oauth/callback'
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+elif environment == "development":
+    logging.basicConfig(
+        format='%(asctime)s %(levelname)-8s %(message)s',
+        level=logging.INFO,
+        datefmt='%d-%m-%Y %H:%M:%S')
+    logging.info("Environment set to development")
+    frontend_domain = 'dev.zero-totp.com'
+    frontend_URI = ['https://dev.zero-totp.com']
+    callback_URI = "https://dev.zero-totp.com/google-drive/oauth/callback"
 else:
     logging.basicConfig(
         filename="/var/log/api/api.log",
