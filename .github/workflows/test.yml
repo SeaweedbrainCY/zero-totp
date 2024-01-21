@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - '*'
+      - '**'
+      - '*/*'
+      - '**/**'
+      - '!dev'
     tags-ignore:
       - '**'
-    branches-ignore:
-      - 'dev'
   workflow_call:
   
   
