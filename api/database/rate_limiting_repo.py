@@ -29,12 +29,12 @@ class RateLimitingRepo:
             return True
         return False
     
-    def flush_ip_limit(self, ip):
+    def flush_login_limit(self, ip):
         db.session.query(RateLimiting).filter_by(ip=ip).delete()
         db.session.commit()
         return True
     
-    def flush_user_id_limit(self, user_id):
+    def flush_email_verification_limit(self, user_id):
         db.session.query(RateLimiting).filter_by(user_id=user_id).delete()
         db.session.commit()
         return True
