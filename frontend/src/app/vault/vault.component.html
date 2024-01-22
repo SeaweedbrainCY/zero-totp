@@ -203,10 +203,9 @@
             is-one-third-desktop
             is-one-third-widescreen
             is-one-quarter-fullhd" *ngFor="let uuid of vaultDomain">
-                    <div class="card has-text-white" [ngClass]="{   'has-background-success': vault!.get(uuid)?.get('color') == 'success',
+                    <div class="card has-text-white has-background-info" [ngClass]="{   'has-background-success': vault!.get(uuid)?.get('color') == 'success',
                                                                     'has-background-danger': vault!.get(uuid)?.get('color') == 'danger',   
                                                                     'has-background-warning': vault!.get(uuid)?.get('color') == 'warning',
-                                                                    'has-background-info': vault!.get(uuid)?.get('color') == 'info', 
                                                                 }">
                         <header class="card-header">
                             <p class="card-header-title  has-text-white"><img src="{{get_favicon_url(vault!.get(uuid)?.get('domain'))}}" alt="" *ngIf="(vault!.get(uuid)?.get('favicon') == 'true' || faviconPolicy == 'always') && faviconPolicy != 'never'" width="25px" height="25px" style="margin-right: 6px;">
