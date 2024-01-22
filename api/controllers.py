@@ -147,8 +147,9 @@ def login():
         return {"message": "generic_errors.invalid_creds"}, 403
     if user.isBlocked: # only authenticated users can see the blocked status
         return {"message": "blocked"}, 403
-        
-
+    
+    if ip:
+        rate_limiting_db.flush_login_limit(ip)
 
     jwt_token = jwt_auth.generate_jwt(user.id)
     if not env.require_email_validation: # we fake the isVerified status if email validation is not required
@@ -162,6 +163,11 @@ def login():
 
 #GET /login/specs
 def get_login_specs(username):
+    rate_limiting_db = Rate_Limiting_DB()
+    ip = utils.get_ip(request)
+    if ip:
+        if rate_limiting_db.is_login_rate_limited(ip):
+            return {"message": "Too many requests"}, 429
     if(not utils.check_email(username)):
         return {"message": "Bad request"}, 400
     userDB = UserDB()
@@ -837,6 +843,7 @@ def verify_email(user_id,body):
         logging.warning("User " + str(user_id) + " tried to verify email with wrong token.")
         return {"message": "email_verif.error.failed", "attempt_left":5-(int(token_obj.failed_attempts))}, 403
     token_db.delete(user_id)
+    Rate_Limiting_DB().flush_email_verification_limit(user_id)
     user = UserDB().update_email_verification(user_id, True)
     if user:
         return {"message": "Email verified"}, 200
