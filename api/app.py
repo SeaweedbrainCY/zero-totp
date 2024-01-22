@@ -10,8 +10,8 @@ from environment import logging
 import contextlib
 from flask_apscheduler import APScheduler
 from monitoring.sentry import sentry_configuration
-
-
+from flask_migrate import Migrate
+from datetime import datetime
 
 
 def create_app():
@@ -32,24 +32,27 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.secret_key = env.flask_secret_key
+    
 
     
     db.init_app(app)
     sentry_configuration() #optional
     
 
-    return app_instance
-app = create_app()
+    return app_instance, app
+app, flask = create_app()
+migrate = Migrate(flask, db)
 scheduler = APScheduler()
-scheduler.init_app(app.app)
+scheduler.init_app(flask)
 scheduler.start()
+
 
 @scheduler.task('interval', id='clean_email_verification_token_from_db', hours=12, misfire_grace_time=900)
 def clean_email_verification_token_from_db():
-    with app.app.app_context():
+    with flask.app_context():
         logging.info("🧹  Cleaning email verification tokens from database")
         from database.model import EmailVerificationToken
-        from datetime import datetime
+        
         tokens = db.session.query(EmailVerificationToken).all()
         for token in tokens:
             if float(token.expiration) < datetime.now().timestamp():
@@ -57,8 +60,16 @@ def clean_email_verification_token_from_db():
                 db.session.commit()
                 logging.info(f"❌  Deleted token for user {token.user_id} at {datetime.now()}")
 
+@scheduler.task('interval', id='clean_rate_limiting_from_db', hours=2, misfire_grace_time=900)
+def clean_rate_limiting_from_db():
+    with flask.app_context():
+        logging.info("🧹  Cleaning rate limits from database")
+        from database.rate_limiting_repo import RateLimitingRepo
+        RateLimitingRepo().flush_outdated_limit()
+        logging.info(f"✅  Rate limits cleaned at {datetime.utcnow()}")
 
-@app.app.before_request
+
+@flask.before_request
 def before_request():
     if not env.are_all_tables_created:
         with app.app.app_context():
