@@ -2,7 +2,7 @@ import unittest
 from app import app
 from database.db import db 
 import environment as env
-from database.model import User as UserModel
+from database.model import User as UserModel, RateLimiting
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
@@ -62,3 +62,20 @@ class TestSendVerificationController(unittest.TestCase):
             self.client.cookies = {"api-key": "bad"}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
+    
+    def test_send_verification_rate_limited(self):
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"api-key": generate_jwt(self.user_id)}
+            for _ in range(env.send_email_attempts_limit_per_user):
+                response = self.client.get(self.endpoint)
+                self.assertEqual(response.status_code, 200)
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 429)
+    
+    def test_rate_limiting_expired(self):
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"api-key": generate_jwt(self.user_id)}
+            for _ in range(env.send_email_attempts_limit_per_user):
+                attempt = RateLimiting(ip=None, user_id=self.user_id, action_type="send_verification_email", timestamp= datetime.datetime.utcnow() - datetime.timedelta(minutes=60))
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 200)
