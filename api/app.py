@@ -11,7 +11,7 @@ import contextlib
 from flask_apscheduler import APScheduler
 from monitoring.sentry import sentry_configuration
 from flask_migrate import Migrate
-
+from datetime import datetime
 
 
 def create_app():
@@ -52,13 +52,21 @@ def clean_email_verification_token_from_db():
     with flask.app_context():
         logging.info("🧹  Cleaning email verification tokens from database")
         from database.model import EmailVerificationToken
-        from datetime import datetime
+        
         tokens = db.session.query(EmailVerificationToken).all()
         for token in tokens:
             if float(token.expiration) < datetime.now().timestamp():
                 db.session.delete(token)
                 db.session.commit()
                 logging.info(f"❌  Deleted token for user {token.user_id} at {datetime.now()}")
+
+@scheduler.task('interval', id='clean_rate_limiting_from_db', hours=2, misfire_grace_time=900)
+def clean_rate_limiting_from_db():
+    with flask.app_context():
+        logging.info("🧹  Cleaning rate limits from database")
+        from database.rate_limiting_repo import RateLimitingRepo
+        RateLimitingRepo().flush_outdated_limit()
+        logging.info(f"✅  Rate limits cleaned at {datetime.utcnow()}")
 
 
 @flask.before_request

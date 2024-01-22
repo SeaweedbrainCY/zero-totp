@@ -38,4 +38,9 @@ class RateLimitingRepo:
         db.session.query(RateLimiting).filter_by(user_id=user_id).delete()
         db.session.commit()
         return True
-
+    
+    def flush_outdated_limit(self):
+        time_period = datetime.datetime.utcnow() - datetime.timedelta(minutes=60) 
+        db.session.query(RateLimiting).filter(RateLimiting.timestamp < time_period).delete()
+        db.session.commit()
+        return True
