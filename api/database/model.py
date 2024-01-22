@@ -71,7 +71,7 @@ class EmailVerificationToken(db.Model):
 class RateLimiting(db.Model):
     __tablename__ = "rate_limiting"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
-    ip = db.Column(db.String(45), nullable=False)
+    ip = db.Column(db.String(45), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=True)
     action_type = db.Column(db.String(256), nullable=False) # send_verification_email, failed_login 
     timestamp = db.Column(db.DateTime, nullable=False)
