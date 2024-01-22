@@ -1,6 +1,7 @@
 from database.db import db 
 from database.model import RateLimiting
 import datetime
+import environment as env
 
 class RateLimitingRepo:
     def add_failed_login(self, ip, user_id):
@@ -18,14 +19,14 @@ class RateLimitingRepo:
     def is_login_rate_limited (self, ip):
         time_period = datetime.datetime.utcnow() - datetime.timedelta(minutes=60) 
         rl = db.session.query(RateLimiting).filter_by(ip=ip, action_type="failed_login").filter(RateLimiting.timestamp > time_period).all()
-        if len(rl) >= 10:
+        if len(rl) >= env.login_attempts_limit_per_ip:
             return True
         return False
     
     def is_send_verification_email_rate_limited (self, user_id):
         time_period = datetime.datetime.utcnow() - datetime.timedelta(minutes=60) 
         rl = db.session.query(RateLimiting).filter_by(user_id=user_id, action_type="send_verification_email").filter(RateLimiting.timestamp > time_period).all()
-        if len(rl) >= 5:
+        if len(rl) >= env.send_email_attempts_limit_per_user :
             return True
         return False
     

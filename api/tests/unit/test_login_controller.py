@@ -155,7 +155,7 @@ class TestLoginController(unittest.TestCase):
     def test_rate_limited_user(self):
         with self.application.app.app_context():
             self.checkpw.return_value = False
-            for _ in range(10):
+            for _ in range(env.login_attempts_limit_per_ip):
                 response = self.client.post(self.loginEndpoint, json=self.json_payload)
                 self.assertEqual(response.status_code, 403)
                 self.assertEqual(response.json()["message"], "generic_errors.invalid_creds")
@@ -168,7 +168,7 @@ class TestLoginController(unittest.TestCase):
     
     def test_rate_limit_expiring(self):
         with self.application.app.app_context():
-            for _ in range(10):
+            for _ in range(env.login_attempts_limit_per_ip):
                 attempt = RateLimiting(ip='1.1.1.1', user_id=None, action_type="failed_login", timestamp=datetime.datetime.utcnow() - datetime.timedelta(minutes=61))
                 db.session.add(attempt)
                 db.session.commit()
