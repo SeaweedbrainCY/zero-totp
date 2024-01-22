@@ -509,7 +509,6 @@ export class EditTOTPComponent implements OnInit{
 
   loadFavicon(){
     this.uriError = "";
-    console.log(this.uri)
     if(this.favicon == true){
       if(this.uri != ""){
         if(!this.uri.startsWith("http://") && !this.uri.startsWith("https://")){
@@ -518,11 +517,14 @@ export class EditTOTPComponent implements OnInit{
         }
         try{
           const parsedUrl = new URLParse(this.uri);
-          console.log(parsedUrl)
            const domain = parsedUrl.hostname;
-           console.log(domain)
            if(domain != null && domain != ""){
-            this.faviconURL = "https://icons.duckduckgo.com/ip3/" +domain + ".ico";
+            if (this.utils.domain_name_validator(domain)){
+              this.faviconURL = "https://icons.duckduckgo.com/ip3/" +domain + ".ico";
+            } else {
+              this.uriError = "totp.error.invalid_domain";
+              return;
+            }
            } else {
             this.uriError ="totp.error.invalid_uri" ;
             return;
