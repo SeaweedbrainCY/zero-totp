@@ -77,5 +77,7 @@ class TestSendVerificationController(unittest.TestCase):
             self.client.cookies = {"api-key": generate_jwt(self.user_id)}
             for _ in range(env.send_email_attempts_limit_per_user):
                 attempt = RateLimiting(ip=None, user_id=self.user_id, action_type="send_verification_email", timestamp= datetime.datetime.utcnow() - datetime.timedelta(minutes=60))
+                db.session.add(attempt)
+                db.session.commit()
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)

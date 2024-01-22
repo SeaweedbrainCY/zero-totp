@@ -2,7 +2,7 @@ import unittest
 from app import app
 from database.db import db 
 import environment as env
-from database.model import User as UserModel, EmailVerificationToken as EmailVerificationToken_model
+from database.model import User as UserModel, EmailVerificationToken as EmailVerificationToken_model, RateLimiting
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
@@ -140,5 +140,17 @@ class TestVerifyEmailToken(unittest.TestCase):
             self.client.cookies = {"api-key": "badkey"}
             response = self.client.put(self.endpoint, json=body)
             self.assertEqual(response.status_code, 403)
+    
+    def test_flush_rate_limiting_table(self):
+        with self.flask_application.app.app_context():
+            for _ in range(env.send_email_attempts_limit_per_user):
+                attempt = RateLimiting(ip=None, user_id=self.user_id, action_type="send_verification_email", timestamp= datetime.datetime.utcnow() - datetime.timedelta(minutes=60))
+                db.session.add(attempt)
+                db.session.commit()
+            body = {"token": "token"}
+            self.client.cookies = {"api-key": generate_jwt(self.user_id)}
+            response = self.client.put(self.endpoint, json=body)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(RateLimiting.query.all()), 0)
 
 
