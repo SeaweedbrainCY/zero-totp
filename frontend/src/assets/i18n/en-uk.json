@@ -571,7 +571,8 @@
       "deleting": "An error occured while deleting your secret.",
       "missing_https": "Missing http(s)://",
       "invalid_uri": "Invalid URI",
-      "no_fav": "No favicon found for this domain"
+      "no_fav": "No favicon found for this domain",
+      "invalid_domain": "Invalid domain name"
     },
     "favicon": {
       "label": "Display favicon",
