@@ -386,7 +386,8 @@ export class LoginComponent implements OnInit {
       }
     }, error => {
       if(error.status == 429){
-        this.translate.get("login.errors.rate_limited").subscribe((translation)=>{
+        const ban_time = error.error.ban_time || "few";
+        this.translate.get("login.errors.rate_limited", {time:String(ban_time)} ).subscribe((translation)=>{
         superToast({
           message: translation,
           type: "is-danger",
