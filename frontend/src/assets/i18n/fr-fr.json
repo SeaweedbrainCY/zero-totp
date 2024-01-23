@@ -188,6 +188,7 @@
       "failed": "Mauvais code de vérification. Il te reste {{left_attempts}} essai(s) avant d'invalider ton code de vérification.",
       "generic": "Code invalide ou expiré",
       "no_active_code": "Tu n'as pas de code de vérification actif. Pour vérifier ton adresse mail, demande en un nouveau.",
+      "rate_limited": "Tu es rate limité ! Tu as demandé trop de codes de vérification en peu de temps. Tu pourras demander de nouveaux codes dans {{time}} min.",
       "too_many_failed": "Trop de tentatives échouées. Demande un nouveau code de vérification.",
       "unknown": "Une erreur est survenue ! Déconnecte et reconnecte toi ❌"
     },
@@ -361,6 +362,7 @@
       "hashing": "Une erreur est survenue en hachant ton mot de passe. Merci de réessayer.",
       "no_connection": "Impossible de discuter avec le server ! Vérifie ta connexion internet et status.zero-totp.com",
       "oauth": "Une dernière étape, confirme ta passphrase pour compléter la synchronisation",
+      "rate_limited": "Tu es rate limité ! Ton adresse IP a généré trop de connexion échoué en peu de temps. Tu pourras essayer de te connecter à nouveau dans {{time}} min. Si tu utilises un VPN, essaye une autre localisation ou désactive le.",
       "server_error": "Erreur : Impossible de récupérer les informations depuis le serveur",
       "session_end": "Pour ta sécurité, chaque session doit être renouvelée toutes les heures",
       "session_killed": "Pour ta sécurité tu as été déconnecté car tu as rafraichi ou fermé l'onglet ",

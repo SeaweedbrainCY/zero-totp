@@ -117,7 +117,8 @@ export class EmailVerificationComponent implements OnInit {
     }, (error) => {
       this.verifyLoading = false;
       if(error.status == 429){
-        this.translate.get("email_verif.error.rate_limited").subscribe((translation)=>{
+        const ban_time = error.error.ban_time || "few";
+        this.translate.get("email_verif.error.rate_limited",{time:String(ban_time)} ).subscribe((translation)=>{
         superToast({
           message: translation,
           type: "is-danger",
