@@ -169,7 +169,7 @@ class TestLoginController(unittest.TestCase):
     def test_rate_limit_expiring(self):
         with self.application.app.app_context():
             for _ in range(env.login_attempts_limit_per_ip):
-                attempt = RateLimiting(ip='1.1.1.1', user_id=None, action_type="failed_login", timestamp=datetime.datetime.utcnow() - datetime.timedelta(minutes=61))
+                attempt = RateLimiting(ip='1.1.1.1', user_id=None, action_type="failed_login", timestamp=datetime.datetime.utcnow() - datetime.timedelta(minutes=env.login_ban_time + 1))
                 db.session.add(attempt)
                 db.session.commit()
             self.checkpw.return_value = False

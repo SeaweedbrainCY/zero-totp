@@ -76,7 +76,7 @@ class TestSendVerificationController(unittest.TestCase):
         with self.flask_application.app.app_context():
             self.client.cookies = {"api-key": generate_jwt(self.user_id)}
             for _ in range(env.send_email_attempts_limit_per_user):
-                attempt = RateLimiting(ip=None, user_id=self.user_id, action_type="send_verification_email", timestamp= datetime.datetime.utcnow() - datetime.timedelta(minutes=60))
+                attempt = RateLimiting(ip=None, user_id=self.user_id, action_type="send_verification_email", timestamp= datetime.datetime.utcnow() - datetime.timedelta(minutes=env.email_ban_time + 1))
                 db.session.add(attempt)
                 db.session.commit()
             response = self.client.get(self.endpoint)
