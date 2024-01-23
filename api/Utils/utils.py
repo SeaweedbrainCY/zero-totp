@@ -14,6 +14,7 @@ from hashlib import sha256
 from base64 import b64encode
 import requests
 from Email import send as send_email
+import ipaddress
 
 
 
@@ -106,3 +107,22 @@ def get_geolocation(ip):
     except Exception as e:
         logging.error("Error while getting geolocation : " + str(e))
         return "unknown (unknown, unknown)"
+
+def get_ip(request):
+    def test_ip(ip):
+        try:
+            if(ipaddress.ip_address(ip).is_private):
+                return False
+            return True
+        except Exception as e:
+            return False
+        
+    remote_ip = request.remote_addr
+    forwarded_for = request.headers.get("X-Forwarded-For", request.remote_addr)
+    if test_ip(remote_ip):
+        return remote_ip
+    elif test_ip(forwarded_for):
+        return forwarded_for
+    else:
+        logging.error("Could not get ip address from request. Remote ip : " + str(remote_ip) + " Forwarded for : " + str(forwarded_for))
+        return None

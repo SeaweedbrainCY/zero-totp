@@ -517,5 +517,16 @@ export class VaultComponent implements OnInit {
       });
     });
   }
+
+  get_favicon_url(unsafe_domain:string | undefined): string{
+    if(unsafe_domain == undefined){
+      return "https://icons.duckduckgo.com/ip3/unknown.ico";
+    }
+    if(this.utils.domain_name_validator(unsafe_domain)){
+      return  "https://icons.duckduckgo.com/ip3/" +unsafe_domain + ".ico";
+    } else {
+      return "https://icons.duckduckgo.com/ip3/unknown.ico";
+    }
+  }
 }
 

@@ -1,4 +1,8 @@
-<article class="hero is-{{color}} mt-6">
+<article class="hero mt-6 is-info" [ngClass]="{
+                                      'is-success': color == 'success',
+                                      'is-warning': color == 'warning',
+                                      'is-danger': color == 'danger',
+}"  >
   <div class="hero-body has-text-centered">
     <p class="subtitle">
       <img src="{{faviconURL}}" alt="favicon " *ngIf="(favicon || faviconPolicy=='always') && uriError=='' && faviconPolicy != 'never' " width="20px" height="20px" style="margin-bottom: -4px;">

@@ -385,6 +385,18 @@ export class LoginComponent implements OnInit {
         this.isLoading=false;
       }
     }, error => {
+      if(error.status == 429){
+        const ban_time = error.error.ban_time || "few";
+        this.translate.get("login.errors.rate_limited", {time:String(ban_time)} ).subscribe((translation)=>{
+        superToast({
+          message: translation,
+          type: "is-danger",
+          dismissible: true,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      });
+    } else {
       this.translate.get("login.errors.no_connection").subscribe((translation)=>{
         superToast({
           message: translation,
@@ -394,6 +406,7 @@ export class LoginComponent implements OnInit {
           animate: { in: 'fadeIn', out: 'fadeOut' }
         });
       });
+    }
       this.isLoading=false;
     });
   }
@@ -440,7 +453,18 @@ export class LoginComponent implements OnInit {
       console.log(error);
       console.log(error.error.message)
       this.isLoading=false;
-      if(error.error.message == "blocked"){
+      if(error.status == 429){
+        const ban_time = error.error.ban_time || "few";
+        this.translate.get("login.errors.rate_limited",{time:String(ban_time)} ).subscribe((translation)=>{
+        superToast({
+          message: translation,
+          type: "is-danger",
+          dismissible: true,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      });
+      } else if(error.error.message == "blocked"){
         this.translate.get("login.errors.account_blocked").subscribe((translation)=>{
         superToast({
           message: translation,

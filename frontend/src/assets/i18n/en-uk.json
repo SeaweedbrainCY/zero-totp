@@ -374,7 +374,8 @@
         "parse_fail": "Error : Impossible to parse your file",
         "wrong_passphrase": "Wrong passphrase",
         "key_dec": "Impossible to decrypt your key."
-      }
+      },
+      "rate_limited": "You are rate limited ! Your IP as generated too much failed login attempts in a short period of time. You will be able to try to login again in {{time}} min. If you are using a VPN, try another location or disable it."
     }
   },
   "unlock": "Unlock",
@@ -426,7 +427,8 @@
       "too_many_failed": "Too many failed attempts. Please ask for a new verification code.",
       "failed": "Wrong verification code. You have {{ left_attempts }} attempt(s) left before invaliding your verification code.",
       "generic": "Invalid or expired code",
-      "unknown": "An error occured ! Please logout and login again ❌"
+      "unknown": "An error occured ! Please logout and login again ❌",
+      "rate_limited": "You are rate limited ! Your asked too much verification code in a short period of time. You will be able to ask for a new code in {{time}} min."
     },
     "verify": {
       "success": "Your email is verified ! ✅"
@@ -571,7 +573,8 @@
       "deleting": "An error occured while deleting your secret.",
       "missing_https": "Missing http(s)://",
       "invalid_uri": "Invalid URI",
-      "no_fav": "No favicon found for this domain"
+      "no_fav": "No favicon found for this domain",
+      "invalid_domain": "Invalid domain name"
     },
     "favicon": {
       "label": "Display favicon",

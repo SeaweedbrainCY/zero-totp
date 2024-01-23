@@ -116,12 +116,25 @@ export class EmailVerificationComponent implements OnInit {
         });
     }, (error) => {
       this.verifyLoading = false;
+      if(error.status == 429){
+        const ban_time = error.error.ban_time || "few";
+        this.translate.get("email_verif.error.rate_limited",{time:String(ban_time)} ).subscribe((translation)=>{
+        superToast({
+          message: translation,
+          type: "is-danger",
+          dismissible: true,
+          duration: 20000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
+        });
+      });
+      } else {
       superToast({
         message:this.translate.instant("email_verif.resend.error") ,
         type: "is-danger",
         dismissible: true,
       animate: { in: 'fadeIn', out: 'fadeOut' }
       });
+    }
     });
   }
 

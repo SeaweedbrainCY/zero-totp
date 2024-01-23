@@ -14,6 +14,17 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "22/01/2024",
+      version: "b2.2",
+      added: [
+       "We improved the protection of your accounts with rate limiting for abusing user or attack attempts.",
+      ],
+      fixed:[
+        "We fixed potential injection of css class while displaying your vault.",
+        "Improvement of the handling of favicon domain name to prevent any attempt of side-attack."
+      ]
+    },
+    {
       date: "20/01/2024",
       version: "b2.1",
       added: [

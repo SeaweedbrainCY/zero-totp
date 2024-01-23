@@ -8,6 +8,7 @@ from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
 from database.preferences_repo import Preferences as PreferencesDB
 from database.admin_repo import Admin as Admin_db
+from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
@@ -110,6 +111,13 @@ def signup():
 
 # POST /login
 def login():
+    ip = utils.get_ip(request)
+    rate_limiting_db = Rate_Limiting_DB()
+    if ip:
+        if rate_limiting_db.is_login_rate_limited(ip):
+            return {"message": "Too many requests", 'ban_time':env.login_ban_time}, 429
+    else:
+        logging.error("The remote IP used to login is private. The headers are not set correctly")
     dataJSON = json.dumps(request.get_json())
     try:
         data = json.loads(dataJSON)
@@ -130,15 +138,20 @@ def login():
         logging.info("User " + str(email) + " tried to login but does not exist. A fake password is checked to avoid timing attacks")
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fakePassword)
+        if ip:
+            rate_limiting_db.add_failed_login(ip, None)
         return {"message": "generic_errors.invalid_creds"}, 403
     logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {request.headers.get('X-Forwarded-For', 'None')} ")
     checked = bcrypt.checkpw(user.password)
     if not checked:
+        if ip:
+            rate_limiting_db.add_failed_login(ip, user.id)
         return {"message": "generic_errors.invalid_creds"}, 403
     if user.isBlocked: # only authenticated users can see the blocked status
         return {"message": "blocked"}, 403
-        
-
+    
+    if ip:
+        rate_limiting_db.flush_login_limit(ip)
 
     jwt_token = jwt_auth.generate_jwt(user.id)
     if not env.require_email_validation: # we fake the isVerified status if email validation is not required
@@ -152,6 +165,11 @@ def login():
 
 #GET /login/specs
 def get_login_specs(username):
+    rate_limiting_db = Rate_Limiting_DB()
+    ip = utils.get_ip(request)
+    if ip:
+        if rate_limiting_db.is_login_rate_limited(ip):
+            return {"message": "Too many requests", 'ban_time':env.login_ban_time}, 429
     if(not utils.check_email(username)):
         return {"message": "Bad request"}, 400
     userDB = UserDB()
@@ -802,6 +820,9 @@ def update_blocked_status(user_id, account_id_to_update, action):
 def send_verification_email(user_id):
     if not env.require_email_validation:
         return {"message": "not implemented"}, 501
+    rate_limiting = Rate_Limiting_DB()
+    if(rate_limiting.is_send_verification_email_rate_limited(user_id=user_id)):
+            return {"message": "Rate limited",  'ban_time':env.email_ban_time}, 429
     logging.info("Sending verification email to user " + str(user_id))
     user = UserDB().getById(user_id)
     if user == None:
@@ -810,6 +831,8 @@ def send_verification_email(user_id):
     try:
         send_email.send_verification_email(user.mail, token)
         logging.info("Verification email sent to user " + str(user_id))
+        ip = utils.get_ip(request=request)
+        rate_limiting.add_send_verification_email(ip=ip, user_id=user_id)
         return {"message": "Verification email sent"}, 200
     except Exception as e:
         logging.error("Error while sending verification email to user " + str(user_id) + ". Exception : " + str(e))
@@ -837,6 +860,7 @@ def verify_email(user_id,body):
         logging.warning("User " + str(user_id) + " tried to verify email with wrong token.")
         return {"message": "email_verif.error.failed", "attempt_left":5-(int(token_obj.failed_attempts))}, 403
     token_db.delete(user_id)
+    Rate_Limiting_DB().flush_email_verification_limit(user_id)
     user = UserDB().update_email_verification(user_id, True)
     if user:
         return {"message": "Email verified"}, 200

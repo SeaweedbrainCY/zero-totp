@@ -1,6 +1,6 @@
 import unittest
 from CryptoClasses.hash_func import Bcrypt
-from Utils.utils import check_email, sanitize_input, extract_last_backup_from_list, FileNotFound, get_all_secrets_sorted, generate_new_email_verification_token, get_geolocation, send_information_email
+from Utils.utils import check_email, sanitize_input, extract_last_backup_from_list, FileNotFound, get_all_secrets_sorted, generate_new_email_verification_token, get_geolocation, send_information_email, get_ip
 import datetime
 from uuid import uuid4
 from random import shuffle
@@ -257,3 +257,36 @@ class TestBcrypt(unittest.TestCase):
         send_information_email("IP", "email", "reason")
         get_geolocation_mock.assert_called_once_with("IP")
         send_email_mock.assert_called()
+
+
+#########
+## get_ip
+#########
+        
+    def test_get_remote_ip(self):
+        request = lambda:None
+        request.remote_addr = "1.1.1.1"
+        request.headers = {}
+        ip = get_ip(request)
+        self.assertEqual(ip, "1.1.1.1")
+
+    def test_get_forwarded_for(self):
+        request = lambda:None
+        request.remote_addr = "192.168.0.0"
+        request.headers = {"X-Forwarded-For": "1.1.1.1"}
+        ip = get_ip(request)
+        self.assertEqual(ip, "1.1.1.1")
+    
+    def test_get_no_ip(self):
+        request = lambda:None
+        request.remote_addr = "192.168.0.0"
+        request.headers = {}
+        ip = get_ip(request)
+        self.assertIsNone(ip)
+    
+    def test_invalid_ip(self):
+        request = lambda:None
+        request.remote_addr = "testclient"
+        request.headers = {}
+        ip = get_ip(request)
+        self.assertIsNone(ip)
