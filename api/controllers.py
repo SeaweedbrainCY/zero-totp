@@ -115,7 +115,7 @@ def login():
     rate_limiting_db = Rate_Limiting_DB()
     if ip:
         if rate_limiting_db.is_login_rate_limited(ip):
-            return {"message": "Too many requests"}, 429
+            return {"message": "Too many requests", 'ban_time':env.login_ban_time}, 429
     else:
         logging.error("The remote IP used to login is private. The headers are not set correctly")
     dataJSON = json.dumps(request.get_json())
@@ -169,7 +169,7 @@ def get_login_specs(username):
     ip = utils.get_ip(request)
     if ip:
         if rate_limiting_db.is_login_rate_limited(ip):
-            return {"message": "Too many requests"}, 429
+            return {"message": "Too many requests", 'ban_time':env.login_ban_time}, 429
     if(not utils.check_email(username)):
         return {"message": "Bad request"}, 400
     userDB = UserDB()
@@ -822,7 +822,7 @@ def send_verification_email(user_id):
         return {"message": "not implemented"}, 501
     rate_limiting = Rate_Limiting_DB()
     if(rate_limiting.is_send_verification_email_rate_limited(user_id=user_id)):
-            return {"message": "Rate limited"}, 429
+            return {"message": "Rate limited",  'ban_time':env.email_ban_time}, 429
     logging.info("Sending verification email to user " + str(user_id))
     user = UserDB().getById(user_id)
     if user == None:
