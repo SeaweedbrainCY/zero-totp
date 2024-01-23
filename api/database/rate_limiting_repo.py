@@ -17,14 +17,18 @@ class RateLimitingRepo:
         return rl
     
     def is_login_rate_limited (self, ip):
-        time_period = datetime.datetime.utcnow() - datetime.timedelta(minutes=60) 
+        if env.login_attempts_limit_per_ip <= 0:
+            return False
+        time_period = datetime.datetime.utcnow() - datetime.timedelta(minutes=env.login_ban_time) 
         rl = db.session.query(RateLimiting).filter_by(ip=ip, action_type="failed_login").filter(RateLimiting.timestamp > time_period).all()
         if len(rl) >= env.login_attempts_limit_per_ip:
             return True
         return False
     
-    def is_send_verification_email_rate_limited (self, user_id):
-        time_period = datetime.datetime.utcnow() - datetime.timedelta(minutes=60) 
+    def is_send_verification_email_rate_limited(self, user_id):
+        if env.send_email_attempts_limit_per_user <= 0:
+            return False
+        time_period = datetime.datetime.utcnow() - datetime.timedelta(minutes=env.email_ban_time ) 
         rl = db.session.query(RateLimiting).filter_by(user_id=user_id, action_type="send_verification_email").filter(RateLimiting.timestamp > time_period).all()
         if len(rl) >= env.send_email_attempts_limit_per_user :
             return True
@@ -41,7 +45,8 @@ class RateLimitingRepo:
         return True
     
     def flush_outdated_limit(self):
-        time_period = datetime.datetime.utcnow() - datetime.timedelta(minutes=60) 
+        max_ban_time = max(env.login_ban_time, env.email_ban_time)
+        time_period = datetime.datetime.utcnow() - datetime.timedelta(minutes=max_ban_time) 
         db.session.query(RateLimiting).filter(RateLimiting.timestamp < time_period).delete()
         db.session.commit()
         return True
