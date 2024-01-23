@@ -17,7 +17,7 @@ export class ChangelogComponent {
       date: "22/01/2024",
       version: "b2.2",
       added: [
-       
+       "We improved the protection of your accounts with rate limiting for abusing user or attack attempts.",
       ],
       fixed:[
         "We fixed potential injection of css class while displaying your vault.",
