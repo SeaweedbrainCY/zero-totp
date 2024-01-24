@@ -32,11 +32,11 @@ You are the only one able to decrypt these information, thanks to your strong an
 | Platform | In development | In beta Test | Stable |
 | --- | --- | --- | --- |
 | [Rescue Zero-TOTP](https://rescue.zero-totp.com) | ✅ | ✅ | ✅ |
-| [Zero-TOTP Web App](https://zero-totp.com) | ✅ | ✅ | ❌ |
-| Zero-TOTP web app self-host | ✅ | ❌ | ❌ |
-| Rescue Zero-TOTP self-host | ✅ | ❌ | ❌ |
-| Zero-TOTP iOS App | ❌ | ❌ | ❌ |
-| Zero-TOTP CLI App | ❌ | ❌ | ❌ |
+| [Zero-TOTP Web App](https://zero-totp.com) | ✅ | ✅ | ⏳ |
+| Zero-TOTP web app self-host | ✅ | ⏳ | ⏳ |
+| Rescue Zero-TOTP self-host | ✅ | ⏳ | ⏳ |
+| Zero-TOTP iOS App | ⏳ | ⏳ | ⏳ |
+| Zero-TOTP CLI App | ⏳ | ⏳ | ⏳ |
 
 ## Secure and reliable
 
