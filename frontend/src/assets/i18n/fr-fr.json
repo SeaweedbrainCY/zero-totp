@@ -614,7 +614,9 @@
     "beta": {
       "warning": {
         "desc": "Si tu veux devenir un beta-testeur, tu peux t'inscrire ci-dessous",
-        "title": "Il s'agit d'un accès anticipé à la version beta de Zero-TOTP"
+        "title": "Il s'agit d'un accès anticipé à la version beta de Zero-TOTP",
+        "discord1": "Rejoins notre",
+        "discord2": "pour être au courants des dernière nouvelles à propos de la beta et pour nous faire part de tes retours !"
       }
     },
     "button": {
