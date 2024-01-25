@@ -528,5 +528,13 @@ export class VaultComponent implements OnInit {
       return "https://icons.duckduckgo.com/ip3/unknown.ico";
     }
   }
+
+  resync_after_error(){
+    this.disable_google_drive();
+    setTimeout(()=> {
+      this.get_oauth_authorization_url();
+  }, 1000);
+    
+  }
 }
 

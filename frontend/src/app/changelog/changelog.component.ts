@@ -21,7 +21,8 @@ export class ChangelogComponent {
       ],
       fixed:[
         "We fixed potential injection of css class while displaying your vault.",
-        "Improvement of the handling of favicon domain name to prevent any attempt of side-attack."
+        "Improvement of the handling of favicon domain name to prevent any attempt of side-attack.",
+        "We fixed a bug in the Google Drive integration causing the synchronization to be ephemeral when the user had previously revoked the access to Zero-TOTP directly from their Google Drive account instead of in the application.",
       ]
     },
     {

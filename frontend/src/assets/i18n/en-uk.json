@@ -141,7 +141,9 @@
     "beta": {
       "warning": {
         "title": "This is an early access to Zero-TOTP beta version.",
-        "desc": "If you want to become a beta tester, you can sign up below :"
+        "desc": "If you want to become a beta tester, you can sign up below :",
+        "discord1": "Join our",
+        "discord2": "to be updated on all the beta news and report bugs or improvements"
       }
     },
     "checkbox": {

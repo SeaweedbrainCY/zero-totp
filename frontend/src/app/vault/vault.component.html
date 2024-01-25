@@ -115,7 +115,7 @@
                                             <p class="has-text-danger is-size-7 ">{{ 'vault.storage.google.error.check' | translate }}</p>
                                             <p class="has-text-centered mt-1">
                                                 <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
-                                                    (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
+                                                    (click)="resync_after_error()"><fa-icon [icon]="faLink"
                                                         class="mr-3"></fa-icon> {{ 'vault.storage.google.resync' | translate }} </button>
                                                         <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
                                                     (click)="disable_google_drive()"><fa-icon
