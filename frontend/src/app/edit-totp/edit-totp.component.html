@@ -34,7 +34,7 @@
         is-one-third-fullhd mr-2 ml-2">
             <label class="label">{{ 'name' | translate }}</label>
             <div class="control has-icons-left has-icons-right">
-              <input class="input" type="text" placeholder="github.com" name="name" [(ngModel)]="name"
+              <input class="input" type="text" placeholder="GitHub" name="name" [(ngModel)]="name"
                 (keyup)="checkName()"
                 [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }"
                 [disabled]="this.userService.getIsVaultLocal()!">
@@ -49,7 +49,7 @@
         is-one-third-desktop
         is-one-third-widescreen
         is-one-third-fullhd mr-2 ml-2">
-            <label class="label">URI</label>
+            <label class="label">Favicon URI</label>
             <div class="control has-icons-left has-icons-right">
               <input class="input" type="text" placeholder="https://github.com" name="uri" [(ngModel)]="uri"
                 (change)="checkURI()"
