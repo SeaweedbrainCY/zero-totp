@@ -14,7 +14,7 @@ click==8.1.7
 clickclick==20.10.2
 connexion==3.0.1
 coverage==7.3.2
-cryptography==41.0.6
+cryptography==42.0.0
 Deprecated==1.2.14
 dparse==0.6.3
 exceptiongroup==1.1.3
