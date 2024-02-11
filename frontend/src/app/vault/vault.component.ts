@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark} from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -28,6 +28,8 @@ export class VaultComponent implements OnInit {
   faCheckCircle = faCheckCircle;
   faRotateRight = faRotateRight;
   faCircleNotch = faCircleNotch;
+  faMagnifyingGlass = faMagnifyingGlass;
+  faXmark = faXmark;
   faFlask = faFlask;
   faDesktop=faDesktop;
   faCircleExclamation=faCircleExclamation;
@@ -54,6 +56,7 @@ export class VaultComponent implements OnInit {
   isGoogleDriveSync = "loading"; // uptodate, loading, error, false
   lastBackupDate = "";
   faviconPolicy = "";
+  filter=""
   constructor(
     public userService: UserService,
     private router: Router,
@@ -206,7 +209,7 @@ export class VaultComponent implements OnInit {
                 try{
                   this.vault?.set(secret.uuid, this.utils.mapFromJson(dec_secret));
                   this.userService.setVault(this.vault!);
-                  this.vaultDomain = Array.from(this.vault!.keys()) as string[];
+                  this.filterVault(); // to display all the vault
                 } catch {
                   this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
                   superToast({
@@ -291,6 +294,33 @@ export class VaultComponent implements OnInit {
     }
 
 
+  }
+
+  filterVault(){
+    this.filterError = "";
+    this.vaultDomain = [];
+    let tmp_vault =  Array.from(this.vault!.keys()) as string[];
+    if (this.filter == ""){
+      this.vaultDomain = tmp_vault;
+      return;
+    }
+    this.filter = this.filter.replace(/[^a-zA-Z0-9-_]/g, '');
+    this.filter = this.filter.toLowerCase();
+    if(this.filter.length > 50){
+      this.filter = this.filter.substring(0,50);
+    }
+    const regex = new RegExp(this.filter);
+    for (let uuid of tmp_vault){
+      if(regex.test(this.get_favicon_url(this.vault!.get(uuid)?.get('domain')).toLowerCase()))
+      {
+        this.vaultDomain.push(uuid);
+      } else if (this.vault!.get(uuid)?.get('name')){
+        if(regex.test(this.vault!.get(uuid)?.get('name')!.toLowerCase()!))
+        {
+          this.vaultDomain.push(uuid);
+        }
+      }
+    }
   }
 
   edit(domain:string){
