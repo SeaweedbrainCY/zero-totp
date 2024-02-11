@@ -297,7 +297,6 @@ export class VaultComponent implements OnInit {
   }
 
   filterVault(){
-    this.filterError = "";
     this.vaultDomain = [];
     let tmp_vault =  Array.from(this.vault!.keys()) as string[];
     if (this.filter == ""){
