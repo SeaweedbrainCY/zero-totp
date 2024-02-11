@@ -14,6 +14,34 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "11/02/2024",
+      version: "b2.5",
+      added: [
+        "We added a new search bar in the vault page to easily find your TOTP codes.",
+      ],
+      fixed:[
+       
+      ]
+    },
+    {
+      date: "05/02/2024",
+      version: "b2.4",
+      added: [
+      ],
+      fixed:[
+        "We upgrade some of our dependencies to fix 2 vulnerabilities."
+      ]
+    },
+    {
+      date: "26/01/2024",
+      version: "b2.3",
+      added: [
+      ],
+      fixed:[
+        "We improve the 'add new TOTP code' UX to be more user-friendly and to avoid any confusion in the application.",
+      ]
+    },
+    {
       date: "22/01/2024",
       version: "b2.2",
       added: [
