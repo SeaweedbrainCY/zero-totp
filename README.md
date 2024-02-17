@@ -1,7 +1,7 @@
 # Zero-TOTP
 <p align="center">
     <img src="https://img.shields.io/uptimerobot/status/m794827592-25c510a0c14f34a3812711a9%20?label=zero-totp.com&link=zero-totp.com"/>
-    <img src="https://img.shields.io/uptimerobot/status/m794828362-be618abc0d9ba7230401e6af?label=api.zero-totp.com&link=zero-totp.com"/>
+    <img src="https://img.shields.io/uptimerobot/status/m795499972-828167232e3d77f12e0505fd?label=api.zero-totp.com&link=zero-totp.com"/>
     <br>
     <img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/main.yml/badge.svg?branch="/>
      <a href="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml"><img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml/badge.svg" alt="Test and Coverage"/></a>
