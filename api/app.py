@@ -12,6 +12,7 @@ from flask_apscheduler import APScheduler
 from monitoring.sentry import sentry_configuration
 from flask_migrate import Migrate
 from datetime import datetime
+from flask import request, redirect, make_response
 
 
 def create_app():
@@ -78,6 +79,12 @@ def before_request():
             logging.info("✅  Tables created")
             logging.info(db.metadata.tables.keys())
             env.are_all_tables_created = True
+
+@flask.errorhandler(404)
+def not_found(error):
+    logging.error(f"❌  404 error at {datetime.now()} {request.remote_addr} {request.url}")
+    return make_response(redirect(env.frontend_URI[0] + "/404",  code=302))
+            
 
 
 
