@@ -14,6 +14,16 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "02/03/2024",
+      version: "b2.6",
+      added: [
+        "You can now ask your browser to remember your email address when you log in.",
+      ],
+      fixed:[
+       
+      ]
+    },
+    {
       date: "11/02/2024",
       version: "b2.5",
       added: [
