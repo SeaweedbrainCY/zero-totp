@@ -384,7 +384,8 @@
       "part1": "🛟 Des problèmes pour se connecter à ton compte ? Ouvre une backup sur notre ",
       "part2": "Rescue Zero-TOTP",
       "strong": "plateforme ultra stable"
-    }
+    },
+    "remember": "Mémoriser mon adresse email"
   },
   "navbar": {
     "account": "Compte",

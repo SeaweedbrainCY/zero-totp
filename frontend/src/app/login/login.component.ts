@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
   login_button="login.open_button"
   isPassphraseVisible=false;
   isLocalVaultPassphraseVisible=false;
+  remember=false;
 
   constructor(
     private http: HttpClient,
@@ -93,6 +94,10 @@ export class LoginComponent implements OnInit {
           this.is_oauth_flow=true;
           break;
         }
+      }
+      if(localStorage.getItem("r_email") != null){
+        this.email = localStorage.getItem("r_email")!;
+        this.remember = true;
       }
       
     }
@@ -497,6 +502,11 @@ export class LoginComponent implements OnInit {
           if(this.is_oauth_flow){
             this.router.navigate(["/oauth/synchronize"], {relativeTo:this.route.root});
           } else {
+            if(this.remember){
+              localStorage.setItem("r_email", this.email);
+            } else {
+              localStorage.removeItem("r_email");
+            }
             this.router.navigate(["/vault"], {relativeTo:this.route.root});
           }
         }, (error)=>{
