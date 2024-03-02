@@ -82,7 +82,7 @@ def before_request():
 
 @flask.errorhandler(404)
 def not_found(error):
-    logging.error(f"❌  404 error at {datetime.now()} {request.remote_addr} {request.url}")
+    logging.warning(f"❌  404 error at {datetime.now()} {request.remote_addr} {request.url}")
     return make_response(redirect(env.frontend_URI[0] + "/404",  code=302))
             
 
