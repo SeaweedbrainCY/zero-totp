@@ -33,16 +33,23 @@
               <fa-icon [icon]="faKey"></fa-icon>
             </span>
           </p>
-          <p class="control">
+          <div class="control">
             <a class="button" (click)="isPassphraseVisible = !isPassphraseVisible">
               <fa-icon [icon]="faEyeSlash" *ngIf="isPassphraseVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isPassphraseVisible" size="sm"></fa-icon>
             </a>
-          </p>
+            
+          </div>
+        </div>
+        <div class="control has-text-left" style="margin-top: -20px;">
+          <label class="checkbox">
+            <input type="checkbox" name="remember" [(ngModel)]="remember">
+            {{ 'login.remember' | translate }} 
+          </label>
         </div>
         </div>
         <div class="has-text-centered	block">
         
-        <div class="field">
+        <div class="field mt-5">
           <div class="control">
             <button class="button is-info is-medium block " (click)="login()" [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading">{{login_button | translate }}
               </button>
