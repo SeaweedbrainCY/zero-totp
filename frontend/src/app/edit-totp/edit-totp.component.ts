@@ -152,7 +152,12 @@ export class EditTOTPComponent implements OnInit{
   }
 
   generateCode(){
-   this.code=this.totp(this.secret);
+  try {
+    this.secret = this.secret.replace(/\s/g, "");
+      this.code=this.totp(this.secret);
+      } catch(e) {
+        this.code = this.translate.instant("totp.error.code");
+    }
    }
    
 
@@ -350,6 +355,16 @@ export class EditTOTPComponent implements OnInit{
     this.checkSecret();
     this.checkURI();
     if(this.nameError != "" || this.secretError != "" || this.uriError != ""){
+      return;
+    }
+    if(this.code == this.translate.instant("totp.error.code")){
+      superToast({
+        message: this.translate.instant("totp.error.code"),
+       type: "is-danger",
+        dismissible: false,
+        duration: 20000,
+      animate: { in: 'fadeIn', out: 'fadeOut' }
+      });
       return;
     }
    

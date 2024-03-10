@@ -577,7 +577,8 @@
       "missing_https": "Missing http(s)://",
       "invalid_uri": "Invalid URI",
       "no_fav": "No favicon found for this domain",
-      "invalid_domain": "Invalid domain name"
+      "invalid_domain": "Invalid domain name",
+      "code": "Invalid secret. "
     },
     "favicon": {
       "label": "Display favicon",

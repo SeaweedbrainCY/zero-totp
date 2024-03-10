@@ -694,7 +694,8 @@
       "ro": "Tu en mode lecture-seulement. Tu ne peux rien modifier sur un coffre local.",
       "secret_empty": "Un secret ne peut pas être vide",
       "update": "Une erreur est survenue en ajoutant un nouveau code à ton coffre.",
-      "update_pref": "Impossible de mettre à jour tes préférences."
+      "update_pref": "Impossible de mettre à jour tes préférences.",
+      "code": "Secret invalide. "
     },
     "favicon": {
       "label": "Afficher la favicon",
