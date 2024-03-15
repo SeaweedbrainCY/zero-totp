@@ -111,4 +111,17 @@ export class Utils {
           messageClass: 'toast-message',
         });
       }
+
+      public toastWarning(toastr:ToastrService,title:string, message:string){
+        toastr.warning(title, message,{
+          timeOut: 30000,
+          closeButton: true,
+          progressBar: true,
+          progressAnimation: 'decreasing',
+          tapToDismiss: true,
+          positionClass: 'toast-top-right',
+          titleClass: 'toast-title',
+          messageClass: 'toast-message',
+        });
+      }
 }
