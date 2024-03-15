@@ -1,5 +1,4 @@
 import { Component,OnInit } from '@angular/core';
-import { toast as superToast } from 'bulma-toast'
 import { faEnvelope, faLock,  faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -8,8 +7,10 @@ import { UserService } from '../common/User/user.service';
 import {Crypto} from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
 import { LocalVaultV1Service, UploadVaultStatus } from '../common/upload-vault/LocalVaultv1Service.service';
+import { Utils } from '../common/Utils/utils';
+
+import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
-import { error } from 'console';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -49,9 +50,12 @@ export class LoginComponent implements OnInit {
     private userService: UserService,
     private crypto:Crypto,
     private localVaultv1: LocalVaultV1Service,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private toastr: ToastrService,
+    private utils: Utils,
     ) {
     }
+
 
     ngOnInit(){
       this.error_param = this.route.snapshot.paramMap.get('error_param')
@@ -111,13 +115,7 @@ export class LoginComponent implements OnInit {
     const emailRegex = /\S+@\S+\.\S+/;
     if(!emailRegex.test(this.email)){
       this.translate.get("login.errors.email").subscribe((translation)=>{
-      superToast({
-        message:  translation,
-        type: "is-danger",
-        dismissible: true,
-        duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr, translation, "");
     });
       return false;
     } else {
@@ -129,13 +127,7 @@ export class LoginComponent implements OnInit {
   login(){
     if(this.email == "" || this.password == ""){
       this.translate.get("login.errors.empty").subscribe((translation)=>{
-      superToast({
-        message: translation,
-        type: "is-danger",
-        dismissible: true,
-        duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+        this.utils.toastError(this.toastr,translation,"");
      });
       return;
     }
@@ -158,13 +150,7 @@ export class LoginComponent implements OnInit {
           const version = this.localVaultv1.extract_version_from_vault(unsecure_context);
           if(version == null){
             this.translate.get("login.errors.import_vault.invalid_file").subscribe((translation)=>{
-            superToast({
-              message: translation,
-              type: "is-danger",
-              dismissible: false,
-              duration: 20000,
-              animate: { in: 'fadeIn', out: 'fadeOut' }
-            });
+              this.utils.toastError(this.toastr,translation,"");
           });
             
           } else if (version == 1){
@@ -178,13 +164,7 @@ export class LoginComponent implements OnInit {
             }
             case UploadVaultStatus.INVALID_JSON: {
               this.translate.get("login.errors.import_vault.invalid_type").subscribe((translation)=>{
-              superToast({
-                message: translation,
-                type: "is-danger",
-                dismissible: false,
-                duration: 20000,
-                animate: { in: 'fadeIn', out: 'fadeOut' }
-              });
+                this.utils.toastError(this.toastr,translation,"");
             });
               
               break;
@@ -192,26 +172,14 @@ export class LoginComponent implements OnInit {
 
             case UploadVaultStatus.INVALID_VERSION: {
               this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation)=>{
-                superToast({
-                  message: translation,
-                  type: "is-danger",
-                  dismissible: false,
-                  duration: 20000,
-                  animate: { in: 'fadeIn', out: 'fadeOut' }
-                });
+                this.utils.toastError(this.toastr,translation,"");
               });
               
               break;
             }
             case UploadVaultStatus.NO_SIGNATURE: {
               this.translate.get("login.errors.import_vault.no_signature").subscribe((translation)=>{
-                superToast({
-                  message: translation,
-                  type: "is-danger",
-                  dismissible: false,
-                  duration: 20000,
-                  animate: { in: 'fadeIn', out: 'fadeOut' }
-                });
+                this.utils.toastError(this.toastr, translation,"")
               });
               
               break;
@@ -223,26 +191,14 @@ export class LoginComponent implements OnInit {
             }
             case UploadVaultStatus.MISSING_ARGUMENT: {
               this.translate.get("login.errors.import_vault.missing_arg").subscribe((translation)=>{
-                superToast({
-                  message: translation,
-                  type: "is-danger",
-                  dismissible: false,
-                  duration: 20000,
-                  animate: { in: 'fadeIn', out: 'fadeOut' }
-                });
+                this.utils.toastError(this.toastr,translation,"")
               });
               
               break;
             }
             case UploadVaultStatus.INVALID_ARGUMENT: {
               this.translate.get("login.errors.import_vault.invalid_arg").subscribe((translation)=>{
-                superToast({
-                  message: translation,
-                  type: "is-danger",
-                  dismissible: false,
-                  duration: 20000,
-                  animate: { in: 'fadeIn', out: 'fadeOut' }
-                });
+                this.utils.toastError(this.toastr,translation,"")
               });
               
               break;
@@ -250,13 +206,7 @@ export class LoginComponent implements OnInit {
 
               case UploadVaultStatus.UNKNOWN: {
                 this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation)=>{
-                  superToast({
-                    message: translation,
-                    type: "is-danger",
-                    dismissible: false,
-                    duration: 20000,
-                    animate: { in: 'fadeIn', out: 'fadeOut' }
-                  });
+                    this.utils.toastError(this.toastr,translation,"")
                 });
                 
                 break;
@@ -264,13 +214,7 @@ export class LoginComponent implements OnInit {
 
             default: {
               this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation)=>{
-                superToast({
-                  message: translation,
-                  type: "is-danger",
-                  dismissible: false,
-                  duration: 20000,
-                  animate: { in: 'fadeIn', out: 'fadeOut' }
-                });
+                this.utils.toastError(this.toastr,translation,"")
               });
               
               break;
@@ -280,37 +224,19 @@ export class LoginComponent implements OnInit {
     }
     else {
       this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation)=>{
-        superToast({
-          message: translation,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr,translation,"")
       });
       
     }
       } catch(e){
         this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation)=>{
-          superToast({
-            message: translation,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+this.utils.toastError(this.toastr,translation,"")
         });
           
         }
       } else {
         this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation)=>{
-          superToast({
-            message: translation,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+this.utils.toastError(this.toastr,translation,"")
         });
         
       }
@@ -332,23 +258,11 @@ export class LoginComponent implements OnInit {
               this.userService.set_zke_key(zke_key!);
               this.router.navigate(["/vault"], {relativeTo:this.route.root});
             }, (error)=>{
-              superToast({
-                message: error,
-                type: "is-danger",
-                dismissible: false,
-                duration: 20000,
-                animate: { in: 'fadeIn', out: 'fadeOut' }
-              });
+              this.utils.toastError(this.toastr,error,"")
               this.isLoading=false;
             });
         },(error)=>{
-          superToast({
-            message: error,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr,error,"")
               this.isLoading=false;
         });
     }
@@ -366,26 +280,14 @@ export class LoginComponent implements OnInit {
             this.postLoginRequest();
           } else {
             this.translate.get("login.errors.hashing").subscribe((translation)=>{
-            superToast({
-              message: translation,
-              type: "is-danger",
-              dismissible: false,
-              duration: 20000,
-              animate: { in: 'fadeIn', out: 'fadeOut' }
-            });
+            this.utils.toastError(this.toastr,translation,"")
           });
             this.isLoading=false;
           }
         });
       } catch {
         this.translate.get("login.errors.hashing").subscribe((translation)=>{
-          superToast({
-            message: translation,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+this.utils.toastError(this.toastr,translation,"")
         });
         this.isLoading=false;
       }
@@ -393,23 +295,11 @@ export class LoginComponent implements OnInit {
       if(error.status == 429){
         const ban_time = error.error.ban_time || "few";
         this.translate.get("login.errors.rate_limited", {time:String(ban_time)} ).subscribe((translation)=>{
-        superToast({
-          message: translation,
-          type: "is-danger",
-          dismissible: true,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr,translation,"")
       });
     } else {
       this.translate.get("login.errors.no_connection").subscribe((translation)=>{
-        superToast({
-          message: translation,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr,translation,"")
       });
     }
       this.isLoading=false;
@@ -443,13 +333,7 @@ export class LoginComponent implements OnInit {
         this.isLoading=false;
         console.log(e);
         this.translate.get("login.errors.server_error").subscribe((translation)=>{
-        superToast({
-          message: translation ,
-          type: "is-danger",
-          duration: 20000,
-          dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr,translation,"")
       });
       }
       
@@ -461,33 +345,15 @@ export class LoginComponent implements OnInit {
       if(error.status == 429){
         const ban_time = error.error.ban_time || "few";
         this.translate.get("login.errors.rate_limited",{time:String(ban_time)} ).subscribe((translation)=>{
-        superToast({
-          message: translation,
-          type: "is-danger",
-          dismissible: true,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr,translation,"")
       });
       } else if(error.error.message == "blocked"){
         this.translate.get("login.errors.account_blocked").subscribe((translation)=>{
-        superToast({
-          message: translation,
-          type: "is-danger",
-          dismissible: true,
-          duration: 99000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr,translation,"")
       });
       } else {
-        this.translate.get("generic_errors.error").subscribe((trans)=>{
-          superToast({
-            message: trans + " : "+ this.translate.instant((error.error.message) ? error.error.message : ""),
-            type: "is-danger",
-            dismissible: true,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+        this.translate.get("generic_errors.error").subscribe((translation)=>{
+          this.utils.toastError(this.toastr,translation + " : "+ this.translate.instant((error.error.message) ? error.error.message : ""),"")
         });
       }
       
@@ -510,33 +376,15 @@ export class LoginComponent implements OnInit {
             this.router.navigate(["/vault"], {relativeTo:this.route.root});
           }
         }, (error)=>{
-          superToast({
-            message: error,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr,error,"")
           this.isLoading=false;
         });
       }, (error)=>{
-        superToast({
-          message: error,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr,error,"")
         this.isLoading=false;
       });
     },(error)=>{
-      superToast({
-        message: error,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+this.utils.toastError(this.toastr,error,"")
           this.isLoading=false;
     });
   }

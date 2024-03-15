@@ -120,8 +120,8 @@ export class EditTOTPComponent implements OnInit{
     setInterval(()=> { this.generateCode() }, 100);
     setInterval(()=> { this.generateTime() }, 20);
     
-     this.utils.toastError("coucou", "salut")
-     this.utils.toastSuccess("coucou", "salut")
+   //  this.utils.toastError("coucou", "salut")
+  //   this.utils.toastSuccess("coucou", "salut")
   }
 
   checkName(){
