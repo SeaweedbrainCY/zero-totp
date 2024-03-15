@@ -4,7 +4,6 @@ import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
-import { toast as superToast } from 'bulma-toast'
 import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
@@ -14,7 +13,6 @@ import  * as URLParse from 'url-parse';
 import { dom } from '@fortawesome/fontawesome-svg-core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-
 @Component({
   selector: 'app-edit-totp',
   templateUrl: './edit-totp.component.html',
@@ -43,7 +41,6 @@ export class EditTOTPComponent implements OnInit{
   duration = 0;
   currentUrl:string = "";
   secret_uuid:string|null = null;
-  superToast = require('bulma-toast');
   isModalActive = false;  
   isDestroying = false;
   faviconPolicy=""; // never, always, enabledOnly
@@ -120,8 +117,7 @@ export class EditTOTPComponent implements OnInit{
     setInterval(()=> { this.generateCode() }, 100);
     setInterval(()=> { this.generateTime() }, 20);
     
-   //  this.utils.toastError("coucou", "salut")
-  //   this.utils.toastSuccess("coucou", "salut")
+
   }
 
   checkName(){
@@ -225,13 +221,7 @@ export class EditTOTPComponent implements OnInit{
         } else {
           this.faviconPolicy = "enabledOnly";
           this.translate.get("totp.favicon_policy.enabledOnly").subscribe((translation: string) => {
-          superToast({
-            message:translation,
-            type: "is-danger",
-            dismissible: false,
-            duration: 5000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+            this.utils.toastError(this.toastr,translation,"")
         });
         }
       }
@@ -246,13 +236,7 @@ export class EditTOTPComponent implements OnInit{
             errorMessage = "vault.error.server_unreachable"
             return;
           } 
-          superToast({
-            message: this.translate.instant("totp.error.update_pref") + this.translate.instant(errorMessage),
-            type: "is-danger",
-            dismissible: false,
-            duration: 5000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr, this.translate.instant("totp.error.update_pref") + this.translate.instant(errorMessage),"");
     });
   }
 
@@ -264,13 +248,7 @@ export class EditTOTPComponent implements OnInit{
         this.crypto.decrypt(data.enc_secret, this.userService.get_zke_key()!).then((decrypted_secret)=>{
           if(decrypted_secret == null){
             this.translate.get("totp.error.decryption").subscribe((translation: string) => {
-            superToast({
-              message:translation,
-             type: "is-warning",
-              dismissible: false,
-              duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-            });
+              this.utils.toastWarning(this.toastr,translation,"")
             });
           } else {
             const property = this.utils.mapFromJson(decrypted_secret);
@@ -316,13 +294,7 @@ export class EditTOTPComponent implements OnInit{
         });
       } catch {
         this.translate.get("totp.error.fetch_secret").subscribe((translation: string) => {
-        superToast({
-          message: translation,
-         type: "is-warning",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+            this.utils.toastWarning(this.toastr,translation,"")
       });
       }
     }, (error) => {
@@ -341,13 +313,7 @@ export class EditTOTPComponent implements OnInit{
         return;
       }
       this.translate.get("totp.error.fetch_secret_server").subscribe((translation: string) => {
-      superToast({
-        message: translation  + " " +this.translate.instant(errorMessage),
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr, translation  + " " +this.translate.instant(errorMessage),"");
       });
     });
   }
@@ -364,13 +330,7 @@ export class EditTOTPComponent implements OnInit{
       return;
     }
     if(this.code == this.translate.instant("totp.error.code")){
-      superToast({
-        message: this.translate.instant("totp.error.code"),
-       type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr, this.translate.instant("totp.error.code"),"");
       return;
     }
    
@@ -400,13 +360,7 @@ export class EditTOTPComponent implements OnInit{
       });
     } catch {
       this.translate.get("totp.error.encryption").subscribe((translation: string) => {
-      superToast({
-        message: translation ,
-       type: "is-warning",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+        this.utils.toastWarning(this.toastr,  translation ,"");
     });
     }
   }
@@ -414,12 +368,7 @@ export class EditTOTPComponent implements OnInit{
   addNewSecret(enc_property:string, property: Map<string,string>){
     this.uuid = window.crypto.randomUUID();
     this.http.post(ApiService.API_URL + "/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
-      superToast({
-        message: this.translate.instant("totp.secret.add.added"),
-        type: "is-success",
-        dismissible: true,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastSuccess(this.toastr,  this.translate.instant("totp.secret.add.added"),"");
       this.QRCodeService.setLabel('')
       this.QRCodeService.setSecret('')
       this.router.navigate(["/vault"], {relativeTo:this.route.root});
@@ -439,25 +388,14 @@ export class EditTOTPComponent implements OnInit{
         return;
       }
       this.translate.get("totp.error.update").subscribe((translation: string) => {
-      superToast({
-        message: translation  + " " +this.translate.instant(errorMessage),
-       type: "is-warning",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+        this.utils.toastWarning(this.toastr,  translation  + " " +this.translate.instant(errorMessage),"");
     });
     });
   }
 
   updateSecret(enc_property:string, property: Map<string,string>){
     this.http.put(ApiService.API_URL + "/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
-      superToast({
-        message: this.translate.instant("totp.secret.add.success") ,
-        type: "is-success",
-        dismissible: true,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.add.success") ,"");
       this.router.navigate(["/vault"], {relativeTo:this.route.root});
     }, (error) => {
       let errorMessage = "";
@@ -475,13 +413,7 @@ export class EditTOTPComponent implements OnInit{
         return;
       }
       this.translate.get("totp.error.update").subscribe((translation: string) => {
-      superToast({
-        message: translation + " " + this.translate.instant(errorMessage),
-       type: "is-warning",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+        this.utils.toastWarning(this.toastr,  translation + " " + this.translate.instant(errorMessage),"");
     });
     });
   }
@@ -491,22 +423,11 @@ export class EditTOTPComponent implements OnInit{
     this.http.delete(ApiService.API_URL + "/encrypted_secret/"+this.secret_uuid, {withCredentials:true, observe: 'response'}).subscribe((response) => {
       if(response.status == 201){
       this.isDestroying = false;
-      superToast({
-        message: this.translate.instant("totp.secret.delete.success"),
-        type: "is-success",
-        dismissible: true,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.delete.success"),"");
       this.router.navigate(["/vault"], {relativeTo:this.route.root});
     } else {
       this.isDestroying = false;
-      superToast({
-        message: this.translate.instant("totp.error.deleting"),
-       type: "is-warning",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastWarning(this.toastr,  this.translate.instant("totp.error.deleting"),"");
     }
      
     } , (error) => {
@@ -517,13 +438,7 @@ export class EditTOTPComponent implements OnInit{
       } else if(error.error.detail != null){
         errorMessage = error.error.detail;
       }
-      superToast({
-        message:  this.translate.instant("totp.error.deleting") + " " + errorMessage,
-       type: "is-warning",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastWarning(this.toastr,  this.translate.instant("totp.error.deleting") + " " + errorMessage,"");
     });
     
   }
