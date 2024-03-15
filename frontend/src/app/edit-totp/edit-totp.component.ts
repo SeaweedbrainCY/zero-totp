@@ -13,6 +13,8 @@ import { BnNgIdleService } from 'bn-ng-idle';
 import  * as URLParse from 'url-parse';
 import { dom } from '@fortawesome/fontawesome-svg-core';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-edit-totp',
   templateUrl: './edit-totp.component.html',
@@ -54,7 +56,8 @@ export class EditTOTPComponent implements OnInit{
     private utils: Utils,
     private crypto: Crypto,
     private bnIdle: BnNgIdleService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private toastr: ToastrService
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
@@ -116,6 +119,9 @@ export class EditTOTPComponent implements OnInit{
 
     setInterval(()=> { this.generateCode() }, 100);
     setInterval(()=> { this.generateTime() }, 20);
+    
+     this.utils.toastError("coucou", "salut")
+     this.utils.toastSuccess("coucou", "salut")
   }
 
   checkName(){

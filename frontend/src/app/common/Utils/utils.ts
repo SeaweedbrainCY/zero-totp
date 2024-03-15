@@ -1,6 +1,10 @@
+import { ToastrService } from "ngx-toastr";
 export class Utils {
 
-    constructor(){}
+    constructor(
+      private toastr: ToastrService
+
+    ){}
       
 
     sanitize(unsafe_str:string|null) : string |null {
@@ -89,5 +93,31 @@ export class Utils {
           }
         }
         return '';
+      }
+
+
+      public toastSuccess(title:string, message:string){
+        this.toastr.success(title, message,{
+          timeOut: 3000,
+          closeButton: true,
+          progressBar: true,
+          progressAnimation: 'decreasing',
+          tapToDismiss: true,
+          positionClass: 'toast-top-right',
+          titleClass: 'toast-title',
+          messageClass: 'toast-message',
+        });
+      }
+      public toastError(title:string, message:string){
+        this.toastr.error(title, message,{
+          timeOut: 30000,
+          closeButton: true,
+          progressBar: true,
+          progressAnimation: 'decreasing',
+          tapToDismiss: true,
+          positionClass: 'toast-top-right',
+          titleClass: 'toast-title',
+          messageClass: 'toast-message',
+        });
       }
 }
