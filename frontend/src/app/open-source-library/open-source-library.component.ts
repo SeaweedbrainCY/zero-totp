@@ -63,12 +63,12 @@ export class OpenSourceLibraryComponent {
       copyright:"Copyright (c) 2018 Posta.re",
     },
     {
-      name:"bulma-toast",
-      url:"https://github.com/rfoel/bulma-toast",
-      description:"A pure CSS toast notification for Bulma.io.",
+      name:"ngx-toastr",
+      url:"https://github.com/scttcper/ngx-toastr",
+      description:"🍞 Angular Toastr",
       license:"MIT license",
-      licenseUrl:"https://github.com/rfoel/bulma-toast/blob/main/LICENSE",
-      copyright:"Copyright (c) 2018 Rafael Franco",
+      licenseUrl:"https://github.com/scttcper/ngx-toastr?tab=MIT-1-ov-file#readme",
+      copyright:"Copyright (c) Scott Cooper <scttcper@gmail.com"
     },
     {
       name:"bulma",
