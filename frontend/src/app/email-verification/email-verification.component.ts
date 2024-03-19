@@ -4,8 +4,9 @@ import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../common/ApiService/api-service';
-import { toast as superToast } from 'bulma-toast'
 import { TranslateService } from '@ngx-translate/core';
+import { Utils } from '../common/Utils/utils';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-email-verification',
@@ -30,7 +31,9 @@ export class EmailVerificationComponent implements OnInit {
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private utils: Utils,
+    private toastr: ToastrService
   ) { 
     this.emailAddress = this.userService.getEmail();
     if (this.emailAddress == null) {
@@ -67,12 +70,7 @@ export class EmailVerificationComponent implements OnInit {
     this.http.put(ApiService.API_URL+"/email/verify",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
       if(response.status == 200){
         this.verifyLoading = false;
-        superToast({
-          message: this.translate.instant("email_verif.verify.success") ,
-          type: "is-success",
-          dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastSuccess(this.toastr, this.translate.instant("email_verif.verify.success") ,"");
         if(this.userService.getId() == null){
           this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
         } else {
@@ -94,12 +92,7 @@ export class EmailVerificationComponent implements OnInit {
           this.errorMessage = this.translate.instant("email_verif.error.generic");
         }
       } else {
-        superToast({
-          message:this.translate.instant("email_verif.error.unknown") ,
-          type: "is-danger",
-          dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr,this.translate.instant("email_verif.error.unknown") ,"");
       }
     });
   }
@@ -108,32 +101,16 @@ export class EmailVerificationComponent implements OnInit {
     this.verifyLoading = true;
     this.http.get(ApiService.API_URL+"/email/send_verification", {withCredentials: true, observe: 'response'}).subscribe((response) => {
       this.verifyLoading = false;
-        superToast({
-          message:this.translate.instant("email_verif.resend.success") ,
-          type: "is-success",
-          dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+      this.utils.toastSuccess(this.toastr,this.translate.instant("email_verif.resend.success") ,"");
     }, (error) => {
       this.verifyLoading = false;
       if(error.status == 429){
         const ban_time = error.error.ban_time || "few";
         this.translate.get("email_verif.error.rate_limited",{time:String(ban_time)} ).subscribe((translation)=>{
-        superToast({
-          message: translation,
-          type: "is-danger",
-          dismissible: true,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+          this.utils.toastError(this.toastr, translation,"");
       });
       } else {
-      superToast({
-        message:this.translate.instant("email_verif.resend.error") ,
-        type: "is-danger",
-        dismissible: true,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+        this.utils.toastError(this.toastr,this.translate.instant("email_verif.resend.error") ,"");
     }
     });
   }
@@ -169,12 +146,7 @@ export class EmailVerificationComponent implements OnInit {
       this.http.put(ApiService.API_URL+"/update/email",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
         this.emailLoading = false;
         this.translate.get("email_verif.popup.success").subscribe((translation:string) => {
-        superToast({
-          message:translation,
-          type: "is-success",
-          dismissible: true,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+          this.utils.toastSuccess(this.toastr,translation,"");
       });
         this.userService.setEmail(JSON.parse(JSON.stringify(response.body))["message"])
         this.emailAddress = this.userService.getEmail();
