@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ZXingScannerComponent } from '@zxing/ngx-scanner';
-import { toast as superToast } from 'bulma-toast'
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 import { BnNgIdleService } from 'bn-ng-idle';
 import { TranslateService } from '@ngx-translate/core';
+import { Utils } from '../common/Utils/utils';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-qrcode-reader',
   templateUrl: './qrcode-reader.component.html',
@@ -29,7 +30,9 @@ export class QrcodeReaderComponent implements OnInit {
     private userService : UserService,
     private qrCode: QrCodeTOTP,
     private bnIdle: BnNgIdleService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private utils:Utils,
+    private toastr:ToastrService
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
@@ -72,12 +75,7 @@ export class QrcodeReaderComponent implements OnInit {
       this.scannerEnabled = false;
     
     this.qrResultString = resultString;
-    superToast({
-      message: "Got it!",
-      type: "is-success",
-      dismissible: true,
-    animate: { in: 'fadeIn', out: 'fadeOut' }
-    });
+    this.utils.toastSuccess(this.toastr, "Got it!","");
     this.qrResultString = decodeURIComponent(this.qrResultString);
     const substring = ['otpauth://totp/', '?', 'secret=']
     let patternOK = true;
@@ -88,13 +86,7 @@ export class QrcodeReaderComponent implements OnInit {
     }
     if(!patternOK){
       this.translate.get('qrcode.error.pattern_invalid').subscribe((translation: string) => {
-      superToast({
-        message: translation,
-        type: "is-warning",
-        duration: 20000,
-        dismissible: false,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+        this.utils.toastWarning(this.toastr, translation,"");
     });
     } else {
       const radical = this.qrResultString.split('otpauth://totp/')[1]
@@ -111,13 +103,7 @@ export class QrcodeReaderComponent implements OnInit {
         this.navigate("/vault/add")
       } catch {
         this.translate.get('qrcode.error.read_error').subscribe((translation: string) => {
-          superToast({
-            message: translation,
-            type: "is-warning",
-            duration: 20000,
-            dismissible: false,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastWarning(this.toastr,  translation,"");
         });
       }
 
