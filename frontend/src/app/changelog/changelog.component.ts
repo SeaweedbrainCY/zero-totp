@@ -21,6 +21,7 @@ export class ChangelogComponent {
       ],
       fixed:[
         "We improve the edit TOTP code page, especially when the TOTP secret is invalid or malformed in a way the user understands the problem and can fix it more easily.",
+        "We updated our dependencies to fix a moderate CVE."
       ]
     },
     {
