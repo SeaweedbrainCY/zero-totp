@@ -6,13 +6,13 @@ import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
-import { toast as superToast } from 'bulma-toast'
 import { Utils } from '../common/Utils/utils';
 import { error } from 'console';
 import { formatDate } from '@angular/common';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
 import { BnNgIdleService } from 'bn-ng-idle';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr'; 
 
 @Component({
   selector: 'app-vault',
@@ -65,7 +65,8 @@ export class VaultComponent implements OnInit {
     private crypto: Crypto,
     private utils: Utils,
     private bnIdle: BnNgIdleService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private toastr: ToastrService
     ) {  }
 
   ngOnInit() {
@@ -118,13 +119,7 @@ export class VaultComponent implements OnInit {
             return;
           }
           this.translate.get("vault.error.server").subscribe((translation: string) => {
-          superToast({
-            message:translation +  " " + this.translate.instant(errorMessage),
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr, translation +  " " + this.translate.instant(errorMessage),"");
         });
         }
       });
@@ -147,13 +142,7 @@ export class VaultComponent implements OnInit {
         } else {
           this.faviconPolicy = "enabledOnly";
           this.translate.get("vault.error.preferences").subscribe((translation: string) => {
-          superToast({
-            message: translation ,
-            type: "is-danger",
-            dismissible: false,
-            duration: 5000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+            this.utils.toastError(this.toastr,translation ,"");
         });
         }
       }
@@ -169,13 +158,7 @@ export class VaultComponent implements OnInit {
             return;
           } 
           this.translate.get("vault.error.server").subscribe((translation: string) => {
-          superToast({
-            message: "Error : Impossible to update your preferences. "+ this.translate.instant(errorMessage),
-            type: "is-danger",
-            dismissible: false,
-            duration: 5000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+            this.utils.toastError(this.toastr, "Error : Impossible to update your preferences. "+ this.translate.instant(errorMessage),"");
         });
     });
   }
@@ -191,13 +174,7 @@ export class VaultComponent implements OnInit {
           this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
             if(dec_secret == null){
               this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
-              superToast({
-                message: translation,
-                type: "is-danger",
-                dismissible: false,
-                duration: 20000,
-              animate: { in: 'fadeIn', out: 'fadeOut' }
-              });
+                this.utils.toastError(this.toastr, translation,"");
             });
               let fakeProperty = new Map<string, string>();
               fakeProperty.set("color","info");
@@ -212,60 +189,30 @@ export class VaultComponent implements OnInit {
                   this.filterVault(); // to display all the vault
                 } catch {
                   this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
-                  superToast({
-                    message:"vault.error.wrong_key",
-                    type: "is-danger",
-                    dismissible: false,
-                    duration: 20000,
-                  animate: { in: 'fadeIn', out: 'fadeOut' }
-                  });
+                    this.utils.toastError(this.toastr,"vault.error.wrong_key","");
                 });
                 }
               }
           }).catch((error)=>{
             this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-            superToast({
-              message:  translation + " " + error,
-              type: "is-danger",
-              dismissible: false,
-              duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-            });
+              this.utils.toastError(this.toastr,  translation + " " + error,"");
           });
           });
         }
         this.reloadSpin = false
       } catch {
         this.translate.get("vault.error.wrong_key_vault").subscribe((translation: string) => {
-        superToast({
-          message:translation,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+            this.utils.toastError(this.toastr,translation,"")
       });
       }
     } else {
       this.translate.get("vault.error.decryption_vault").subscribe((translation: string) => {
-      superToast({
-        message: translation,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+          this.utils.toastError(this.toastr,translation,"")
     });
     }
     } catch(e){
       this.translate.get("vault.error.retrieve_vault").subscribe((translation: string) => {
-      superToast({
-        message: translation,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+        this.utils.toastError(this.toastr,translation,"")
     });
     }
   }
@@ -327,12 +274,7 @@ export class VaultComponent implements OnInit {
   }
 
   copy(){
-    superToast({
-      message: this.translate.instant("copied"),
-      type: "is-success",
-      dismissible: true,
-    animate: { in: 'fadeIn', out: 'fadeOut' }
-    });
+    this.utils.toastSuccess(this.toastr,this.translate.instant("copied"),"");
   }
 
   reload(){
@@ -349,13 +291,7 @@ export class VaultComponent implements OnInit {
         a.download = 'enc_vault_' + date + '.zero-totp';
         a.click();
         window.URL.revokeObjectURL(url);
-      superToast({
-        message: this.translate.instant("vault.downloaded") ,
-        type: "is-success",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+        this.utils.toastSuccess(this.toastr, this.translate.instant("vault.downloaded") ,"");
     }, error => {
       let errorMessage = "";
       if(error.error.message != null){
@@ -372,13 +308,7 @@ export class VaultComponent implements OnInit {
         return;
       }
       this.translate.get("vault.error.server").subscribe((translation: string) => {
-      superToast({
-        message: translation + " " + this.translate.instant(errorMessage),
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+        this.utils.toastError(this.toastr,  translation + " " + this.translate.instant(errorMessage),"");
     });
     });
   }
@@ -396,13 +326,7 @@ export class VaultComponent implements OnInit {
           errorMessage = error.error.detail;
         }
         this.translate.get("vault.error.server").subscribe((translation: string) => {
-        superToast({
-          message: translation + " "+ errorMessage,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+          this.utils.toastError(this.toastr,  translation + " "+ errorMessage,"");
       });
     });
   }
@@ -427,13 +351,7 @@ export class VaultComponent implements OnInit {
           errorMessage = error.error.detail;
         }
         this.translate.get("vault.error.server").subscribe((translation: string) => {
-          superToast({
-            message: translation + " "+ errorMessage,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr,  translation + " "+ errorMessage,"");
         });
     });
   }
@@ -451,13 +369,7 @@ export class VaultComponent implements OnInit {
               errorMessage = error.error.title;
             }
             this.translate.get("vault.error.backup.part1").subscribe((translation: string) => {
-            superToast({
-              message: translation + " " + errorMessage + ". " + this.translate.instant("vault.error.backup.part2"),
-              type: "is-danger",
-              dismissible: false,
-              duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-            });
+              this.utils.toastError(this.toastr,  translation + " " + errorMessage + ". " + this.translate.instant("vault.error.backup.part2"),"");
           });
           });
   }
@@ -476,23 +388,11 @@ export class VaultComponent implements OnInit {
       } else if (data.status == "corrupted_file"){
         this.isGoogleDriveSync = "error";
         this.translate.get("vault.error.google.unreadable").subscribe((translation: string) => {
-        superToast({
-          message: translation,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+          this.utils.toastError(this.toastr,  translation,"");
       });
       } else {
         this.translate.get("vault.error.google.unreadable").subscribe((translation: string) => {
-          superToast({
-            message: translation,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr,  translation,"");
         });
       }
     }, (error) => {
@@ -507,13 +407,7 @@ export class VaultComponent implements OnInit {
         errorMessage = error.error.detail;
       }
       this.translate.get("vault.error.google.verify").subscribe((translation: string) => {
-      superToast({
-        message:  translation + ". "+ errorMessage,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+        this.utils.toastError(this.toastr,  translation + ". "+ errorMessage,"");
     });
     }
     });
@@ -523,12 +417,7 @@ export class VaultComponent implements OnInit {
     this.http.delete(ApiService.API_URL+"/google-drive/option",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
       this.isGoogleDriveEnabled = false;
       this.isGoogleDriveSync = "false";
-      superToast({
-        message: this.translate.instant("vault.google.disabled"),
-        type: "is-success",
-        dismissible: true,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastSuccess(this.toastr, this.translate.instant("vault.google.disabled"),"");
     }, (error) => {
       this.isGoogleDriveSync = 'error';
       let errorMessage = "";
@@ -537,15 +426,11 @@ export class VaultComponent implements OnInit {
       } else if(error.error.detail != null){
         errorMessage = error.error.detail;
       }
-      superToast({
-        message: this.translate.instant("vault.error.google.disable") + " " + errorMessage,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+
+      this.utils.toastError(this.toastr, this.translate.instant("vault.error.google.disable") + " " + errorMessage,"");
     });
-  }
+    }
+
 
   get_favicon_url(unsafe_domain:string | undefined): string{
     if(unsafe_domain == undefined){

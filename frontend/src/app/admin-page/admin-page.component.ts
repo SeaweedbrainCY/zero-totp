@@ -4,9 +4,9 @@ import { ApiService } from '../common/ApiService/api-service';
 import { faCircleNotch, faGear, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { toast as superToast } from 'bulma-toast'
 import { Crypto } from '../common/Crypto/crypto';
- 
+import { Utils } from '../common/Utils/utils';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-admin-page',
@@ -37,7 +37,9 @@ export class AdminPageComponent implements OnInit {
       private userService: UserService,
       private router: Router,
       private route: ActivatedRoute,
-      private crypto: Crypto
+      private crypto: Crypto,
+      private utils: Utils,
+      private toastr: ToastrService
       ) { 
 
     }
@@ -56,13 +58,7 @@ export class AdminPageComponent implements OnInit {
         this.users = body.users;
 
       } catch (e) {
-        superToast({
-          message: "Impossible to fetch users. "+ e,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr,"Impossible to fetch users. "+ e,"");
       }
     }, (error) => {
       let errorMessage = "";
@@ -71,13 +67,7 @@ export class AdminPageComponent implements OnInit {
       } else if(error.error.detail != null){
         errorMessage = error.error.detail;
       }
-      superToast({
-        message: "Impossible to fetch users. "+ errorMessage,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr,"Impossible to fetch users. "+ errorMessage,"");
     });
   }
 
@@ -137,13 +127,7 @@ export class AdminPageComponent implements OnInit {
           } else if(error.error.detail != null){
             errorMessage = error.error.detail;
           }
-          superToast({
-            message: "Challenge failed. "+ errorMessage,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr, "Challenge failed. "+ errorMessage,"");
         });
   }
 
@@ -179,13 +163,7 @@ export class AdminPageComponent implements OnInit {
     this.http.delete(ApiService.API_URL+"/admin/account/"+this.userToDelete.id,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       this.isDeletionModalActive = false;
       this.getUsers();
-      superToast({
-        message: "User deleted",
-        type: "is-success",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastSuccess(this.toastr, "User deleted","");
     }, (error) => {
       let errorMessage = "";
       if(error.error.message != null){
@@ -193,26 +171,14 @@ export class AdminPageComponent implements OnInit {
       } else if(error.error.detail != null){
         errorMessage = error.error.detail;
       }
-      superToast({
-        message: "Impossible to delete user. "+ errorMessage,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr,"Impossible to delete user. "+ errorMessage,"");
     });
   }
 
   blockAccount(){
     this.http.put(ApiService.API_URL+"/admin/account/"+this.userToBlock.id+"/block", {}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
       this.getUsers();
-      superToast({
-        message: "User blocked",
-        type: "is-success",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastSuccess(this.toastr, "User blocked","");
     }, (error) => {
       let errorMessage = "";
       if(error.error.message != null){
@@ -220,40 +186,22 @@ export class AdminPageComponent implements OnInit {
       } else if(error.error.detail != null){
         errorMessage = error.error.detail;
       }
-      superToast({
-        message: "Impossible to block user. "+ errorMessage,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr,"Impossible to block user. "+ errorMessage,"");
     });
   }
 
   unblockAccount(){
     this.http.put(ApiService.API_URL+"/admin/account/"+this.userToBlock.id+"/unblock", {}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
       this.getUsers();
-      superToast({
-        message: "User unblocked",
-        type: "is-success",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastSuccess(this.toastr,"User unblocked","");
     }, (error) => {
       let errorMessage = "";
       if(error.error.message != null){
         errorMessage = error.error.message;
       } else if(error.error.detail != null){
-        errorMessage = error.error.detail;
+        errorMessage = error.error.detail
       }
-      superToast({
-        message: "Impossible to unblock user. "+ errorMessage,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr, "Impossible to unblock user. "+ errorMessage,"");
     });
   }
 }
