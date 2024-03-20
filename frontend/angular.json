@@ -32,7 +32,6 @@
               "node_modules/bulma-modal-fx/dist/css/modal-fx.min.css"
             ],
             "scripts": [
-              "node_modules/bulma-toast/dist/bulma-toast.min.js"
             ]
           },
           "configurations": {

@@ -6,7 +6,7 @@ import { SecurityContext } from '@angular/core';
 import { Utils } from '../common/Utils/utils';
 import { faLock, faEyeSlash, faFingerprint, faUserLock, faHouse, faMobileScreenButton, faCode, faKitMedical, faAngleDown, faPen, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import { toast as superToast } from 'bulma-toast'
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-home',
@@ -49,7 +49,9 @@ export class HomeComponent implements OnInit {
   constructor(
     private userService:UserService, 
     private _sanitizer: DomSanitizer,
-    private utils: Utils){
+    private utils: Utils,
+    private toastr:ToastrService
+    ){
   }
 
   ngOnInit(){
@@ -86,12 +88,7 @@ export class HomeComponent implements OnInit {
   }
 
   copy(){
-    superToast({
-      message: "Copied !",
-      type: "is-success",
-      dismissible: true,
-    animate: { in: 'fadeIn', out: 'fadeOut' }
-    });
+    this.utils.toastSuccess(this.toastr, "Copied !", "");
   }
 
  login(){

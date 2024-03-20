@@ -3,13 +3,11 @@ import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, f
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
-import { toast } from 'bulma-toast';
-import { toast as superToast } from 'bulma-toast'
 import { Utils } from '../common/Utils/utils';
 import { Crypto } from '../common/Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-signup',
@@ -55,7 +53,8 @@ export class SignupComponent implements OnInit {
     private crypto:Crypto,
     private router: Router,
     private route: ActivatedRoute,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private toastr: ToastrService
     ) { }
 
   ngOnInit(): void {
@@ -127,34 +126,15 @@ this.closeModal()
     this.usernameErrorMessage="";
     this.passwordErrorMessage = [''];
     if(!this.terms){
-      superToast({
-        message: this.translate.instant("signup.errors.terms"),
-        type: "is-danger",
-        dismissible: true,
-        duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr, this.translate.instant("signup.errors.terms"),"");
       return;
     }
     if(!this.beta){
-      superToast({
-        message: this.translate.instant("signup.errors.beta"),
-        type: "is-danger",
-        dismissible: true,
-        duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' },
-      });
+      this.utils.toastError(this.toastr, this.translate.instant("signup.errors.beta"),"");
       return;
     }
     if(this.username == "" || this.email == "" || this.password == ""){
-      superToast({
-        message: this.translate.instant("signup.errors.missing_fields") ,
-        type: "is-danger",
-        dismissible: true,
-        duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' },
-        extraClasses: "has-text-weight-bold "
-      });
+      this.utils.toastError(this.toastr, this.translate.instant("signup.errors.missing_fields") ,"");
       return;
     }
     this.checkPassword();
@@ -181,13 +161,7 @@ this.closeModal()
             this.password = hashed;
             this.signupRequest();
           } else {
-            superToast({
-              message: this.translate.instant("signup.errors.hashing") ,
-              type: "is-danger",
-              dismissible: false,
-              duration: 20000,
-              animate: { in: 'fadeIn', out: 'fadeOut' }
-            });
+            this.utils.toastError(this.toastr, this.translate.instant("signup.errors.hashing") ,"");
           }
         });
   }
@@ -204,12 +178,7 @@ this.closeModal()
 
     this.http.post(ApiService.API_URL+"/signup", data, {observe: 'response'}).subscribe((response) => {
       this.isLoading=false;
-      superToast({
-        message: this.translate.instant("signup.success"),
-        type: "is-success",
-        dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastSuccess(this.toastr, this.translate.instant("signup.success"),"");
       this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
 
     },
@@ -219,13 +188,7 @@ this.closeModal()
       if(error.error.message == undefined){
         error.error.message = this.translate.instant("signup.errors.unknown");
       }
-      superToast({
-        message: "Error : "+ error.error.message,
-        type: "is-danger",
-        dismissible: true,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr,  "Error : "+ error.error.message,"");
     });
   }
 

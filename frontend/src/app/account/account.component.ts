@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { toast as superToast } from 'bulma-toast'
 import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash,faVault, faExclamationTriangle, faEye, faEyeSlash, faCircleExclamation, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -9,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-account',
@@ -70,7 +70,8 @@ export class AccountComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private crypto:Crypto,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private toastr: ToastrService
     ){}
 
   
@@ -126,12 +127,7 @@ export class AccountComponent implements OnInit {
       this.buttonLoading["username"] = 1
       this.http.put(ApiService.API_URL+"/update/username",  {username: this.username}, {withCredentials: true, observe: 'response'}).subscribe((response) => {
         this.buttonLoading["username"] = 0
-        superToast({
-          message: this.translate.instant('account.username.success'),
-          type: "is-success",
-          dismissible: true,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastSuccess(this.toastr, this.translate.instant('account.username.success'), "");
         this.get_whoami();
         
       }, error =>{
@@ -139,12 +135,7 @@ export class AccountComponent implements OnInit {
         if(error.error.message == undefined){
           error.error.message = 'account.username.error.unknown';
         }
-        superToast({
-          message: "Error : "+this.translate.instant(error.error.message),
-          type: "is-danger",
-          dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr,"Error : "+this.translate.instant(error.error.message),"");
       });
     }
   }
@@ -170,12 +161,7 @@ export class AccountComponent implements OnInit {
   updateEmail(){
     if(this.email == ""){
       this.translate.get("signup.errors.missing_fields").subscribe((translation: string) => {
-      superToast({
-        message: translation,
-        type: "is-danger",
-        dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr,translation,"")
     });
       return;
     }
@@ -188,12 +174,7 @@ export class AccountComponent implements OnInit {
     }
     this.http.put(ApiService.API_URL+"/update/email",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
       this.buttonLoading["email"] = 0
-      superToast({
-        message: this.translate.instant('account.email.success'),
-        type: "is-success",
-        dismissible: true,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastSuccess(this.toastr, this.translate.instant('account.email.success'),"");
       this.userService.setEmail(JSON.parse(JSON.stringify(response.body))["message"])
       this.get_whoami();
     }, error =>{
@@ -201,12 +182,7 @@ export class AccountComponent implements OnInit {
       if(error.error.message == undefined){
         error.error.message = this.translate.instant('account.email.error');
       }
-      superToast({
-        message: "Error : "+ error.error.message,
-        type: "is-danger",
-        dismissible: true,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr, "Error : "+ error.error.message,"");
     });
   }
 
@@ -220,13 +196,7 @@ export class AccountComponent implements OnInit {
     let isOk = true;
     if(this.password == ""){
       this.translate.get("account.passphrase.no_former_passphrase").subscribe((translation: string) => {
-      superToast({
-        message: translation,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+      this.utils.toastError(this.toastr,translation,"")
     });
       isOk = false;
     }
@@ -266,13 +236,7 @@ export class AccountComponent implements OnInit {
         this.hashedOldPassword = hashed;
         this.sendDeleteAccountRequest().then(_ => {
           this.router.navigate(["/logout"], {relativeTo:this.route.root});
-          superToast({
-            message: this.translate.instant("account.delete.success"),
-            type: "is-success",
-            dismissible: true,
-            duration: 10000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastSuccess(this.toastr, this.translate.instant("account.delete.success"),"");
         }, error => {
           this.buttonLoading['deletion'] =0
         this.deletionErrorMessage = this.translate.instant("account.delete.error.aborted") ;
@@ -317,13 +281,7 @@ export class AccountComponent implements OnInit {
           }
           this.isGoogleDriveBackupEnabled = false;
           this.translate.get("account.passphrase.popup.google.fetch_error").subscribe((translation: string) => {
-          superToast({
-            message: translation + " " + errorMessage,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+            this.utils.toastError(this.toastr, translation + " " + errorMessage,"");
         });
       });
   }
@@ -340,13 +298,7 @@ export class AccountComponent implements OnInit {
         } else if(error.error.detail != null){
           errorMessage = error.error.detail;
         }
-        superToast({
-          message: this.translate.instant("account.passphrase.popup.google.delete_error") + " " + errorMessage,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.popup.google.delete_error") + " " + errorMessage,"");
         reject(error)
       });
     });
@@ -363,13 +315,7 @@ export class AccountComponent implements OnInit {
         } else if(error.error.detail != null){
           errorMessage = error.error.detail;
         }
-        superToast({
-          message: this.translate.instant("account.passphrase.popup.google.backup_error") + " "+ errorMessage,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr,this.translate.instant("account.passphrase.popup.google.backup_error") + " "+ errorMessage,"");
         reject(error)
       });
     });
@@ -408,25 +354,13 @@ export class AccountComponent implements OnInit {
                                 if(this.isGoogleDriveBackupEnabled){
                                   this.backup().then(_ => {
                                     this.stepsDone.push("backup");
-                                    superToast({
-                                      message: this.translate.instant("account.passphrase.popup.updating.success") ,
-                                      type: "is-success",
-                                      dismissible: true,
-                                      duration: 10000,
-                                      animate: { in: 'fadeIn', out: 'fadeOut' }
-                                    });
+                                    this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success") ,"");
                                     this.router.navigate(["/login"], {relativeTo:this.route.root});
                                   }, error =>{
                                     this.updateAborted('#8. Reason : '+error)
                                   });
                                 }
-                                superToast({
-                                  message: this.translate.instant("account.passphrase.popup.updating.success") ,
-                                  type: "is-success",
-                                  dismissible: true,
-                                  duration: 10000,
-                                  animate: { in: 'fadeIn', out: 'fadeOut' }
-                                });
+                                this.utils.toastSuccess(this.toastr,this.translate.instant("account.passphrase.popup.updating.success") ,"");
                                 this.router.navigate(["/login"], {relativeTo:this.route.root});
                               }, error =>{
                                 this.updateAborted('#7. Reason : '+error)
@@ -435,25 +369,13 @@ export class AccountComponent implements OnInit {
                               if(this.isGoogleDriveBackupEnabled){
                                 this.backup().then(_ => {
                                   this.stepsDone.push("backup");
-                                  superToast({
-                                    message: this.translate.instant("account.passphrase.popup.updating.success") ,
-                                    type: "is-success",
-                                    dismissible: true,
-                                    duration: 10000,
-                                    animate: { in: 'fadeIn', out: 'fadeOut' }
-                                  });
+                                  this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success") ,"");
                                   this.router.navigate(["/login"], {relativeTo:this.route.root});
                                 }, error =>{
                                   this.updateAborted('#8. Reason : '+error)
                                 });
                               } else {
-                                superToast({
-                                  message: this.translate.instant("account.passphrase.popup.updating.success") ,
-                                  type: "is-success",
-                                  dismissible: true,
-                                  duration: 10000,
-                                  animate: { in: 'fadeIn', out: 'fadeOut' }
-                                });
+                                this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success") ,"");
                                 this.router.navigate(["/login"], {relativeTo:this.route.root});
                               }
                             }
@@ -484,13 +406,7 @@ export class AccountComponent implements OnInit {
 
   updateAborted(errorCode: string){
     this.buttonLoading["passphrase"] = 0
-    superToast({
-      message: this.translate.instant("account.passphrase.error.full_abort") + " " + errorCode,
-      type: "is-danger",
-      dismissible: false,
-      duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-    });
+    this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.full_abort") + " " + errorCode,"");
   }
 
 
@@ -505,13 +421,7 @@ export class AccountComponent implements OnInit {
         if(hashed != null){
             resolve(hashed);
         } else {
-          superToast({
-            message: this.translate.instant("account.passphrase.error.hashing"),
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.hashing"),"");
             reject("hashed is null");
         }
       });
@@ -529,13 +439,7 @@ export class AccountComponent implements OnInit {
       resolve("ok");
       },
      (error) => {
-       superToast({
-         message: this.translate.instant("account.passphrase.error.incorrect"),
-         type: "is-danger",
-         duration: 20000,
-         dismissible: false,
-       animate: { in: 'fadeIn', out: 'fadeOut' }
-       });
+      this.utils.toastError(this.toastr,this.translate.instant("account.passphrase.error.incorrect"),"");
        this.buttonLoading["passphrase"] = 0
        reject(error)
      });
@@ -554,25 +458,13 @@ export class AccountComponent implements OnInit {
             for (let secret of data.enc_secrets){
               this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
                 if(dec_secret == null){
-                  superToast({
-                    message: this.translate.instant("account.passphrase.error.wrong_key"),
-                    type: "is-danger",
-                    dismissible: false,
-                    duration: 20000,
-                  animate: { in: 'fadeIn', out: 'fadeOut' }
-                  });
+                  this.utils.toastError(this.toastr,this.translate.instant("account.passphrase.error.wrong_key"),"");
                   reject("dec_secret is null");
                 } else {
                     try{
                       vault.set(secret.uuid, this.utils.mapFromJson(dec_secret));
                     } catch(e) {
-                      superToast({
-                        message:this.translate.instant("account.passphrase.error.decrypt_one_secret"), 
-                        type: "is-danger",
-                        dismissible: false,
-                        duration: 20000,
-                      animate: { in: 'fadeIn', out: 'fadeOut' }
-                      });
+                      this.utils.toastError(this.toastr,this.translate.instant("account.passphrase.error.decrypt_one_secret"), "");
                       reject(e)
                     }
                   }
@@ -580,33 +472,15 @@ export class AccountComponent implements OnInit {
             }
             resolve(vault)
           } catch(e) {
-            superToast({
-              message: this.translate.instant("account.passphrase.error.wrong_key_vault"),
-              type: "is-danger",
-              dismissible: false,
-              duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-            });
+            this.utils.toastError(this.toastr,this.translate.instant("account.passphrase.error.wrong_key_vault"),"");
             reject(e)
           }
         } else {
-          superToast({
-            message: this.translate.instant("account.passphrase.error.expired") ,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.expired") ,"");
           reject("zke_key is null");
         }
         } catch(e){
-          superToast({
-            message: this.translate.instant("account.passphrase.error.fetch_vault"),
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.fetch_vault"),"");
           reject(e)
         }
       }, (error) => {
@@ -627,13 +501,7 @@ export class AccountComponent implements OnInit {
             return;
           }
 
-          superToast({
-            message: this.translate.instant("account.passphrase.error.fetch_vault") + " "+ errorMessage,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.fetch_vault") + " "+ errorMessage,"");
           reject(error)
         }
       });
@@ -646,13 +514,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
       resolve(derivedKey);
     }, error => {
       this.translate.get("account.passphrase.error.derive").subscribe((translation: string) => {
-      superToast({
-        message: translation,
-        type: "is-danger",
-        dismissible: false,
-        duration: 20000,
-      animate: { in: 'fadeIn', out: 'fadeOut' }
-      });
+        this.utils.toastError(this.toastr, translation,"");
       reject(error)
     });
   });
@@ -677,13 +539,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
             enc_vault.set(uuid, enc_property);
           });
         } catch(e) {
-          superToast({
-            message: this.translate.instant("account.passphrase.error.decrypt"),
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr,this.translate.instant("account.passphrase.error.decrypt"),"");
           reject(e)
         }
       }
@@ -764,32 +620,17 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
       }, error =>{
         if(error.status == 500){
           if (error.error.hashing == 1){
-            superToast({
-              message: this.translate.instant('account.passphrase.error.hash_new') ,
-              type: "is-danger",
-              dismissible: false,
-              duration: 20000,
-            });
+            this.utils.toastError(this.toastr, this.translate.instant('account.passphrase.error.hash_new') ,"");
             reject(error.status)
           } else {
             this.translate.get("account.passphrase.error.fatal").subscribe((translation: string) => {
-            superToast({
-              message: translation +error.error.totp +" "+ error.error.zke + error.error.user ,
-              type: "is-danger",
-              dismissible: false,
-              duration: 2000000,
-            });
+              this.utils.toastError(this.toastr,translation +error.error.totp +" "+ error.error.zke + error.error.user ,"");
           });
             reject(error.status)
           }
           resolve("ok");
         } else {
-          superToast({
-            message: this.translate.instant("account.passphrase.error.fatal_light") + error.status +" "+ error.error.message,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          });
+          this.utils.toastError(this.toastr,this.translate.instant("account.passphrase.error.fatal_light") + error.status +" "+ error.error.message,"");
           reject(error.status)
         }
       });
@@ -810,13 +651,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
         } else if(error.error.detail != null){
           errorMessage = error.error.detail;
         }
-        superToast({
-          message: errorMessage,
-          type: "is-danger",
-          dismissible: false,
-          duration: 20000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
-        });
+        this.utils.toastError(this.toastr, errorMessage,"");
         reject(errorMessage)
       });
     });

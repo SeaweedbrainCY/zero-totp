@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { toast as superToast } from 'bulma-toast'
 import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
@@ -8,6 +7,8 @@ import { Utils } from '../common/Utils/utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
+
 
 @Component({
   selector: 'app-preferences',
@@ -40,7 +41,8 @@ export class PreferencesComponent implements OnInit{
     private router: Router,
     private route: ActivatedRoute,
     private crypto:Crypto,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private toastr: ToastrService
     ){}
 
   
@@ -62,13 +64,7 @@ export class PreferencesComponent implements OnInit{
           this.loadingPreferencesError = true;
           this.faviconPolicy = "enabledOnly";
           this.translate.get('preference.error.fetch').subscribe((translation: string) => {
-          superToast({
-            message: translation,
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+          this.utils.toastError(this.toastr,translation,"")
         });
         }
       }
@@ -89,13 +85,7 @@ export class PreferencesComponent implements OnInit{
             return;
           }
           this.translate.get('preference.error.update').subscribe((translation: string) => {
-          superToast({
-            message: translation + " " + this.translate.instant(errorMessage),
-            type: "is-danger",
-            dismissible: false,
-            duration: 20000,
-          animate: { in: 'fadeIn', out: 'fadeOut' }
-          });
+            this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
         });
     });
   }
@@ -125,13 +115,7 @@ export class PreferencesComponent implements OnInit{
           }
 
           this.translate.get('preference.error.update').subscribe((translation: string) => {
-            superToast({
-              message: translation + " " + this.translate.instant(errorMessage),
-              type: "is-danger",
-              dismissible: false,
-              duration: 20000,
-            animate: { in: 'fadeIn', out: 'fadeOut' }
-            });
+            this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
           });
     });
   }

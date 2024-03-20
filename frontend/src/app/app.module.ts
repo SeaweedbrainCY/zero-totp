@@ -39,8 +39,8 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateService, MissingTranslationHandler, MissingTranslationHandlerParams, } from '@ngx-translate/core';
 import defaultLanguage from "./../assets/i18n/en-uk.json";
-
-
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
@@ -85,6 +85,8 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
     HttpClientModule, 
     ClipboardModule,
     ZXingScannerModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot(),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -101,8 +103,9 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
   providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, BnNgIdleService, {
     provide: CSP_NONCE,
     useValue: 'random-nonce-placeholder'
-  }],
-  bootstrap: [AppComponent]
+  },
+],
+  bootstrap: [AppComponent],
 })
 export class AppModule { 
 

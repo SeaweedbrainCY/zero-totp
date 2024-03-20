@@ -14,6 +14,17 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "18/03/2024",
+      version: "b2.7",
+      added: [
+        "We improve the style and options of informational and errors toasts and reduce the code complexity.",
+      ],
+      fixed:[
+        "We improve the edit TOTP code page, especially when the TOTP secret is invalid or malformed in a way the user understands the problem and can fix it more easily.",
+        "We updated our dependencies to fix a moderate CVE."
+      ]
+    },
+    {
       date: "02/03/2024",
       version: "b2.6",
       added: [
