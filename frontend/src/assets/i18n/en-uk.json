@@ -431,10 +431,12 @@
       "failed": "Wrong verification code. You have {{ left_attempts }} attempt(s) left before invaliding your verification code.",
       "generic": "Invalid or expired code",
       "unknown": "An error occured ! Please logout and login again ❌",
-      "rate_limited": "You are rate limited ! Your asked too much verification code in a short period of time. You will be able to ask for a new code in {{time}} min."
+      "rate_limited": "You are rate limited ! Your asked too much verification code in a short period of time. You will be able to ask for a new code in {{time}} min.",
+      "no_email": "Please, login first"
     },
     "verify": {
-      "success": "Your email is verified ! ✅"
+      "success": "Your email is verified ! ✅",
+      "already_verified": "Email already verified"
     }
   },
   "verify": "Verify",

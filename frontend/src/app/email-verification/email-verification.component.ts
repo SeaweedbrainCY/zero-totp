@@ -46,16 +46,19 @@ export class EmailVerificationComponent implements OnInit {
       try{
         const user  = JSON.parse(JSON.stringify(response.body));
         if(user.role != "not_verified"){
-          if(this.userService.getId() == null){
+          if(this.userService.getEmail() == null){
+            this.utils.toastError(this.toastr,this.translate.instant("email_verif.error.no_email") ,"");
             this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
           } else {
             this.router.navigate(['/vault'], { queryParams: { returnUrl: this.router.url } });
           }
         }
         } catch {
+          this.utils.toastError(this.toastr,this.translate.instant("email_verif.error.unknown") ,"");
           this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
         }
     }, (error) => {
+      this.utils.toastError(this.toastr,this.translate.instant("email_verif.error.unknown") ,"");
         this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
     });
   }

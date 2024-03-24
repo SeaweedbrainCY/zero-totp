@@ -190,7 +190,8 @@
       "no_active_code": "Tu n'as pas de code de vérification actif. Pour vérifier ton adresse mail, demande en un nouveau.",
       "rate_limited": "Tu es rate limité ! Tu as demandé trop de codes de vérification en peu de temps. Tu pourras demander de nouveaux codes dans {{time}} min.",
       "too_many_failed": "Trop de tentatives échouées. Demande un nouveau code de vérification.",
-      "unknown": "Une erreur est survenue ! Déconnecte et reconnecte toi ❌"
+      "unknown": "Une erreur est survenue ! Déconnecte et reconnecte toi ❌",
+      "no_email": "Pour commencer, connecte toi"
     },
     "popup": {
       "error": "Une erreur est survenue. Tu peux réessayer",
@@ -208,7 +209,8 @@
       "part2": "pour vérifier ton adresse email."
     },
     "verify": {
-      "success": "Email vérifié ! ✅"
+      "success": "Email vérifié ! ✅",
+      "already_verified": "Email déjà vérifié !"
     }
   },
   "footer": {
