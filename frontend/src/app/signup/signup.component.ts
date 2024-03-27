@@ -178,7 +178,7 @@ this.closeModal()
       passphraseSalt: this.passphraseSalt
     };
 
-    this.http.post(ApiService.API_URL+"/signup", data, {observe: 'response'}).subscribe((response) => {
+    this.http.post(ApiService.API_URL+"/signup", data,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       this.isLoading=false;
       this.utils.toastSuccess(this.toastr, this.translate.instant("signup.success"),"");
       this.userService.setEmail(this.email)
