@@ -30,17 +30,11 @@ export class UserService {
    }
 
    getEmail() : string | null{
-    if(this.email == null){
-      this.email = localStorage.getItem("email") || null;
-    }
-    return this.utils.sanitize(this.email);;
+    return this.utils.sanitize(this.email);
    }
 
    setEmail(email:string){
     this.email = this.utils.sanitize(email);
-    if(this.email != null){
-      localStorage.setItem("email", this.email)
-    }
    }
 
    get_zke_key() : CryptoKey | null{

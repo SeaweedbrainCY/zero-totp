@@ -427,6 +427,7 @@ def export_vault(user_id):
     vault = vault_b64 + "," + signature
     return vault, 200
 
+# GET /role
 @require_userid
 def get_role(user_id, *args, **kwargs):
     user = UserDB().getById(user_id=user_id)
