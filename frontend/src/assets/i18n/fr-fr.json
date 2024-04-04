@@ -798,5 +798,6 @@
       "backup": "Backup du",
       "main": "Et voilà ton coffre TOTP"
     }
-  }
+  },
+  "session_expired": "Oups, ta session a expirée !"
 }

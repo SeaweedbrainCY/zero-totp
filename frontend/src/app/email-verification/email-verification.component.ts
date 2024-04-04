@@ -37,7 +37,10 @@ export class EmailVerificationComponent implements OnInit {
   ) { 
     this.emailAddress = this.userService.getEmail();
     if (this.emailAddress == null) {
-      this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+      this.translate.get("session_expired").subscribe((translation: string) => {
+        this.toastr.error(translation)
+        this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+      });
     }
   }
 

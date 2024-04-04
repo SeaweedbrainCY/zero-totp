@@ -798,5 +798,6 @@
     }
   },
   "always": "Always",
-  "never": "Never"
+  "never": "Never",
+  "session_expired": "Oups, you session is expired !"
 }
