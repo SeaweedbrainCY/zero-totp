@@ -27,7 +27,6 @@ import { DevComponent } from './dev/dev.component';
 import { AccountComponent } from './account/account.component';
 import { LocalVaultV1Service } from './common/upload-vault/LocalVaultv1Service.service';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
-import { BnNgIdleService } from 'bn-ng-idle'; 
 import { ChangelogComponent } from './changelog/changelog.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
 import { CallbackComponent } from './callback/callback.component';
@@ -41,6 +40,9 @@ import { TranslateService, MissingTranslationHandler, MissingTranslationHandlerP
 import defaultLanguage from "./../assets/i18n/en-uk.json";
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {NgIdleModule} from '@ng-idle/core';
+
+
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
@@ -87,6 +89,7 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
     ZXingScannerModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
+    NgIdleModule.forRoot(),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -100,7 +103,7 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
     }),
     HttpClientModule,
   ],
-  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, BnNgIdleService, {
+  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, {
     provide: CSP_NONCE,
     useValue: 'random-nonce-placeholder'
   },
