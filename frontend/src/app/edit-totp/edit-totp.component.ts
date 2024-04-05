@@ -8,11 +8,12 @@ import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
-import { BnNgIdleService } from 'bn-ng-idle';
 import  * as URLParse from 'url-parse';
 import { dom } from '@fortawesome/fontawesome-svg-core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import {Idle, DEFAULT_INTERRUPTSOURCES} from '@ng-idle/core';
+
 @Component({
   selector: 'app-edit-totp',
   templateUrl: './edit-totp.component.html',
@@ -52,15 +53,24 @@ export class EditTOTPComponent implements OnInit{
     private http: HttpClient,
     private utils: Utils,
     private crypto: Crypto,
-    private bnIdle: BnNgIdleService,
     private translate: TranslateService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private idle: Idle
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
           this.currentUrl = url.url;
       }
     });
+
+    this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
+      this.idle.setIdle(600);
+      this.idle.setTimeout(20);
+      this.idle.onTimeout.subscribe(() => {
+        console.log("Idle timeout")
+        this.userService.clear();
+        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
+      });
   }
 
   ngOnInit(){
@@ -69,6 +79,7 @@ export class EditTOTPComponent implements OnInit{
     } 
     this.secret_uuid = this.route.snapshot.paramMap.get('id');
     if(this.secret_uuid == null){
+        this.idle.watch();
         if(this.currentUrl != "/vault/add"){
           this.router.navigate(["/vault"], {relativeTo:this.route.root});
           return;
@@ -86,6 +97,7 @@ export class EditTOTPComponent implements OnInit{
       if(!this.userService.getIsVaultLocal()){
         this.getSecretTOTP()
         this.get_preferences()
+        this.idle.watch();
       } else {
         const vault = this.userService.getVault()!;
         const property = vault.get(this.secret_uuid);
@@ -105,14 +117,7 @@ export class EditTOTPComponent implements OnInit{
 
       }
     }
-    this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
-      if(isTimedOut){
-        isTimedOut=false;
-        this.userService.clear();
-        this.bnIdle.stopTimer();
-        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
-      }
-    });
+    
 
     setInterval(()=> { this.generateCode() }, 100);
     setInterval(()=> { this.generateTime() }, 20);

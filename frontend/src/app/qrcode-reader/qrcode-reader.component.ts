@@ -3,10 +3,10 @@ import { ZXingScannerComponent } from '@zxing/ngx-scanner';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
-import { BnNgIdleService } from 'bn-ng-idle';
 import { TranslateService } from '@ngx-translate/core';
 import { Utils } from '../common/Utils/utils';
 import { ToastrService } from 'ngx-toastr';
+import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 @Component({
   selector: 'app-qrcode-reader',
   templateUrl: './qrcode-reader.component.html',
@@ -29,15 +29,24 @@ export class QrcodeReaderComponent implements OnInit {
     private route : ActivatedRoute,
     private userService : UserService,
     private qrCode: QrCodeTOTP,
-    private bnIdle: BnNgIdleService,
     public translate: TranslateService,
     private utils:Utils,
-    private toastr:ToastrService
+    private toastr:ToastrService,
+    private idle: Idle
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
           this.currentUrl = url.url;
       }});
+
+      this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
+      this.idle.setIdle(600);
+      this.idle.setTimeout(20);
+      this.idle.onTimeout.subscribe(() => {
+        console.log("Idle timeout")
+        this.userService.clear();
+        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
+      });
   }
 
 
@@ -52,14 +61,7 @@ export class QrcodeReaderComponent implements OnInit {
     this.scanner.askForPermission().then((hasPermission: boolean) => {
       this.hasPermission = hasPermission;
     });
-    this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
-      if(isTimedOut){
-        this.bnIdle.stopTimer();
-        isTimedOut=false;
-        this.userService.clear();
-        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
-      }
-    });
+    this.idle.watch();
   }
 
   onCamerasFound(devices: MediaDeviceInfo[]): void {
