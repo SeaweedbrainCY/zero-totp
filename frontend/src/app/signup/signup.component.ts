@@ -8,6 +8,7 @@ import { Crypto } from '../common/Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { UserService } from '../common/User/user.service';
 
 @Component({
   selector: 'app-signup',
@@ -54,7 +55,8 @@ export class SignupComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private translate: TranslateService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private userService: UserService
     ) { }
 
   ngOnInit(): void {
@@ -176,9 +178,10 @@ this.closeModal()
       passphraseSalt: this.passphraseSalt
     };
 
-    this.http.post(ApiService.API_URL+"/signup", data, {observe: 'response'}).subscribe((response) => {
+    this.http.post(ApiService.API_URL+"/signup", data,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       this.isLoading=false;
       this.utils.toastSuccess(this.toastr, this.translate.instant("signup.success"),"");
+      this.userService.setEmail(this.email)
       this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
 
     },
