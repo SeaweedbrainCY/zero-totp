@@ -116,6 +116,11 @@ class TestSignupController(unittest.TestCase):
         self.getByEmailMocked.return_value = True 
         response = self.client.post("/signup", json=self.json_payload)
         self.assertEqual(response.status_code, 409)
+    
+    def test_signup_username_too_long(self):
+        self.json_payload["username"] = "a"*322
+        response = self.client.post("/signup", json=self.json_payload)
+        self.assertEqual(response.status_code, 400)
 
     
 

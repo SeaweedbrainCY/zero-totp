@@ -68,3 +68,10 @@ class TestUpdateUsername(unittest.TestCase):
             response = self.client.put(self.endpoint, json={"username": "new_username"})
             self.assertEqual(response.status_code, 403)
             self.assertEqual(response.json(), {"error": "Not verified"})
+     
+     def test_update_username_too_long(self):
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"api-key": generate_jwt(self.user1_id)}
+            response = self.client.put(self.endpoint, json={"username": "a"*321})
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.json(), {"error": "Username too long"})
