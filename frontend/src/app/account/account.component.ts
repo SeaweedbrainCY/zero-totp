@@ -9,6 +9,7 @@ import { Crypto } from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import {Idle, DEFAULT_INTERRUPTSOURCES} from '@ng-idle/core';
 
 @Component({
   selector: 'app-account',
@@ -71,8 +72,19 @@ export class AccountComponent implements OnInit {
     private route: ActivatedRoute,
     private crypto:Crypto,
     public translate: TranslateService,
-    private toastr: ToastrService
-    ){}
+    private toastr: ToastrService,
+    private idle: Idle
+    ){
+
+      this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
+      this.idle.setIdle(600);
+      this.idle.setTimeout(20);
+      this.idle.onTimeout.subscribe(() => {
+        console.log("Idle timeout")
+        this.userService.clear();
+        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
+      });
+    }
 
   
   ngOnInit(): void {
@@ -82,6 +94,7 @@ export class AccountComponent implements OnInit {
        }
     }
     this.get_whoami();
+    this.idle.watch();
   }
 
   get_whoami(){
