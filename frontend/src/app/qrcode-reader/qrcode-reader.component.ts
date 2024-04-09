@@ -6,7 +6,6 @@ import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Utils } from '../common/Utils/utils';
 import { ToastrService } from 'ngx-toastr';
-import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 @Component({
   selector: 'app-qrcode-reader',
   templateUrl: './qrcode-reader.component.html',
@@ -32,21 +31,13 @@ export class QrcodeReaderComponent implements OnInit {
     public translate: TranslateService,
     private utils:Utils,
     private toastr:ToastrService,
-    private idle: Idle
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
           this.currentUrl = url.url;
       }});
 
-      this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
-      this.idle.setIdle(600);
-      this.idle.setTimeout(20);
-      this.idle.onTimeout.subscribe(() => {
-        console.log("Idle timeout")
-        this.userService.clear();
-        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
-      });
+     
   }
 
 
@@ -61,7 +52,6 @@ export class QrcodeReaderComponent implements OnInit {
     this.scanner.askForPermission().then((hasPermission: boolean) => {
       this.hasPermission = hasPermission;
     });
-    this.idle.watch();
   }
 
   onCamerasFound(devices: MediaDeviceInfo[]): void {

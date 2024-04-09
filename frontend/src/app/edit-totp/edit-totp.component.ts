@@ -12,7 +12,6 @@ import  * as URLParse from 'url-parse';
 import { dom } from '@fortawesome/fontawesome-svg-core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import {Idle, DEFAULT_INTERRUPTSOURCES} from '@ng-idle/core';
 
 @Component({
   selector: 'app-edit-totp',
@@ -55,7 +54,6 @@ export class EditTOTPComponent implements OnInit{
     private crypto: Crypto,
     private translate: TranslateService,
     private toastr: ToastrService,
-    private idle: Idle
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
@@ -63,14 +61,6 @@ export class EditTOTPComponent implements OnInit{
       }
     });
 
-    this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
-      this.idle.setIdle(600);
-      this.idle.setTimeout(20);
-      this.idle.onTimeout.subscribe(() => {
-        console.log("Idle timeout")
-        this.userService.clear();
-        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
-      });
   }
 
   ngOnInit(){
@@ -79,7 +69,6 @@ export class EditTOTPComponent implements OnInit{
     } 
     this.secret_uuid = this.route.snapshot.paramMap.get('id');
     if(this.secret_uuid == null){
-        this.idle.watch();
         if(this.currentUrl != "/vault/add"){
           this.router.navigate(["/vault"], {relativeTo:this.route.root});
           return;
@@ -97,7 +86,6 @@ export class EditTOTPComponent implements OnInit{
       if(!this.userService.getIsVaultLocal()){
         this.getSecretTOTP()
         this.get_preferences()
-        this.idle.watch();
       } else {
         const vault = this.userService.getVault()!;
         const property = vault.get(this.secret_uuid);

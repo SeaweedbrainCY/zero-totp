@@ -8,8 +8,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import {Idle, DEFAULT_INTERRUPTSOURCES} from '@ng-idle/core';
-
 
 @Component({
   selector: 'app-preferences',
@@ -44,17 +42,7 @@ export class PreferencesComponent implements OnInit{
     private crypto:Crypto,
     private translate: TranslateService,
     private toastr: ToastrService,
-    private idle: Idle
     ){
-
-      this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
-      this.idle.setIdle(600);
-      this.idle.setTimeout(20);
-      this.idle.onTimeout.subscribe(() => {
-        console.log("Idle timeout")
-        this.userService.clear();
-        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
-      });
     }
 
   
@@ -63,7 +51,6 @@ export class PreferencesComponent implements OnInit{
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } 
     this.get_preferences()
-    this.idle.watch();
   }
 
   get_preferences(){

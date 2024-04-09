@@ -12,7 +12,6 @@ import { formatDate } from '@angular/common';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr'; 
-import {Idle, DEFAULT_INTERRUPTSOURCES} from '@ng-idle/core';
 
 @Component({
   selector: 'app-vault',
@@ -56,7 +55,7 @@ export class VaultComponent implements OnInit {
   isGoogleDriveSync = "loading"; // uptodate, loading, error, false
   lastBackupDate = "";
   faviconPolicy = "";
-  filter=""
+  filter="";
   constructor(
     public userService: UserService,
     private router: Router,
@@ -66,18 +65,7 @@ export class VaultComponent implements OnInit {
     private utils: Utils,
     private translate: TranslateService,
     private toastr: ToastrService,
-    private idle: Idle,
-    ) { 
-
-      this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
-      this.idle.setIdle(600);
-      this.idle.setTimeout(20);
-      this.idle.onTimeout.subscribe(() => {
-        console.log("Idle timeout")
-        this.userService.clear();
-        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
-      });
-     }
+    ) {}
 
   ngOnInit() {
     if(this.userService.getId() == null && !this.userService.getIsVaultLocal()){
@@ -97,12 +85,8 @@ export class VaultComponent implements OnInit {
       this.vault_date = vaultDate;
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
-      console.log("setting up idle")
       this.get_google_drive_option();
       this.get_preferences();
-      
-      this.idle.watch();
-
 
       this.reloadSpin = true
       this.vault = new Map<string, Map<string,string>>();
@@ -135,6 +119,7 @@ export class VaultComponent implements OnInit {
       
     }    
   }
+
 
 
   startDisplayingCode(){
