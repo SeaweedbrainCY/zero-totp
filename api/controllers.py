@@ -58,7 +58,7 @@ def signup():
     
     if not username or not passphrase or not email or not derivedKeySalt or not zke_key or not passphraseSalt:
         return {"message": "Missing parameters"}, 400
-    if len(username) > 320:
+    if len(username) > 250:
         return {"message": "Username is too long"}, 400
     if not utils.check_email(email) :
         return {"message": "Bad email format"}, 401
@@ -326,7 +326,7 @@ def update_username(user_id,body):
     if not username:
         return {"message": "generic_errors.missing_params"}, 400
     userDb = UserDB()
-    if len(username) > 320:
+    if len(username) > 250:
         return {"message": "Username is too long"}, 400
     if userDb.getByUsername(username):
         return {"message": "generic_errors.username_exists"}, 409
