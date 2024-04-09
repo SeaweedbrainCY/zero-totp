@@ -39,23 +39,10 @@ export class NavbarComponent implements OnInit{
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
       this.currentUrl = url.url;
-      console.log(this.idle.isRunning())
-    /* if(this.idleEndSupscription){
-        this.idleEndSupscription.unsubscribe();
-        console.log("unsubscribed")
-      }*/
-      
-
       if(this.userService.getId() && !this.userService.getIsVaultLocal() && !this.idle.isRunning()){
         this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
-        this.idle.setIdle(6);
-        this.idle.setTimeout(10);
-        this.idleEndSupscription = this.idle.onIdleEnd.subscribe(() => {
-          console.log("Idle end " +  this.currentUrl )
-        });
-        this.idle.onIdleStart.subscribe(() => {
-          console.log("Idle start " +  this.currentUrl )
-        });
+        this.idle.setIdle(600);
+        this.idle.setTimeout(20);
         this.idle.onTimeout.subscribe(() => {
           // As idle.stop() doesn't work (issue #167, we need to check if the user is still logged in before redirecting to the login page)
           if(this.userService.getId() && !this.userService.getIsVaultLocal()){ 
@@ -67,7 +54,6 @@ export class NavbarComponent implements OnInit{
         if(!this.idle.isRunning()){
           this.idle.watch();
         }
-        console.log("wathching for idle")
       }
     }
     translate.use(this.current_language)
