@@ -387,7 +387,8 @@
       "part2": "Rescue Zero-TOTP",
       "strong": "plateforme ultra stable"
     },
-    "remember": "Mémoriser mon adresse email"
+    "remember": "Mémoriser mon adresse email",
+    "success": "Coffre déchiffré ✅"
   },
   "navbar": {
     "account": "Compte",

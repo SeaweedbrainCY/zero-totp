@@ -379,7 +379,8 @@
       },
       "rate_limited": "You are rate limited ! Your IP as generated too much failed login attempts in a short period of time. You will be able to try to login again in {{time}} min. If you are using a VPN, try another location or disable it."
     },
-    "remember": "Remember my email address"
+    "remember": "Remember my email address",
+    "success": "Vault decrypted ✅"
   },
   "unlock": "Unlock",
   "generic_errors": {
