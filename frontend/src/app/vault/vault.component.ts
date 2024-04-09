@@ -10,7 +10,6 @@ import { Utils } from '../common/Utils/utils';
 import { error } from 'console';
 import { formatDate } from '@angular/common';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
-import { BnNgIdleService } from 'bn-ng-idle';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr'; 
 
@@ -56,7 +55,7 @@ export class VaultComponent implements OnInit {
   isGoogleDriveSync = "loading"; // uptodate, loading, error, false
   lastBackupDate = "";
   faviconPolicy = "";
-  filter=""
+  filter="";
   constructor(
     public userService: UserService,
     private router: Router,
@@ -64,10 +63,9 @@ export class VaultComponent implements OnInit {
     private http: HttpClient,
     private crypto: Crypto,
     private utils: Utils,
-    private bnIdle: BnNgIdleService,
     private translate: TranslateService,
-    private toastr: ToastrService
-    ) {  }
+    private toastr: ToastrService,
+    ) {}
 
   ngOnInit() {
     if(this.userService.getId() == null && !this.userService.getIsVaultLocal()){
@@ -87,17 +85,12 @@ export class VaultComponent implements OnInit {
       this.vault_date = vaultDate;
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
+      this.get_google_drive_option();
+      this.get_preferences();
+
       this.reloadSpin = true
       this.vault = new Map<string, Map<string,string>>();
       this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
-        this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
-          if(isTimedOut){
-            this.bnIdle.stopTimer();
-            this.userService.clear();
-            isTimedOut = false;
-            this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
-          }
-        });
         const data = JSON.parse(JSON.stringify(response.body))
         this.decrypt_and_display_vault(data.enc_secrets);
       }, (error) => {
@@ -123,10 +116,11 @@ export class VaultComponent implements OnInit {
         });
         }
       });
-      this.get_google_drive_option();
-      this.get_preferences();
+      
     }    
   }
+
+
 
   startDisplayingCode(){
         setInterval(()=> { this.generateTime() }, 20);

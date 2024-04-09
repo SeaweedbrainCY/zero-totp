@@ -71,7 +71,7 @@ export class AccountComponent implements OnInit {
     private route: ActivatedRoute,
     private crypto:Crypto,
     public translate: TranslateService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
     ){}
 
   

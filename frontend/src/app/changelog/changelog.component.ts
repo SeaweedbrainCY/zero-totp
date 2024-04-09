@@ -20,7 +20,8 @@ export class ChangelogComponent {
         "The signup flow has been improved to be less heavy and don't require the user to enter too much their passphrase",
       ],
       fixed:[
-        "We updated our dependencies to fix 2 moderate CVE."
+        "We updated our dependencies to fix 2 moderate CVE.",
+        "We fixed a bug causing the session to timeout before 10min of inactivity."
       ]
     },
     {

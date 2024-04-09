@@ -9,7 +9,6 @@ import { Crypto } from '../common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
-
 @Component({
   selector: 'app-preferences',
   templateUrl: './preferences.component.html',
@@ -42,8 +41,9 @@ export class PreferencesComponent implements OnInit{
     private route: ActivatedRoute,
     private crypto:Crypto,
     private translate: TranslateService,
-    private toastr: ToastrService
-    ){}
+    private toastr: ToastrService,
+    ){
+    }
 
   
   ngOnInit(): void {

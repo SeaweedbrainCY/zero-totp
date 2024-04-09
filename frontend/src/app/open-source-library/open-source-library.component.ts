@@ -40,10 +40,10 @@ export class OpenSourceLibraryComponent {
     licenseUrl:"https://github.com/zxing-js/ngx-scanner/blob/master/LICENSE"
    },
    {
-    name:"bn-ng-idle",
-    url:"https://github.com/bearnithi/bn-ng-idle",
-    description:"Angular Idle Timer.",
-    license:"MIT license",
+    name:"@ng-idle/core",
+    url:"https://github.com/moribvndvs/ng2-idle#readme",
+    description:"A module for responding to idle users in Angular applications.",
+    license:"Apache-2.0 license",
     licenseUrl:""
    },
     {

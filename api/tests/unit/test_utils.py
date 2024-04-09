@@ -73,6 +73,11 @@ class TestBcrypt(unittest.TestCase):
             with self.subTest(email=email):
                 self.assertFalse(check_email(email), f"Email '{email}' should not pass the check")
     
+
+    def test_email_too_long(self):
+        email = "a"*321 + "@example.com"
+        self.assertFalse(check_email(email), f"Email '{email}' should be invalid")
+    
 #####################
 ###### sanitize tests
 #####################

@@ -3,7 +3,6 @@ import { ZXingScannerComponent } from '@zxing/ngx-scanner';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
-import { BnNgIdleService } from 'bn-ng-idle';
 import { TranslateService } from '@ngx-translate/core';
 import { Utils } from '../common/Utils/utils';
 import { ToastrService } from 'ngx-toastr';
@@ -29,15 +28,16 @@ export class QrcodeReaderComponent implements OnInit {
     private route : ActivatedRoute,
     private userService : UserService,
     private qrCode: QrCodeTOTP,
-    private bnIdle: BnNgIdleService,
     public translate: TranslateService,
     private utils:Utils,
-    private toastr:ToastrService
+    private toastr:ToastrService,
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
           this.currentUrl = url.url;
       }});
+
+     
   }
 
 
@@ -51,14 +51,6 @@ export class QrcodeReaderComponent implements OnInit {
     });
     this.scanner.askForPermission().then((hasPermission: boolean) => {
       this.hasPermission = hasPermission;
-    });
-    this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
-      if(isTimedOut){
-        this.bnIdle.stopTimer();
-        isTimedOut=false;
-        this.userService.clear();
-        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
-      }
     });
   }
 

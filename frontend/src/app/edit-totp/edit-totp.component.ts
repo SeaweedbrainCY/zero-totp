@@ -8,11 +8,11 @@ import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
-import { BnNgIdleService } from 'bn-ng-idle';
 import  * as URLParse from 'url-parse';
 import { dom } from '@fortawesome/fontawesome-svg-core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-edit-totp',
   templateUrl: './edit-totp.component.html',
@@ -52,15 +52,15 @@ export class EditTOTPComponent implements OnInit{
     private http: HttpClient,
     private utils: Utils,
     private crypto: Crypto,
-    private bnIdle: BnNgIdleService,
     private translate: TranslateService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
   ){
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
           this.currentUrl = url.url;
       }
     });
+
   }
 
   ngOnInit(){
@@ -105,14 +105,7 @@ export class EditTOTPComponent implements OnInit{
 
       }
     }
-    this.bnIdle.startWatching(600).subscribe((isTimedOut: boolean) => {
-      if(isTimedOut){
-        isTimedOut=false;
-        this.userService.clear();
-        this.bnIdle.stopTimer();
-        this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
-      }
-    });
+    
 
     setInterval(()=> { this.generateCode() }, 100);
     setInterval(()=> { this.generateTime() }, 20);
