@@ -698,7 +698,9 @@
       "secret_empty": "Un secret ne peut pas être vide",
       "update": "Une erreur est survenue en ajoutant un nouveau code à ton coffre.",
       "update_pref": "Impossible de mettre à jour tes préférences.",
-      "code": "Secret invalide. "
+      "code": "Secret invalide. ",
+      "tag_empty": "Le tag ne peut pas être vide",
+      "tag_exists": "Ce tag existe déjà"
     },
     "favicon": {
       "label": "Afficher la favicon",
@@ -722,6 +724,12 @@
       },
       "delete": {
         "success": "Code TOTP supprimé !"
+      }
+    },
+    "tag": {
+      "popup": {
+        "title": "Ajouter un tag",
+        "placeholder": "Nom du tag"
       }
     }
   },
@@ -798,7 +806,13 @@
     "title": {
       "backup": "Backup du",
       "main": "Et voilà ton coffre TOTP"
+    },
+    "filter": {
+      "tag": {
+        "title": "Filtrer par tag"
+      }
     }
   },
-  "session_expired": "Oups, ta session a expirée !"
+  "session_expired": "Oups, ta session a expirée !",
+  "add": "Ajouter"
 }

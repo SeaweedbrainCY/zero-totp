@@ -124,4 +124,22 @@ export class Utils {
           messageClass: 'toast-message',
         });
       }
+
+
+      public parseTags(json_tags:string): string[]{
+        const tags_extracted = JSON.parse(json_tags);
+        const tags:string[] = [];
+        try{
+          for (const tag of tags_extracted){
+            if (tag != null){
+              if(this.sanitize(tag) != null){
+                tags.push(this.sanitize(tag)!);
+              }
+            }
+          }
+        } catch {
+          return [];
+        }
+        return tags;
+      }
 }

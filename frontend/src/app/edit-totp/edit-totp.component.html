@@ -108,7 +108,7 @@
             </div>
           </label>
         </div>
-        <div class="field p-5 is-flex is-justify-content-center">
+        <div class="field pt-5 is-flex is-justify-content-center">
           <div class=" select is-{{color}}">
             <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color"
               (keyup)="changeColor(colorSelected.value)" (change)="changeColor(colorSelected.value)"
@@ -118,6 +118,16 @@
               <option>{{ 'orange' | translate }}</option>
               <option>{{ 'red' | translate }}</option>
             </select>
+          </div>
+        </div>
+        <div class=" pb-5 mt-3 mb-3 is-flex is-justify-content-center">
+          <div class="p-2"><strong>Tag :</strong></div>
+          <div class="p-2" *ngFor="let tag of tags">
+            <span class="tag is-rounded is-info">{{tag}} <button class="delete is-small" (click)="deleteTag(tag)"></button></span>
+           
+          </div>
+          <div class="p-2" style="cursor: pointer ;" (click)="tagModal()">
+            <span class="tag is-rounded is-info"><fa-icon [icon]="faPlus" size="xs"></fa-icon></span>
           </div>
         </div>
         <div class="field is-grouped is-flex is-justify-content-center">
@@ -151,4 +161,18 @@
     </footer>
   </div>
   <button class="modal-close is-large" aria-label="close" (click)="modal()" *ngIf="!isDestroying"></button>
+</div>
+
+<div id="addTag" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isTagModalActive}">
+  <div class="modal-background" (click)="tagModal()"></div>
+  <div class="modal-content">
+    <section class="modal-card-body">
+      <h1 class="is-size-3 mb-4 has-text-centered">{{ 'totp.tag.popup.title' | translate }}</h1>
+      <div class="is-flex is-justify-content-center">
+    <input class="input is-rounded mr-5 is-small" style="width:50%" (keyup.enter)="addTag()" [(ngModel)]="addTagName" name="addTagName" type="text" placeholder="{{'totp.tag.popup.placeholder' | translate }}"/>
+    <button class="button is-success is-rounded is-small" (click)="addTag()"><fa-icon [icon]="faCheck"></fa-icon></button>
+  </div>
+    </section>
+  </div>
+  <button class="modal-close is-large" aria-label="close" (click)="tagModal()" ></button>
 </div>
