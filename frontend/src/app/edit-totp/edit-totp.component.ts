@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport } from '@fortawesome/free-solid-svg-icons';
+import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
 import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
@@ -23,6 +23,8 @@ export class EditTOTPComponent implements OnInit{
   faGlobe = faGlobe;
   faKey = faKey;
   faPassport = faPassport;
+  faPlus = faPlus;
+  faCheck = faCheck;
   faCircleQuestion = faCircleQuestion;
   faviconURL = "";
   name = "";
@@ -44,6 +46,9 @@ export class EditTOTPComponent implements OnInit{
   isModalActive = false;  
   isDestroying = false;
   faviconPolicy=""; // never, always, enabledOnly
+  tags:string[] = [];
+  isTagModalActive = false;
+  addTagName="";
   constructor(
     private router: Router,
     private route : ActivatedRoute,
@@ -101,6 +106,9 @@ export class EditTOTPComponent implements OnInit{
           if(this.favicon){
             this.loadFavicon()
           }
+        }
+        if(property!.has("tags")){
+          this.tags = this.utils.parseTags(property!.get("tags")!);
         }
 
       }
@@ -282,6 +290,9 @@ export class EditTOTPComponent implements OnInit{
                 this.loadFavicon()
               }
             }
+            if(property!.has("tags")){
+              this.tags = this.utils.parseTags(property!.get("tags")!);
+            }
     
           }
         });
@@ -334,6 +345,7 @@ export class EditTOTPComponent implements OnInit{
     property.set("name", this.name);
     property.set("uri", this.uri);
     property.set("favicon", this.favicon.toString());
+    property.set("tags", JSON.stringify(this.tags));
     if(this.uri != ""){
       if(this.uri.startsWith("http://") || this.uri.startsWith("https://")){
         const parsedUrl = new URLParse(this.uri);
@@ -474,6 +486,31 @@ export class EditTOTPComponent implements OnInit{
     if(!this.isDestroying){
       this.isModalActive = !this.isModalActive;
     }
+  }
+
+  tagModal(){
+    this.addTagName = "";
+      this.isTagModalActive = !this.isTagModalActive;
+  }
+
+  addTag(){
+    if(this.addTagName != ""){
+      if(this.tags.includes(this.addTagName)){
+        this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.tag_exists"),"")
+      } else {
+       this.tags.push(this.addTagName);
+       this.addTagName = "";
+       this.toastr.clear()
+       this.tagModal()
+      }
+    } else {
+      this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.tag_empty"),"")
+    }
+    
+  }
+
+  deleteTag(tag:string){
+    this.tags = this.tags.filter(item => item !== tag);
   }
 
 }

@@ -581,7 +581,9 @@
       "invalid_uri": "Invalid URI",
       "no_fav": "No favicon found for this domain",
       "invalid_domain": "Invalid domain name",
-      "code": "Invalid secret. "
+      "code": "Invalid secret. ",
+      "tag_empty": "Your tag cannot be empty",
+      "tag_exists": "Tag already associated"
     },
     "favicon": {
       "label": "Display favicon",
@@ -602,6 +604,12 @@
         "title": "Are you sure ?",
         "corps": "You won't be able to undo this action",
         "destroy": "Destroy this secret"
+      }
+    },
+    "tag": {
+      "popup": {
+        "title": "Add a tag",
+        "placeholder": "Tag's name"
       }
     }
   },
@@ -800,5 +808,6 @@
   },
   "always": "Always",
   "never": "Never",
-  "session_expired": "Oups, you session is expired !"
+  "session_expired": "Oups, you session is expired !",
+  "add": "Add"
 }
