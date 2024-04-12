@@ -806,6 +806,11 @@
     "title": {
       "backup": "Backup du",
       "main": "Et voilà ton coffre TOTP"
+    },
+    "filter": {
+      "tag": {
+        "title": "Filtrer par tag"
+      }
     }
   },
   "session_expired": "Oups, ta session a expirée !",

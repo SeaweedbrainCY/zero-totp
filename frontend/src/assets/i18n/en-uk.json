@@ -515,6 +515,11 @@
     "downloaded": "Encrypted vault downloaded ! 🧳\nKeep it in a safe place 🔒",
     "google": {
       "disabled": "Google Drive disabled ! ✅"
+    },
+    "filter": {
+      "tag": {
+        "title": "Filter by tag"
+      }
     }
   },
   "less": "Less",
