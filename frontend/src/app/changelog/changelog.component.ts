@@ -14,6 +14,17 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "13/04/2024",
+      version: "b2.9",
+      added: [
+        "You can now add tags to your secrets to easily finds them in your vault.",
+        "We improved the login flow to be less confusing when the user successfully logs in after several failed attempts.",
+      ],
+      fixed:[
+        "We updated our dependencies to fix a moderate CVE.",
+      ]
+    },
+    {
       date: "05/04/2024",
       version: "b2.8",
       added: [
