@@ -379,7 +379,8 @@
       },
       "rate_limited": "You are rate limited ! Your IP as generated too much failed login attempts in a short period of time. You will be able to try to login again in {{time}} min. If you are using a VPN, try another location or disable it."
     },
-    "remember": "Remember my email address"
+    "remember": "Remember my email address",
+    "success": "Vault decrypted ✅"
   },
   "unlock": "Unlock",
   "generic_errors": {
@@ -514,6 +515,11 @@
     "downloaded": "Encrypted vault downloaded ! 🧳\nKeep it in a safe place 🔒",
     "google": {
       "disabled": "Google Drive disabled ! ✅"
+    },
+    "filter": {
+      "tag": {
+        "title": "Filter by tag"
+      }
     }
   },
   "less": "Less",
@@ -580,7 +586,10 @@
       "invalid_uri": "Invalid URI",
       "no_fav": "No favicon found for this domain",
       "invalid_domain": "Invalid domain name",
-      "code": "Invalid secret. "
+      "code": "Invalid secret. ",
+      "tag_empty": "Your tag cannot be empty",
+      "tag_exists": "Tag already associated",
+      "tag_length": "Too long tag name"
     },
     "favicon": {
       "label": "Display favicon",
@@ -601,6 +610,12 @@
         "title": "Are you sure ?",
         "corps": "You won't be able to undo this action",
         "destroy": "Destroy this secret"
+      }
+    },
+    "tag": {
+      "popup": {
+        "title": "Add a tag",
+        "placeholder": "Tag's name"
       }
     }
   },
@@ -799,5 +814,6 @@
   },
   "always": "Always",
   "never": "Never",
-  "session_expired": "Oups, you session is expired !"
+  "session_expired": "Oups, you session is expired !",
+  "add": "Add"
 }

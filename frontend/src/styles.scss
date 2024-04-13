@@ -1,5 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* Code for bulma 1.0
+@use "../node_modules/bulma/sass" with (
+  $info: #5AA9E6,
+$link:#5AA9E6,
+$danger:#FE6847,
+$warning:#FFCF56,
+$dark:#16262E,
+$success:#63A375,
+$primary:#5AA9E6,
+$black:#16262E,
+);*/
+
 
 $info: #5AA9E6;
 $link:#5AA9E6;
@@ -7,9 +19,8 @@ $danger:#FE6847;
 $warning:#FFCF56;
 $dark:#16262E;
 $success:#63A375;
-$primary:$success;
-$black:$dark;
-$test:$dark;
+$primary:#5AA9E6;
+$black:#16262E;
 
 a:hover{
   text-decoration: underline;

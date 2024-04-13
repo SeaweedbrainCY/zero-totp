@@ -373,6 +373,8 @@ this.utils.toastError(this.toastr,translation,"")
             } else {
               localStorage.removeItem("r_email");
             }
+            this.toastr.clear();
+            this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
             this.router.navigate(["/vault"], {relativeTo:this.route.root});
           }
         }, (error)=>{

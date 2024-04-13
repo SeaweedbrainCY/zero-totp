@@ -56,6 +56,8 @@ export class VaultComponent implements OnInit {
   lastBackupDate = "";
   faviconPolicy = "";
   filter="";
+  tags:string[]=[];
+  selectedTags:string[]=[];
   constructor(
     public userService: UserService,
     private router: Router,
@@ -180,7 +182,19 @@ export class VaultComponent implements OnInit {
                 try{
                   this.vault?.set(secret.uuid, this.utils.mapFromJson(dec_secret));
                   this.userService.setVault(this.vault!);
+
                   this.filterVault(); // to display all the vault
+                  for (let uuid of this.vaultDomain){
+                    // display all tags, always
+                    if(this.vault!.get(uuid)!.has("tags")){
+                      const secret_tags = this.utils.parseTags(this.vault!.get(uuid)!.get("tags")!);
+                      for (const tag of secret_tags){
+                        if(!this.tags.includes(tag)){
+                        this.tags.push(tag);
+                        }
+                      }
+                    }
+                  }
                 } catch {
                   this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
                     this.utils.toastError(this.toastr,"vault.error.wrong_key","");
@@ -240,7 +254,7 @@ export class VaultComponent implements OnInit {
   filterVault(){
     this.vaultDomain = [];
     let tmp_vault =  Array.from(this.vault!.keys()) as string[];
-    if (this.filter == ""){
+    if (this.filter == "" && this.selectedTags.length == 0){
       this.vaultDomain = tmp_vault;
       return;
     }
@@ -249,8 +263,24 @@ export class VaultComponent implements OnInit {
     if(this.filter.length > 50){
       this.filter = this.filter.substring(0,50);
     }
-    const regex = new RegExp(this.filter);
+    let regex = new RegExp(this.filter);
+    if(this.filter == ""){ // we filter on tags
+      regex = new RegExp(".*");
+    }
     for (let uuid of tmp_vault){
+      let has_tag = false;
+      if(this.selectedTags.length > 0){
+        if(this.vault!.get(uuid)!.has("tags")){
+          const secret_tags = this.utils.parseTags(this.vault!.get(uuid)!.get("tags")!);
+          for(const tag of this.selectedTags){
+            if(secret_tags.includes(tag)){
+              has_tag = true;
+            }
+          }
+      }
+    }
+      if(this.selectedTags.length == 0 || has_tag){
+      //filter on search filter
       if(regex.test(this.get_favicon_url(this.vault!.get(uuid)?.get('domain')).toLowerCase()))
       {
         this.vaultDomain.push(uuid);
@@ -261,6 +291,7 @@ export class VaultComponent implements OnInit {
         }
       }
     }
+  }
   }
 
   edit(domain:string){
@@ -443,6 +474,16 @@ export class VaultComponent implements OnInit {
       this.get_oauth_authorization_url();
   }, 1000);
     
+  }
+
+
+  selectTag(tag:string){
+    if(this.selectedTags.includes(tag)){
+      this.selectedTags = this.selectedTags.filter(e => e !== tag);
+    } else {
+      this.selectedTags.push(tag);
+    }
+    this.filterVault();
   }
 }
 
