@@ -588,7 +588,8 @@
       "invalid_domain": "Invalid domain name",
       "code": "Invalid secret. ",
       "tag_empty": "Your tag cannot be empty",
-      "tag_exists": "Tag already associated"
+      "tag_exists": "Tag already associated",
+      "tag_length": "Too long tag name"
     },
     "favicon": {
       "label": "Display favicon",

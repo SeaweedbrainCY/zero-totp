@@ -497,6 +497,8 @@ export class EditTOTPComponent implements OnInit{
     if(this.addTagName != ""){
       if(this.tags.includes(this.addTagName)){
         this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.tag_exists"),"")
+      } else if (this.addTagName.length > 30){
+        this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.tag_length"),"")
       } else {
        this.tags.push(this.addTagName);
        this.addTagName = "";

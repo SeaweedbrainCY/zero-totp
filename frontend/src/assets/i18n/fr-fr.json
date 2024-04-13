@@ -700,7 +700,8 @@
       "update_pref": "Impossible de mettre à jour tes préférences.",
       "code": "Secret invalide. ",
       "tag_empty": "Le tag ne peut pas être vide",
-      "tag_exists": "Ce tag existe déjà"
+      "tag_exists": "Ce tag existe déjà",
+      "tag_length": "Nom de tag trop long"
     },
     "favicon": {
       "label": "Afficher la favicon",

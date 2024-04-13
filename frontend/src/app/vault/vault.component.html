@@ -191,7 +191,7 @@
                 <strong>{{'vault.filter.tag.title' | translate}} : </strong>
                 <span class="tag is-rounded ml-4" style="cursor:pointer" [ngClass]="{'is-info':selectedTags.length == 0}" (click)="selectedTags=[]; filterVault()">All</span>
                 <span *ngFor="let tag of tags">
-                  <span class="tag is-rounded ml-4" style="cursor:pointer" [ngClass]="{'is-info':selectedTags.includes(tag)}" (click)="selectTag(tag)">{{tag}} </span>
+                  <span class="tag is-rounded ml-4 mt-2" style="cursor:pointer" [ngClass]="{'is-info':selectedTags.includes(tag)}" (click)="selectTag(tag)">{{tag}} </span>
                 </span>
               </div>
             <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault"
