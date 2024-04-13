@@ -36,7 +36,7 @@ httpcore==1.0.2
 httplib2==0.22.0
 httptools==0.6.1
 httpx==0.25.1
-idna==3.4
+idna==3.7
 importlib-metadata==6.8.0
 inflection==0.5.1
 iniconfig==2.0.0
