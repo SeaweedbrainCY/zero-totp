@@ -140,10 +140,8 @@
     "subtitle": "Have a safe and pleasant zero-trip",
     "beta": {
       "warning": {
-        "title": "This is an early access to Zero-TOTP beta version.",
-        "desc": "If you want to become a beta tester, you can sign up below :",
-        "discord1": "Join our",
-        "discord2": "to be updated on all the beta news and report bugs or improvements"
+        "title": "Welcome to the beta version of Zero-TOTP 👋",
+        "desc": "Thanks for joining us ! We are a small team and we are working hard to make Zero-TOTP the best TOTP client. We are still in beta, so some features are not implemented yet, bugs may occur and we need your help to make Zero-TOTP better. Please, report any issue you find. Thank you for your understanding and your help !"
       }
     },
     "checkbox": {

@@ -617,10 +617,8 @@
     "welcome": "Bienvenue à bord",
     "beta": {
       "warning": {
-        "desc": "Si tu veux devenir un beta-testeur, tu peux t'inscrire ci-dessous",
-        "title": "Il s'agit d'un accès anticipé à la version beta de Zero-TOTP",
-        "discord1": "Rejoins notre",
-        "discord2": "pour être au courants des dernière nouvelles à propos de la beta et pour nous faire part de tes retours !"
+        "title": "Bienvenue sur la version beta de Zero-TOTP 👋",
+        "desc": "Merci de nous avoir rejoint ! Nous sommes une petite équipe et nous travaillons dur pour faire de Zero-TOTP le meilleur client TOTP. Nous sommes encore en version bêta, donc certaines fonctionnalités ne sont pas encore implémentées, des bugs peuvent survenir et nous avons besoin de votre aide pour améliorer Zero-TOTP. Veuillez signaler tout problème que vous rencontrez. Merci pour votre compréhension et votre aide !"
       }
     },
     "button": {
