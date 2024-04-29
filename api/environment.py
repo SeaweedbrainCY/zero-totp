@@ -1,12 +1,75 @@
 import os
 import logging
+import pyyaml 
 
-port = int(os.environ.get('PORT')) if os.environ.get('PORT') != None else None
-db_uri = os.environ.get('DATABASE_URI')
+
+
+
+with open("./config/config.yml") as config_yml:
+    try:
+        conf = yaml.safe_load(config_yml)
+
+    except yaml.YAMLError as exc:
+        raise Exception(exc)
+
+
+def parse_conf(conf):
+    ##API 
+    if "api" in conf:
+        global port
+        port = None 
+        if "port" in conf["api"]:
+            try :
+                port =  int(conf["api"]["port"])
+            except:
+                logging.warning("api.port is not valid. Ignoring it ...")
+        if port == None:
+            port = 8080
+            logging.warning("api.port not set. Using default value: 8080")
+        
+        if "database_uri" in conf["api"]:
+            global db_uri
+            db_uri = conf["api"]["database_uri"]
+        else:
+            logging.error("api.database_uri is not set. Please set it to a valid database URI. Aborting...")
+            raise Exception("api.database_uri is not set. Please set it to a valid database URI. ")
+
+        if "jwt_secret" in conf["api"]:
+            global jwt_secret 
+            jwt_secret = conf["api"]["jwt_secret"]
+        else:
+            logging.error("api.jwt_secret is not set. Please set  a valid secret key. Aborting...")
+            raise Exception("api.jwt_secret is not set. Please set  a valid secret key.")
+
+        if "private_key_path" in conf["api"]:
+            global private_key_path
+            private_key_path = conf["api"]["private_key_path"]
+        else:
+            logging.error("api.private_key_path is not set. Please set  a valid private_key_path path. Aborting...")
+            raise Exception("api.private_key_path is not set. Please set  a valid private_key_path path.")
+
+        if "public_key_path" in conf["api"]:
+            global public_key_path
+            public_key_path = conf["api"]["public_key_path"]
+        else:
+            logging.error("api.public_key_path is not set. Please set  a valid public_key_path path. Aborting...")
+            raise Exception("api.public_key_path is not set. Please set  a valid public_key_path path.")
+        
+        if "oauth" in conf["api"]:
+            pass
+        else:
+            logging.warning("api.oauth is empty. No oauth configuration provided. Oauth will not be supported.")
+
+    else:
+        raise Exception("Was expecting the key 'api'") 
+
+
+#port = int(os.environ.get('PORT')) if os.environ.get('PORT') != None else None
+#db_uri = os.environ.get('DATABASE_URI')
 environment = os.environ.get('ENVIRONMENT')
-jwt_secret = os.environ.get('JWT_SECRET')
-private_key_path = os.environ.get('PRIVATE_KEY_PATH')
-public_key_path = os.environ.get('PUBLIC_KEY_PATH')
+#jwt_secret = os.environ.get('JWT_SECRET')
+#private_key_path = os.environ.get('PRIVATE_KEY_PATH')
+#public_key_path = os.environ.get('PUBLIC_KEY_PATH')
 oauth_client_secret_file = os.environ.get('OAUTH_CLIENT_SECRET_FILE')
 flask_secret_key = os.environ.get('FLASK_SECRET_KEY')
 sever_side_encryption_key = os.environ.get('SEVER_SIDE_ENCRYPTION_KEY')
@@ -58,10 +121,6 @@ else:
 
 
 
-if port == None:
-    port = 8080
-    logging.warning("PORT environment variable not set. Using default value: 8080")
-
 if admin_can_delete_users != True:
     logging.info("ADMIN_CAN_DELETE_USERS environment variable not set. Using default value: false")
     admin_can_delete_users = False
@@ -69,22 +128,6 @@ else:
     logging.warning("ADMIN_CAN_DELETE_USERS environment variable set to true. This should be a TEMPORARY option ONLY.  Please set it to false if you are not sure what you are doing. DISABLE THIS OPTION AS SOON AS NOT NEEDED ANYMORE.")
 
 
-if db_uri == None:
-    logging.error("DATABASE_URI environment variable not set. Please set it to a valid database URI. Aborting...")
-    raise Exception("DATABASE_URI environment variable not set. Please set it to a valid database URI.")
-
-
-
-
-
-if jwt_secret == None:
-    logging.error("JWT_SECRET environment variable not set. Please set it to a valid secret key. Aborting...")
-    raise Exception("JWT_SECRET environment variable not set. Please set it to a valid secret key.")
-
-
-if private_key_path == None or public_key_path == None:
-    logging.error("PRIVATE_KEY_PATH or PUBLIC_KEY_PATH environment variable not set. Please set it to a valid key path. Aborting...")
-    raise Exception("PRIVATE_KEY_PATH or PUBLIC_KEY_PATH environment variable not set. Please set it to a valid key path.")
 
 
 
