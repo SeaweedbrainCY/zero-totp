@@ -2,6 +2,9 @@ import os
 import logging
 import pyyaml 
 
+# TODO : add requirements for each value
+
+
 
 
 
@@ -55,8 +58,18 @@ def parse_conf(conf):
             logging.error("api.public_key_path is not set. Please set  a valid public_key_path path. Aborting...")
             raise Exception("api.public_key_path is not set. Please set  a valid public_key_path path.")
         
+        if "flask_secret_key" in conf["api"]:
+            flask_secret_key = conf["api"]["flask_secret_key"]
+        else:
+            logging.error("FLASK_SECRET_KEY environment variable not set. Please set it to a valid secret key. Aborting...")
+            raise Exception("FLASK_SECRET_KEY environment variable not set. Please set it to a valid secret key.")
+
         if "oauth" in conf["api"]:
-            pass
+            if "client_secret_file_path" in conf["api"]["oauth"]:
+                oauth_client_secret_file = conf["api"]["oauth"]["client_secret_file_path"]
+            else :
+                logging.error("api.oauth is set but no client_secret_file_path path set. Please set it to a valid path to the client_secret.json file. Aborting...")
+                raise Exception("api.oauth is set but no client_secret_file_path path set. Please set it to a valid path to the client_secret.json file.")
         else:
             logging.warning("api.oauth is empty. No oauth configuration provided. Oauth will not be supported.")
 
@@ -70,8 +83,8 @@ environment = os.environ.get('ENVIRONMENT')
 #jwt_secret = os.environ.get('JWT_SECRET')
 #private_key_path = os.environ.get('PRIVATE_KEY_PATH')
 #public_key_path = os.environ.get('PUBLIC_KEY_PATH')
-oauth_client_secret_file = os.environ.get('OAUTH_CLIENT_SECRET_FILE')
-flask_secret_key = os.environ.get('FLASK_SECRET_KEY')
+#oauth_client_secret_file = os.environ.get('OAUTH_CLIENT_SECRET_FILE')
+#flask_secret_key = os.environ.get('FLASK_SECRET_KEY')
 sever_side_encryption_key = os.environ.get('SEVER_SIDE_ENCRYPTION_KEY')
 are_all_tables_created = False
 admin_can_delete_users = os.environ.get('ADMIN_CAN_DELETE_USERS') == "true"
@@ -132,13 +145,6 @@ else:
 
 
 
-if oauth_client_secret_file == None:
-    logging.error("OAUTH_CLIENT_SECRET_FILE environment variable not set. Please set it to a valid path to the client_secret.json file. Aborting...")
-    raise Exception("OAUTH_CLIENT_SECRET_FILE environment variable not set. Please set it to a valid path to the client_secret.json file.")
-
-if flask_secret_key == None:
-    logging.error("FLASK_SECRET_KEY environment variable not set. Please set it to a valid secret key. Aborting...")
-    raise Exception("FLASK_SECRET_KEY environment variable not set. Please set it to a valid secret key.")
 
 
 if sever_side_encryption_key == None:
