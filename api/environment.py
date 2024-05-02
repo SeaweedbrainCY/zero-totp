@@ -89,9 +89,63 @@ class DatabaseConfig:
                 logging.error(f"Was expecting the key database.'{key}'")
                 raise Exception(f"Was expecting the key database.'{key}'")
         self.uri = data["uri"]
+        self.are_all_tables_created = False
+
+class AdminsConfig:
+    def __init__(self, data):
+        if "admin_can_delete_users" not in data:
+            logging.info("ADMIN_CAN_DELETE_USERS environment variable not set. Using default value: false")
+            self.admin_can_delete_users = False
+        else:
+            logging.warning("ADMIN_CAN_DELETE_USERS environment variable set to true. This should be a TEMPORARY option ONLY.  Please set it to false if you are not sure what you are doing. DISABLE THIS OPTION AS SOON AS NOT NEEDED ANYMORE.")
+            self.admin_can_delete_users = data["admin_can_delete_users"]
+
+class EmailsConfig:
+    required_keys = ["email_sender_address", "email_sender_password", "email_smtp_server", "email_smtp_port", "email_smtp_username"]
+    def __init__(self, data):
+        if "require_email_validation" not in data:
+            data["require_email_validation"] = False
+        if data["require_email_validation"] == False:
+            logging.info("REQUIRE_EMAIL_VALIDATION is disabled. Users will not be asked to verify their email address. You can enable this option by setting the REQUIRE_EMAIL_VALIDATION environment variable to true at any moment.")
+            self.require_email_validation = False
+        else :
+            self.require_email_validation = True
+            for key in self.required_keys:
+                if key not in data:
+                    logging.error(f"Was expecting the key features.emails.'{key}' because REQUIRE_EMAIL_VALIDATION is set to true")
+                    raise Exception(f"Was expecting the key features.emails.'{key}' because REQUIRE_EMAIL_VALIDATION is set to true")
+            self.email_sender_address = data["email_sender_address"]
+            self.email_sender_password = data["email_sender_password"]
+            self.email_smtp_server = data["email_smtp_server"]
+            self.email_smtp_port = data["email_smtp_port"]
+            self.email_smtp_username = data["email_smtp_username"]
+
+class RateLimitingConfig:
+    required_keys = ["login_attempts_limit_per_ip", "send_email_attempts_limit_per_user", "login_ban_time", "email_ban_time"]
+    def __init__(self, data):
+        for key in self.required_keys:
+            if key not in data:
+                logging.error(f"Was expecting the key features.rate_limiting.'{key}'")
+                raise Exception(f"Was expecting the key features.rate_limiting.'{key}'")
+        self.login_attempts_limit_per_ip = data["login_attempts_limit_per_ip"]
+        self.send_email_attempts_limit_per_user = data["send_email_attempts_limit_per_user"]
+        self.login_ban_time = data["login_ban_time"]
+        self.email_ban_time = data["email_ban_time"]
+class FeaturesConfig:
+    require_keys = ["admins", "emails", "rate_limiting", "sentry"]
+    def __init__(self, data):
+        for key in self.required_keys:
+            if key not in data:
+                logging.error(f"Was expecting the key features.'{key}'")
+                raise Exception(f"Was expecting the key features.'{key}'")
+                
+        self.admins = AdminsConfig(data["admins"] if "admins" in data else [])
+        self.emails = EmailsConfig(data["emails"] if "emails" in data else [])
+        self.rate_limiting = RateLimitingConfig(data["rate_limiting"] if "rate_limiting" in data else [])
+        self.sentry = data["sentry"]
 
 class Config:
-    required_keys = ["api", "environment", "database"]
+    required_keys = ["api", "environment", "database", "features"]
     def __init__(self, data):
         for key in self.required_keys:
             if key not in data:
@@ -99,7 +153,7 @@ class Config:
         self.api = APIConfig(data["api"])
         self.environment = EnvironmentConfig(data["environment"])
         self.database = DatabaseConfig(data["database"])
-
+        self.features = FeaturesConfig(data["features"])
 
 
 
@@ -122,14 +176,14 @@ with open("./config/config.yml") as config_yml:
 #oauth_client_secret_file = os.environ.get('OAUTH_CLIENT_SECRET_FILE')
 #flask_secret_key = os.environ.get('FLASK_SECRET_KEY')
 #sever_side_encryption_key = os.environ.get('SEVER_SIDE_ENCRYPTION_KEY')
-are_all_tables_created = False
-admin_can_delete_users = os.environ.get('ADMIN_CAN_DELETE_USERS') == "true"
-email_sender_address = os.environ.get('EMAIL_SENDER_ADDRESS')
-email_sender_password = os.environ.get('EMAIL_SENDER_PASSWORD')
-email_smtp_server = os.environ.get('EMAIL_SMTP_SERVER')
-email_smtp_port = os.environ.get('EMAIL_SMTP_PORT')
-email_smtp_username = os.environ.get('EMAIL_SMTP_USERNAME')
-require_email_validation = os.environ.get('REQUIRE_EMAIL_VALIDATION') == "true"
+
+#admin_can_delete_users = os.environ.get('ADMIN_CAN_DELETE_USERS') == "true"
+#email_sender_address = os.environ.get('EMAIL_SENDER_ADDRESS')
+#email_sender_password = os.environ.get('EMAIL_SENDER_PASSWORD')
+#email_smtp_server = os.environ.get('EMAIL_SMTP_SERVER')
+#email_smtp_port = os.environ.get('EMAIL_SMTP_PORT')
+#email_smtp_username = os.environ.get('EMAIL_SMTP_USERNAME')
+#require_email_validation = os.environ.get('REQUIRE_EMAIL_VALIDATION') == "true"
 sentry_dsn = os.environ.get('SENTRY_DSN')
 login_attempts_limit_per_ip = int(os.environ.get('LOGIN_ATTEMPTS_LIMIT_PER_IP')) if os.environ.get('LOGIN_ATTEMPTS_LIMIT_PER_IP') != None else 10
 send_email_attempts_limit_per_user = int(os.environ.get('SEND_EMAIL_ATTEMPTS_LIMIT_PER_USER')) if os.environ.get('SEND_EMAIL_ATTEMPTS_LIMIT_PER_USER') != None else 5
