@@ -1,7 +1,7 @@
 import unittest
 from app import app
 from database.db import db 
-import environment as env
+from environment import conf
 from database.model import User as UserModel
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
@@ -16,13 +16,13 @@ from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
 from database.admin_repo import Admin as Admin_repo
 from database.model import Admin as AdminModel, Preferences as PreferencesModel
 from uuid import uuid4
-import environment as env
+from environment import conf
 
 
 class TestDeleteAccount(unittest.TestCase):
 
     def setUp(self):
-        if env.db_uri != "sqlite:///:memory:":
+        if conf.database.database_uri != "sqlite:///:memory:":
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
@@ -53,9 +53,9 @@ class TestDeleteAccount(unittest.TestCase):
         self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
         self.checkpw.return_value = True
 
-        if env.admin_can_delete_users == True:
+        if conf.features.admins.admin_can_delete_users == True:
             raise Exception("ADMIN_CAN_DELETE_USERS environment should be false by default")
-        env.admin_can_delete_users = True
+        conf.features.admins.admin_can_delete_users = True
         
 
 
@@ -104,7 +104,7 @@ class TestDeleteAccount(unittest.TestCase):
             db.session.remove()
             db.drop_all()
             patch.stopall()
-        env.admin_can_delete_users = False
+        conf.features.admins.admin_can_delete_users = False
 
 
 ##############################
@@ -322,7 +322,7 @@ class TestDeleteAccount(unittest.TestCase):
     
 
     def test_delete_as_admin_but_admin_are_forbidden(self):
-        env.admin_can_delete_users = False
+        conf.features.admins.admin_can_delete_users = False
         with self.flask_application.app.app_context():
             self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)}
             response = self.client.delete(self.adminDeleteEndpoint + "/" + str(self.user_without_google_drive))

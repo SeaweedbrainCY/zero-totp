@@ -24,7 +24,7 @@ api:
 
     ## Secret used to encrypt flask session.
     ## A random 128 alphanumeric string is required.
-    flask_api_secret: "unsafe_secret"
+    flask_secret_key: "unsafe_secret"
 
     ## Server side encryption key used to encrypt data stored in the database that is not Encrypted by the ZKE flow
     ## A random 128 alphanumeric string is required.
@@ -80,6 +80,39 @@ features:
         ## Configuration of the SMTP server used to send emails.
         # email_sender_address: "Zero-TOTP <zero-totp@example.com>"
         # email_smtp_server: "smtp.example.com"
-        # email_smtp_port: 587
+        # email_smtp_port: "587"
         # email_smtp_username: "username"
         # email_smtp_password: "password"
+
+    ## Optional
+    ## Configuration of the rate limiting protection
+    #  rate_limiting:
+        
+        ## Max consecutives failed login per IP in 1h
+        ## Default : 10
+        # login_attempts_limit_per_ip:10
+
+        ## Ban time per IP in minutes
+        ## Default : 15 min
+        #  login_ban_time:15
+
+
+
+        ## Max email verification request per user in 1h
+        ## Default : 5
+        # send_email_attempts_limit_per_user:5
+
+        ## Email ban time per user in minutes
+        ## Default : 60 min
+        #  email_ban_time:60
+    
+
+    ## Optional
+    ## Sentry configuration to centralize error tracking
+    ## Keep commented to disable
+    #  sentry:
+        ## Sentry DSN
+        ## See https://docs.sentry.io/platforms/python/flask/ for more information.
+        # dsn: ""
+
+

@@ -5,7 +5,7 @@ from unittest.mock import patch
 from database.user_repo import User as UserRepo
 from database.oauth_tokens_repo import Oauth_tokens as OAuthTokensRepo
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationRepo
-import environment as env
+from environment import conf
 from CryptoClasses import jwt_func
 import jwt
 import datetime
@@ -17,7 +17,7 @@ import json
 class TestOauthCallback(unittest.TestCase):
 
     def setUp(self):
-        if env.db_uri != "sqlite:///:memory:":
+        if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
@@ -67,7 +67,7 @@ class TestOauthCallback(unittest.TestCase):
             "nbf": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() - datetime.timedelta(hours=1),
         }
-        jwtCookie = jwt.encode(payload, env.jwt_secret, algorithm=jwt_func.ALG)
+        jwtCookie = jwt.encode(payload, conf.api.jwt_secret, algorithm=jwt_func.ALG)
         return jwtCookie
     
 
@@ -78,7 +78,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
             self.assertNotIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNotNone(encrypted_credentials.enc_credentials)
@@ -94,7 +94,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
             self.assertIn("error", response.headers["Location"])
 
     def test_oauth_callback_already_token(self):
@@ -105,7 +105,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
             self.assertNotIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNotNone(encrypted_credentials.enc_credentials)
@@ -122,7 +122,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
             self.assertNotIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNotNone(encrypted_credentials.enc_credentials)
@@ -140,7 +140,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
             self.assertIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNotNone(encrypted_credentials.enc_credentials)
@@ -156,7 +156,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
             self.assertIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNone(encrypted_credentials)
@@ -170,7 +170,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(env.frontend_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
             self.assertIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNone(encrypted_credentials)

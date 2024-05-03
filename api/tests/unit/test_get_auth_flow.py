@@ -1,6 +1,6 @@
 import unittest
 from app import app
-import environment as env
+from environment import conf
 from CryptoClasses.jwt_func import generate_jwt
 from controllers import flask
 from unittest.mock import patch
@@ -9,7 +9,7 @@ from unittest.mock import patch
 class TestGetAuthFlow(unittest.TestCase):
     
         def setUp(self):
-            if env.db_uri != "sqlite:///:memory:":
+            if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
             self.application = app
             self.client = self.application.test_client()

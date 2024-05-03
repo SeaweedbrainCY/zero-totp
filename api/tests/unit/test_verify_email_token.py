@@ -1,7 +1,7 @@
 import unittest
 from app import app
 from database.db import db 
-import environment as env
+from environment import conf
 from database.model import User as UserModel, EmailVerificationToken as EmailVerificationToken_model, RateLimiting
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
@@ -12,7 +12,7 @@ import jwt
 class TestVerifyEmailToken(unittest.TestCase):
 
     def setUp(self):
-        if env.db_uri != "sqlite:///:memory:":
+        if conf.database.database_uri != "sqlite:///:memory:":
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
@@ -143,7 +143,7 @@ class TestVerifyEmailToken(unittest.TestCase):
     
     def test_flush_rate_limiting_table(self):
         with self.flask_application.app.app_context():
-            for _ in range(env.send_email_attempts_limit_per_user):
+            for _ in range(conf.features.rate_limiting.send_email_attempts_limit_per_user):
                 attempt = RateLimiting(ip=None, user_id=self.user_id, action_type="send_verification_email", timestamp= datetime.datetime.utcnow() - datetime.timedelta(minutes=60))
                 db.session.add(attempt)
                 db.session.commit()

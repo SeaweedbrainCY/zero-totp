@@ -1,5 +1,5 @@
 import jwt
-import environment as env
+from environment import conf
 from functools import wraps
 import uuid
 import jwt
@@ -15,7 +15,7 @@ ISSUER = "https://api.zero-totp.com"
 def verify_jwt(jwt_token): 
    try:
         data = jwt.decode(jwt_token,
-                           env.jwt_secret, 
+                           conf.api.jwt_secret, 
                            algorithms=[ALG], 
                            verify=True, 
                            issuer = ISSUER,
@@ -43,7 +43,7 @@ def generate_jwt(user_id, admin=False):
         if admin:
             payload["admin"] = True
             payload["exp"] = datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
-        return jwt.encode(payload, env.jwt_secret, algorithm=ALG)
+        return jwt.encode(payload, conf.api.jwt_secret, algorithm=ALG)
     except Exception as e:
         logging.warning("Error while generating JWT : " + str(e))
         raise e

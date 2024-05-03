@@ -1,6 +1,6 @@
 import os
 import logging
-import pyyaml 
+import yaml 
 
 # TODO : add requirements for each value
 
@@ -9,13 +9,13 @@ class EnvironmentConfig:
     def __init__(self, data) -> None:
         for key in self.required_keys:
             if key not in data:
-                logging.error(f"Was expecting the key environment.'{key}'")
-                raise Exception(f"Was expecting the key environment.'{key}'")
+                logging.error(f"[FATAL] Load config fail. Was expecting the key environment.{key}")
+                exit(1)
         if data["type"] == "local":
             self.type = "local"
             logging.basicConfig(
                 format='%(asctime)s %(levelname)-8s %(message)s',
-                level=logging.DEBUG,
+                level=logging.DEBG,
                 datefmt='%d-%m-%Y %H:%M:%S')
             logging.debug("Environment set to development")
             self.frontend_domain = 'zero-totp.local'
@@ -50,22 +50,22 @@ class OauthConfig:
     def __init__(self, data):
         for key in self.required_keys:
             if key not in data:
-                logging.error(f"Was expecting the key api.oauth.'{key}'")
-                raise Exception(f"Was expecting the key api.oauth.'{key}'")
+                logging.error(f"[FATAL] Load config fail. Was expecting the key api.oauth.{key}")
+                exit(1)
         self.client_secret_file_path = data["client_secret_file_path"]
 
 class APIConfig:
-    required_keys = [ "jwt_secret", "private_key_path", "public_key_path", "flask_secret_key", "sever_side_encryption_key"]
+    required_keys = [ "jwt_secret", "private_key_path", "public_key_path", "flask_secret_key", "server_side_encryption_key"]
     option_config = ["oauth"]
 
     def __init__(self, data):
         for key in self.required_keys:
             if key not in data:
-                logging.error(f"Was expecting the key api.'{key}'")
-                raise Exception(f"Was expecting the key api.'{key}'")
+                logging.error(f"[FATAL] Load config fail. Was expecting the key api.{key}")
+                exit(1)
         for key in self.option_config:
             if key not in data:
-                logging.warning(f"api.'{key}' is not set. Ignoring it ...")
+                logging.warning(f"api.{key} is not set. Ignoring it ...")
         if "port" not in data:
             logging.warning(f"api.'port' is not set. Using default value: 8080")
             data["port"] = 8080
@@ -80,7 +80,7 @@ class APIConfig:
         self.private_key_path = data["private_key_path"]
         self.public_key_path = data["public_key_path"]
         self.flask_secret_key = data["flask_secret_key"]
-        self.sever_side_encryption_key = data["sever_side_encryption_key"]
+        self.server_side_encryption_key = data["server_side_encryption_key"]
         if "oauth" in data:
             self.oauth = OauthConfig(data["oauth"])
         else:
@@ -91,8 +91,8 @@ class DatabaseConfig:
     def __init__(self, data):
         for key in self.required_keys:
             if key not in data:
-                logging.error(f"Was expecting the key database.'{key}'")
-                raise Exception(f"Was expecting the key database.'{key}'")
+                logging.error(f"[FATAL] Load config fail. Was expecting the key database.{key}")
+                exit(1)
         self.database_uri = data["database_uri"]
         self.are_all_tables_created = False
 
@@ -102,8 +102,15 @@ class AdminsConfig:
             logging.info("ADMIN_CAN_DELETE_USERS environment variable not set. Using default value: false")
             self.admin_can_delete_users = False
         else:
-            logging.warning("ADMIN_CAN_DELETE_USERS environment variable set to true. This should be a TEMPORARY option ONLY.  Please set it to false if you are not sure what you are doing. DISABLE THIS OPTION AS SOON AS NOT NEEDED ANYMORE.")
-            self.admin_can_delete_users = data["admin_can_delete_users"]
+            
+            try: 
+                self.admin_can_delete_users = bool(data["admin_can_delete_users"])
+            except Exception as e:
+                logging.error(f"[FATAL] Load config fail. {e}")
+                exit(1)
+            if self.admin_can_delete_users:
+                logging.warning("ADMIN_CAN_DELETE_USERS environment variable set to true. This should be a TEMPORARY option ONLY.  Please set it to false if you are not sure what you are doing. DISABLE THIS OPTION AS SOON AS NOT NEEDED ANYMORE.")
+
 
 class EmailsConfig:
     required_keys = ["email_sender_address", "email_smtp_password", "email_smtp_server", "email_smtp_port", "email_smtp_username"]
@@ -111,14 +118,14 @@ class EmailsConfig:
         if "require_email_validation" not in data:
             data["require_email_validation"] = False
         if data["require_email_validation"] == False:
-            logging.info("REQUIRE_EMAIL_VALIDATION is disabled. Users will not be asked to verify their email address. You can enable this option by setting the REQUIRE_EMAIL_VALIDATION environment variable to true at any moment.")
+            logging.info("[FATAL] Load config fail. require_email_validation is disabled. Users will not be asked to verify their email address. You can enable this option by setting the require_email_validation  variable to true at any moment.")
             self.require_email_validation = False
         else :
             self.require_email_validation = True
             for key in self.required_keys:
                 if key not in data:
-                    logging.error(f"Was expecting the key features.emails.'{key}' because REQUIRE_EMAIL_VALIDATION is set to true")
-                    raise Exception(f"Was expecting the key features.emails.'{key}' because REQUIRE_EMAIL_VALIDATION is set to true")
+                    logging.error(f"[FATAL] Load config fail. Was expecting the key features.emails.{key} because require_email_validation is set to true")
+                    exit(1)
             self.sender_address = data["email_sender_address"]
             self.sender_password = data["email_smtp_password"]
             self.smtp_server = data["email_smtp_server"]
@@ -127,10 +134,14 @@ class EmailsConfig:
 
 class RateLimitingConfig:
     def __init__(self, data):
-        self.login_attempts_limit_per_ip = data["login_attempts_limit_per_ip"] if "login_attempts_limit_per_ip" in data else 10
-        self.send_email_attempts_limit_per_user = data["send_email_attempts_limit_per_user"] if "send_email_attempts_limit_per_user" in data else 5
-        self.login_ban_time = data["login_ban_time"] if "login_ban_time" in data else 15
-        self.email_ban_time = data["email_ban_time"] if "email_ban_time" in data else 60
+        try :
+            self.login_attempts_limit_per_ip = int(data["login_attempts_limit_per_ip"]) if "login_attempts_limit_per_ip" in data else 10
+            self.send_email_attempts_limit_per_user = int(data["send_email_attempts_limit_per_user"]) if "send_email_attempts_limit_per_user" in data else 5
+            self.login_ban_time = int(data["login_ban_time"]) if "login_ban_time" in data else 15
+            self.email_ban_time = int(data["email_ban_time"]) if "email_ban_time" in data else 60
+        except Exception as e:
+            logging.error(f"[FATAL] Load config fail. {e}")
+            exit(1)
 
 
 class SentryConfig:
@@ -138,23 +149,18 @@ class SentryConfig:
     def __init__(self, data):
         for key in self.required_keys:
             if key not in data:
-                logging.error(f"Was expecting the key features.sentry.'{key}'")
-                raise Exception(f"Was expecting the key features.sentry.'{key}'")
+                logging.error(f"[FATAL] Load config fail. Was expecting the key features.sentry.{key}")
+                exit(1)
         self.dsn = data["dsn"]
 
 
 class FeaturesConfig:
-    require_keys = ["admins", "emails", "rate_limiting", "sentry"]
     def __init__(self, data):
-        for key in self.required_keys:
-            if key not in data:
-                logging.error(f"Was expecting the key features.'{key}'")
-                raise Exception(f"Was expecting the key features.'{key}'")
                 
         self.admins = AdminsConfig(data["admins"] if "admins" in data else [])
         self.emails = EmailsConfig(data["emails"]) if "emails" in data else None
         self.rate_limiting = RateLimitingConfig(data["rate_limiting"] if "rate_limiting" in data else [])
-        self.sentry = data["sentry"]
+        self.sentry = SentryConfig(data["sentry"]) if "sentry" in data else None
 
 
 class Config:
@@ -162,11 +168,11 @@ class Config:
     def __init__(self, data):
         for key in self.required_keys:
             if key not in data:
-                raise Exception(f"Was expecting the key '{key}'")
-        self.api = APIConfig(data["api"])
-        self.environment = EnvironmentConfig(data["environment"])
-        self.database = DatabaseConfig(data["database"])
-        self.features = FeaturesConfig(data["features"])
+                exit(1)
+        self.api = APIConfig(data["api"] if data["api"] != None else [])
+        self.environment = EnvironmentConfig(data["environment"] if data["environment"] != None else [])
+        self.database = DatabaseConfig(data["database"] if data["database"] != None else [])
+        self.features = FeaturesConfig(data["features"] if data["features"] != None else [])
 
 
 
@@ -174,8 +180,8 @@ class Config:
 
 with open("./config/config.yml") as config_yml:
     try:
-        conf = yaml.safe_load(config_yml)
-
+        raw_conf = yaml.safe_load(config_yml)
+        conf = Config(raw_conf)
     except yaml.YAMLError as exc:
         raise Exception(exc)
 

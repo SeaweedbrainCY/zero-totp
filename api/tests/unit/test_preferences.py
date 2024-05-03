@@ -4,7 +4,7 @@ from app import app
 from unittest.mock import patch
 from database.user_repo import User as UserRepo
 from database.preferences_repo import Preferences as PreferencesRepo
-import environment as env
+from environment import conf
 from CryptoClasses import jwt_func
 import jwt
 import datetime
@@ -21,7 +21,7 @@ class TestPreferences(unittest.TestCase):
     favicon_policy_default_value = "enabledOnly"
 
     def setUp(self):
-        if env.db_uri != "sqlite:///:memory:":
+        if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
@@ -69,7 +69,7 @@ class TestPreferences(unittest.TestCase):
             "nbf": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() - datetime.timedelta(hours=1),
         }
-        jwtCookie = jwt.encode(payload, env.jwt_secret, algorithm=jwt_func.ALG)
+        jwtCookie = jwt.encode(payload,conf.api.jwt_secret, algorithm=jwt_func.ALG)
         return jwtCookie
 
 #########

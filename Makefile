@@ -37,4 +37,3 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name "pycache" -exec rm -rf {} +
 	find . -type f -name "*.pyc" -exec rm -f {} +
-	docker rm database -f 2>/dev/null || true

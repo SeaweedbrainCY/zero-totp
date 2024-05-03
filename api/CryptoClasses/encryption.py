@@ -1,13 +1,12 @@
 from Crypto.Cipher import AES
-import environment as env
 from base64 import b64encode, b64decode
 import json
-from environment import logging
+from environment import logging, conf
 
 
 class ServiceSideEncryption:
     def __init__(self) -> None:
-      self.key = b64decode(env.sever_side_encryption_key)
+      self.key = b64decode(conf.api.server_side_encryption_key)
 
 
     def encrypt(self, message) -> dict :

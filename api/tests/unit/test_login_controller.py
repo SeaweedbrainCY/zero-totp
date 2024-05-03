@@ -3,14 +3,14 @@ import controllers
 from app import app
 from unittest.mock import patch
 from database.model import User, RateLimiting
-import environment as env
+from environment import conf
 from database.db import db 
 import datetime
 
 class TestLoginController(unittest.TestCase):
 
     def setUp(self):
-        if env.db_uri != "sqlite:///:memory:":
+        if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
         self.application = app
         self.client = self.application.test_client()
@@ -155,7 +155,7 @@ class TestLoginController(unittest.TestCase):
     def test_rate_limited_user(self):
         with self.application.app.app_context():
             self.checkpw.return_value = False
-            for _ in range(env.login_attempts_limit_per_ip):
+            for _ in range(conf.features.rate_limiting.login_attempts_limit_per_ip):
                 response = self.client.post(self.loginEndpoint, json=self.json_payload)
                 self.assertEqual(response.status_code, 403)
                 self.assertEqual(response.json()["message"], "generic_errors.invalid_creds")
@@ -168,8 +168,8 @@ class TestLoginController(unittest.TestCase):
     
     def test_rate_limit_expiring(self):
         with self.application.app.app_context():
-            for _ in range(env.login_attempts_limit_per_ip):
-                attempt = RateLimiting(ip='1.1.1.1', user_id=None, action_type="failed_login", timestamp=datetime.datetime.utcnow() - datetime.timedelta(minutes=env.login_ban_time + 1))
+            for _ in range(conf.features.rate_limiting.login_attempts_limit_per_ip):
+                attempt = RateLimiting(ip='1.1.1.1', user_id=None, action_type="failed_login", timestamp=datetime.datetime.utcnow() - datetime.timedelta(minutes=conf.features.rate_limiting.login_ban_time + 1))
                 db.session.add(attempt)
                 db.session.commit()
             self.checkpw.return_value = False
