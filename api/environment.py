@@ -174,7 +174,8 @@ class Config:
         self.database = DatabaseConfig(data["database"] if data["database"] != None else [])
         self.features = FeaturesConfig(data["features"] if data["features"] != None else [])
 
-
+def test_config():
+    
 
 
 
@@ -184,30 +185,5 @@ with open("./config/config.yml") as config_yml:
         conf = Config(raw_conf)
     except yaml.YAMLError as exc:
         raise Exception(exc)
-
-
-#port = int(os.environ.get('PORT')) if os.environ.get('PORT') != None else None
-#db_uri = os.environ.get('DATABASE_URI')
-#environment = os.environ.get('ENVIRONMENT')
-#jwt_secret = os.environ.get('JWT_SECRET')
-#private_key_path = os.environ.get('PRIVATE_KEY_PATH')
-#public_key_path = os.environ.get('PUBLIC_KEY_PATH')
-#oauth_client_secret_file = os.environ.get('OAUTH_CLIENT_SECRET_FILE')
-#flask_secret_key = os.environ.get('FLASK_SECRET_KEY')
-#sever_side_encryption_key = os.environ.get('SEVER_SIDE_ENCRYPTION_KEY')
-
-#admin_can_delete_users = os.environ.get('ADMIN_CAN_DELETE_USERS') == "true"
-#email_sender_address = os.environ.get('EMAIL_SENDER_ADDRESS')
-#email_sender_password = os.environ.get('EMAIL_SENDER_PASSWORD')
-#email_smtp_server = os.environ.get('EMAIL_SMTP_SERVER')
-#email_smtp_port = os.environ.get('EMAIL_SMTP_PORT')
-#email_smtp_username = os.environ.get('EMAIL_SMTP_USERNAME')
-#require_email_validation = os.environ.get('REQUIRE_EMAIL_VALIDATION') == "true"
-#sentry_dsn = os.environ.get('SENTRY_DSN')
-#login_attempts_limit_per_ip = int(os.environ.get('LOGIN_ATTEMPTS_LIMIT_PER_IP')) if os.environ.get('LOGIN_ATTEMPTS_LIMIT_PER_IP') != None else 10
-#send_email_attempts_limit_per_user = int(os.environ.get('SEND_EMAIL_ATTEMPTS_LIMIT_PER_USER')) if os.environ.get('SEND_EMAIL_ATTEMPTS_LIMIT_PER_USER') != None else 5
-#login_ban_time = int(os.environ.get('LOGIN_BAN_TIME')) if os.environ.get('LOGIN_BAN_TIME') != None else 15
-#email_ban_time = int(os.environ.get('EMAIL_BAN_TIME')) if os.environ.get('EMAIL_BAN_TIME') != None else 60
-
 
 
