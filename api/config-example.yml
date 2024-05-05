@@ -80,7 +80,7 @@ features:
         ## Configuration of the SMTP server used to send emails.
         # email_sender_address: "Zero-TOTP <zero-totp@example.com>"
         # email_smtp_server: "smtp.example.com"
-        # email_smtp_port: "587"
+        # email_smtp_port: 587
         # email_smtp_username: "username"
         # email_smtp_password: "password"
 
