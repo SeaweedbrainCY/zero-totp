@@ -1,8 +1,8 @@
 import os
 import logging
 import yaml 
+import Utils.env_requirements_check as env_requirements_check
 
-# TODO : add requirements for each value
 
 class EnvironmentConfig:
     required_keys = ["type"]
@@ -174,7 +174,6 @@ class Config:
         self.database = DatabaseConfig(data["database"] if data["database"] != None else [])
         self.features = FeaturesConfig(data["features"] if data["features"] != None else [])
 
-#def test_config():
 
 
 
@@ -183,7 +182,9 @@ with open("./config/config.yml") as config_yml:
     try:
         raw_conf = yaml.safe_load(config_yml)
         conf = Config(raw_conf)
+        
     except yaml.YAMLError as exc:
         raise Exception(exc)
 
 
+env_requirements_check.test_conf(conf) 
