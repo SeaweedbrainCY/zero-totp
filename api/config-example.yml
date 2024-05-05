@@ -90,21 +90,21 @@ features:
         
         ## Max consecutives failed login per IP in 1h
         ## Default : 10
-        # login_attempts_limit_per_ip:10
+        # login_attempts_limit_per_ip: 10
 
         ## Ban time per IP in minutes
         ## Default : 15 min
-        #  login_ban_time:15
+        #  login_ban_time: 15
 
 
 
         ## Max email verification request per user in 1h
         ## Default : 5
-        # send_email_attempts_limit_per_user:5
+        # send_email_attempts_limit_per_user: 5
 
         ## Email ban time per user in minutes
         ## Default : 60 min
-        #  email_ban_time:60
+        #  email_ban_time: 60
     
 
     ## Optional
