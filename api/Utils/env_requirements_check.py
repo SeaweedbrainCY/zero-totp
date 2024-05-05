@@ -28,7 +28,7 @@ def test_conf(conf) -> bool:
 
     ## Database
     assert isinstance(conf.database.database_uri, str), "database.database_uri is not a string"
-    assert re.match(r"mysql:\/\/.*:.*@.*:[0-9]*\/.*", conf.database.database_uri), "database.database_uri is not a valid uri. Was expecting something like 'mysql://user:password@hostname:port/dbname'"
+    assert re.match(r"mysql:\/\/.*:.*@.*:[0-9]*\/.*", conf.database.database_uri) or conf.database.database_uri == "sqlite:///:memory:", "database.database_uri is not a valid uri. Was expecting something like 'mysql://user:password@hostname:port/dbname'"
 
     ## Features
     ## Admins 

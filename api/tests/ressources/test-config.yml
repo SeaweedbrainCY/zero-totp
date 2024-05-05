@@ -11,7 +11,7 @@ api:
 
     ## The secret that will be used to sign JWT tokens. CHANGE THIS VALUE !
     ## A random 128 alphanumeric string is required.
-    jwt_secret: "unsafe_secret"
+    jwt_secret: "false_secret_Xt4PF5TYTCyxVz3xHa828MH2KBgMAeSfXQYcHf35ARuMu3sV42zvFVYjRRDU8bRH"
 
 
     ## Absolute path to the API private key used to sign the vault to guarantee its authenticity.
@@ -24,7 +24,7 @@ api:
 
     ## Secret used to encrypt flask session.
     ## A random 128 alphanumeric string is required.
-    flask_secret_key: "unsafe_secret"
+    flask_secret_key: "false_secret_Xt4PF5TYTCyxVz3xHa828MH2KBgMAeSfXQYcHf35ARuMu3sV42zvFVYjRRDU8bRH"
 
     ## Server side encryption key used to encrypt data stored in the database that is not Encrypted by the ZKE flow
     ## A random 128 alphanumeric string is required.
