@@ -110,9 +110,9 @@ features:
     ## Optional
     ## Sentry configuration to centralize error tracking
     ## Keep commented to disable
-    sentry:
+    #sentry:
         ## Sentry DSN
         ## See https://docs.sentry.io/platforms/python/flask/ for more information.
-        dsn: "not a dns"
+        #dsn: "not a dns"
 
 
