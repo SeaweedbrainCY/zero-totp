@@ -174,8 +174,8 @@ class Config:
         self.database = DatabaseConfig(data["database"] if data["database"] != None else [])
         self.features = FeaturesConfig(data["features"] if data["features"] != None else [])
 
-def test_config():
-    
+#def test_config():
+
 
 
 
