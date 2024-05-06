@@ -15,7 +15,7 @@ class EnvironmentConfig:
             self.type = "local"
             logging.basicConfig(
                 format='%(asctime)s %(levelname)-8s %(message)s',
-                level=logging.DEBG,
+                level=logging.DEBUG,
                 datefmt='%d-%m-%Y %H:%M:%S')
             logging.debug("Environment set to development")
             self.frontend_domain = 'zero-totp.local'
