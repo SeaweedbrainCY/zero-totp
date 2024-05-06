@@ -1,5 +1,8 @@
 from getpass import getpass
-
+from database.db import db
+from Crypto.Protocol.KDF import PBKDF2
+from Crypto.Hash import SHA512
+from Crypto.Random import get_random_bytes
 
 
 print("Welcome to this utility to update the server side encryption key.")
@@ -23,5 +26,29 @@ if new_key != new_key_confirm:
     print("The new key and the confirmation key do not match.")
     exit(1)
 
+print("Updating the server side encryption key...")
+print("DO NOT INTERRUPT THIS PROCESS. THIS COULD LEAD TO DATA LOSS.")
+
+
+# update encrypted oauth creds 
+
+from database.model import Oauth_tokens
+from CryptoClasses.encryption import ServiceSideEncryption
+new_aes_key = PBKDF2(new_key.encode("utf-8"), None, count=2000000, dkLen=32, prf=SHA512)
+
+old_sse = ServiceSideEncryption(old_key)
+new_sse = ServiceSideEncryption(new_key)
+
+all_enc_creds = db.session.query(Oauth_tokens).all()
+for enc_cred in all_enc_creds:
+    decrypted = old_sse.decrypt(ciphertext=enc_cred.enc_credentials, tag=enc_cred.cipher_tag, nonce=enc_cred.cipher_nonce)
+    if decrypted is None:
+        print(f"Failed to decrypt oauth token for user {enc_cred.user_id}")
+        continue
+    new_encrypted = new_sse.encrypt(decrypted)
+    enc_cred.enc_credentials = new_encrypted["ciphertext"]
+    enc_cred.cipher_nonce = new_encrypted["nonce"]
+    enc_cred.cipher_tag = new_encrypted["tag"]
+    db.session.commit()
 
 
