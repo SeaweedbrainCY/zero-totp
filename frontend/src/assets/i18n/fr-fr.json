@@ -810,6 +810,11 @@
       "tag": {
         "title": "Filtrer par tag"
       }
+    },
+    "oauth": {
+      "error": {
+        "server": "Impossible de lancer le flow Oauth"
+      }
     }
   },
   "session_expired": "Oups, ta session a expirée !",
