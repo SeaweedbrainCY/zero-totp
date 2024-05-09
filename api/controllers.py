@@ -483,6 +483,8 @@ def admin_login(user_id, body):
     
 # GET /google-drive/oauth/authorization_flow
 def get_authorization_flow():
+    if not conf.api.oauth:
+        return {"message": "Oauth is disabled on this tenant. Contact the tenant administrator to enable it."}, 403 
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
     logging.info("State stored in session : " + str(state))
@@ -583,7 +585,7 @@ def verify_last_backup(user_id):
     sse = ServiceSideEncryption()
     creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce, tag=oauth_tokens.cipher_tag)
     if creds_b64 == None:
-        logging.warning("Error while decrypting credentials for user " + str(user_id) + ". creds_b64 = " + str(creds_b64))
+        logging.error("Error while decrypting credentials for user " + str(user_id) + ". creds_b64 = " + str(creds_b64))
         return {"error": "Error while connecting to the Google API"}, 500
     
     
