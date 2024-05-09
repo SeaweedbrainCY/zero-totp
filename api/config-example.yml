@@ -49,6 +49,10 @@ environment:
   ## Possible values are "local", "development" and "production".
   ## Running non production type can cause security issues.
   type: "production"
+  ## DO NOT MODIFY THIS VALUE
+  ## THIS VALUE IS AUTOMATICALLY GENERATED/UPDATED
+  ## MODIFICATION OF THIS VALUE WILL CAUSE THE API TO FAIL OR NEVER START
+  config_version: 1.0
 
 database:
     ## The URI of the database to connect to.
