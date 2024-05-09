@@ -5,7 +5,7 @@ import Utils.env_requirements_check as env_requirements_check
 
 
 class EnvironmentConfig:
-    required_keys = ["type"]
+    required_keys = ["type", "config_version"]
     def __init__(self, data) -> None:
         for key in self.required_keys:
             if key not in data:
