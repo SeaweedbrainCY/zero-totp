@@ -1,5 +1,5 @@
 #!/bin/bash
-
+cd ..
 FLASK_EXECUTABLE="./venv/bin/flask --app app:flask"
 
 run_flask_command() {
