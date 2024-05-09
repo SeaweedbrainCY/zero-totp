@@ -37,7 +37,7 @@ api:
     ## See https://developers.google.com/identity/protocols/oauth2 for more information.
     oauth:
           ## See https://developers.google.com/identity/protocols/oauth2 for more information.
-        client_secret_file_path: "fake_client_secret.json"
+        client_secret_file_path: "./tests/ressources/fake_client_secret.json"
 
 
 
