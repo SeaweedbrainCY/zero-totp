@@ -201,11 +201,11 @@ class TestOauthCallback(unittest.TestCase):
             self.assertEqual(self.google_integration_repo.is_google_drive_enabled(self.blocked_user_id), 0)
 
 
-   # def test_oauth_callback_disabled_oauth(self):
-   #     self.client.cookies = {"api-key": jwt_func.generate_jwt(self.blocked_user_id)}
-   #     conf.api.oauth = None
-   #     with self.application.app.app_context():
-   #         self.client.get(self.setSateSession)
-   #         self.client.follow_redirects = False
-   #         response = self.client.get(self.endpoint)
-   #         self.assertEqual(response.status_code, 403)
+    def test_oauth_callback_disabled_oauth(self):
+        self.client.cookies = {"api-key": jwt_func.generate_jwt(self.blocked_user_id)}
+        patch.object(conf.api, 'oauth', None)
+        with self.application.app.app_context():
+            self.client.get(self.setSateSession)
+            self.client.follow_redirects = False
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
