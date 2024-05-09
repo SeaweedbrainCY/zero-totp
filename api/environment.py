@@ -2,11 +2,13 @@ import os
 import logging
 import yaml 
 import Utils.env_requirements_check as env_requirements_check
-
+from Crypto.Protocol.KDF import PBKDF2
+from Crypto.Hash import SHA512
 
 class EnvironmentConfig:
     required_keys = ["type", "config_version"]
     def __init__(self, data) -> None:
+        self.config_version = data["config_version"]
         for key in self.required_keys:
             if key not in data:
                 logging.error(f"[FATAL] Load config fail. Was expecting the key environment.{key}")
@@ -58,7 +60,7 @@ class APIConfig:
     required_keys = [ "jwt_secret", "private_key_path", "public_key_path", "flask_secret_key", "server_side_encryption_key"]
     option_config = ["oauth"]
 
-    def __init__(self, data):
+    def __init__(self, data, config_version):
         for key in self.required_keys:
             if key not in data:
                 logging.error(f"[FATAL] Load config fail. Was expecting the key api.{key}")
@@ -80,7 +82,15 @@ class APIConfig:
         self.private_key_path = data["private_key_path"]
         self.public_key_path = data["public_key_path"]
         self.flask_secret_key = data["flask_secret_key"]
-        self.server_side_encryption_key = data["server_side_encryption_key"]
+        try:
+            if config_version >= 1.0:
+                self.server_side_encryption_key = PBKDF2(data["server_side_encryption_key"].encode("utf-8"), '4ATK7mA8aKgT6768' , count=2000000, dkLen=32, hmac_hash_module=SHA512)
+            else:
+                logging.error(f"[FATAL] Load config fail. config version {config_version} is not supported.")
+                exit(1)
+        except Exception as e:
+            logging.error(f"[FATAL] Load config fail. {e}")
+            exit(1)
         if "oauth" in data:
             self.oauth = OauthConfig(data["oauth"])
         else:
@@ -169,8 +179,8 @@ class Config:
         for key in self.required_keys:
             if key not in data:
                 exit(1)
-        self.api = APIConfig(data["api"] if data["api"] != None else [])
         self.environment = EnvironmentConfig(data["environment"] if data["environment"] != None else [])
+        self.api = APIConfig(data["api"] if data["api"] != None else [], self.environment.config_version)
         self.database = DatabaseConfig(data["database"] if data["database"] != None else [])
         self.features = FeaturesConfig(data["features"] if data["features"] != None else [])
 

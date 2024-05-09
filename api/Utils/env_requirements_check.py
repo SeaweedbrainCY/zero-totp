@@ -14,8 +14,7 @@ def test_conf(conf) -> bool:
         raise Exception(f"api.private_key_path or api.public_key_path is not a valid path. {e}")
     assert isinstance(conf.api.flask_secret_key, str), "api.flask_secret_key is not a string"
     assert len(conf.api.flask_secret_key) >= 64, "api.flask.secret_key must be at least 64 characters long"
-    assert isinstance(conf.api.server_side_encryption_key, str), "api.server_side_encryption_key is not a string"
-    #assert len(conf.api.server_side_encryption_key) >= 64, "api.server_side_encryption_key must be at least 64 characters long"
+    assert isinstance(conf.api.server_side_encryption_key, bytes), "api.server_side_encryption_key is not a string"
     if conf.api.oauth != None:
         assert isinstance(conf.api.oauth.client_secret_file_path, str), "api.oauth.client_secret_file_path is not a string"
         try:

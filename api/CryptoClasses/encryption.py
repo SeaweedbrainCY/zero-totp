@@ -2,12 +2,11 @@ from Crypto.Cipher import AES
 from base64 import b64encode, b64decode
 import json
 from environment import logging, conf
-from Crypto.Protocol.KDF import PBKDF2
-from Crypto.Hash import SHA512
+
 
 class ServiceSideEncryption:
     def __init__(self) -> None:
-      self.key = PBKDF2(conf.api.server_side_encryption_key.encode("utf-8"), '4ATK7mA8aKgT6768' , count=2000000, dkLen=32, hmac_hash_module=SHA512)
+      self.key = conf.api.server_side_encryption_key
 
 
     def encrypt(self, message) -> dict :
