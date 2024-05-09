@@ -1,6 +1,6 @@
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
-import environment as env
+from environment import conf
 import logging
 import datetime
 
@@ -13,7 +13,7 @@ def get_authorization_url(): # pragma: no cover
     # Use the client_secret.json file to identify the application requesting
     # authorization. The client ID (from that file) and access scopes are required.
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        env.oauth_client_secret_file,
+        conf.api.oauth.client_secret_file_path,
         scopes=SCOPES)
 
     # Indicate where the API server will redirect the user after the user completes
@@ -21,7 +21,7 @@ def get_authorization_url(): # pragma: no cover
     # match one of the authorized redirect URIs for the OAuth 2.0 client, which you
     # configured in the API Console. If this value doesn't match an authorized URI,
     # you will get a 'redirect_uri_mismatch' error.
-    flow.redirect_uri = env.callback_URI
+    flow.redirect_uri = conf.environment.callback_URI
 
     # Generate URL for request to Google's OAuth 2.0 server.
     # Use kwargs to set optional request parameters.
@@ -36,12 +36,12 @@ def get_authorization_url(): # pragma: no cover
 
 def get_credentials(request_url, state): # pragma: no cover
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        env.oauth_client_secret_file,
+        conf.api.oauth.client_secret_file_path,
         scopes=SCOPES,
         state=state)
-    flow.redirect_uri = env.callback_URI
+    flow.redirect_uri = conf.environment.callback_URI
 
-    if(env.environment != "development"):
+    if(conf.environment.type != "development"):
         # we force https in production
         authorization_response = request_url.replace('http://', 'https://')
     else:

@@ -1,7 +1,7 @@
 import unittest
 from app import app
 from database.db import db 
-import environment as env
+from environment import conf
 from database.model import User as UserModel, Admin as AdminModel
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, verify_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
@@ -12,7 +12,7 @@ import jwt
 class TestGetAllUsers(unittest.TestCase):
 
     def setUp(self):
-        if env.db_uri != "sqlite:///:memory:":
+        if conf.database.database_uri != "sqlite:///:memory:":
             raise Exception("Test must be run with in memory database")
         self.application = app
         self.client = self.application.test_client()
@@ -47,7 +47,7 @@ class TestGetAllUsers(unittest.TestCase):
         }
         if admin:
             payload["admin"] = True
-        jwt_cookie = jwt.encode(payload, env.jwt_secret, algorithm=jwt_ALG)
+        jwt_cookie = jwt.encode(payload, conf.api.jwt_secret, algorithm=jwt_ALG)
         return jwt_cookie
 
     def test_get_all_users_success(self):

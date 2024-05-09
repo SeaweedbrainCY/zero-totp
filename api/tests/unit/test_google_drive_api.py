@@ -1,5 +1,5 @@
 import unittest
-import environment as env
+from environment import conf
 from unittest.mock import patch
 from Oauth import google_drive_api  
 import datetime
@@ -41,7 +41,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
 
     
         def setUp(self):
-            if env.db_uri != "sqlite:///:memory:":
+            if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
             self.application = app
             self.jwtCookie = jwt_func.generate_jwt(1)

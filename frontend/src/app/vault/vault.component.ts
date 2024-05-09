@@ -350,8 +350,8 @@ export class VaultComponent implements OnInit {
         } else if(error.error.detail != null){
           errorMessage = error.error.detail;
         }
-        this.translate.get("vault.error.server").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr,  translation + " "+ errorMessage,"");
+        this.translate.get("vault.oauth.error.server").subscribe((translation: string) => {
+          this.utils.toastError(this.toastr,  translation + ". "+ errorMessage,"");
       });
     });
   }
