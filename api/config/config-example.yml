@@ -16,11 +16,13 @@ api:
 
     ## Absolute path to the API private key used to sign the vault to guarantee its authenticity.
     ## This must be a PEM encoded RSA private key.
-    private_key_path: "path/to/private_key.pem"
+    ## For automatic generation at startup, use the value "automatic_generation". 
+    private_key_path: "automatic_generation"
 
     ## Absolute path to the API public key used to verify vault the vault signature before opening it in the frontend.
     ## This must be a PEM encoded RSA public key.
-    public_key_path: "path/to/public_key.pem"
+    ## For automatic generation at startup, use the value "automatic_generation".
+    public_key_path: "automatic_generation"
 
     ## Secret used to encrypt flask session.
     ## A random 128 alphanumeric string is required.
