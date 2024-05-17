@@ -187,14 +187,17 @@ class Config:
 
 
 
-
-with open("./config/config.yml") as config_yml:
-    try:
-        raw_conf = yaml.safe_load(config_yml)
-        conf = Config(raw_conf)
+try:
+    with open("./config/config.yml") as config_yml:
+        try:
+            raw_conf = yaml.safe_load(config_yml)
+            conf = Config(raw_conf)
         
-    except yaml.YAMLError as exc:
-        raise Exception(exc)
+        except yaml.YAMLError as exc:
+            raise Exception(exc)
+except:
+    logging.error("[FATAL] Load config fail. Could not open config file. Mount the config file to /api/config/config.yml")
+    exit(1)
 
 
 env_requirements_check.test_conf(conf) 
