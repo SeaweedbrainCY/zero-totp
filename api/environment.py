@@ -2,6 +2,7 @@ import os
 import logging
 import yaml 
 import Utils.env_requirements_check as env_requirements_check
+from CryptoClasses.serverRSAKeys import ServerRSAKeys
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Hash import SHA512
 
@@ -79,6 +80,11 @@ class APIConfig:
             self.port = 8080
         
         self.jwt_secret = data["jwt_secret"]
+        if "private_key_path" == "automatic_generation" or "public_key_path" == "automatic_generation":
+            rsa_server_keys = ServerRSAKeys()
+            data["private_key_path"] = "./secrets/private.pem"
+            data["public_key_path"] = "./secrets/public.pem"
+            rsa_server_keys.generate(private_key_path=self.private_key_path, public_key_path=self.public_key_path)
         self.private_key_path = data["private_key_path"]
         self.public_key_path = data["public_key_path"]
         self.flask_secret_key = data["flask_secret_key"]
@@ -199,5 +205,11 @@ except:
     logging.error("[FATAL] Load config fail. Could not open config file. Mount the config file to /api/config/config.yml")
     exit(1)
 
+with open("./config/config.yml", "w") as config_yml:
+    try:
+        yaml.safe_dump(raw_conf, config_yml, default_flow_style=False, sort_keys=False)
+        
+    except yaml.YAMLError as exc:
+        raise Exception(exc)
 
 env_requirements_check.test_conf(conf) 
