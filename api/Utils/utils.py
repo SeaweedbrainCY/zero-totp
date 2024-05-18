@@ -15,6 +15,7 @@ from base64 import b64encode
 import requests
 from Email import send as send_email
 import ipaddress
+from jsonschema import validate, ValidationError
 
 
 
@@ -128,3 +129,13 @@ def get_ip(request):
     else:
         logging.error("Could not get ip address from request. Remote ip : " + str(remote_ip) + " Forwarded for : " + str(forwarded_for))
         return None
+
+def unsafe_json_validation(json:str) -> (bool, str):
+    if len(json) > 4 * 1024 *1024:
+        return False, "Json is too big"
+    schema = [
+        {
+            ""
+        }
+    ]
+    
