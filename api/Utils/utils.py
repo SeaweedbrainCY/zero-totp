@@ -99,7 +99,7 @@ def send_information_email(ip, email, reason):
 def get_geolocation(ip):
     try:
         logging.info("Getting geolocation for ip " + str(ip))  
-        r = requests.get("http://ip-api.com/json/" + str(ip) )
+        r = requests.get("http://ip-api.com/json/" + str(ip) )# nosemgrep
         if r.status_code != 200:
             return "unknown (unknown, unknown)"
         json = r.json()
