@@ -42,9 +42,8 @@ if conf.environment.type == "development":
 
 # POST /signup
 def signup():
-    dataJSON = json.dumps(request.get_json())
     try:
-        data = json.loads(dataJSON)
+        data = request.get_json()
         username = utils.sanitize_input(data["username"].strip())
         passphrase = data["password"].strip()
         email = utils.sanitize_input(data["email"].strip())
@@ -119,9 +118,8 @@ def login():
             return {"message": "Too many requests", 'ban_time':conf.features.rate_limiting.login_ban_time}, 429
     else:
         logging.error("The remote IP used to login is private. The headers are not set correctly")
-    dataJSON = json.dumps(request.get_json())
     try:
-        data = json.loads(dataJSON)
+        data = request.get_json()
         passphrase = data["password"].strip()
         email = utils.sanitize_input(data["email"]).strip()
     except Exception as e:
