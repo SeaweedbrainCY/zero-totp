@@ -1,4 +1,5 @@
 import re
+from  CryptoClasses.serverRSAKeys import ServerRSAKeys
 
 def test_conf(conf) -> bool:
     ## API
@@ -10,6 +11,10 @@ def test_conf(conf) -> bool:
     try:
         open(conf.api.private_key_path, "r").close()
         open(conf.api.public_key_path, "r").close()
+    except FileNotFoundError:
+        logging.info("api.private_key_path or api.public_key_path does not exist. Generating new keys ...")
+        rsa_server_keys = ServerRSAKeys()
+        rsa_server_keys.generate(private_key_path=conf.api.private_key_path, public_key_path=conf.api.public_key_path)
     except Exception as e:
         raise Exception(f"api.private_key_path or api.public_key_path is not a valid path. {e}")
     assert isinstance(conf.api.flask_secret_key, str), "api.flask_secret_key is not a string"
