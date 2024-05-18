@@ -20,7 +20,7 @@ api:
 
     ## Absolute path to the API public key used to verify vault the vault signature before opening it in the frontend.
     ## This must be a PEM encoded RSA public key.
-    public_key_path: "./tests/ressources/test_private.pem"
+    public_key_path: "./tests/ressources/test_public.pem"
 
     ## Secret used to encrypt flask session.
     ## A random 128 alphanumeric string is required.
