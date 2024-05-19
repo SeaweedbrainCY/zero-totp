@@ -130,12 +130,20 @@ def get_ip(request):
         logging.error("Could not get ip address from request. Remote ip : " + str(remote_ip) + " Forwarded for : " + str(forwarded_for))
         return None
 
-def unsafe_json_validation(json:str) -> (bool, str):
+def unsafe_json_vault_validation(json:str) -> (bool, str):
+    print("len = ", len(json))
     if len(json) > 4 * 1024 *1024:
-        return False, "Json is too big"
-    schema = [
-        {
-            ""
-        }
-    ]
+        return False, "The vault is too big. The maximum size is 4MB"
+    schema = {
+        "type": "object",
+        "properties": {
+            "uuid": {"type": "string"},
+        },
+        "required": ["uuid"]
+    }
+    try:
+        validate(json, schema)
+        return True, "OK"
+    except Exception as e:
+        return False, "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support."
     

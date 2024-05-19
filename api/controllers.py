@@ -346,12 +346,16 @@ def update_vault(user_id, body):
         zke_key = body["zke_enc"].strip()
         passphrase_salt = body["passphrase_salt"].strip()
         derivedKeySalt = body["derived_key_salt"].strip()
-    except:
+    except Exception as e:
+        logging.error(e)
         return '{"message": "Invalid request"}', 400
 
     if not newPassphrase or not old_passphrase or not enc_vault or not zke_key or not passphrase_salt or not derivedKeySalt:
         return {"message": "Missing parameters"}, 400
     
+    is_vault_valid, vault_validation_msg = utils.unsafe_json_vault_validation(enc_vault)
+    if not is_vault_valid:
+        return {"message": vault_validation_msg}, 400
     userDb = UserDB()
     zke_db = ZKE_DB()
     totp_secretDB = TOTP_secretDB()
