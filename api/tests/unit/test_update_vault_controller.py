@@ -197,7 +197,7 @@ class TestUpdateVault(unittest.TestCase):
         self.client.cookies = {"api-key": self.jwtCookie}
         payload = self.payload.copy()
         payload["enc_vault"] = "{"
-        for _ in range(0,1024):
+        for _ in range(0,1024*1024):
             payload["enc_vault"] += f'"{uuid4()}": "{uuid4()}",'
         payload["enc_vault"] += f'"{uuid4()}": "{uuid4()}"' + "}"
         response = self.client.put(self.endpoint, json=payload)
