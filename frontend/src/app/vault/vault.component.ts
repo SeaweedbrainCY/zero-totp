@@ -472,7 +472,7 @@ export class VaultComponent implements OnInit {
     this.disable_google_drive();
     setTimeout(()=> {
       this.get_oauth_authorization_url();
-  }, 1000);
+  }, 2000);
     
   }
 
