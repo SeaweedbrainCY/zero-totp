@@ -1,14 +1,13 @@
 import sentry_sdk
-import environment as env
-from environment import logging
+from environment import logging, conf
 
 
 def sentry_configuration():
-    if env.sentry_dsn:
+    if conf.features.sentry:
         
         logging.info("🔧  Sentry configured")
         sentry_sdk.init(
-            dsn=env.sentry_dsn,
+            dsn=conf.features.sentry.dsn,
             # Set traces_sample_rate to 1.0 to capture 100%
             # of transactions for performance monitoring.
             traces_sample_rate=1.0,

@@ -1,7 +1,7 @@
 import unittest
 from app import app
 from database.db import db 
-import environment as env
+from environment import conf
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
@@ -11,7 +11,7 @@ from database.model import User as UserModel
 class TestUpdateUsername(unittest.TestCase):
 
     def setUp(self) -> None:
-        if env.db_uri != "sqlite:///:memory:":
+        if conf.database.database_uri != "sqlite:///:memory:":
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()

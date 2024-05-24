@@ -10,11 +10,10 @@ from database.preferences_repo import Preferences as PreferencesDB
 from database.admin_repo import Admin as Admin_db
 from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
 from CryptoClasses.hash_func import Bcrypt
-from environment import logging
+from environment import logging, conf
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
 from CryptoClasses.hash_func import Bcrypt
 from Oauth import google_drive_api
-import environment as env
 import random
 import string
 from Email import send as send_email
@@ -37,7 +36,7 @@ import threading
 
 
 
-if env.environment == "development":
+if conf.environment.type == "development":
     logging.getLogger().setLevel(logging.INFO)
 
 
@@ -92,7 +91,7 @@ def signup():
            zke_key = None
         if zke_key:
             jwt_token = jwt_auth.generate_jwt(user.id)
-            if env.require_email_validation:
+            if conf.features.emails.require_email_validation:
                 try:
 
                     send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
@@ -117,7 +116,7 @@ def login():
     rate_limiting_db = Rate_Limiting_DB()
     if ip:
         if rate_limiting_db.is_login_rate_limited(ip):
-            return {"message": "Too many requests", 'ban_time':env.login_ban_time}, 429
+            return {"message": "Too many requests", 'ban_time':conf.features.rate_limiting.login_ban_time}, 429
     else:
         logging.error("The remote IP used to login is private. The headers are not set correctly")
     dataJSON = json.dumps(request.get_json())
@@ -156,7 +155,7 @@ def login():
         rate_limiting_db.flush_login_limit(ip)
 
     jwt_token = jwt_auth.generate_jwt(user.id)
-    if not env.require_email_validation: # we fake the isVerified status if email validation is not required
+    if not conf.features.emails.require_email_validation: # we fake the isVerified status if email validation is not required
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True}))
     elif user.isVerified:
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":user.isVerified}))
@@ -171,7 +170,7 @@ def get_login_specs(username):
     ip = utils.get_ip(request)
     if ip:
         if rate_limiting_db.is_login_rate_limited(ip):
-            return {"message": "Too many requests", 'ban_time':env.login_ban_time}, 429
+            return {"message": "Too many requests", 'ban_time':conf.features.rate_limiting.login_ban_time}, 429
     if(not utils.check_email(username)):
         return {"message": "Bad request"}, 400
     userDB = UserDB()
@@ -306,7 +305,7 @@ def update_email(user_id,body):
             thread.start()
         except Exception as e:
             logging.error("Unknown error while sending information email" + str(e))
-        if env.require_email_validation:
+        if conf.features.emails.require_email_validation:
             try:
            
                 send_verification_email(user=user_id, context_={"user":user_id}, token_info={"user":user_id})
@@ -437,7 +436,7 @@ def get_role(user_id, *args, **kwargs):
     user = UserDB().getById(user_id=user_id)
     if not user:
         return {"message" : "User not found"}, 404
-    elif not user.isVerified and env.require_email_validation:
+    elif not user.isVerified and conf.features.emails.require_email_validation:
         return {"role" : "not_verified"}, 200
     return {"role": user.role}, 200
 
@@ -484,6 +483,8 @@ def admin_login(user_id, body):
     
 # GET /google-drive/oauth/authorization_flow
 def get_authorization_flow():
+    if not conf.api.oauth:
+        return {"message": "Oauth is disabled on this tenant. Contact the tenant administrator to enable it."}, 403 
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
     logging.info("State stored in session : " + str(state))
@@ -492,7 +493,7 @@ def get_authorization_flow():
 # GET /google-drive/oauth/callback
 @require_valid_user
 def oauth_callback(user_id):
-    frontend_URI = env.frontend_URI[0] # keep the default URI, not regionized. 
+    frontend_URI = conf.environment.frontend_URI[0] # keep the default URI, not regionized. 
     try: 
         credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
 
@@ -584,7 +585,7 @@ def verify_last_backup(user_id):
     sse = ServiceSideEncryption()
     creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce, tag=oauth_tokens.cipher_tag)
     if creds_b64 == None:
-        logging.warning("Error while decrypting credentials for user " + str(user_id) + ". creds_b64 = " + str(creds_b64))
+        logging.error("Error while decrypting credentials for user " + str(user_id) + ". creds_b64 = " + str(creds_b64))
         return {"error": "Error while connecting to the Google API"}, 500
     
     
@@ -774,7 +775,7 @@ def delete_account(user_id):
 
 @require_admin_token
 def delete_account_admin(user_id, account_id_to_delete):
-    if not env.admin_can_delete_users:
+    if not conf.features.admins.admin_can_delete_users:
         logging.error("Admin " + str(user_id) + " tried to delete user " + str(account_id_to_delete) + " but admin cannot delete users. To enable this feature change the env variable and reload the API.")
         return {"message": "Admin cannot delete users. To enable this feature change the env variable and reload the API."}, 403
     logging.info("Deleting account for user " + str(account_id_to_delete) + " by admin " + str(user_id))
@@ -823,11 +824,11 @@ def update_blocked_status(user_id, account_id_to_update, action):
 
 @require_userid
 def send_verification_email(user_id):
-    if not env.require_email_validation:
+    if not conf.features.emails.require_email_validation:
         return {"message": "not implemented"}, 501
     rate_limiting = Rate_Limiting_DB()
     if(rate_limiting.is_send_verification_email_rate_limited(user_id=user_id)):
-            return {"message": "Rate limited",  'ban_time':env.email_ban_time}, 429
+            return {"message": "Rate limited",  'ban_time':conf.features.rate_limiting.email_ban_time}, 429
     logging.info("Sending verification email to user " + str(user_id))
     user = UserDB().getById(user_id)
     if user == None:

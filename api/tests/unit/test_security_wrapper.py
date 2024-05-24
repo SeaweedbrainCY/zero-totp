@@ -33,7 +33,7 @@ class TestSecurityWrapper(unittest.TestCase):
         
         
         def test_valid_user_not_verified_and_require(self):
-            security_wrapper.require_email_validation = True
+            security_wrapper.conf.features.emails.require_email_validation = True
             @security_wrapper.require_valid_user
             def wrapped_function(user_id):
                 return True, 200
@@ -42,7 +42,7 @@ class TestSecurityWrapper(unittest.TestCase):
                 self.assertEqual(status, 403)
         
         def test_valid_user_verified_and_require(self):
-            security_wrapper.require_email_validation = True
+            security_wrapper.conf.features.emails.require_email_validation = True
             @security_wrapper.require_valid_user
             def wrapped_function(user_id):
                 return True, 200
@@ -51,7 +51,7 @@ class TestSecurityWrapper(unittest.TestCase):
                 self.assertEqual(status, 200)
         
         def test_valid_user_not_verified_and_not_require(self):
-            security_wrapper.require_email_validation = False
+            security_wrapper.conf.features.emails.require_email_validation = False
             @security_wrapper.require_valid_user
             def wrapped_function(user_id):
                 return True, 200
@@ -60,7 +60,7 @@ class TestSecurityWrapper(unittest.TestCase):
                 self.assertEqual(status, 200)
         
         def test_valid_user_verified_and_not_require(self):
-            security_wrapper.require_email_validation = False
+            security_wrapper.conf.features.emails.require_email_validation = False
             @security_wrapper.require_valid_user
             def wrapped_function(user_id):
                 return True, 200
@@ -78,7 +78,7 @@ class TestSecurityWrapper(unittest.TestCase):
                 self.assertEqual(status, 403)
 
         def test_require_userid_blocked(self):
-            security_wrapper.require_email_validation = True
+            security_wrapper.conf.features.emails.require_email_validation = True
             @security_wrapper.require_userid
             def wrapped_function(user_id):
                 return True, 200

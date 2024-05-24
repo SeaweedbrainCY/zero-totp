@@ -1,17 +1,17 @@
 import smtplib, ssl
-import environment 
+from environment import conf
 from environment import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 
 def send_verification_email(email_reciever:str, token:str):# pragma: no cover
-    if environment.email_smtp_server == "" or environment.email_smtp_port == "" or environment.email_smtp_username == "" or environment.email_sender_password == "" or environment.email_sender_address == "" or not environment.require_email_validation:
+    if conf.features.emails.smtp_server == "" or conf.features.emails.smtp_port == None or conf.features.emails.smtp_username == "" or conf.features.emails.sender_password == "" or conf.features.emails.sender_address == "" or not conf.features.emails.require_email_validation :
         logging.error("Email configuration is not set. Please set the email configuration in the environment file.")
         raise Exception("Email configuration is not set. Please set the email configuration in the environment file.")
     message = MIMEMultipart("alternative")
     message["Subject"] = "Verify your email address"
-    message["From"] = environment.email_sender_address
+    message["From"] = conf.features.emails.sender_address
     message["To"] = email_reciever
 
     text = f"""\
@@ -58,21 +58,21 @@ def send_verification_email(email_reciever:str, token:str):# pragma: no cover
 
     message.attach(part1)
     message.attach(part2)
-    with smtplib.SMTP(environment.email_smtp_server, environment.email_smtp_port) as server:
-        server.connect(environment.email_smtp_server, environment.email_smtp_port)
+    with smtplib.SMTP(conf.features.emails.smtp_server, conf.features.emails.smtp_port) as server:
+        server.connect(conf.features.emails.smtp_server, conf.features.emails.smtp_port)
         server.starttls()
-        server.login(environment.email_smtp_username, environment.email_sender_password)
+        server.login(conf.features.emails.smtp_username, conf.features.emails.sender_password)
         server.sendmail(
-            environment.email_sender_address, email_reciever, message.as_string()
+            conf.features.emails.sender_address, email_reciever, message.as_string()
         )
 
 def send_information_email(email_reciever:str, reason:str, date:str, ip:str): # pragma: no cover
-    if environment.email_smtp_server == "" or environment.email_smtp_port == "" or environment.email_smtp_username == "" or environment.email_sender_password == "" or environment.email_sender_address == "":
+    if conf.features.emails.smtp_server == "" or conf.features.emails.smtp_port == "" or conf.features.emails.smtp_username == "" or conf.features.emails.sender_password == "" or conf.features.emails.sender_address == "":
         logging.error("Email configuration is not set. Please set the email configuration in the environment file.")
         raise Exception("Email configuration is not set. Please set the email configuration in the environment file.")
     message = MIMEMultipart("alternative")
     message["Subject"] = reason
-    message["From"] = environment.email_sender_address
+    message["From"] = conf.features.emails.sender_address
     message["To"] = email_reciever
 
     text = f"""\
@@ -121,10 +121,10 @@ def send_information_email(email_reciever:str, reason:str, date:str, ip:str): # 
 
     message.attach(part1)
     message.attach(part2)
-    with smtplib.SMTP(environment.email_smtp_server, environment.email_smtp_port) as server:
-        server.connect(environment.email_smtp_server, environment.email_smtp_port)
+    with smtplib.SMTP(conf.features.emails.smtp_server, conf.features.emails.smtp_port) as server:
+        server.connect(conf.features.emails.smtp_server, conf.features.emails.smtp_port)
         server.starttls()
-        server.login(environment.email_smtp_username, environment.email_sender_password)
+        server.login(conf.features.emails.smtp_username,conf.features.emails.sender_password)
         server.sendmail(
-            environment.email_sender_address, email_reciever, message.as_string()
+            conf.features.emails.sender_address, email_reciever, message.as_string()
         )

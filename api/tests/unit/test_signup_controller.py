@@ -3,12 +3,12 @@ import controllers
 from app import app
 from unittest.mock import patch
 from database.model import User
-import environment as env
+from environment import conf
 
 class TestSignupController(unittest.TestCase):
 
     def setUp(self):
-        if env.db_uri != "sqlite:///:memory:":
+        if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
         self.application = app
         self.client = self.application.test_client()

@@ -3,7 +3,7 @@ import controllers
 from app import app
 from unittest.mock import patch
 from database.model import User, TOTP_secret
-import environment as env
+from environment import conf
 from CryptoClasses import jwt_func
 import jwt
 import datetime
@@ -11,7 +11,7 @@ import datetime
 class TestUpdateEmail(unittest.TestCase):
 
     def setUp(self):
-        if env.db_uri != "sqlite:///:memory:":
+        if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
@@ -52,7 +52,7 @@ class TestUpdateEmail(unittest.TestCase):
             "nbf": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() - datetime.timedelta(hours=1),
         }
-        jwtCookie = jwt.encode(payload, env.jwt_secret, algorithm=jwt_func.ALG)
+        jwtCookie = jwt.encode(payload, conf.api.jwt_secret, algorithm=jwt_func.ALG)
         return jwtCookie
     
     def test_update_email(self):

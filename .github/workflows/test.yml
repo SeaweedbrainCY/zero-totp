@@ -48,18 +48,12 @@ jobs:
     - name: Install dependencies
       working-directory: ./api
       run:  pip install --upgrade pip && pip install -r requirements.txt && pip install -r test-requirements.txt
+    
+    - name: Moving config file
+      run: cp api/tests/ressources/test-config.yml api/config/config.yml
 
     - name: Run tests with pytest
       working-directory: ./api
-      env:
-        DATABASE_URI: "sqlite:///:memory:"
-        JWT_SECRET : "secret"
-        PRIVATE_KEY_PATH: "./tests/ressources/test_private.pem"
-        PUBLIC_KEY_PATH: "./tests/ressources/test_public.pem"
-        OAUTH_CLIENT_SECRET_FILE: "fake_client_secret.json"
-        FLASK_SECRET_KEY: "secret"
-        SEVER_SIDE_ENCRYPTION_KEY: "/SMwC/kEZCXRwzoFas8HU2KggGUYRnHuxziuE6NN1aM="
-        REQUIRE_EMAIL_VALIDATION: "true"
       run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml  --cov-fail-under=90
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2

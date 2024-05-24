@@ -2,7 +2,7 @@ import jwt
 import unittest
 from CryptoClasses.jwt_func import verify_jwt, generate_jwt
 import datetime
-import environment as env
+from environment import conf
 from connexion.exceptions import Forbidden
 
 
@@ -18,7 +18,7 @@ class TestJWT(unittest.TestCase):
             "nbf": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
         }
-        self.secret = env.jwt_secret
+        self.secret = conf.api.jwt_secret
         self.algorithm = "HS256"
 
     def test_verify_jwt_correct(self):
@@ -71,7 +71,7 @@ class TestJWT(unittest.TestCase):
         self.assertEqual(verify_jwt(jwt)["admin"], 1)
 
     def test_generate_jwt_invalid_key(self):
-        realSecret = env.jwt_secret
-        env.jwt_secret = "-----BEGIN PUBLIC KEY-----\nMFswDQYJKoZIhvcNAQEBBQADSgAwRwJAQqbu/gXebwVHrK9DAh/yeMu7Hw7P0HC4sgwE88Kep51c/WDeAJsd9NHd5AM3Omq1f8A2SP6kPP5sC7kI7douswIDAQAB\n-----END PUBLIC KEY-----"
+        realSecret = conf.api.jwt_secret
+        conf.api.jwt_secret = "-----BEGIN PUBLIC KEY-----\nMFswDQYJKoZIhvcNAQEBBQADSgAwRwJAQqbu/gXebwVHrK9DAh/yeMu7Hw7P0HC4sgwE88Kep51c/WDeAJsd9NHd5AM3Omq1f8A2SP6kPP5sC7kI7douswIDAQAB\n-----END PUBLIC KEY-----"
         self.assertRaises(Exception, generate_jwt, 1)
-        env.jwt_secret = realSecret
+        conf.api.jwt_secret = realSecret

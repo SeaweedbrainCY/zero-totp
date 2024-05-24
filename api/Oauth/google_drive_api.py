@@ -1,6 +1,6 @@
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
-import environment as env
+from environment import conf
 from environment import logging
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials

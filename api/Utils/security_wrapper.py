@@ -1,7 +1,7 @@
 from database.user_repo import User as UserDB
 from CryptoClasses.jwt_func import verify_jwt
 import connexion
-from environment import logging, require_email_validation
+from environment import logging, conf
 from CryptoClasses.hash_func import Bcrypt
 import random
 import string
@@ -78,7 +78,7 @@ def require_valid_user(func):
         user = UserDB().getById(user_id)
         if user == None:
             return {"error": "Unauthorized"}, 401
-        if not user.isVerified and require_email_validation:
+        if not user.isVerified and conf.features.emails.require_email_validation:
             return {"error": "Not verified"}, 403
         return func(user_id, *args, **kwargs)
     return wrapper

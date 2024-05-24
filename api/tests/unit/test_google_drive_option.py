@@ -5,7 +5,7 @@ from unittest.mock import patch
 from database.user_repo import User as UserRepo
 from database.oauth_tokens_repo import Oauth_tokens as OAuthTokensRepo
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationRepo
-import environment as env
+from environment import conf
 from CryptoClasses import jwt_func
 import jwt
 import datetime
@@ -18,7 +18,7 @@ from uuid import uuid4
 class TestGoogleDriveOption(unittest.TestCase):
 
     def setUp(self):
-        if env.db_uri != "sqlite:///:memory:":
+        if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
@@ -67,7 +67,7 @@ class TestGoogleDriveOption(unittest.TestCase):
             "nbf": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() - datetime.timedelta(hours=1),
         }
-        jwtCookie = jwt.encode(payload, env.jwt_secret, algorithm=jwt_func.ALG)
+        jwtCookie = jwt.encode(payload, conf.api.jwt_secret, algorithm=jwt_func.ALG)
         return jwtCookie
 
 #########

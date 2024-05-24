@@ -350,8 +350,8 @@ export class VaultComponent implements OnInit {
         } else if(error.error.detail != null){
           errorMessage = error.error.detail;
         }
-        this.translate.get("vault.error.server").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr,  translation + " "+ errorMessage,"");
+        this.translate.get("vault.oauth.error.server").subscribe((translation: string) => {
+          this.utils.toastError(this.toastr,  translation + ". "+ errorMessage,"");
       });
     });
   }
@@ -472,7 +472,7 @@ export class VaultComponent implements OnInit {
     this.disable_google_drive();
     setTimeout(()=> {
       this.get_oauth_authorization_url();
-  }, 1000);
+  }, 2000);
     
   }
 

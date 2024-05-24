@@ -518,6 +518,11 @@
       "tag": {
         "title": "Filter by tag"
       }
+    },
+    "oauth": {
+      "error": {
+        "server": "Impossible to start the Oauth flow"
+      }
     }
   },
   "less": "Less",
