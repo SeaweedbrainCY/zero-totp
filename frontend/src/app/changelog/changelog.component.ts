@@ -14,6 +14,17 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "24/05/2024",
+      version: "b2.10",
+      added: [
+        "A lot of new invisible features have been added to prepare Zero-TOTP so it can easily be self-hosted.",
+      ],
+      fixed:[
+        "We improved the error message handling of the frontend.",
+        "We updated our dependencies to fix 2 moderate CVE.",
+      ]
+    },
+    {
       date: "13/04/2024",
       version: "b2.9",
       added: [
