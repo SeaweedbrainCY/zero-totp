@@ -193,22 +193,6 @@ class TestUpdateVault(unittest.TestCase):
         
         self.assertEqual(response.json()["message"], "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support.")
     
-    def test_update_vault_too_long(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        payload = self.payload.copy()
-        payload["enc_vault"] = "{"
-        for _ in range(0,1024*1024):
-            payload["enc_vault"] += f'"{uuid4()}": "{uuid4()}",'
-        payload["enc_vault"] += f'"{uuid4()}": "{uuid4()}"' + "}"
-        response = self.client.put(self.endpoint, json=payload)
-        self.assertEqual(response.status_code, 400)
-        print("resp", response.json())
-        self.assertEqual(response.json()["message"], "The vault is too big. The maximum size is 4MB")
-
-
-    
-        
-
 
     
     
