@@ -3,6 +3,7 @@ from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Hash import SHA512
 from app import app 
 from database.db import db
+from base64 import b64decode
 
 
 print("Welcome to this utility to update the server side encryption key.")
@@ -16,7 +17,7 @@ if backup.lower() != "y":
     exit(1)
 
 
-
+old_key = getpass(prompt="Please enter your current server side encryption key:")
 new_key = getpass(prompt="Please enter your new server side encryption key:")
 new_key_confirm = getpass(prompt="Please confirm your new server side encryption key:")
 
@@ -35,6 +36,7 @@ from CryptoClasses.encryption import ServiceSideEncryption
 new_aes_key = PBKDF2(new_key.encode("utf-8"), '4ATK7mA8aKgT6768' , count=2000000, dkLen=32, hmac_hash_module=SHA512)
 
 old_sse = ServiceSideEncryption()
+old_sse.key = b64decode(old_key)
 new_sse = ServiceSideEncryption()
 new_sse.key = new_aes_key
 with app.app.app_context():
