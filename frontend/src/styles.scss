@@ -48,6 +48,32 @@ video {
   cursor: pointer;
 }
 
+.coffee-button {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  width: 60px;
+  height: 60px;
+  background-color: #ffdd57; /* Background color for the button */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+}
+
+.coffee-button img {
+  width: 30px; /* Adjust the size of the icon */
+  height: 30px;
+}
+
+.coffee-button:hover {
+  transform: scale(1.1); /* Animation on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
 #totp-tag:hover,
 #totp-status-tag:hover,
 #google-tag:hover,
