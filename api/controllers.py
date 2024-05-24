@@ -42,9 +42,8 @@ if conf.environment.type == "development":
 
 # POST /signup
 def signup():
-    dataJSON = json.dumps(request.get_json())
     try:
-        data = json.loads(dataJSON)
+        data = request.get_json()
         username = utils.sanitize_input(data["username"].strip())
         passphrase = data["password"].strip()
         email = utils.sanitize_input(data["email"].strip())
@@ -119,9 +118,8 @@ def login():
             return {"message": "Too many requests", 'ban_time':conf.features.rate_limiting.login_ban_time}, 429
     else:
         logging.error("The remote IP used to login is private. The headers are not set correctly")
-    dataJSON = json.dumps(request.get_json())
     try:
-        data = json.loads(dataJSON)
+        data = request.get_json()
         passphrase = data["password"].strip()
         email = utils.sanitize_input(data["email"]).strip()
     except Exception as e:
@@ -348,12 +346,16 @@ def update_vault(user_id, body):
         zke_key = body["zke_enc"].strip()
         passphrase_salt = body["passphrase_salt"].strip()
         derivedKeySalt = body["derived_key_salt"].strip()
-    except:
+    except Exception as e:
+        logging.error(e)
         return '{"message": "Invalid request"}', 400
 
     if not newPassphrase or not old_passphrase or not enc_vault or not zke_key or not passphrase_salt or not derivedKeySalt:
         return {"message": "Missing parameters"}, 400
     
+    is_vault_valid, vault_validation_msg = utils.unsafe_json_vault_validation(enc_vault)
+    if not is_vault_valid:
+        return {"message": vault_validation_msg}, 400
     userDb = UserDB()
     zke_db = ZKE_DB()
     totp_secretDB = TOTP_secretDB()

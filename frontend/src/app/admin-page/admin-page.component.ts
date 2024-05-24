@@ -72,9 +72,8 @@ export class AdminPageComponent implements OnInit {
   }
 
   logoutUser(){
-    this.userService.clear();
     setTimeout(() => {
-      window.location.href = "/login";
+      this.router.navigate(['/login'], { relativeTo: this.route });
     }, 5000);
   }
 

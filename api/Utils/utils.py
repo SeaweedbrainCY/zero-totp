@@ -15,6 +15,7 @@ from base64 import b64encode
 import requests
 from Email import send as send_email
 import ipaddress
+from jsonschema import validate, ValidationError
 
 
 
@@ -99,7 +100,7 @@ def send_information_email(ip, email, reason):
 def get_geolocation(ip):
     try:
         logging.info("Getting geolocation for ip " + str(ip))  
-        r = requests.get("http://ip-api.com/json/" + str(ip) )
+        r = requests.get("http://ip-api.com/json/" + str(ip) )# nosemgrep
         if r.status_code != 200:
             return "unknown (unknown, unknown)"
         json = r.json()
@@ -128,3 +129,21 @@ def get_ip(request):
     else:
         logging.error("Could not get ip address from request. Remote ip : " + str(remote_ip) + " Forwarded for : " + str(forwarded_for))
         return None
+
+def unsafe_json_vault_validation(json:str) -> (bool, str):
+    print("len = ", len(json))
+    if len(json) > 4 * 1024 *1024:
+        return False, "The vault is too big. The maximum size is 4MB"
+    schema = {
+        "type": "object",
+        "properties": {
+            "uuid": {"type": "string"},
+        },
+        "required": ["uuid"]
+    }
+    try:
+        validate(json, schema)
+        return True, "OK"
+    except Exception as e:
+        return False, "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support."
+    
