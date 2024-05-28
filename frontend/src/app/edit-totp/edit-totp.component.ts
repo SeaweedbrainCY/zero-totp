@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
 import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
@@ -23,6 +23,7 @@ export class EditTOTPComponent implements OnInit{
   faGlobe = faGlobe;
   faKey = faKey;
   faPassport = faPassport;
+  faCircleNotch = faCircleNotch;
   faPlus = faPlus;
   faCheck = faCheck;
   faCircleQuestion = faCircleQuestion;
@@ -49,6 +50,8 @@ export class EditTOTPComponent implements OnInit{
   tags:string[] = [];
   isTagModalActive = false;
   addTagName="";
+  isEditing = false; // true if editing, false if adding
+  remainingTags:string[] = [];
   constructor(
     private router: Router,
     private route : ActivatedRoute,
@@ -74,6 +77,7 @@ export class EditTOTPComponent implements OnInit{
     } 
     this.secret_uuid = this.route.snapshot.paramMap.get('id');
     if(this.secret_uuid == null){
+        this.isEditing = false;
         if(this.currentUrl != "/vault/add"){
           this.router.navigate(["/vault"], {relativeTo:this.route.root});
           return;
@@ -86,8 +90,11 @@ export class EditTOTPComponent implements OnInit{
         this.translate.get("blue").subscribe((default_color: string) => {
         this.selected_color = default_color;
         });
+        this.remainingTags = this.userService.getVaultTags();
         
     } else {
+      this.isEditing = true;
+      console.log("is editing")
       if(!this.userService.getIsVaultLocal()){
         this.getSecretTOTP()
         this.get_preferences()
@@ -108,7 +115,7 @@ export class EditTOTPComponent implements OnInit{
           }
         }
         if(property!.has("tags")){
-          this.tags = this.utils.parseTags(property!.get("tags")!);
+          this.tags = this.utils.parseTags(property!.get("tags")!); // no remaining tags because the vault is local
         }
 
       }
@@ -293,6 +300,15 @@ export class EditTOTPComponent implements OnInit{
             if(property!.has("tags")){
               this.tags = this.utils.parseTags(property!.get("tags")!);
             }
+            console.log(this.userService.getVaultTags())
+          if(property!.has("tags")){
+            this.tags = this.utils.parseTags(property!.get("tags")!);
+          }
+          for(let tag of this.userService.getVaultTags()){
+            if(!this.tags.includes(tag)){
+              this.remainingTags.push(tag);
+            }
+          }
     
           }
         });
@@ -501,6 +517,9 @@ export class EditTOTPComponent implements OnInit{
         this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.tag_length"),"")
       } else {
        this.tags.push(this.addTagName);
+       if(this.remainingTags.includes(this.addTagName)){
+        this.remainingTags = this.remainingTags.filter(item => item !== this.addTagName);
+       }
        this.addTagName = "";
        this.toastr.clear()
        this.tagModal()
@@ -511,8 +530,19 @@ export class EditTOTPComponent implements OnInit{
     
   }
 
+  selectTag(tag:string){
+    this.tags.push(tag);
+    this.addTagName = "";
+       this.toastr.clear()
+       this.tagModal()
+       this.remainingTags = this.remainingTags.filter(item => item !== tag);
+  }
+
   deleteTag(tag:string){
     this.tags = this.tags.filter(item => item !== tag);
+    if(this.userService.getVaultTags().includes(tag)){
+      this.remainingTags.push(tag);
+    }
   }
 
 }

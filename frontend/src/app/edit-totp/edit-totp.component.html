@@ -18,7 +18,14 @@
     </div>
   </div>
 </article>
-<article class="hero is-halfheight">
+<article class="hero is-halfheight" *ngIf="this.isEditing && this.name == ''" style="min-height: 70vh;">
+  <article class="hero-body is-flex is-justify-content-center" >
+    <div>
+        <fa-icon [icon]="faCircleNotch" [spin]="true" style="color:#000000;" size="2xl"></fa-icon >
+    </div>
+</article>
+</article>
+<article class="hero is-halfheight" *ngIf="(this.isEditing && this.name != '') || !this.isEditing ">
   <div class="columns is-flex is-justify-content-center pt-6 is-mobile">
     <div class="column is-full-mobile
     is-full-tablet
@@ -79,7 +86,7 @@
             <p class="help is-danger" *ngIf="secretError != ''">{{secretError | translate}}</p>
           </div>
         </div>
-        <div class="notification is-warning" *ngIf="this.userService.getIsVaultLocal()!">
+        <div class="notification is-warning has-text-centered" *ngIf="this.userService.getIsVaultLocal()!">
           {{ 'totp.error.ro' | translate }}
         </div>
         <div class="field p-5 is-flex is-justify-content-center">
@@ -108,11 +115,10 @@
             </div>
           </label>
         </div>
-        <div class="field pt-5 is-flex is-justify-content-center">
+        <div class="field pt-5 is-flex is-justify-content-center" *ngIf="!this.userService.getIsVaultLocal()!">
           <div class=" select is-{{color}}">
             <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color"
-              (keyup)="changeColor(colorSelected.value)" (change)="changeColor(colorSelected.value)"
-              *ngIf="!this.userService.getIsVaultLocal()!">
+              (keyup)="changeColor(colorSelected.value)" (change)="changeColor(colorSelected.value)">
               <option default>{{ 'blue' | translate }}</option>
               <option>{{ 'green' | translate }}</option>
               <option>{{ 'orange' | translate }}</option>
@@ -123,10 +129,10 @@
         <div class=" pb-5 mt-3 mb-3 is-flex is-justify-content-center is-flex-wrap-wrap">
           <div class="p-2"><strong>Tag :</strong></div>
           <div class="p-2" *ngFor="let tag of tags">
-            <span class="tag is-rounded is-info">{{tag}} <button class="delete is-small" (click)="deleteTag(tag)"></button></span>
+            <span class="tag is-rounded is-info">{{tag}} <button class="delete is-small" (click)="deleteTag(tag)"  *ngIf="!this.userService.getIsVaultLocal()!"></button></span>
            
           </div>
-          <div class="p-2" style="cursor: pointer ;" (click)="tagModal()">
+          <div class="p-2" style="cursor: pointer ;" (click)="tagModal()" *ngIf="!this.userService.getIsVaultLocal()!">
             <span class="tag is-rounded is-info"><fa-icon [icon]="faPlus" size="xs"></fa-icon></span>
           </div>
         </div>
@@ -168,9 +174,16 @@
   <div class="modal-content">
     <section class="modal-card-body">
       <h1 class="is-size-3 mb-4 has-text-centered">{{ 'totp.tag.popup.title' | translate }}</h1>
+      <div class="is-flex is-justify-content-center" style="width: 100%;">
+        <div *ngIf=" remainingTags.length != 0" class="mb-4"  style="width: 100%;" class="is-flex is-justify-content-center is-flex-wrap-wrap">
+          <span *ngFor="let tag of  remainingTags" >
+            <span class="tag is-rounded ml-4 mt-2" style="cursor:pointer"  (click)="selectTag(tag)">{{tag}} </span>
+          </span>
+        </div>
+        </div>
       <div class="is-flex is-justify-content-center">
-    <input class="input is-rounded mr-5 is-small" style="width:50%" (keyup.enter)="addTag()" [(ngModel)]="addTagName" name="addTagName" type="text" placeholder="{{'totp.tag.popup.placeholder' | translate }}"/>
-    <button class="button is-success is-rounded is-small" (click)="addTag()"><fa-icon [icon]="faCheck"></fa-icon></button>
+    <input class="input is-rounded mr-5 is-small mt-6" style="width:50%" (keyup.enter)="addTag()" [(ngModel)]="addTagName" name="addTagName" type="text" placeholder="{{'totp.tag.popup.placeholder' | translate }}"/>
+    <button class="button is-success is-rounded is-small mt-6" (click)="addTag()"><fa-icon [icon]="faCheck"></fa-icon></button>
   </div>
     </section>
   </div>

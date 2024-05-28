@@ -56,7 +56,6 @@ export class VaultComponent implements OnInit {
   lastBackupDate = "";
   faviconPolicy = "";
   filter="";
-  tags:string[]=[];
   selectedTags:string[]=[];
   constructor(
     public userService: UserService,
@@ -92,6 +91,7 @@ export class VaultComponent implements OnInit {
 
       this.reloadSpin = true
       this.vault = new Map<string, Map<string,string>>();
+      this.userService.setVaultTags([]);
       this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         this.decrypt_and_display_vault(data.enc_secrets);
@@ -99,6 +99,7 @@ export class VaultComponent implements OnInit {
         this.reloadSpin = true
         if(error.status == 404){
           this.userService.setVault(new Map<string, Map<string,string>>());
+          this.reloadSpin = false
         } else {
           let errorMessage = "";
           if(error.error.message != null){
@@ -189,8 +190,8 @@ export class VaultComponent implements OnInit {
                     if(this.vault!.get(uuid)!.has("tags")){
                       const secret_tags = this.utils.parseTags(this.vault!.get(uuid)!.get("tags")!);
                       for (const tag of secret_tags){
-                        if(!this.tags.includes(tag)){
-                        this.tags.push(tag);
+                        if(!this.userService.getVaultTags().includes(tag)){
+                        this.userService.getVaultTags().push(tag);
                         }
                       }
                     }
@@ -485,5 +486,6 @@ export class VaultComponent implements OnInit {
     }
     this.filterVault();
   }
+
 }
 

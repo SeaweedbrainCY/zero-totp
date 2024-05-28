@@ -1,13 +1,13 @@
 FROM node:20-slim AS builder
 
-RUN npm install -g @angular/cli
+RUN npm install -g @angular/cli --ignore-scripts
 
 
 WORKDIR /app
 COPY package.json package-lock.json ./
 
 
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 
 COPY . .

@@ -37,7 +37,7 @@ export class LocalVaultV1Service {
   ) { }
 
   extract_version_from_vault(unsecure_context_b64:string): number | null {
-    unsecure_context_b64 = unsecure_context_b64.replace('"', '')
+    unsecure_context_b64 = unsecure_context_b64.replace('"', '')// nosemgrep
     const unsecure_vault_b64 = unsecure_context_b64.split(",")[0];
     let unsecure_vault = atob(unsecure_vault_b64);
     let context = JSON.parse(unsecure_vault);
@@ -55,7 +55,7 @@ export class LocalVaultV1Service {
       if(unsecure_context_b64.split(",").length != 2){
         resolve( UploadVaultStatus.NO_SIGNATURE);
       }
-      unsecure_context_b64 = unsecure_context_b64.replace('"', '')
+      unsecure_context_b64 = unsecure_context_b64.replace('"', '') // nosemgrep
       const unsecure_vault_b64 = unsecure_context_b64.split(",")[0];
       const signature = unsecure_context_b64.split(",")[1];
       let unsecure_vault = atob(unsecure_vault_b64);

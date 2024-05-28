@@ -187,17 +187,24 @@
                     </a>
                   </div>
               </div>
-              <div *ngIf="tags.length != 0" class="mb-4">
+              <div *ngIf=" this.userService.getVaultTags().length != 0" class="mb-4">
                 <strong>{{'vault.filter.tag.title' | translate}} : </strong>
                 <span class="tag is-rounded ml-4" style="cursor:pointer" [ngClass]="{'is-info':selectedTags.length == 0}" (click)="selectedTags=[]; filterVault()">All</span>
-                <span *ngFor="let tag of tags">
+                <span *ngFor="let tag of  this.userService.getVaultTags()">
                   <span class="tag is-rounded ml-4 mt-2" style="cursor:pointer" [ngClass]="{'is-info':selectedTags.includes(tag)}" (click)="selectTag(tag)">{{tag}} </span>
                 </span>
               </div>
             <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault"
                 *ngIf="!this.userService.getIsVaultLocal()">{{ 'vault.button.reload' | translate }} <fa-icon [icon]="faRotateRight" class="pl-1"
                     [spin]=reloadSpin></fa-icon></span>
-            <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
+            <article class="hero is-halfheight" *ngIf="reloadSpin" style="min-height: 40vh;">
+                <article class="hero-body is-flex is-justify-content-center" >
+                  <div>
+                      <fa-icon [icon]="faCircleNotch" [spin]="true" style="color:#000000;" size="2xl"></fa-icon >
+                  </div>
+              </article>
+              </article>
+            <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop" *ngIf="!reloadSpin">
 
                 <div class="column is-full-mobile
             is-one-third-tablet

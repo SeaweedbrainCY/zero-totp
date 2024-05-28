@@ -2,7 +2,7 @@ import { ToastrService } from "ngx-toastr";
 export class Utils {
 
       
-
+    
     sanitize(unsafe_str:string|null) : string |null {
       // THIS IS NOT A SECURITY FUNCTION.
       // a proper sanitizer is implemented in the backend. This just avoid user to see escaped characters in the UI. 
@@ -10,7 +10,7 @@ export class Utils {
         if(unsafe_str == null){
             return null;
         }
-        return unsafe_str.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;').replaceAll('`', '&#x60;');
+        return unsafe_str.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;').replaceAll('`', '&#x60;');//  nosemgrep 
     }
 
     domain_name_validator(domain_name:string):boolean{

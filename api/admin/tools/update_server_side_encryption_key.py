@@ -17,7 +17,6 @@ if backup.lower() != "y":
     exit(1)
 
 
-old_key = getpass(prompt="Please enter your current server side encryption key:")
 new_key = getpass(prompt="Please enter your new server side encryption key:")
 new_key_confirm = getpass(prompt="Please confirm your new server side encryption key:")
 
@@ -36,7 +35,6 @@ from CryptoClasses.encryption import ServiceSideEncryption
 new_aes_key = PBKDF2(new_key.encode("utf-8"), '4ATK7mA8aKgT6768' , count=2000000, dkLen=32, hmac_hash_module=SHA512)
 
 old_sse = ServiceSideEncryption()
-old_sse.key = b64decode(old_key)
 new_sse = ServiceSideEncryption()
 new_sse.key = new_aes_key
 with app.app.app_context():
@@ -51,5 +49,9 @@ with app.app.app_context():
         enc_cred.cipher_nonce = new_encrypted["nonce"]
         enc_cred.cipher_tag = new_encrypted["tag"]
         db.session.commit()
+
+
+print("Server side encryption key updated successfully.")
+print("You can now update the server side encryption key in the configuration file.")
 
 

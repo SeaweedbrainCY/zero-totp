@@ -5,6 +5,7 @@ from unittest.mock import patch
 from database.model import User, TOTP_secret, ZKE_encryption_key
 from environment import conf
 from CryptoClasses import jwt_func,hash_func
+from uuid import uuid4
 
 import jwt
 import datetime
@@ -182,12 +183,16 @@ class TestUpdateVault(unittest.TestCase):
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json()["error"], "User is blocked")
-
-
-
     
+    def test_update_invalid_vault(self):
+        self.client.cookies = {"api-key": self.jwtCookie}
+        payload = self.payload.copy()
+        payload["enc_vault"] = '{"test": "secret"}'
+        response = self.client.put(self.endpoint, json=payload)
+        self.assertEqual(response.status_code, 400)
         
-
+        self.assertEqual(response.json()["message"], "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support.")
+    
 
     
     
