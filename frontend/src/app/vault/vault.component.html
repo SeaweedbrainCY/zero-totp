@@ -197,7 +197,14 @@
             <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault"
                 *ngIf="!this.userService.getIsVaultLocal()">{{ 'vault.button.reload' | translate }} <fa-icon [icon]="faRotateRight" class="pl-1"
                     [spin]=reloadSpin></fa-icon></span>
-            <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
+            <article class="hero is-halfheight" *ngIf="reloadSpin" style="min-height: 40vh;">
+                <article class="hero-body is-flex is-justify-content-center" >
+                  <div>
+                      <fa-icon [icon]="faCircleNotch" [spin]="true" style="color:#000000;" size="2xl"></fa-icon >
+                  </div>
+              </article>
+              </article>
+            <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop" *ngIf="!reloadSpin">
 
                 <div class="column is-full-mobile
             is-one-third-tablet
