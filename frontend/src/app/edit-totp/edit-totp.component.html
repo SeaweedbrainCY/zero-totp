@@ -18,7 +18,14 @@
     </div>
   </div>
 </article>
-<article class="hero is-halfheight">
+<article class="hero is-halfheight" *ngIf="this.isEditing && this.name == ''" style="min-height: 70vh;">
+  <article class="hero-body is-flex is-justify-content-center" >
+    <div>
+        <fa-icon [icon]="faCircleNotch" [spin]="true" style="color:#000000;" size="2xl"></fa-icon >
+    </div>
+</article>
+</article>
+<article class="hero is-halfheight" *ngIf="(this.isEditing && this.name != '') || !this.isEditing ">
   <div class="columns is-flex is-justify-content-center pt-6 is-mobile">
     <div class="column is-full-mobile
     is-full-tablet

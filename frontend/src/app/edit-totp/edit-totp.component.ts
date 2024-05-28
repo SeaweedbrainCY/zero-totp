@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
 import { ApiService } from '../common/ApiService/api-service';
 import { Crypto } from '../common/Crypto/crypto';
@@ -23,6 +23,7 @@ export class EditTOTPComponent implements OnInit{
   faGlobe = faGlobe;
   faKey = faKey;
   faPassport = faPassport;
+  faCircleNotch = faCircleNotch;
   faPlus = faPlus;
   faCheck = faCheck;
   faCircleQuestion = faCircleQuestion;
@@ -49,6 +50,7 @@ export class EditTOTPComponent implements OnInit{
   tags:string[] = [];
   isTagModalActive = false;
   addTagName="";
+  isEditing = false; // true if editing, false if adding
   constructor(
     private router: Router,
     private route : ActivatedRoute,
@@ -74,6 +76,7 @@ export class EditTOTPComponent implements OnInit{
     } 
     this.secret_uuid = this.route.snapshot.paramMap.get('id');
     if(this.secret_uuid == null){
+        this.isEditing = false;
         if(this.currentUrl != "/vault/add"){
           this.router.navigate(["/vault"], {relativeTo:this.route.root});
           return;
@@ -88,6 +91,7 @@ export class EditTOTPComponent implements OnInit{
         });
         
     } else {
+      this.isEditing = true;
       if(!this.userService.getIsVaultLocal()){
         this.getSecretTOTP()
         this.get_preferences()
