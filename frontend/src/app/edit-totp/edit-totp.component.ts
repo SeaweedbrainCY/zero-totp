@@ -51,6 +51,7 @@ export class EditTOTPComponent implements OnInit{
   isTagModalActive = false;
   addTagName="";
   isEditing = false; // true if editing, false if adding
+  remainingTags:string[] = [];
   constructor(
     private router: Router,
     private route : ActivatedRoute,
@@ -89,9 +90,11 @@ export class EditTOTPComponent implements OnInit{
         this.translate.get("blue").subscribe((default_color: string) => {
         this.selected_color = default_color;
         });
+        this.remainingTags = this.userService.getVaultTags();
         
     } else {
       this.isEditing = true;
+      console.log("is editing")
       if(!this.userService.getIsVaultLocal()){
         this.getSecretTOTP()
         this.get_preferences()
@@ -112,7 +115,7 @@ export class EditTOTPComponent implements OnInit{
           }
         }
         if(property!.has("tags")){
-          this.tags = this.utils.parseTags(property!.get("tags")!);
+          this.tags = this.utils.parseTags(property!.get("tags")!); // no remaining tags because the vault is local
         }
 
       }
@@ -297,6 +300,15 @@ export class EditTOTPComponent implements OnInit{
             if(property!.has("tags")){
               this.tags = this.utils.parseTags(property!.get("tags")!);
             }
+            console.log(this.userService.getVaultTags())
+          if(property!.has("tags")){
+            this.tags = this.utils.parseTags(property!.get("tags")!);
+          }
+          for(let tag of this.userService.getVaultTags()){
+            if(!this.tags.includes(tag)){
+              this.remainingTags.push(tag);
+            }
+          }
     
           }
         });
@@ -505,6 +517,9 @@ export class EditTOTPComponent implements OnInit{
         this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.tag_length"),"")
       } else {
        this.tags.push(this.addTagName);
+       if(this.remainingTags.includes(this.addTagName)){
+        this.remainingTags = this.remainingTags.filter(item => item !== this.addTagName);
+       }
        this.addTagName = "";
        this.toastr.clear()
        this.tagModal()
@@ -515,8 +530,19 @@ export class EditTOTPComponent implements OnInit{
     
   }
 
+  selectTag(tag:string){
+    this.tags.push(tag);
+    this.addTagName = "";
+       this.toastr.clear()
+       this.tagModal()
+       this.remainingTags = this.remainingTags.filter(item => item !== tag);
+  }
+
   deleteTag(tag:string){
     this.tags = this.tags.filter(item => item !== tag);
+    if(this.userService.getVaultTags().includes(tag)){
+      this.remainingTags.push(tag);
+    }
   }
 
 }

@@ -56,7 +56,6 @@ export class VaultComponent implements OnInit {
   lastBackupDate = "";
   faviconPolicy = "";
   filter="";
-  tags:string[]=[];
   selectedTags:string[]=[];
   constructor(
     public userService: UserService,
@@ -189,8 +188,8 @@ export class VaultComponent implements OnInit {
                     if(this.vault!.get(uuid)!.has("tags")){
                       const secret_tags = this.utils.parseTags(this.vault!.get(uuid)!.get("tags")!);
                       for (const tag of secret_tags){
-                        if(!this.tags.includes(tag)){
-                        this.tags.push(tag);
+                        if(!this.userService.getVaultTags().includes(tag)){
+                        this.userService.getVaultTags().push(tag);
                         }
                       }
                     }
@@ -485,5 +484,6 @@ export class VaultComponent implements OnInit {
     }
     this.filterVault();
   }
+
 }
 

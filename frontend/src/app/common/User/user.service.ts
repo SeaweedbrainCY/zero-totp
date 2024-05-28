@@ -16,7 +16,8 @@ export class UserService {
   private isVaultLocal:boolean = false;
   private local_vault_service:LocalVaultV1Service | null = null;
   private isAdmin: boolean = false;
-  private googleDriveSync:boolean | null = null;;
+  private googleDriveSync:boolean | null = null;
+  private vault_tags:string[] = [];
 
   constructor(private utils: Utils) {
    }
@@ -103,6 +104,15 @@ export class UserService {
     this.googleDriveSync = sync;
     }
 
+    getVaultTags(): string[]  {
+      return this.vault_tags;
+    }
+
+    setVaultTags(tags:string[]){
+      this.vault_tags = tags;
+    }
+
+
    clear(){
     this.id = null;
     this.email = null;
@@ -113,6 +123,8 @@ export class UserService {
     this.isVaultLocal = false;
     this.local_vault_service = null;
     this.isAdmin = false;
+    this.googleDriveSync = null;
+    this.vault_tags = [];
     localStorage.removeItem("email");
    }
 
