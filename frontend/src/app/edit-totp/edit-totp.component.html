@@ -138,15 +138,15 @@
         </div>
         <div class="field is-grouped is-flex is-justify-content-center">
           <div class="control">
-            <button class="button is-info is-light block" (click)="cancel()">{{"cancel" | translate }}</button>
+            <button class="button is-info is-light block" [disabled]="isSaving" (click)="cancel()">{{"cancel" | translate }}</button>
           </div>
           <div class="control" *ngIf="secret_uuid != '' && secret_uuid != null ">
-            <button class="button is-danger block" (click)="modal()" data-target="confirmation"
-              [disabled]="this.userService.getIsVaultLocal()!">{{ 'delete' | translate }}</button>
+            <button class="button is-danger block" (click)="modal()" data-target="confirmation" [ngClass]="{'is-loading': isDestroying}"
+              [disabled]="this.userService.getIsVaultLocal()! || isSaving">{{ 'delete' | translate }}</button>
           </div>
           <div class="control">
-            <button class="button is-info block" (click)="save()"
-              [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != '' || uriError != ''">{{ 'save' | translate }}</button>
+            <button class="button is-info block" (click)="save()" [ngClass]="{'is-loading': isSaving}"
+              [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != '' || uriError != '' || isDestroying">{{ 'save' | translate }}</button>
           </div>
         </div>
       </div>
