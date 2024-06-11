@@ -51,6 +51,7 @@ export class EditTOTPComponent implements OnInit{
   isTagModalActive = false;
   addTagName="";
   isEditing = false; // true if editing, false if adding
+  isSaving = false;
   remainingTags:string[] = [];
   constructor(
     private router: Router,
@@ -339,6 +340,7 @@ export class EditTOTPComponent implements OnInit{
   }
 
   save(){
+    this.isSaving = true;
     if(this.userService.getId() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
@@ -347,10 +349,12 @@ export class EditTOTPComponent implements OnInit{
     this.checkSecret();
     this.checkURI();
     if(this.nameError != "" || this.secretError != "" || this.uriError != ""){
+      this.isSaving = false;
       return;
     }
     if(this.code == this.translate.instant("totp.error.code")){
       this.utils.toastError(this.toastr, this.translate.instant("totp.error.code"),"");
+      this.isSaving = false;
       return;
     }
    
@@ -378,12 +382,15 @@ export class EditTOTPComponent implements OnInit{
         } else { 
           this.addNewSecret(enc_jsonProperty, property);
         }
+        this.isSaving = false;
       });
     } catch {
       this.translate.get("totp.error.encryption").subscribe((translation: string) => {
         this.utils.toastWarning(this.toastr,  translation ,"");
+        this.isSaving = false;
     });
     }
+    this.isSaving = false;
   }
 
   addNewSecret(enc_property:string, property: Map<string,string>){

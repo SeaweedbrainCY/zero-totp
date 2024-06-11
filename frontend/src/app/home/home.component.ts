@@ -43,6 +43,7 @@ export class HomeComponent implements OnInit {
   example_title=""
   remainingTime=0;
   example_color=""
+  example_ico=""
   last_random_i = 0;
   current_color_index = 0;
 
@@ -64,6 +65,7 @@ export class HomeComponent implements OnInit {
   }
 
   generateExample(){
+    const icos = ["facebook.ico", "github.ico", "google.ico", "apple.ico", "google.ico", "amazon.ico", "aws.ico", "microsoft.ico", "onedrive.ico", "gitlab.ico"]
     const domains = ["facebook.com", "github.com", "google.com", "apple.com", "google.com", "amazon.com", "aws.com", "microsoft.com", "onedrive.com", "gitlab.com"]
     const titles = ["Facebook", "Github", "Gmail", "Apple", "Google", "Amazon", "AWS", "Microsoft", "OneDrive", "Gitlab"]
     const colors = [ "info", "success", "danger"]
@@ -75,6 +77,7 @@ export class HomeComponent implements OnInit {
     this.example_domain = domains[random_i];
     this.example_title = titles[random_i];
     this.example_code = (Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000).toString();
+    this.example_ico = icos[random_i];
     this.current_color_index = (this.current_color_index+1)%colors.length;
     this.example_color = colors[this.current_color_index];
   }
