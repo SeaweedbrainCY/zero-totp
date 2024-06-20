@@ -30,6 +30,7 @@ export class SignupComponent implements OnInit {
   email="";
   password="";
   confirmPassword="";
+  hashed_password=""
   terms=false;
   isLoading=false;
   declare bulmaToast : any;
@@ -160,7 +161,7 @@ this.closeModal()
     this.passphraseSalt = this.crypto.generateRandomSalt();
         this.crypto.hashPassphrase(this.password, this.passphraseSalt).then(hashed => {
           if(hashed != null){
-            this.password = hashed;
+            this.hashed_password = hashed;
             this.signupRequest();
           } else {
             this.utils.toastError(this.toastr, this.translate.instant("signup.errors.hashing") ,"");
@@ -172,7 +173,7 @@ this.closeModal()
     const data = {
       username: this.username,
       email: this.email,
-      password: this.password,
+      password: this.hashed_password,
       ZKE_key: this.encryptedZKEkey,
       derivedKeySalt: this.derivedKeySalt,
       passphraseSalt: this.passphraseSalt

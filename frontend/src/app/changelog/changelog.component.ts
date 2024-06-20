@@ -14,8 +14,8 @@ export class ChangelogComponent {
 
   changelogs = [
     {
-      date: "27/05/2024",
-      version: "b2.10.1",
+      date: "20/06/2024",
+      version: "b2.10.5",
       added: [
         "Enhance the deployment process of Zero-TOTP to be more secure.",
         "You can now easily add a tag to a secret that was already added to another secret.",
@@ -25,6 +25,8 @@ export class ChangelogComponent {
         "Huge improvement of the security and the reliability of the application.",
         "Zero-TOTP removed all its frontend dependencies to BuyMeACoffee API, leading to a better privacy for the users.",
         "Improve loading UX for low internet connection.",
+        "Some dependencies have been updated to fix 2 moderate CVE.",
+        "We fixed a bug when creating your accounting replacing the password by its hash in the password field when an error occurs."
       ]
     },
     {
