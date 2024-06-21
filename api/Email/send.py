@@ -20,7 +20,7 @@ def send_verification_email(email_reciever:str, token:str):# pragma: no cover
 
         VERIFICATION CODE: {token}
 
-        Use this code in the Zero-TOTP application to complete the verification process. The code is valid for 10 minutes.
+        Use this code in the Zero-TOTP application to complete the verification process. The code is valid for 30 minutes.
 
         If you did not sign up for this account, please ignore this email.
 
