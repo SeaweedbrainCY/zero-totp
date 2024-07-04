@@ -45,15 +45,15 @@ jobs:
       with:
         python-version: 3.11
 
-    - name: Install dependencies
-      working-directory: ./api
+    - name: Install dependencies on main API
+      working-directory: ./api/main_api
       run:  pip install --upgrade pip && pip install -r requirements.txt && pip install -r test-requirements.txt
     
     - name: Moving config file
-      run: cp api/tests/ressources/test-config.yml api/config/config.yml
+      run: cp api/main_api/tests/ressources/test-config.yml api/main_api/config/config.yml
 
     - name: Run tests with pytest
-      working-directory: ./api
+      working-directory: ./api/main_api
       run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml  --cov-fail-under=90
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2

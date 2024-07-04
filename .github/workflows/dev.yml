@@ -29,7 +29,7 @@ jobs:
           run: current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/frontend:latest . 
         - name: Publish Docker Image
           run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/frontend:latest
-    docker-api:
+    docker-api-light:
       needs: [tests]
       name: Publish API-dev Docker image 
       runs-on: ubuntu-latest
@@ -45,7 +45,7 @@ jobs:
         - name: Publish Docker Image
           run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/api:latest
     deploy-dev-env:
-       needs: [docker-frontend, docker-api] 
+       needs: [docker-frontend, docker-api-light] 
        name: Deploy on development environment
        runs-on: ubuntu-latest
        steps:

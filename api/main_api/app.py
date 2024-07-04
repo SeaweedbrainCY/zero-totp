@@ -1,7 +1,6 @@
 import connexion
 from flask_cors import CORS
 from environment import conf
-from database.db import db
 import uvicorn
 from asgiref.wsgi import WsgiToAsgi
 from starlette.middleware.cors import CORSMiddleware
@@ -13,6 +12,7 @@ from monitoring.sentry import sentry_configuration
 from flask_migrate import Migrate
 from datetime import datetime
 from flask import request, redirect, make_response
+from db_repo.db import db
 
 
 def create_app():
