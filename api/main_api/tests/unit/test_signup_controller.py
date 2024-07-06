@@ -2,7 +2,7 @@ import unittest
 import controllers
 from app import app
 from unittest.mock import patch
-from database.model import User
+from db_models.model import User
 from environment import conf
 
 class TestSignupController(unittest.TestCase):

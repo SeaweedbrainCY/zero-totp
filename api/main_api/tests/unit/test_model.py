@@ -1,5 +1,5 @@
 import unittest
-from database.model import User, ZKE_encryption_key, TOTP_secret
+from db_models.model import User, ZKE_encryption_key, TOTP_secret
 
 class TestUserConstructor(unittest.TestCase):
     def setUp(self):

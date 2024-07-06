@@ -1,8 +1,8 @@
 import unittest
 from app import app
-from database.db import db 
+from db_models.db import db 
 from environment import conf
-from database.model import User as UserModel, EmailVerificationToken as EmailVerificationToken_model, RateLimiting
+from db_models.model import User as UserModel, EmailVerificationToken as EmailVerificationToken_model, RateLimiting
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime

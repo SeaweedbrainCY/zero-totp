@@ -1,5 +1,5 @@
-from database.db import db 
-from database.model import GoogleDriveIntegration as GoogleDriveIntegrationModel
+from db_models.db import db 
+from db_models.model import GoogleDriveIntegration as GoogleDriveIntegrationModel
 from environment import logging
 
 class GoogleDriveIntegration:

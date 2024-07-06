@@ -1,5 +1,5 @@
-from database.db import db 
-from database.model import Admin as Admin_model
+from db_models.db import db 
+from db_models.model import Admin as Admin_model
 
 class Admin:
    def get_by_user_id(self, user_id):

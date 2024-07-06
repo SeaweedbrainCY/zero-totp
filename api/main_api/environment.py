@@ -189,7 +189,7 @@ class Config:
 
 
 try:
-    with open("./config/config.yml") as config_yml:
+    with open("./main_api/config/config.yml") as config_yml:
         try:
             raw_conf = yaml.safe_load(config_yml)
             conf = Config(raw_conf)

@@ -1,5 +1,5 @@
-from database.db import db 
-from database.model import EmailVerificationToken as EmailVerificationToken_model
+from db_models.db import db 
+from db_models.model import EmailVerificationToken as EmailVerificationToken_model
 
 class EmailVerificationToken:
 

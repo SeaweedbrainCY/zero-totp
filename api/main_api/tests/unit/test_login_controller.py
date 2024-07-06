@@ -2,9 +2,9 @@ import unittest
 import controllers
 from app import app
 from unittest.mock import patch
-from database.model import User, RateLimiting
+from db_models.model import User, RateLimiting
 from environment import conf
-from database.db import db 
+from db_models.db import db 
 import datetime
 
 class TestLoginController(unittest.TestCase):

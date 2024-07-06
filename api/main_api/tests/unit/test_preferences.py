@@ -2,13 +2,13 @@ import unittest
 import controllers
 from app import app
 from unittest.mock import patch
-from database.user_repo import User as UserRepo
-from database.preferences_repo import Preferences as PreferencesRepo
+from db_repo.user_repo import User as UserRepo
+from db_repo.preferences_repo import Preferences as PreferencesRepo
 from environment import conf
 from CryptoClasses import jwt_func
 import jwt
 import datetime
-from database.db import db
+from db_models.db import db
 import base64
 import json
 import random

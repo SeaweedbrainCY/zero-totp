@@ -1,5 +1,5 @@
-from database.db import db 
-from database.model import TOTP_secret as TOTP_secret_model
+from db_models.db import db 
+from db_models.model import TOTP_secret as TOTP_secret_model
 
 class TOTP_secret:
     def get_all_enc_secret_by_user_id(self, user_id):

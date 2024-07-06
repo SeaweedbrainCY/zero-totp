@@ -2,7 +2,7 @@ import unittest
 import controllers
 from app import app
 from unittest.mock import patch
-from database.model import User, TOTP_secret, ZKE_encryption_key
+from db_models.model import User, TOTP_secret, ZKE_encryption_key
 from environment import conf
 from CryptoClasses import jwt_func
 from CryptoClasses.sign_func import API_signature

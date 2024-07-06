@@ -1,8 +1,8 @@
 from Utils import security_wrapper
 import unittest
 from unittest.mock import patch
-from database.model import User as UserModel, Admin as AdminModel
-from database.db import db
+from db_models.model import User as UserModel, Admin as AdminModel
+from db_models.db import db
 from app import app
 
 

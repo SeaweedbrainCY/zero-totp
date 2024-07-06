@@ -2,7 +2,7 @@ from getpass import getpass
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Hash import SHA512
 from app import app 
-from database.db import db
+from db_models.db import db
 from base64 import b64decode
 
 
@@ -30,7 +30,7 @@ print("DO NOT INTERRUPT THIS PROCESS. THIS COULD LEAD TO DATA LOSS.")
 
 # update encrypted oauth creds 
 
-from database.model import Oauth_tokens
+from db_models.model import Oauth_tokens
 from CryptoClasses.encryption import ServiceSideEncryption
 new_aes_key = PBKDF2(new_key.encode("utf-8"), '4ATK7mA8aKgT6768' , count=2000000, dkLen=32, hmac_hash_module=SHA512)
 

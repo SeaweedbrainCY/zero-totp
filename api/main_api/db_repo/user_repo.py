@@ -1,5 +1,5 @@
-from database.db import db 
-from database.model import User as UserModel
+from db_models.db import db 
+from db_models.model import User as UserModel
 from environment import logging
 
 class User:

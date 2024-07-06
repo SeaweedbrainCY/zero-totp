@@ -2,13 +2,13 @@ import re
 import html
 from environment import logging
 import datetime
-from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
-from database.user_repo import User as User_repo
-from database.totp_secret_repo import TOTP_secret as TOTP_secret_repo
-from database.zke_repo import ZKE as ZKE_encryption_key_repo
-from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
-from database.preferences_repo import Preferences as Preferences_repo
-from database.email_verification_repo import EmailVerificationToken
+from db_repo.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
+from db_repo.user_repo import User as User_repo
+from db_repo.totp_secret_repo import TOTP_secret as TOTP_secret_repo
+from db_repo.zke_repo import ZKE as ZKE_encryption_key_repo
+from db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
+from db_repo.preferences_repo import Preferences as Preferences_repo
+from db_repo.email_verification_repo import EmailVerificationToken
 import os
 from hashlib import sha256
 from base64 import b64encode

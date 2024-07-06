@@ -1,7 +1,7 @@
 import unittest
 from app import app
-from database.db import db 
-from database.model import User as UserModel, Admin as AdminModel
+from db_models.db import db 
+from db_models.model import User as UserModel, Admin as AdminModel
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, verify_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime

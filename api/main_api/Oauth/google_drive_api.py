@@ -10,7 +10,7 @@ import tempfile
 import json
 from base64 import  b64decode
 from Utils import utils
-from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
+from db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
 import requests
 
 FOLDER_NAME = "Zero-TOTP Backup"

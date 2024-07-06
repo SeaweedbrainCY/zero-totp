@@ -1,5 +1,5 @@
-from database.db import db 
-from database.model import RateLimiting
+from db_models.db import db 
+from db_models.model import RateLimiting
 import datetime
 from environment import conf
 class RateLimitingRepo:

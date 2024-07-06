@@ -1,5 +1,5 @@
-from database.db import db 
-from database.model import Oauth_tokens as Oauth_tokens_model
+from db_models.db import db 
+from db_models.model import Oauth_tokens as Oauth_tokens_model
 
 class Oauth_tokens:
     def get_by_user_id(self, user_id):

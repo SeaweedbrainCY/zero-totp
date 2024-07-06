@@ -12,7 +12,7 @@ from monitoring.sentry import sentry_configuration
 from flask_migrate import Migrate
 from datetime import datetime
 from flask import request, redirect, make_response
-from db_repo.db import db
+from db_models.db import db
 
 
 def create_app():
@@ -52,7 +52,7 @@ scheduler.start()
 def clean_email_verification_token_from_db():
     with flask.app_context():
         logging.info("🧹  Cleaning email verification tokens from database")
-        from database.model import EmailVerificationToken
+        from db_models.model import EmailVerificationToken
         
         tokens = db.session.query(EmailVerificationToken).all()
         for token in tokens:
@@ -65,7 +65,7 @@ def clean_email_verification_token_from_db():
 def clean_rate_limiting_from_db():
     with flask.app_context():
         logging.info("🧹  Cleaning rate limits from database")
-        from database.rate_limiting_repo import RateLimitingRepo
+        from db_repo.rate_limiting_repo import RateLimitingRepo
         RateLimitingRepo().flush_outdated_limit()
         logging.info(f"✅  Rate limits cleaned at {datetime.utcnow()}")
 

@@ -1,4 +1,4 @@
-from database.user_repo import User as UserDB
+from db_repo.user_repo import User as UserDB
 from CryptoClasses.jwt_func import verify_jwt
 import connexion
 from environment import logging, conf

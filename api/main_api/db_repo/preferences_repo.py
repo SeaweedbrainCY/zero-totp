@@ -1,5 +1,5 @@
-from database.db import db 
-from database.model import Preferences as PreferencesModel
+from db_models.db import db 
+from db_models.model import Preferences as PreferencesModel
 from environment import logging
 
 class Preferences:

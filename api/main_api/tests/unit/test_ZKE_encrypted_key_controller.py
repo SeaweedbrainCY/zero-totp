@@ -2,7 +2,7 @@ import unittest
 import controllers
 from app import app
 from unittest.mock import patch
-from database.model import ZKE_encryption_key, User
+from db_models.model import ZKE_encryption_key, User
 from environment import conf
 from CryptoClasses import jwt_func
 import jwt

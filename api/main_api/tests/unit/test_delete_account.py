@@ -1,20 +1,20 @@
 import unittest
 from app import app
-from database.db import db 
+from db_models.db import db 
 from environment import conf
-from database.model import User as UserModel
+from db_models.model import User as UserModel
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
 import jwt
-from database.user_repo import User as User_repo
-from database.totp_secret_repo import TOTP_secret as TOTP_secret_repo
-from database.zke_repo import ZKE as ZKE_encryption_key_repo
-from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
-from database.preferences_repo import Preferences as Preferences_repo
-from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
-from database.admin_repo import Admin as Admin_repo
-from database.model import Admin as AdminModel, Preferences as PreferencesModel
+from db_repo.user_repo import User as User_repo
+from db_repo.totp_secret_repo import TOTP_secret as TOTP_secret_repo
+from db_repo.zke_repo import ZKE as ZKE_encryption_key_repo
+from db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
+from db_repo.preferences_repo import Preferences as Preferences_repo
+from db_repo.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
+from db_repo.admin_repo import Admin as Admin_repo
+from db_models.model import Admin as AdminModel, Preferences as PreferencesModel
 from uuid import uuid4
 from environment import conf
 
