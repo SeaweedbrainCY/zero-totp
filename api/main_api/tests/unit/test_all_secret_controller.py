@@ -1,10 +1,10 @@
 import unittest
-import controllers
-from app import app
+import main_api.controllers as controllers
+from main_api.app import app
 from unittest.mock import patch
 from db_models.model import User, TOTP_secret
-from environment import conf
-from CryptoClasses import jwt_func
+from main_api.environment import conf
+from main_api.CryptoClasses import jwt_func
 import jwt
 import datetime
 

@@ -1,6 +1,6 @@
 from db_models.db import db 
 from db_models.model import User as UserModel
-from environment import logging
+from main_api.environment import logging
 
 class User:
 

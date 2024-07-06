@@ -1,6 +1,6 @@
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
-from environment import conf
+from main_api.environment import conf
 import logging
 import datetime
 

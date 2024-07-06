@@ -1,19 +1,19 @@
 import re
 import html
-from environment import logging
+from main_api.environment import logging
 import datetime
-from db_repo.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
-from db_repo.user_repo import User as User_repo
-from db_repo.totp_secret_repo import TOTP_secret as TOTP_secret_repo
-from db_repo.zke_repo import ZKE as ZKE_encryption_key_repo
-from db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
-from db_repo.preferences_repo import Preferences as Preferences_repo
-from db_repo.email_verification_repo import EmailVerificationToken
+from main_api.db_repo.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
+from main_api.db_repo.user_repo import User as User_repo
+from main_api.db_repo.totp_secret_repo import TOTP_secret as TOTP_secret_repo
+from main_api.db_repo.zke_repo import ZKE as ZKE_encryption_key_repo
+from main_api.db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
+from main_api.db_repo.preferences_repo import Preferences as Preferences_repo
+from main_api.db_repo.email_verification_repo import EmailVerificationToken
 import os
 from hashlib import sha256
 from base64 import b64encode
 import requests
-from Email import send as send_email
+from main_api.Email import send as send_email
 import ipaddress
 from jsonschema import validate, ValidationError
 

@@ -1,22 +1,22 @@
 import unittest
-from app import app
+from main_api.app import app
 from db_models.db import db 
-from environment import conf
+from main_api.environment import conf
 from db_models.model import User as UserModel
 from unittest.mock import patch
-from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
+from main_api.CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
 import jwt
-from db_repo.user_repo import User as User_repo
-from db_repo.totp_secret_repo import TOTP_secret as TOTP_secret_repo
-from db_repo.zke_repo import ZKE as ZKE_encryption_key_repo
-from db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
-from db_repo.preferences_repo import Preferences as Preferences_repo
-from db_repo.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
-from db_repo.admin_repo import Admin as Admin_repo
+from main_api.db_repo.user_repo import User as User_repo
+from main_api.db_repo.totp_secret_repo import TOTP_secret as TOTP_secret_repo
+from main_api.db_repo.zke_repo import ZKE as ZKE_encryption_key_repo
+from main_api.db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
+from main_api.db_repo.preferences_repo import Preferences as Preferences_repo
+from main_api.db_repo.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
+from main_api.db_repo.admin_repo import Admin as Admin_repo
 from db_models.model import Admin as AdminModel, Preferences as PreferencesModel
 from uuid import uuid4
-from environment import conf
+from main_api.environment import conf
 
 
 class TestDeleteAccount(unittest.TestCase):

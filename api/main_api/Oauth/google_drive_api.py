@@ -1,7 +1,7 @@
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
-from environment import conf
-from environment import logging
+from main_api.environment import conf
+from main_api.environment import logging
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from datetime import datetime
@@ -9,8 +9,8 @@ from googleapiclient.http import MediaFileUpload
 import tempfile
 import json
 from base64 import  b64decode
-from Utils import utils
-from db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
+from main_api.Utils import utils
+from main_api.db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
 import requests
 
 FOLDER_NAME = "Zero-TOTP Backup"

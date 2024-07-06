@@ -1,5 +1,5 @@
 import sentry_sdk
-from environment import logging, conf
+from main_api.environment import logging, conf
 
 
 def sentry_configuration():

@@ -1,11 +1,11 @@
 import unittest
-from app import app
+from main_api.app import app
 from db_models.db import db 
-from environment import conf
+from main_api.environment import conf
 from db_models.model import User as UserModel, Admin as AdminModel
-from db_repo.user_repo import User as UserDB
+from main_api.db_repo.user_repo import User as UserDB
 from unittest.mock import patch
-from CryptoClasses.jwt_func import generate_jwt, verify_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
+from main_api.CryptoClasses.jwt_func import generate_jwt, verify_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
 
 class TestUpdateBlockedStatus(unittest.TestCase):

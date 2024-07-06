@@ -1,8 +1,8 @@
-from db_repo.user_repo import User as UserDB
-from CryptoClasses.jwt_func import verify_jwt
+from main_api.db_repo.user_repo import User as UserDB
+from main_api.CryptoClasses.jwt_func import verify_jwt
 import connexion
-from environment import logging, conf
-from CryptoClasses.hash_func import Bcrypt
+from main_api.environment import logging, conf
+from main_api.CryptoClasses.hash_func import Bcrypt
 import random
 import string
 

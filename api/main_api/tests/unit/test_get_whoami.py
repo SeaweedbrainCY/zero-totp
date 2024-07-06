@@ -1,9 +1,9 @@
 import unittest
-from app import app
+from main_api.app import app
 from db_models.db import db 
-from environment import conf
+from main_api.environment import conf
 from unittest.mock import patch
-from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
+from main_api.CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
 from db_models.model import User as UserModel
 

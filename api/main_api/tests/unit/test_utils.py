@@ -1,6 +1,6 @@
 import unittest
-from CryptoClasses.hash_func import Bcrypt
-from Utils.utils import check_email, sanitize_input, extract_last_backup_from_list, FileNotFound, get_all_secrets_sorted, generate_new_email_verification_token, get_geolocation, send_information_email, get_ip
+from main_api.CryptoClasses.hash_func import Bcrypt
+from main_api.Utils.utils import check_email, sanitize_input, extract_last_backup_from_list, FileNotFound, get_all_secrets_sorted, generate_new_email_verification_token, get_geolocation, send_information_email, get_ip
 import datetime
 from uuid import uuid4
 from random import shuffle

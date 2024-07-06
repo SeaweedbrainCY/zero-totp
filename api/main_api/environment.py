@@ -1,8 +1,8 @@
 import os
 import logging
 import yaml 
-import Utils.env_requirements_check as env_requirements_check
-from CryptoClasses.serverRSAKeys import ServerRSAKeys
+import main_api.Utils.env_requirements_check as env_requirements_check
+from main_api.CryptoClasses.serverRSAKeys import ServerRSAKeys
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Hash import SHA512
 

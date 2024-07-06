@@ -1,8 +1,8 @@
 import unittest
-from app import app
-from environment import conf
-from CryptoClasses.jwt_func import generate_jwt
-from controllers import flask
+from main_api.app import app
+from main_api.environment import conf
+from main_api.CryptoClasses.jwt_func import generate_jwt
+from main_api.controllers import flask
 from unittest.mock import patch
 
 

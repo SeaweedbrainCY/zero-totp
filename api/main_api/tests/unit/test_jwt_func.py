@@ -1,8 +1,8 @@
 import jwt 
 import unittest
-from CryptoClasses.jwt_func import verify_jwt, generate_jwt
+from main_api.CryptoClasses.jwt_func import verify_jwt, generate_jwt
 import datetime
-from environment import conf
+from main_api.environment import conf
 from connexion.exceptions import Forbidden
 
 

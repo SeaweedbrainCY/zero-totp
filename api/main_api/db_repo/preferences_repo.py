@@ -1,6 +1,6 @@
 from db_models.db import db 
 from db_models.model import Preferences as PreferencesModel
-from environment import logging
+from main_api.environment import logging
 
 class Preferences:
 

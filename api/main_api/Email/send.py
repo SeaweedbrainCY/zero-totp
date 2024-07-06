@@ -1,6 +1,6 @@
 import smtplib, ssl
-from environment import conf
-from environment import logging
+from main_api.environment import conf
+from main_api.environment import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 

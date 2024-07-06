@@ -1,11 +1,11 @@
 import unittest
-import controllers
-from app import app
+import main_api.controllers as controllers
+from main_api.app import app
 from unittest.mock import patch
-from db_repo.user_repo import User as UserRepo
-from db_repo.preferences_repo import Preferences as PreferencesRepo
-from environment import conf
-from CryptoClasses import jwt_func
+from main_api.db_repo.user_repo import User as UserRepo
+from main_api.db_repo.preferences_repo import Preferences as PreferencesRepo
+from main_api.environment import conf
+from main_api.CryptoClasses import jwt_func
 import jwt
 import datetime
 from db_models.db import db

@@ -2,34 +2,34 @@ from flask import request, Response, redirect, make_response
 import flask
 import connexion
 import json
-from db_repo.user_repo import User as UserDB
-from db_repo.zke_repo import ZKE as ZKE_DB
-from db_repo.totp_secret_repo import TOTP_secret as TOTP_secretDB
-from db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
-from db_repo.preferences_repo import Preferences as PreferencesDB
-from db_repo .admin_repo import Admin as Admin_db
-from db_repo.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
-from CryptoClasses.hash_func import Bcrypt
-from environment import logging, conf
-from db_repo.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
-from CryptoClasses.hash_func import Bcrypt
-from Oauth import google_drive_api
+from main_api.db_repo.user_repo import User as UserDB
+from main_api.db_repo.zke_repo import ZKE as ZKE_DB
+from main_api.db_repo.totp_secret_repo import TOTP_secret as TOTP_secretDB
+from main_api.db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
+from main_api.db_repo.preferences_repo import Preferences as PreferencesDB
+from main_api.db_repo .admin_repo import Admin as Admin_db
+from main_api.db_repo.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
+from main_api.CryptoClasses.hash_func import Bcrypt
+from main_api.environment import logging, conf
+from main_api.db_repo.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
+from main_api.CryptoClasses.hash_func import Bcrypt
+from main_api.Oauth import google_drive_api
 import random
 import string
-from Email import send as send_email
-from db_repo.email_verification_repo import EmailVerificationToken as EmailVerificationToken_db
-import CryptoClasses.jwt_func as jwt_auth
-from CryptoClasses.sign_func import API_signature
-import CryptoClasses.jwt_func as jwt_auth
-import Oauth.oauth_flow as oauth_flow
-import Utils.utils as utils
+from main_api.Email import send as send_email
+from main_api.db_repo.email_verification_repo import EmailVerificationToken as EmailVerificationToken_db
+import main_api.CryptoClasses.jwt_func as jwt_auth
+from main_api.CryptoClasses.sign_func import API_signature
+import main_api.CryptoClasses.jwt_func as jwt_auth
+import main_api.Oauth.oauth_flow as oauth_flow
+import main_api.Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user, require_userid
+from main_api.Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user, require_userid
 import traceback
 from hashlib import sha256
-from CryptoClasses.encryption import ServiceSideEncryption 
+from main_api.CryptoClasses.encryption import ServiceSideEncryption 
 from db_models.db import db
 import threading
 

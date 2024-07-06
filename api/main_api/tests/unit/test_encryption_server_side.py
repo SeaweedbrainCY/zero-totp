@@ -1,5 +1,5 @@
 import unittest
-from CryptoClasses.encryption import ServiceSideEncryption
+from main_api.CryptoClasses.encryption import ServiceSideEncryption
 
 
 class TestEncryptionServerSide(unittest.TestCase):

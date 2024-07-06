@@ -1,14 +1,16 @@
-from Utils import security_wrapper
+from main_api.Utils import security_wrapper
 import unittest
 from unittest.mock import patch
 from db_models.model import User as UserModel, Admin as AdminModel
 from db_models.db import db
-from app import app
+from main_api.app import app
 
 
 class TestSecurityWrapper(unittest.TestCase):
     
         def setUp(self):
+            if conf.database.database_uri != "sqlite:///:memory:":
+                raise Exception("Test must be run with in memory database")
             self.not_verified_user_id = 1
             self.verified_user_id = 2
             self.blocked_user_id = 3

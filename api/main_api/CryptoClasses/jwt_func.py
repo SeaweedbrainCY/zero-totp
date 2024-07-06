@@ -1,5 +1,5 @@
 import jwt
-from environment import conf
+from main_api.environment import conf
 from functools import wraps
 import uuid
 import jwt

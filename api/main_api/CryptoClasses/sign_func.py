@@ -1,7 +1,7 @@
 from Crypto.Signature import pkcs1_15
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
-from environment import logging, conf
+from main_api.environment import logging, conf
 import base64
 from Crypto.PublicKey import ECC
 from Crypto.Signature import DSS

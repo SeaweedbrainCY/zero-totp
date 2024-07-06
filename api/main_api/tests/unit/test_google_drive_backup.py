@@ -1,18 +1,18 @@
 import unittest
-import controllers
-from app import app
+import main_api.controllers as controllers
+from main_api.app import app
 from unittest.mock import patch
-from db_repo.user_repo import User as UserRepo
-from db_repo.oauth_tokens_repo import Oauth_tokens as OAuthTokensRepo
-from db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationRepo
-from db_repo.zke_repo import ZKE as ZKERepo
-from db_repo.totp_secret_repo import TOTP_secret as TotpSecretRepo
-from environment import conf
-from CryptoClasses import jwt_func
+from main_api.db_repo.user_repo import User as UserRepo
+from main_api.db_repo.oauth_tokens_repo import Oauth_tokens as OAuthTokensRepo
+from main_api.db_repo.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationRepo
+from main_api.db_repo.zke_repo import ZKE as ZKERepo
+from main_api.db_repo.totp_secret_repo import TOTP_secret as TotpSecretRepo
+from main_api.environment import conf
+from main_api.CryptoClasses import jwt_func
 import jwt
 import datetime
 from db_models.db import db
-from CryptoClasses.encryption import ServiceSideEncryption
+from main_api.CryptoClasses.encryption import ServiceSideEncryption
 from uuid import uuid4
 import base64
 import json

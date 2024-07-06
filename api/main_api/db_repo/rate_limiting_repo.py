@@ -1,7 +1,7 @@
 from db_models.db import db 
 from db_models.model import RateLimiting
 import datetime
-from environment import conf
+from main_api.environment import conf
 class RateLimitingRepo:
     def add_failed_login(self, ip, user_id):
         rl = RateLimiting(ip=ip, user_id=user_id, action_type="failed_login", timestamp= datetime.datetime.utcnow())

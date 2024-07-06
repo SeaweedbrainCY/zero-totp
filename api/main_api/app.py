@@ -1,14 +1,14 @@
 import connexion
 from flask_cors import CORS
-from environment import conf
+from main_api.environment import conf
 import uvicorn
 from asgiref.wsgi import WsgiToAsgi
 from starlette.middleware.cors import CORSMiddleware
 from connexion.middleware import MiddlewarePosition
-from environment import logging
+from main_api.environment import logging
 import contextlib
 from flask_apscheduler import APScheduler
-from monitoring.sentry import sentry_configuration
+from main_api.monitoring.sentry import sentry_configuration
 from flask_migrate import Migrate
 from datetime import datetime
 from flask import request, redirect, make_response
@@ -65,7 +65,7 @@ def clean_email_verification_token_from_db():
 def clean_rate_limiting_from_db():
     with flask.app_context():
         logging.info("🧹  Cleaning rate limits from database")
-        from db_repo.rate_limiting_repo import RateLimitingRepo
+        from main_api.db_repo.rate_limiting_repo import RateLimitingRepo
         RateLimitingRepo().flush_outdated_limit()
         logging.info(f"✅  Rate limits cleaned at {datetime.utcnow()}")
 
