@@ -2,12 +2,12 @@ from flask import request, Response, redirect, make_response
 import flask
 import connexion
 import json
-from database.user_repo import User as UserDB
+from ..db_models.model.user_repo import User as UserDB
 from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
 from database.preferences_repo import Preferences as PreferencesDB
-from database.admin_repo import Admin as Admin_db
+from database .admin_repo import Admin as Admin_db
 from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging, conf
