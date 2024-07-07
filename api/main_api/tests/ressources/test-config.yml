@@ -16,11 +16,11 @@ api:
 
     ## Absolute path to the API private key used to sign the vault to guarantee its authenticity.
     ## This must be a PEM encoded RSA private key.
-    private_key_path: "./tests/ressources/test_private.pem"
+    private_key_path: "./main_api/tests/ressources/test_private.pem"
 
     ## Absolute path to the API public key used to verify vault the vault signature before opening it in the frontend.
     ## This must be a PEM encoded RSA public key.
-    public_key_path: "./tests/ressources/test_public.pem"
+    public_key_path: "./main_api/tests/ressources/test_public.pem"
 
     ## Secret used to encrypt flask session.
     ## A random 128 alphanumeric string is required.
@@ -37,7 +37,7 @@ api:
     ## See https://developers.google.com/identity/protocols/oauth2 for more information.
     oauth:
           ## See https://developers.google.com/identity/protocols/oauth2 for more information.
-        client_secret_file_path: "./tests/ressources/fake_client_secret.json"
+        client_secret_file_path: "./main_api/tests/ressources/fake_client_secret.json"
 
 
 
