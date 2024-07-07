@@ -53,7 +53,7 @@ jobs:
       run: cp api/main_api/tests/ressources/test-config.yml api/main_api/config/config.yml
 
     - name: Run tests with pytest
-      working-directory: ./api/main_api
+      working-directory: ./api
       run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml  --cov-fail-under=90
     - name: Upload coverage report
       uses: coverallsapp/github-action@v2
