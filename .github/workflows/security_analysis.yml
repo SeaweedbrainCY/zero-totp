@@ -10,6 +10,8 @@ on:
           required: true
         SONAR_HOST_URL:
           required: true
+        GITGUARDIAN_API_KEY:
+          required: true
 
 jobs:
   tests:
