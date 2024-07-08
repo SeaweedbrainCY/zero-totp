@@ -11,6 +11,9 @@ on:
     tags-ignore:
       - '**'
   workflow_call:
+      secrets:
+        GITGUARDIAN_API_KEY:
+          required: true
   
   
 
