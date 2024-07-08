@@ -15,7 +15,7 @@ export class ChangelogComponent {
   changelogs = [
     {
       date: "20/06/2024",
-      version: "b2.10.5",
+      version: "b2.10.6",
       added: [
         "Enhance the deployment process of Zero-TOTP to be more secure.",
         "You can now easily add a tag to a secret that was already added to another secret.",
