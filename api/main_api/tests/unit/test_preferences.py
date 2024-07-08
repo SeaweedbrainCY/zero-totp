@@ -32,7 +32,7 @@ class TestPreferences(unittest.TestCase):
         self.blocked_user_id = 3
         self.unverified_user_id = 4
 
-        self.google_api_revoke_creds = patch("Oauth.google_drive_api.revoke_credentials").start()
+        self.google_api_revoke_creds = patch("main_api.Oauth.google_drive_api.revoke_credentials").start()
         self.google_api_revoke_creds.return_value = True
 
 

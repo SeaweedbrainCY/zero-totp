@@ -14,22 +14,22 @@ class TestSignupController(unittest.TestCase):
         self.client = self.application.test_client()
 
 
-        self.getByEmailMocked = patch("database.user_repo.User.getByEmail").start()
+        self.getByEmailMocked = patch("main_api.db_repo.user_repo.User.getByEmail").start()
         self.getByEmailMocked.return_value = False
 
-        self.getByUsernameMocked = patch("database.user_repo.User.getByUsername").start()
+        self.getByUsernameMocked = patch("main_api.db_repo.user_repo.User.getByUsername").start()
         self.getByUsernameMocked.return_value = False
 
-        self.create_userMocked = patch("database.user_repo.User.create").start()
+        self.create_userMocked = patch("main_api.db_repo.user_repo.User.create").start()
         self.create_userMocked.return_value = User(id=1)
 
-        self.create_zkeMocked = patch("database.zke_repo.ZKE.create").start()
+        self.create_zkeMocked = patch("main_api.db_repo.zke_repo.ZKE.create").start()
         self.create_zkeMocked.return_value = True
 
-        self.delete_user = patch("database.user_repo.User.delete").start()
+        self.delete_user = patch("main_api.db_repo.user_repo.User.delete").start()
         self.delete_user.return_value = True
 
-        self.hashpw = patch("CryptoClasses.hash_func.Bcrypt.hashpw").start()
+        self.hashpw = patch("main_api.CryptoClasses.hash_func.Bcrypt.hashpw").start()
         self.hashpw.return_value = "hashed"
 
         self.check_email = patch("Utils.utils.check_email").start()
@@ -37,7 +37,7 @@ class TestSignupController(unittest.TestCase):
 
         self.json_payload = {"username" : "username", "password": "Abcdefghij1#", "email": "test@test.py", "derivedKeySalt": "randomSalt", "ZKE_key": "encrypted_key", "passphraseSalt" :"randomSalt"}
         
-        self.send_verification_email = patch("controllers.send_verification_email").start()
+        self.send_verification_email = patch("main_api.controllers.send_verification_email").start()
         self.send_verification_email.return_value = True
 
     def tearDown(self):

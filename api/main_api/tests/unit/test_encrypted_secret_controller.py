@@ -21,19 +21,19 @@ class TestEncryptedSecretController(unittest.TestCase):
         self.endpoint = "/encrypted_secret/uuid"
         
 
-        self.getEncSecretByUUID = patch("database.totp_secret_repo.TOTP_secret.get_enc_secret_by_uuid").start()
+        self.getEncSecretByUUID = patch("main_api.db_repo.totp_secret_repo.TOTP_secret.get_enc_secret_by_uuid").start()
         self.getEncSecretByUUID.return_value = TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret")
 
-        self.addTOTPSecret = patch("database.totp_secret_repo.TOTP_secret.add").start()
+        self.addTOTPSecret = patch("main_api.db_repo.totp_secret_repo.TOTP_secret.add").start()
         self.addTOTPSecret.return_value =  TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret")
 
-        self.updateTOTPSecret = patch("database.totp_secret_repo.TOTP_secret.update_secret").start()
+        self.updateTOTPSecret = patch("main_api.db_repo.totp_secret_repo.TOTP_secret.update_secret").start()
         self.addTOTPSecret.return_value =  TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret")
 
-        self.deleteTOTPSecret = patch("database.totp_secret_repo.TOTP_secret.delete").start()
+        self.deleteTOTPSecret = patch("main_api.db_repo.totp_secret_repo.TOTP_secret.delete").start()
         self.deleteTOTPSecret.return_value = TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret")
 
-        self.get_user_by_id = patch("database.user_repo.User.getById").start()
+        self.get_user_by_id = patch("main_api.db_repo.user_repo.User.getById").start()
         self.get_user_by_id.return_value = User(id=1, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
 
 

@@ -28,12 +28,12 @@ class TestOauthCallback(unittest.TestCase):
         self.blocked_user_id = 2
         self.unverified_user_id = 3
 
-        self.get_auth_url = patch("Oauth.oauth_flow.get_authorization_url").start()
+        self.get_auth_url = patch("main_api.Oauth.oauth_flow.get_authorization_url").start()
         self.get_auth_url.return_value = "auth_url", 'state'
 
         
 
-        self.get_credentials = patch("Oauth.oauth_flow.get_credentials").start()
+        self.get_credentials = patch("main_api.Oauth.oauth_flow.get_credentials").start()
         self.get_credentials.return_value = self.creds
         self.user_repo = UserRepo()
         self.google_integration_repo = GoogleDriveIntegrationRepo()
@@ -134,7 +134,7 @@ class TestOauthCallback(unittest.TestCase):
     def test_oauth_callback_exception(self):
         self.client.cookies = {"api-key": self.jwtCookie}
         with self.application.app.app_context():
-            google_get_by_userid = patch("database.google_drive_integration_repo.GoogleDriveIntegration.get_by_user_id").start()
+            google_get_by_userid = patch("main_api.db_repo.google_drive_integration_repo.GoogleDriveIntegration.get_by_user_id").start()
             google_get_by_userid.side_effect = Exception("test")
             self.client.get(self.setSateSession)
             self.client.follow_redirects = False
@@ -150,7 +150,7 @@ class TestOauthCallback(unittest.TestCase):
     def test_oauth_callback_add_token_error(self):
         self.client.cookies = {"api-key": self.jwtCookie}
         with self.application.app.app_context():
-            add_token = patch("database.oauth_tokens_repo.Oauth_tokens.add").start()
+            add_token = patch("main_api.db_repo.oauth_tokens_repo.Oauth_tokens.add").start()
             add_token.return_value = None
             self.client.get(self.setSateSession)
             self.client.follow_redirects = False
@@ -165,7 +165,7 @@ class TestOauthCallback(unittest.TestCase):
     def test_oauth_callback_no_flask_session(self):
         self.client.cookies = {"api-key": self.jwtCookie}
         with self.application.app.app_context():
-            add_token = patch("database.oauth_tokens_repo.Oauth_tokens.add").start()
+            add_token = patch("main_api.db_repo.oauth_tokens_repo.Oauth_tokens.add").start()
             add_token.return_value = None
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)

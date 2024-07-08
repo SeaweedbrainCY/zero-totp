@@ -21,28 +21,28 @@ class TestUpdateVault(unittest.TestCase):
         self.endpoint = "/update/vault"
         
 
-        self.getById = patch("database.user_repo.User.getById").start()
+        self.getById = patch("main_api.db_repo.user_repo.User.getById").start()
         self.getById.return_value = User(id=1, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001", isBlocked=False)
 
-        self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
+        self.checkpw = patch("main_api.CryptoClasses.hash_func.Bcrypt.checkpw").start()
         self.checkpw.return_value = True
 
-        self.hashpw = patch("CryptoClasses.hash_func.Bcrypt.hashpw").start()
+        self.hashpw = patch("main_api.CryptoClasses.hash_func.Bcrypt.hashpw").start()
         self.hashpw.return_value = "new_passphrase"
 
-        self.getSecretByUUID = patch("database.totp_secret_repo.TOTP_secret.get_enc_secret_by_uuid").start()
+        self.getSecretByUUID = patch("main_api.db_repo.totp_secret_repo.TOTP_secret.get_enc_secret_by_uuid").start()
         self.getSecretByUUID.return_value = TOTP_secret(uuid="uuid", user_id=1)
 
-        self.updateSecret = patch("database.totp_secret_repo.TOTP_secret.update_secret").start()
+        self.updateSecret = patch("main_api.db_repo.totp_secret_repo.TOTP_secret.update_secret").start()
         self.updateSecret.return_value = True
 
-        self.addSecret = patch("database.totp_secret_repo.TOTP_secret.add").start()
+        self.addSecret = patch("main_api.db_repo.totp_secret_repo.TOTP_secret.add").start()
         self.addSecret.return_value = True
 
-        self.zkeUpdate = patch("database.zke_repo.ZKE.update").start()
+        self.zkeUpdate = patch("main_api.db_repo.zke_repo.ZKE.update").start()
         self.zkeUpdate.return_value = True
 
-        self.updateUser = patch("database.user_repo.User.update").start()
+        self.updateUser = patch("main_api.db_repo.user_repo.User.update").start()
         self.updateUser.return_vtest_update_vault_new_passphrase_bad_formatalue = True
 
         self.send_information_email = patch("Utils.utils.send_information_email").start()

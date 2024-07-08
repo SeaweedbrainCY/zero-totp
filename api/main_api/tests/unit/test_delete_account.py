@@ -45,12 +45,12 @@ class TestDeleteAccount(unittest.TestCase):
         self.oauth_tokens_repo = Oauth_tokens_repo()
         self.admin_repo = Admin_repo()
 
-        self.delete_google_drive_option = patch("controllers.delete_google_drive_option").start()
+        self.delete_google_drive_option = patch("main_api.controllers.delete_google_drive_option").start()
         self.delete_google_drive_option.return_value = True
-        self.delete_google_drive_backup = patch("controllers.delete_google_drive_backup").start()
+        self.delete_google_drive_backup = patch("main_api.controllers.delete_google_drive_backup").start()
         self.delete_google_drive_backup.return_value = True
 
-        self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
+        self.checkpw = patch("main_api.CryptoClasses.hash_func.Bcrypt.checkpw").start()
         self.checkpw.return_value = True
 
         if conf.features.admins.admin_can_delete_users == True:
@@ -212,7 +212,7 @@ class TestDeleteAccount(unittest.TestCase):
         with self.flask_application.app.app_context():
             self.client.cookies= {"api-key" :generate_jwt(self.full_user_id)}
             self.client.headers = {"x-hash-passphrase": "passphrase"}
-            self.secrets_delete_all = patch("database.totp_secret_repo.TOTP_secret.delete_all").start()
+            self.secrets_delete_all = patch("main_api.db_repo.totp_secret_repo.TOTP_secret.delete_all").start()
             self.secrets_delete_all.side_effect = Exception("error")
             response = self.client.delete(self.deleteEndpoint)
             self.assertEqual(response.status_code, 500)

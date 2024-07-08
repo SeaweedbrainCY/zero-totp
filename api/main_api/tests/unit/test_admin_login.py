@@ -38,7 +38,7 @@ class TestJWT(unittest.TestCase):
             db.session.add(admin_with_expired_token_token)
             db.session.commit()
         
-        self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
+        self.checkpw = patch("main_api.CryptoClasses.hash_func.Bcrypt.checkpw").start()
 
        
 

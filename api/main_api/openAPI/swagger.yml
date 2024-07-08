@@ -11,7 +11,7 @@ security:
 paths:
   /signup:
     post:
-      operationId: controllers.signup
+      operationId: main_api.controllers.signup
       tags:
         - User
       summary: Sign a user up to the application
@@ -52,7 +52,7 @@ paths:
           description: User already exists
   /login:
     post:
-      operationId: controllers.login
+      operationId: main_api.controllers.login
       tags:
         - User
       summary: Log a user in the application
@@ -97,7 +97,7 @@ paths:
           description: Authentication failed
   /login/specs:
     get:
-      operationId: controllers.get_login_specs
+      operationId: main_api.controllers.get_login_specs
       tags:
         - User
       summary: Return the login specs for this user
@@ -114,7 +114,7 @@ paths:
           description: Return the login specs
   /zke_encrypted_key:
     get:
-      operationId: controllers.get_ZKE_encrypted_key
+      operationId: main_api.controllers.get_ZKE_encrypted_key
       tags:
         - Vault
       summary: Return the user's encrypted ZKE key (encrypted by the user, before transmitting)
@@ -127,7 +127,7 @@ paths:
           description: Access denied
   /encrypted_secret/{uuid}:
     get:
-      operationId: controllers.get_encrypted_secret
+      operationId: main_api.controllers.get_encrypted_secret
       tags:
         - Vault
       summary: Return the user's encrypted secret
@@ -148,7 +148,7 @@ paths:
         "403":
           description: Access denied
     post:
-      operationId: controllers.add_encrypted_secret
+      operationId: main_api.controllers.add_encrypted_secret
       tags:
         - Vault
       summary: Add an encrypted secret to the user's vault
@@ -180,7 +180,7 @@ paths:
         "403":
           description: Access denied
     put:
-      operationId: controllers.update_encrypted_secret
+      operationId: main_api.controllers.update_encrypted_secret
       tags:
         - Vault
       summary: Update an encrypted secret in the user's vault
@@ -212,7 +212,7 @@ paths:
         "403":
           description: Access denied
     delete:
-      operationId: controllers.delete_encrypted_secret
+      operationId: main_api.controllers.delete_encrypted_secret
       tags:
         - Vault
       summary: Delete an encrypted secret from the user's vault
@@ -234,7 +234,7 @@ paths:
           description: Access denied
   /all_secrets:
     get:
-      operationId: controllers.get_all_secrets
+      operationId: main_api.controllers.get_all_secrets
       tags:
         - Vault
       summary: Return all the user's encrypted secrets
@@ -247,7 +247,7 @@ paths:
           description: No secrets found
   /update/email:
     put:
-      operationId: controllers.update_email
+      operationId: main_api.controllers.update_email
       tags:
         - User
       summary: Update the user's email
@@ -273,7 +273,7 @@ paths:
           description: Access denied
   /update/username:
     put:
-      operationId: controllers.update_username
+      operationId: main_api.controllers.update_username
       tags:
         - User
       summary: Update the user's username
@@ -299,7 +299,7 @@ paths:
           description: Access denied
   /update/vault:
     put:
-      operationId: controllers.update_vault
+      operationId: main_api.controllers.update_vault
       tags:
         - User
       summary: Update the user's passphrase, encrypted vault and zke ecrypted key
@@ -343,7 +343,7 @@ paths:
 
   /vault/export:
     get:
-      operationId: controllers.export_vault
+      operationId: main_api.controllers.export_vault
       tags:
         - Vault
       summary: Return all the user's encrypted vault ready for download
@@ -357,7 +357,7 @@ paths:
 
   /google-drive/oauth/authorization-flow:
     get:
-      operationId: controllers.get_authorization_flow
+      operationId: main_api.controllers.get_authorization_flow
       tags:
         - Google Drive
       summary: Get the OAuth authorization flow URI
@@ -371,7 +371,7 @@ paths:
   
   /google-drive/oauth/callback:
     get:
-      operationId: controllers.oauth_callback
+      operationId: main_api.controllers.oauth_callback
       tags:
         - Google Drive
       summary: OAuth callback endpoint for the authorization flow
@@ -381,7 +381,7 @@ paths:
   
   /google-drive/option:
     get:
-      operationId: controllers.get_google_drive_option
+      operationId: main_api.controllers.get_google_drive_option
       tags:
         - Google Drive
       summary: Check if the google drive option as a backup is enabled
@@ -402,7 +402,7 @@ paths:
         "403":
           description: Access disabled
     delete:
-      operationId: controllers.delete_google_drive_option
+      operationId: main_api.controllers.delete_google_drive_option
       tags:
         - Google Drive
       summary: Disable the google drive option as a backup. Delete the oauth token.
@@ -415,7 +415,7 @@ paths:
           description: Access disabled
   /admin/users:
     get:
-      operationId: controllers.get_users_list
+      operationId: main_api.controllers.get_users_list
       tags:
         - Admin
       summary: Return all users
@@ -437,7 +437,7 @@ paths:
           description: Access denied
   /admin/login:
     post:
-      operationId: controllers.admin_login 
+      operationId: main_api.controllers.admin_login 
       tags:
         - Admin
       summary: Admin login verification
@@ -461,7 +461,7 @@ paths:
           description: Access denied
   /google-drive/backup:
     put:
-      operationId: controllers.backup_to_google_drive
+      operationId: main_api.controllers.backup_to_google_drive
       tags:
         - Google Drive
       summary: Back up the encrypted vault to Google Drive
@@ -475,7 +475,7 @@ paths:
         "500":
           description: Backup failed
     delete:
-      operationId: controllers.delete_google_drive_backup
+      operationId: main_api.controllers.delete_google_drive_backup
       tags:
         - Google Drive
       summary: Delete all backups from Google Drive
@@ -491,7 +491,7 @@ paths:
 
   /role:
     get:
-      operationId: controllers.get_role
+      operationId: main_api.controllers.get_role
       tags:
         - User
       summary: Return the user's role
@@ -512,7 +512,7 @@ paths:
           description: No role found
   /preferences:
     get:
-      operationId: controllers.get_preferences
+      operationId: main_api.controllers.get_preferences
       tags:
         - User
       summary: Return the user's role
@@ -545,7 +545,7 @@ paths:
         "403":
           description: Forbidden
     put:
-      operationId: controllers.set_preference
+      operationId: main_api.controllers.set_preference
       tags:
         - User
       summary: Update one of the user's preferences
@@ -582,7 +582,7 @@ paths:
           description: Forbidden
   /google-drive/last-backup/verify:
     get:
-      operationId: controllers.verify_last_backup
+      operationId: main_api.controllers.verify_last_backup
       tags:
         - Google Drive
       summary: Verify the last backup checksum to determine if the last backup is up to date.
@@ -613,7 +613,7 @@ paths:
           description: Internal server error
   /whoami:
     get: 
-      operationId: controllers.get_whoami
+      operationId: main_api.controllers.get_whoami
       tags:
         - User
       summary: Return the user basic account information (id, username, email)
@@ -642,7 +642,7 @@ paths:
           description: Internal server error
   /account:
     delete:
-      operationId: controllers.delete_account
+      operationId: main_api.controllers.delete_account
       tags:
         - User
       summary: Delete the user's account. WARNING The hashed passphrase is required in x-hash-passphrase header !
@@ -657,7 +657,7 @@ paths:
           description: Internal server error
   /admin/account/{account_id_to_delete}:
     delete:
-      operationId: controllers.delete_account_admin
+      operationId: main_api.controllers.delete_account_admin
       tags:
         - Admin
       parameters:
@@ -679,7 +679,7 @@ paths:
           description: Internal server error
   /email/verify:
     put:
-      operationId: controllers.verify_email
+      operationId: main_api.controllers.verify_email
       tags:
         - User
       summary: Verify the user token
@@ -705,7 +705,7 @@ paths:
           description: Internal server error
   /email/send_verification:
     get:
-      operationId: controllers.send_verification_email
+      operationId: main_api.controllers.send_verification_email
       tags:
         - User
       summary: Send the email verification email
@@ -720,7 +720,7 @@ paths:
           description: Internal server error
   /admin/account/{account_id_to_update}/{action}:
     put:
-      operationId: controllers.update_blocked_status
+      operationId: main_api.controllers.update_blocked_status
       tags:
         - Admin
       parameters:

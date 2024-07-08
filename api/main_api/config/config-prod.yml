@@ -1,0 +1,25 @@
+api:
+  jwt_secret: CixLLGVb5u3JC9geHtr289qTDvudTvDR3sBsvdonrt89jXP8MSoEUpiRFKK2w459yUQ6FkAw2XL5svYKJCjBBJhM5BicdSYRprQEpjzSkFssnNr9EJazmZSasKCwZMqB
+  private_key_path: ./main_api/secret/private.pem
+  public_key_path: ./main_api/secret/public.pem
+  flask_secret_key: 6nx3o4SYgxc2t8CGVrUca5kzU6Qqx4uJk6MuCzV9tGafiY6eepVsar7Jdadm7UopTCzPANFRvSSWoYLvmaGqV6dSPV9W4ErTZZAacK5G4KUq2tu9iniLGfhGzgMiV6Pj
+  server_side_encryption_key: ecnx8dSBiusXGPXfTXQLhBHq5mwK8aQNszAV3CnmpDxCPYSxM2kX9QJt5aJYfSMtJd3K4G4Mx2oER87gbZEgYmc7DVzGfApzrSa9dxXNrmyL2WUQyXGBA9QZ7eStkkLv
+  oauth:
+    client_secret_file_path: ./main_api/secret/credentials.json
+  port: 8080
+environment:
+  type: local
+  config_version: 1.0
+database:
+  database_uri: "mysql://api:hxwp6Si7a2VPwgEJri2@192.168.14.26:3306/zero_totp"
+  # database_uri: "sqlite:///:memory:"
+features:
+  admins:
+    admin_can_delete_users: false
+  emails:
+    require_email_validation: true
+    email_sender_address: Zero-TOTP <developer@zero-totp.com>
+    email_smtp_server: smtp.gmail.com
+    email_smtp_port: 587
+    email_smtp_username: nathanstchepinsky@gmail.com
+    email_smtp_password: atbdcetbeinhoulb

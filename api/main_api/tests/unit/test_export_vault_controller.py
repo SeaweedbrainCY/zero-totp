@@ -21,13 +21,13 @@ class TestAllSecret(unittest.TestCase):
         self.client = self.application.test_client()
         self.endpoint = "/vault/export"
 
-        self.get_user = patch("database.user_repo.User.getById").start()
+        self.get_user = patch("main_api.db_repo.user_repo.User.getById").start()
         self.get_user.return_value = User(id=1, derivedKeySalt="salt", isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
 
-        self.get_zke_key = patch("database.zke_repo.ZKE.getByUserId").start()
+        self.get_zke_key = patch("main_api.db_repo.zke_repo.ZKE.getByUserId").start()
         self.get_zke_key.return_value = ZKE_encryption_key(ZKE_key="key")
 
-        self.get_all_secret = patch("database.totp_secret_repo.TOTP_secret.get_all_enc_secret_by_user_id").start()
+        self.get_all_secret = patch("main_api.db_repo.totp_secret_repo.TOTP_secret.get_all_enc_secret_by_user_id").start()
         self.get_all_secret.return_value = [TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret"), TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret2")]
         
         

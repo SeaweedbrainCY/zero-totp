@@ -19,16 +19,16 @@ class TestUpdateEmail(unittest.TestCase):
         self.endpoint = "/update/email"
         
 
-        self.update_email = patch("database.user_repo.User.update_email").start()
+        self.update_email = patch("main_api.db_repo.user_repo.User.update_email").start()
         self.update_email.return_value = User(id=1)
 
-        self.getUserByEmail = patch("database.user_repo.User.getByEmail").start()
+        self.getUserByEmail = patch("main_api.db_repo.user_repo.User.getByEmail").start()
         self.getUserByEmail.return_value = None 
 
-        self.getUserByID = patch("database.user_repo.User.getById").start()
+        self.getUserByID = patch("main_api.db_repo.user_repo.User.getById").start()
         self.getUserByID.return_value = User(id=1, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
 
-        self.send_verification_email = patch("controllers.send_verification_email").start()
+        self.send_verification_email = patch("main_api.controllers.send_verification_email").start()
         self.send_verification_email.return_value = True
 
         self.send_information_email = patch("Utils.utils.send_information_email").start()

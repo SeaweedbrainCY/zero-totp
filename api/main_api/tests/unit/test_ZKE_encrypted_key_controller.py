@@ -20,10 +20,10 @@ class TestZKEEncryptedKey(unittest.TestCase):
         self.endpoint = "/zke_encrypted_key"
         
 
-        self.get_zke_enc = patch("database.zke_repo.ZKE.getByUserId").start()
+        self.get_zke_enc = patch("main_api.db_repo.zke_repo.ZKE.getByUserId").start()
         self.get_zke_enc.return_value = ZKE_encryption_key(id=1, user_id=1, ZKE_key="encrypted_key")
 
-        self.getUserByID = patch("database.user_repo.User.getById").start()
+        self.getUserByID = patch("main_api.db_repo.user_repo.User.getById").start()
         self.getUserByID.return_value = User(id=1, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
 
 

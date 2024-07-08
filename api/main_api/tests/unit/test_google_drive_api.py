@@ -49,7 +49,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
             self.endpoint = "/vault/export"
             self.from_authorized_user_info = patch("google.oauth2.credentials.Credentials.from_authorized_user_info").start()
             self.from_authorized_user_info.return_value = "credentials"
-            self.build = patch("Oauth.google_drive_api.build").start()
+            self.build = patch("main_api.Oauth.google_drive_api.build").start()
             self.mockedFiles = {'files': []}
             self.drive = self.MockedDriveService(mockedFiles=self.mockedFiles)
             self.build.return_value = self.drive
@@ -222,10 +222,10 @@ class TestGoogleDriveAPI(unittest.TestCase):
         def test_backup(self):
              FOLDER_ID = 5
              VAULT = "vault"
-             self.get_folder = patch("Oauth.google_drive_api.get_folder").start()
+             self.get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
              self.get_folder.return_value = {"id" : FOLDER_ID}
 
-             self.create_file = patch("Oauth.google_drive_api.create_file").start()  
+             self.create_file = patch("main_api.Oauth.google_drive_api.create_file").start()  
              self.create_file.return_value = "file"
              
              self.assertEqual(google_drive_api.backup(credentials="creds", vault=VAULT), "file")
@@ -238,9 +238,9 @@ class TestGoogleDriveAPI(unittest.TestCase):
                  print("create foler")
                  files = {'files': [{"id" : FOLDER_ID, "name" :name, "explicitlyTrashed": False}]}
                  drive.mockedFiles =files
-             create_file = patch("Oauth.google_drive_api.create_file").start()  
+             create_file = patch("main_api.Oauth.google_drive_api.create_file").start()  
              create_file.return_value = "file"   
-             create_folder = patch("Oauth.google_drive_api.create_folder").start()
+             create_folder = patch("main_api.Oauth.google_drive_api.create_folder").start()
              create_folder.side_effect = fake_create_foler
              
 
@@ -251,11 +251,11 @@ class TestGoogleDriveAPI(unittest.TestCase):
 
         def test_backup_with_folder_creation_error(self):
              VAULT = "vault"
-             get_service = patch("Oauth.google_drive_api.get_drive_service").start()
+             get_service = patch("main_api.Oauth.google_drive_api.get_drive_service").start()
              get_service.return_value = self.drive
-             create_file = patch("Oauth.google_drive_api.create_file").start()  
+             create_file = patch("main_api.Oauth.google_drive_api.create_file").start()  
              create_file.return_value = "file"
-             create_folder = patch("Oauth.google_drive_api.create_folder").start()
+             create_folder = patch("main_api.Oauth.google_drive_api.create_folder").start()
              create_folder.return_value = {"id" : 1}
              execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
              execute.return_value = {"files" : []}
@@ -309,7 +309,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
         def test_get_last_backup_file(self):
             FOLDER_ID = 5
             LAST_BACKUP_FILENAME = "02-01-2023-00-00-00_backup"
-            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
             get_folder.return_value = {"id" : str(FOLDER_ID)}
             execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
             execute.return_value = {
@@ -331,13 +331,13 @@ class TestGoogleDriveAPI(unittest.TestCase):
             self.assertEqual(google_drive_api.get_last_backup_file(drive=self.drive), ({"name" : LAST_BACKUP_FILENAME, "explicitlyTrashed": False}, datetime.datetime(year=2023, month=1, day=2, hour=0, minute=0, second=0 ) ))
 
         def test_get_last_backup_file_without_folder(self):
-            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
             get_folder.return_value = None
             self.assertRaises(utils.FileNotFound, google_drive_api.get_last_backup_file, drive=self.drive)
         
         def test_get_last_backup_file_with_no_file(self):
             FOLDER_ID = 5
-            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
             get_folder.return_value = {"id" : str(FOLDER_ID)}
             execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
             execute.return_value = {"files": []}
@@ -347,7 +347,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
         def test_get_last_backup_file_with_corrupted_file(self):
             FOLDER_ID = 5
             LAST_BACKUP_FILENAME = "02-01-2023-00-00-00_backup"
-            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
             get_folder.return_value = {"id" : str(FOLDER_ID)}
             execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
             execute.return_value = {
@@ -379,7 +379,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
         def test_get_last_backup_file_with_all_files_trashed(self):
             FOLDER_ID = 5
             LAST_BACKUP_FILENAME = "02-01-2023-00-00-00_backup"
-            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
             get_folder.return_value = {"id" : str(FOLDER_ID)}
             execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
             execute.return_value = {
@@ -407,7 +407,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
 
         def test_get_last_backup_checksum(self):
             LAST_BACKUP_FILENAME = "02-01-2023-00-00-00_backup"
-            get_last_backup_file = patch("Oauth.google_drive_api.get_last_backup_file").start()
+            get_last_backup_file = patch("main_api.Oauth.google_drive_api.get_last_backup_file").start()
             get_last_backup_file.return_value = {"name" : LAST_BACKUP_FILENAME, "explicitlyTrashed": False, "id":1}, datetime.datetime(year=2023, month=1, day=2, hour=0, minute=0, second=0 )
             with self.application.app.app_context():
                 self.client.cookies = {"api-key":self.jwtCookie}
@@ -424,7 +424,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
         
         def test_get_last_backup_no_checksum(self):
             LAST_BACKUP_FILENAME = "02-01-2023-00-00-00_backup"
-            get_last_backup_file = patch("Oauth.google_drive_api.get_last_backup_file").start()
+            get_last_backup_file = patch("main_api.Oauth.google_drive_api.get_last_backup_file").start()
             get_last_backup_file.return_value = {"name" : LAST_BACKUP_FILENAME, "explicitlyTrashed": False, "id":1}, datetime.datetime(year=2023, month=1, day=2, hour=0, minute=0, second=0 )
             execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
             false_vault = b64encode('{"date" : "2023-01-02 00:00:00.000000", "name": "no_checksum"}'.encode("utf-8")).decode("utf-8")
@@ -433,7 +433,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
         
         def test_get_last_backup_bad_backup(self):
             LAST_BACKUP_FILENAME = "02-01-2023-00-00-00_backup"
-            get_last_backup_file = patch("Oauth.google_drive_api.get_last_backup_file").start()
+            get_last_backup_file = patch("main_api.Oauth.google_drive_api.get_last_backup_file").start()
             get_last_backup_file.return_value = {"name" : LAST_BACKUP_FILENAME, "explicitlyTrashed": False, "id":1}, datetime.datetime(year=2023, month=1, day=2, hour=0, minute=0, second=0 )
             execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
             execute.return_value = 'badBackup,data'.encode("utf-8")
@@ -454,9 +454,9 @@ class TestGoogleDriveAPI(unittest.TestCase):
                  files_deleted.append(fileId)
                  return self.drive
                 
-             get_folder = patch("Oauth.google_drive_api.get_folder").start()
+             get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
              get_folder.return_value = {"id" : 1}
-             get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+             get_files_from_folder = patch("main_api.Oauth.google_drive_api.get_files_from_folder").start()
              get_files_from_folder.return_value = [{"name" : f"{str(day).zfill(2)}-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": day} for day in range(1, nb_backup)]
              delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
              delete_execute.return_value = True
@@ -476,9 +476,9 @@ class TestGoogleDriveAPI(unittest.TestCase):
              nb_backup = 19
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
-                get_folder = patch("Oauth.google_drive_api.get_folder").start()
+                get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = {"id" : 1}
-                get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+                get_files_from_folder = patch("main_api.Oauth.google_drive_api.get_files_from_folder").start()
                 get_files_from_folder.return_value = [{"name" : f"{str(day).zfill(2)}-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": day} for day in range(1, nb_backup)]
                 delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
                 delete_execute.return_value = True
@@ -491,9 +491,9 @@ class TestGoogleDriveAPI(unittest.TestCase):
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 today = datetime.datetime.utcnow().strftime('%m-%Y')
-                get_folder = patch("Oauth.google_drive_api.get_folder").start()
+                get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = {"id" : 1}
-                get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+                get_files_from_folder = patch("main_api.Oauth.google_drive_api.get_files_from_folder").start()
                 get_files_from_folder.return_value = [{"name" : f"{str(day).zfill(2)}-{today}-00-00-00_backup", "explicitlyTrashed": False, "id": day} for day in range(1, nb_backup)]
                 delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
                 delete_execute.return_value = True
@@ -505,9 +505,9 @@ class TestGoogleDriveAPI(unittest.TestCase):
              nb_backup = 30
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime.utcnow().strftime('%Y-%m-%d'))
-                get_folder = patch("Oauth.google_drive_api.get_folder").start()
+                get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = {"id" : 1}
-                get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+                get_files_from_folder = patch("main_api.Oauth.google_drive_api.get_files_from_folder").start()
                 get_files_from_folder.return_value = [{"name" : f"{str(day).zfill(2)}-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": day} for day in range(1, nb_backup)]
                 delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
                 delete_execute.return_value = True
@@ -519,9 +519,9 @@ class TestGoogleDriveAPI(unittest.TestCase):
              nb_backup = 30
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
-                get_folder = patch("Oauth.google_drive_api.get_folder").start()
+                get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = None
-                get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+                get_files_from_folder = patch("main_api.Oauth.google_drive_api.get_files_from_folder").start()
                 get_files_from_folder.return_value = [{"name" : f"{str(day).zfill(2)}-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": day} for day in range(1, nb_backup)]
                 delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
                 delete_execute.return_value = True
@@ -532,9 +532,9 @@ class TestGoogleDriveAPI(unittest.TestCase):
         def test_clean_backup_no_files(self):
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
-                get_folder = patch("Oauth.google_drive_api.get_folder").start()
+                get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = {"id":1}
-                get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+                get_files_from_folder = patch("main_api.Oauth.google_drive_api.get_files_from_folder").start()
                 get_files_from_folder.return_value = []
                 delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
                 delete_execute.return_value = True
@@ -546,9 +546,9 @@ class TestGoogleDriveAPI(unittest.TestCase):
              nb_backup = 30 
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
-                get_folder = patch("Oauth.google_drive_api.get_folder").start()
+                get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
                 get_folder.return_value = {"id":1}
-                get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+                get_files_from_folder = patch("main_api.Oauth.google_drive_api.get_files_from_folder").start()
                 get_files_from_folder.return_value = [{"name" : "bad_file", "explicitlyTrashed": False, "id": day} for day in range(1, nb_backup)]
                 delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
                 delete_execute.return_value = True
@@ -561,11 +561,11 @@ class TestGoogleDriveAPI(unittest.TestCase):
 #####################
 
         def test_delete_all_backups(self):
-            get_service = patch("Oauth.google_drive_api.get_drive_service").start()
+            get_service = patch("main_api.Oauth.google_drive_api.get_drive_service").start()
             get_service.return_value = self.drive
-            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
             get_folder.return_value = {"id":1}
-            get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+            get_files_from_folder = patch("main_api.Oauth.google_drive_api.get_files_from_folder").start()
             get_files_from_folder.return_value = [{"name" : "01-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": 1}, {"name" : "01-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": 2},{"name" : "01-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": 3}]
             delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
             delete_execute.return_value = True
@@ -573,9 +573,9 @@ class TestGoogleDriveAPI(unittest.TestCase):
             delete_execute.assert_called()
     
         def test_delete_all_backups_no_folder(self):
-            get_service = patch("Oauth.google_drive_api.get_drive_service").start()
+            get_service = patch("main_api.Oauth.google_drive_api.get_drive_service").start()
             get_service.return_value = self.drive
-            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder = patch("main_api.Oauth.google_drive_api.get_folder").start()
             get_folder.return_value = None
             self.assertTrue(google_drive_api.delete_all_backups("creds"))
 

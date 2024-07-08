@@ -11,10 +11,10 @@ import logging
 class TestBcrypt(unittest.TestCase):
     
     def setUp(self):
-        self.delete_email_token = patch("database.email_verification_repo.EmailVerificationToken.delete").start()
+        self.delete_email_token = patch("main_api.db_repo.email_verification_repo.EmailVerificationToken.delete").start()
         self.delete_email_token.return_value = True
 
-        self.add_email_token = patch("database.email_verification_repo.EmailVerificationToken.add").start()
+        self.add_email_token = patch("main_api.db_repo.email_verification_repo.EmailVerificationToken.add").start()
         self.add_email_token.return_value = True
     
     def tearDown(self):

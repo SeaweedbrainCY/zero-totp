@@ -19,10 +19,10 @@ class TestAllSecret(unittest.TestCase):
         self.endpoint = "/all_secrets"
         
 
-        self.get_all_secret = patch("database.totp_secret_repo.TOTP_secret.get_all_enc_secret_by_user_id").start()
+        self.get_all_secret = patch("main_api.db_repo.totp_secret_repo.TOTP_secret.get_all_enc_secret_by_user_id").start()
         self.get_all_secret.return_value = [TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret"), TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret2")]
 
-        self.getUserById = patch("database.user_repo.User.getById").start()
+        self.getUserById = patch("main_api.db_repo.user_repo.User.getById").start()
         self.getUserById.return_value = User(id=1, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
 
 

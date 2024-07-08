@@ -32,9 +32,9 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
         self.unverified_user_id = 3
 
 
-        self.google_drive_backup = patch("Oauth.google_drive_api.backup").start()
+        self.google_drive_backup = patch("main_api.Oauth.google_drive_api.backup").start()
         self.google_drive_backup.return_value = True
-        self.google_drive_clean = patch("Oauth.google_drive_api.clean_backup_retention").start()
+        self.google_drive_clean = patch("main_api.Oauth.google_drive_api.clean_backup_retention").start()
         self.google_drive_clean.return_value = True
         
 
@@ -67,7 +67,7 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
             tmp_client.cookies = {"api-key": self.jwtCookie}
             export_vault_b64 = tmp_client.get("/vault/export").json().split(",")[0]
             self.exported_vault = json.loads(base64.b64decode(export_vault_b64))
-        self.get_checksum = patch("Oauth.google_drive_api.get_last_backup_checksum").start()
+        self.get_checksum = patch("main_api.Oauth.google_drive_api.get_last_backup_checksum").start()
         self.get_checksum.return_value = self.exported_vault["secrets_sha256sum"], datetime.datetime.utcnow().strftime("%Y-%m-%d")
 
 

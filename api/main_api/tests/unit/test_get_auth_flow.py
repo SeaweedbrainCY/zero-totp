@@ -16,7 +16,7 @@ class TestGetAuthFlow(unittest.TestCase):
             self.roleEndpoint = "/google-drive/oauth/authorization-flow"
             self.admin_user_id = 1
 
-            self.get_authorization_url_patch = patch("Oauth.oauth_flow.get_authorization_url").start()
+            self.get_authorization_url_patch = patch("main_api.Oauth.oauth_flow.get_authorization_url").start()
             self.get_authorization_url_patch.return_value = "https://www.google.com", "state"
         
         

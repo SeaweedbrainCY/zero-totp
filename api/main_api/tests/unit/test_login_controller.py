@@ -24,10 +24,10 @@ class TestLoginController(unittest.TestCase):
             db.session.add(self.user1)
             db.session.commit()
 
-        self.get_is_google_drive_enabled = patch("database.google_drive_integration_repo.GoogleDriveIntegration.is_google_drive_enabled").start()
+        self.get_is_google_drive_enabled = patch("main_api.db_repo.google_drive_integration_repo.GoogleDriveIntegration.is_google_drive_enabled").start()
         self.get_is_google_drive_enabled.return_value = False
 
-        self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
+        self.checkpw = patch("main_api.CryptoClasses.hash_func.Bcrypt.checkpw").start()
         self.checkpw.return_value = True
 
         self.check_email = patch("Utils.utils.check_email").start()

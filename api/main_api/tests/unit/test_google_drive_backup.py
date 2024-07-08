@@ -31,12 +31,12 @@ class TestGoogleDriveBackup(unittest.TestCase):
         self.unverified_user_id = 3
 
 
-        self.google_drive_backup = patch("Oauth.google_drive_api.backup").start()
+        self.google_drive_backup = patch("main_api.Oauth.google_drive_api.backup").start()
         self.google_drive_backup.return_value = True
-        self.google_drive_clean = patch("Oauth.google_drive_api.clean_backup_retention").start()
+        self.google_drive_clean = patch("main_api.Oauth.google_drive_api.clean_backup_retention").start()
         self.google_drive_clean.return_value = True
 
-        self.delete_all_backups = patch("Oauth.google_drive_api.delete_all_backups").start()
+        self.delete_all_backups = patch("main_api.Oauth.google_drive_api.delete_all_backups").start()
         self.delete_all_backups.return_value = True
 
         self.user_repo = UserRepo()
@@ -118,7 +118,7 @@ class TestGoogleDriveBackup(unittest.TestCase):
     def test_google_drive_backup_error_while_backuping(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": self.jwtCookie}
-            backup = patch("Oauth.google_drive_api.backup").start()
+            backup = patch("main_api.Oauth.google_drive_api.backup").start()
             backup.side_effect = Exception("error")
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 500)
@@ -126,7 +126,7 @@ class TestGoogleDriveBackup(unittest.TestCase):
     def test_google_drive_backup_error_while_cleaning(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": self.jwtCookie}
-            backup = patch("Oauth.google_drive_api.clean_backup_retention").start()
+            backup = patch("main_api.Oauth.google_drive_api.clean_backup_retention").start()
             backup.side_effect = Exception("error")
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 500)
@@ -197,7 +197,7 @@ class TestGoogleDriveBackup(unittest.TestCase):
     def test_google_drive_delete_all_backup_no_option(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": self.jwtCookie}
-            self.get_google_drive_integration = patch("database.google_drive_integration_repo.GoogleDriveIntegration.get_by_user_id").start()
+            self.get_google_drive_integration = patch("main_api.db_repo.google_drive_integration_repo.GoogleDriveIntegration.get_by_user_id").start()
             self.get_google_drive_integration.return_value = None
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 403)
@@ -212,7 +212,7 @@ class TestGoogleDriveBackup(unittest.TestCase):
     def test_google_drive_delete_all_backup_error_while_deleting(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": self.jwtCookie}
-            backup = patch("Oauth.google_drive_api.delete_all_backups").start()
+            backup = patch("main_api.Oauth.google_drive_api.delete_all_backups").start()
             backup.side_effect = Exception("error")
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 500)
