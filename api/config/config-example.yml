@@ -73,14 +73,13 @@ features:
         ## This should be disabled in production, most of the time.
         # admin_can_delete_users: false
     
-    ## Optional
     ## Email notifications configuration
-    # emails:
+    emails:
         ## Optional 
         ## Require email validation for new users.
         ## If set to true, users will have to validate their email address before they can use the service.
         ## If set to false, users will be able to use the service without validating their email address.
-        # require_email_validation: false
+        require_email_validation: false
 
         ## Required if require_email_validation is set to true
         ## Configuration of the SMTP server used to send emails.

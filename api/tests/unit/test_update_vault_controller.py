@@ -50,7 +50,7 @@ class TestUpdateVault(unittest.TestCase):
 
        
 
-        self.payload = {"new_passphrase" : "new_passphrase", "old_passphrase":"old_passphrase", "enc_vault":"{\"uuid\": \"secret\"}", "zke_enc":"zke_enc", "passphrase_salt": "pasphrase_salt", "derived_key_salt":"derived_key_salt"}
+        self.payload = {"new_passphrase" : "new_passphrase", "old_passphrase":"old_passphrase", "enc_vault":"{\"ecd44892-ac53-498b-b4ae-9d5124462cdd\": \"secret\"}", "zke_enc":"zke_enc", "passphrase_salt": "pasphrase_salt", "derived_key_salt":"derived_key_salt"}
 
 
     def tearDown(self):

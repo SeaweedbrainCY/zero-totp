@@ -131,19 +131,20 @@ def get_ip(request):
         return None
 
 def unsafe_json_vault_validation(json:str) -> (bool, str):
-    print("len = ", len(json))
     if len(json) > 4 * 1024 *1024:
         return False, "The vault is too big. The maximum size is 4MB"
     schema = {
         "type": "object",
-        "properties": {
-            "uuid": {"type": "string"},
+        "patternProperties": {
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$": {"type": "string"},
         },
-        "required": ["uuid"]
+            "additionalProperties": False
     }
     try:
         validate(json, schema)
         return True, "OK"
     except Exception as e:
+        logging.error("Error while validating vault json : " + str(e))
+        print(e)
         return False, "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support."
     

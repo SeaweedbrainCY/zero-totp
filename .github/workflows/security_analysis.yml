@@ -10,10 +10,14 @@ on:
           required: true
         SONAR_HOST_URL:
           required: true
+        GITGUARDIAN_API_KEY:
+          required: true
 
 jobs:
   tests:
     uses: ./.github/workflows/test.yml  # use the callable tests job to run tests
+    secrets:
+      GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
   sonarqube:
     needs: [tests]
     name: SonarQube scan
