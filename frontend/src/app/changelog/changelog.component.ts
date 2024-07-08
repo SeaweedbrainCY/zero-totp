@@ -27,7 +27,8 @@ export class ChangelogComponent {
         "Zero-TOTP removed all its frontend dependencies to BuyMeACoffee API, leading to a better privacy for the users.",
         "Improve loading UX for low internet connection.",
         "Some dependencies have been updated to fix 2 moderate CVE.",
-        "We fixed a bug when creating your accounting replacing the password by its hash in the password field when an error occurs."
+        "We fixed a bug when creating your accounting replacing the password by its hash in the password field when an error occurs.",
+         "We fixed an error that made the passphrase update impossible due to a vault parsing error"
       ]
     },
     {
