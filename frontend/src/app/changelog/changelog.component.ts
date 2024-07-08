@@ -19,6 +19,7 @@ export class ChangelogComponent {
       added: [
         "Enhance the deployment process of Zero-TOTP to be more secure.",
         "You can now easily add a tag to a secret that was already added to another secret.",
+        "Validation codes are now valid for 30min instead of 10min.",
 
       ],
       fixed:[
