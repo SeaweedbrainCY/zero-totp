@@ -1,5 +1,5 @@
 from database.db import db 
-from database.model import Admin as Admin_model
+from zero_totp_db_model.model import Admin as Admin_model
 
 class Admin:
    def get_by_user_id(self, user_id):

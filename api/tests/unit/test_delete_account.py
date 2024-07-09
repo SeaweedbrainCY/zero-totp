@@ -2,7 +2,7 @@ import unittest
 from app import app
 from database.db import db 
 from environment import conf
-from database.model import User as UserModel
+from zero_totp_db_model.model import User as UserModel
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
@@ -14,7 +14,7 @@ from database.google_drive_integration_repo import GoogleDriveIntegration as Goo
 from database.preferences_repo import Preferences as Preferences_repo
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
 from database.admin_repo import Admin as Admin_repo
-from database.model import Admin as AdminModel, Preferences as PreferencesModel
+from zero_totp_db_model.model import Admin as AdminModel, Preferences as PreferencesModel
 from uuid import uuid4
 from environment import conf
 

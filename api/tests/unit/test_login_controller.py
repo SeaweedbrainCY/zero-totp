@@ -2,7 +2,7 @@ import unittest
 from app import app
 import controllers
 from unittest.mock import patch
-from database.model import User, RateLimiting
+from zero_totp_db_model.model import User, RateLimiting
 from environment import conf
 from database.db import db 
 import datetime

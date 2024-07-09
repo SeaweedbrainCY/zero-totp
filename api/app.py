@@ -2,7 +2,7 @@ import connexion
 from flask_cors import CORS
 from environment import conf
 from database.db import db
-from database.model_init import init_db
+from zero_totp_db_model.model_init import init_db
 import uvicorn
 from asgiref.wsgi import WsgiToAsgi
 from starlette.middleware.cors import CORSMiddleware
@@ -57,7 +57,7 @@ scheduler.start()
 def clean_email_verification_token_from_db():
     with flask.app_context():
         logging.info("🧹  Cleaning email verification tokens from database")
-        from database.model import EmailVerificationToken
+        from zero_totp_db_model.model import EmailVerificationToken
         
         tokens = db.session.query(EmailVerificationToken).all()
         for token in tokens:

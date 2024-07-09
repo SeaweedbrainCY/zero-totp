@@ -2,7 +2,7 @@ import unittest
 from app import app
 import controllers
 from unittest.mock import patch
-from database.model import User, TOTP_secret
+from zero_totp_db_model.model import User, TOTP_secret
 from environment import conf
 from CryptoClasses import jwt_func
 import jwt
