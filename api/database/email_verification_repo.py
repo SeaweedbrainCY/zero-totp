@@ -1,5 +1,5 @@
 from database.db import db 
-from database.model import EmailVerificationToken as EmailVerificationToken_model
+from zero_totp_db_model.model import EmailVerificationToken as EmailVerificationToken_model
 
 class EmailVerificationToken:
 

@@ -4,7 +4,7 @@ from Utils.utils import check_email, sanitize_input, extract_last_backup_from_li
 import datetime
 from uuid import uuid4
 from random import shuffle
-from database.model import TOTP_secret
+from zero_totp_db_model.model import TOTP_secret
 from unittest.mock import patch
 import logging
 

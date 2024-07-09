@@ -167,6 +167,6 @@ cython_debug/
 
 secret/
 .secret/
-
+*.pem
 database-stack/
 .DS_Store

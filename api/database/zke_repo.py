@@ -1,5 +1,5 @@
 from database.db import db 
-from database.model import ZKE_encryption_key as ZKEModel
+from zero_totp_db_model.model import ZKE_encryption_key as ZKEModel
 
 class ZKE:
    

@@ -1,5 +1,5 @@
 from database.db import db 
-from database.model import Preferences as PreferencesModel
+from zero_totp_db_model.model import Preferences as PreferencesModel
 from environment import logging
 
 class Preferences:

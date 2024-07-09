@@ -2,7 +2,7 @@ import unittest
 from app import app
 from database.db import db 
 from environment import conf
-from database.model import User as UserModel
+from zero_totp_db_model.model import User as UserModel
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
