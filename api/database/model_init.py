@@ -1,6 +1,6 @@
 db = None 
 
-def init_db(sqlAlchemy_db):
+def init_db(sql_alchemy_db):
     global db
-    db = sqlAlchemy_db
+    db = sql_alchemy_db
     

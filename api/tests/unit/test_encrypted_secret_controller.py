@@ -1,6 +1,6 @@
 import unittest
-import controllers
 from app import app
+import controllers
 from unittest.mock import patch
 from database.model import User, TOTP_secret
 from environment import conf

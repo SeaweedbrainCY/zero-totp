@@ -1,9 +1,11 @@
+
+from app import app
 from Utils import security_wrapper
 import unittest
 from unittest.mock import patch
 from database.model import User as UserModel, Admin as AdminModel
 from database.db import db
-from app import app
+
 
 
 class TestSecurityWrapper(unittest.TestCase):

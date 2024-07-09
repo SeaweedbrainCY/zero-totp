@@ -39,6 +39,7 @@ def create_app():
     
     db.init_app(app)
     sentry_configuration() #optional
+    init_db(db)
     
     
     
@@ -49,7 +50,7 @@ migrate = Migrate(flask, db)
 scheduler = APScheduler()
 scheduler.init_app(flask)
 scheduler.start()
-init_db(db)
+
 
 
 @scheduler.task('interval', id='clean_email_verification_token_from_db', hours=12, misfire_grace_time=900)

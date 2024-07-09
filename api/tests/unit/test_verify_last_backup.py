@@ -1,6 +1,6 @@
+from app import app
 import unittest
 import controllers
-from app import app
 from unittest.mock import patch
 from database.user_repo import User as UserRepo
 from database.oauth_tokens_repo import Oauth_tokens as OAuthTokensRepo
