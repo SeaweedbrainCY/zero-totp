@@ -2,6 +2,7 @@ import connexion
 from flask_cors import CORS
 from environment import conf
 from database.db import db
+from database.model_init import init_db
 import uvicorn
 from asgiref.wsgi import WsgiToAsgi
 from starlette.middleware.cors import CORSMiddleware
@@ -39,6 +40,8 @@ def create_app():
     db.init_app(app)
     sentry_configuration() #optional
     
+    
+    
 
     return app_instance, app
 app, flask = create_app()
@@ -46,6 +49,7 @@ migrate = Migrate(flask, db)
 scheduler = APScheduler()
 scheduler.init_app(flask)
 scheduler.start()
+init_db(db)
 
 
 @scheduler.task('interval', id='clean_email_verification_token_from_db', hours=12, misfire_grace_time=900)

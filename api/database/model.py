@@ -1,4 +1,8 @@
-from database.db import db
+from .model_init import db
+
+if db is None:
+    raise Exception("Database not initialized. Please call init_db(db) before importing models")
+
 class User(db.Model):
     __tablename__ = "User"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
