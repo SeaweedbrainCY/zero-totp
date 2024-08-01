@@ -44,7 +44,7 @@ class EnvironmentConfig:
                 level=logging.INFO,
                 datefmt='%d-%m-%Y %H:%M:%S')
             self.frontend_domain="zero-totp.com"
-            self.frontend_URI = ["https://zero-totp.com", "https://ca.zero-totp.com", "https://eu.zero-totp.com"]
+            self.frontend_URI = ["https://zero-totp.com", "https://ca.zero-totp.com", "https://eu.zero-totp.com", "https://themis.zero-totp.com"]
             self.callback_URI = "https://api.zero-totp.com/google-drive/oauth/callback"
 
 class OauthConfig:
