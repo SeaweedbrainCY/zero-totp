@@ -73,5 +73,17 @@ jobs:
             uses: distributhor/workflow-webhook@v3
             env:
               webhook_url: ${{ secrets.WEBHOOK_URL_CA }}
+    #deploy-production-themis:
+    #    needs: [docker-frontend, docker-api] 
+    #    name: Deploy on production server (THEMIS)
+    #    environment: 
+    #       name: Production (THEMIS)
+    #       url: https://themis.zero-totp.com
+    #    runs-on: ubuntu-latest
+    #    steps:
+    #      - name: CA deployment
+    #        uses: distributhor/workflow-webhook@v3
+    #        env:
+    #          webhook_url: ${{ secrets.WEBHOOK_URL_THEMIS }}
 
         

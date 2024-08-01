@@ -2,6 +2,7 @@ import connexion
 from flask_cors import CORS
 from environment import conf
 from database.db import db
+from zero_totp_db_model.model_init import init_db
 import uvicorn
 from asgiref.wsgi import WsgiToAsgi
 from starlette.middleware.cors import CORSMiddleware
@@ -38,6 +39,9 @@ def create_app():
     
     db.init_app(app)
     sentry_configuration() #optional
+    init_db(db)
+    
+    
     
 
     return app_instance, app
@@ -48,11 +52,12 @@ scheduler.init_app(flask)
 scheduler.start()
 
 
+
 @scheduler.task('interval', id='clean_email_verification_token_from_db', hours=12, misfire_grace_time=900)
 def clean_email_verification_token_from_db():
     with flask.app_context():
         logging.info("🧹  Cleaning email verification tokens from database")
-        from database.model import EmailVerificationToken
+        from zero_totp_db_model.model import EmailVerificationToken
         
         tokens = db.session.query(EmailVerificationToken).all()
         for token in tokens:

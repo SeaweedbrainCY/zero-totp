@@ -1,6 +1,6 @@
 import unittest
-import controllers
 from app import app
+import controllers
 from unittest.mock import patch
 from database.user_repo import User as UserRepo
 from database.preferences_repo import Preferences as PreferencesRepo

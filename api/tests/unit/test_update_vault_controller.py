@@ -1,8 +1,8 @@
+from app import app
 import unittest
 import controllers
-from app import app
 from unittest.mock import patch
-from database.model import User, TOTP_secret, ZKE_encryption_key
+from zero_totp_db_model.model import User, TOTP_secret, ZKE_encryption_key
 from environment import conf
 from CryptoClasses import jwt_func,hash_func
 from uuid import uuid4

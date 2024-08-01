@@ -39,6 +39,8 @@ export class AppComponent implements OnInit{
         ApiService.API_URL = "https://api.eu.zero-totp.com";
       } else if (location.hostname == "dev.zero-totp.com") {
         ApiService.API_URL = "https://api.dev.zero-totp.com";
+      } else if (location.hostname == "themis.zero-totp.com") {
+        ApiService.API_URL = "https://api.themis.zero-totp.com";
       }
     }
   }

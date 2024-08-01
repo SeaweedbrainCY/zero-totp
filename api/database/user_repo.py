@@ -1,5 +1,5 @@
 from database.db import db 
-from database.model import User as UserModel
+from zero_totp_db_model.model import User as UserModel
 from environment import logging
 
 class User:
