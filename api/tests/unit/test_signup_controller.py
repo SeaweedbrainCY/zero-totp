@@ -1,8 +1,8 @@
 import unittest
-import controllers
 from app import app
+import controllers
 from unittest.mock import patch
-from database.model import User
+from zero_totp_db_model.model import User
 from environment import conf
 
 class TestSignupController(unittest.TestCase):
