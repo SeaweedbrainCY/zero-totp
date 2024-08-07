@@ -746,7 +746,30 @@ paths:
           description: Access disabled
         "500":
           description: Internal server error
-
+  /notification:
+    get: 
+      operationId: controllers.get_notification
+      tags:
+        - User
+      summary: Return the user's last notification
+      responses:
+        "200": 
+          description: Return the user's notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Notification message"
+                  datetime:
+                    type: integer
+                    example: UTC timestamp
+        "401":
+          description: Notif for authorized users only
+        "500":
+          description: Internal server error
 components:
   securitySchemes:
     JWTAuth:
