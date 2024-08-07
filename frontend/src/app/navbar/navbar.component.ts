@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
+import { faLightbulb, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-navbar',
@@ -14,6 +15,8 @@ export class NavbarComponent implements OnInit{
   currentUrl:string = "";
   isNavbarExpanded = false;
   isIdleWatchingEnabled = false;
+  faXmark=faXmark
+  faLightbulb = faLightbulb;
   current_language:string = localStorage.getItem('language') || 'en-uk';
   isLangDropdownExpanded = false;
   idleEndSupscription: Subscription | null = null;
