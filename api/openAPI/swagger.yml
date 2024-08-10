@@ -746,12 +746,13 @@ paths:
           description: Access disabled
         "500":
           description: Internal server error
-  /notification:
+  /notification/global:
     get: 
-      operationId: controllers.get_notification
+      operationId: controllers.get_global_notification
       tags:
-        - User
-      summary: Return the user's last notification
+        - Notification
+      summary: Return the user's last global notification
+      security: []
       responses:
         "200": 
           description: Return the user's notifications
@@ -760,14 +761,40 @@ paths:
               schema:
                 type: object
                 properties:
+                  authenticated_user_only:
+                    type: boolean
+                    example: true
+                  display_notification:
+                    type: boolean
+                    example: true
                   message:
                     type: string
                     example: "Notification message"
-                  datetime:
-                    type: integer
-                    example: UTC timestamp
-        "401":
-          description: Notif for authorized users only
+        "500":
+          description: Internal server error
+  /notification/internal:
+    get: 
+      operationId: controllers.get_internal_notification
+      tags:
+        - Notification
+      summary: Return the user's last internal notification
+      responses:
+        "200": 
+          description: Return the user's notifications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authenticated_user_only:
+                    type: boolean
+                    example: true
+                  display_notification:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Notification message"
         "500":
           description: Internal server error
 components:
