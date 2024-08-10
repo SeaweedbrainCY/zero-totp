@@ -896,6 +896,7 @@ def get_global_notification():
             "message":notif.message
         }
     
+    
 
 def get_internal_notification():
     notif = Notifications_db().get_last_active_notification()
