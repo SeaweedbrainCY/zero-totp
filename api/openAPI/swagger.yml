@@ -786,9 +786,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  authenticated_user_only:
-                    type: boolean
-                    example: true
                   display_notification:
                     type: boolean
                     example: true
