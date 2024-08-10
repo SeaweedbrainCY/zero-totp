@@ -8,6 +8,7 @@ from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
 from database.preferences_repo import Preferences as PreferencesDB
 from database.admin_repo import Admin as Admin_db
+from database.notif_repo import Notifications as Notifications_db
 from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging, conf
@@ -880,3 +881,29 @@ def verify_email(user_id,body):
 def get_whoami(user_id):
     user = UserDB().getById(user_id)
     return {"username": user.username, "email": user.mail, "id":user_id}, 200
+
+
+def get_global_notification():
+    notif = Notifications_db().get_last_active_notification()
+    if notif is None : 
+        return {"display_notification":False}
+    if notif.authenticated_user_only:
+        return {"display_notification": True, "authenticated_user_only": True}
+    else:
+        return {
+            "display_notification": True, 
+            "authenticated_user_only": False,
+            "message":notif.message
+        }
+    
+
+def get_internal_notification():
+    notif = Notifications_db().get_last_active_notification()
+    if notif is None : 
+        return {"display_notification":False}
+    
+    return {
+            "display_notification": True, 
+            "authenticated_user_only": False,
+            "message":notif.message
+        }
