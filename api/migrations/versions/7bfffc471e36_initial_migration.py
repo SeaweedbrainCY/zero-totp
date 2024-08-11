@@ -33,15 +33,6 @@ def upgrade() -> None:
     sa.Column('isBlocked', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('notifications',
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('message', sa.Text(), nullable=False),
-    sa.Column('timestamp', sa.String(length=20), nullable=False),
-    sa.Column('enabled', sa.Boolean(), nullable=False),
-    sa.Column('expiry', sa.String(length=20), nullable=True),
-    sa.Column('authenticated_user_only', sa.Boolean(), nullable=False),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('ZKE_encryption_key',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -124,6 +115,5 @@ def downgrade() -> None:
     op.drop_table('email_verification_token')
     op.drop_table('admin_tokens')
     op.drop_table('ZKE_encryption_key')
-    op.drop_table('notifications')
     op.drop_table('User')
     # ### end Alembic commands ###
