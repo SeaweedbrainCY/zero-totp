@@ -14,6 +14,20 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      
+      date: "11/08/2024",
+      version: "b2.11",
+      added: [
+        "You can now see notifications banner across the application to be aware of any important informtation such as maintenance, ongoing issues, etc.",
+        "Zero-TOTP is expanding with a new replication node in Europe to improve the availability of the application.",
+        "Zero-TOTP is still preparing it-self to be self-hosted. We are working on the last features to make it possible.",
+      ],
+      fixed:[
+       
+      ]
+    },
+    {
+      
       date: "20/06/2024",
       version: "b2.10.6",
       added: [
