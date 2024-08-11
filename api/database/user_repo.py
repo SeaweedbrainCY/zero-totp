@@ -62,14 +62,6 @@ class User:
     def get_all(self):
         return db.session.query(UserModel).all()
     
-    def update_google_drive_sync(self, user_id, google_drive_sync):
-        user = db.session.query(UserModel).filter_by(id=user_id).first()
-        if user == None:
-            return None
-        user.googleDriveSync = google_drive_sync
-        db.session.commit()
-        return user
-    
     def update_email_verification(self, user_id, isVerified):
         user = db.session.query(UserModel).filter_by(id=user_id).first()
         if user == None:
