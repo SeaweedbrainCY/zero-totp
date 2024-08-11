@@ -893,7 +893,8 @@ def get_global_notification():
         return {
             "display_notification": True, 
             "authenticated_user_only": False,
-            "message":notif.message
+            "message":notif.message,
+            "timestamp":float(notif.timestamp)
         }
     
     
@@ -906,5 +907,6 @@ def get_internal_notification():
     return {
             "display_notification": True, 
             "authenticated_user_only": False,
-            "message":notif.message
+            "message":notif.message,
+            "timestamp":float(notif.timestamp)
         }
