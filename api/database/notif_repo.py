@@ -9,7 +9,16 @@ class Notifications:
 
     def get_last_active_notification(self):
         try:
-            notif = db.session.query(model.Notifications).filter_by(enabled=True).order_by(model.Notifications.timestamp.desc()).first()
+            notif = None
+            notifications = db.session.query(model.Notifications).filter_by(enabled=True).order_by(model.Notifications.timestamp.desc()).all()
+            for n in notifications:
+                if n.expiry:
+                    if float(n.expiry) >= datetime.datetime.now(datetime.UTC).timestamp():
+                        notif = n
+                        break
+                else:
+                    notif = n
+                    break
         except Exception as e:
             logging.error(e)
             return None
