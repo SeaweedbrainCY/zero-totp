@@ -13,7 +13,13 @@ class Notifications:
         except Exception as e:
             logging.error(e)
             return None
-        return notif if float(notif.timestamp) >= datetime.datetime.now(datetime.UTC).timestamp() else None
+        if notif:
+            if notif.expiry:
+                return notif if float(notif.expiry) >= datetime.datetime.now(datetime.UTC).timestamp() else None
+            else :
+                return notif
+        else:
+            return None
             
 
  
