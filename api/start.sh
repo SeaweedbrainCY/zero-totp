@@ -2,8 +2,8 @@
 alembic check 
 if [ $? -ne 0 ]; then
     echo "❌  Your database is not up to date. Follow Zero-TOTP's documentation to update it."
-    ehco "📚 https://docs.zero-totp.com"
-    exit 1
+    echo "📚 https://docs.zero-totp.com"
+    tail -f /dev/null
 fi
 echo "🍺  All logs are in /var/log/api"
 echo "🚀  Starting gunicorn"
