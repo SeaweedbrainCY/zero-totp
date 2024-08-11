@@ -770,6 +770,9 @@ paths:
                   message:
                     type: string
                     example: "Notification message"
+                  timestamp:
+                    type: number
+                    example: 1723399133
         "500":
           description: Internal server error
   /notification/internal:
@@ -792,6 +795,9 @@ paths:
                   message:
                     type: string
                     example: "Notification message"
+                  timestamp:
+                    type: number
+                    example: 1723399133
         "500":
           description: Internal server error
 components:
