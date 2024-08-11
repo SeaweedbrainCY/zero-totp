@@ -34,7 +34,7 @@ class EnvironmentConfig:
             logging.info("Environment set to development")
             self.frontend_domain = 'dev.zero-totp.com'
             self.frontend_URI = ['https://dev.zero-totp.com']
-            self.callback_URI = "https://dev.zero-totp.com/google-drive/oauth/callback"
+            self.callback_URI = "https://api.dev.zero-totp.com/google-drive/oauth/callback"
         else:
             self.type = "production"
             logging.basicConfig(
