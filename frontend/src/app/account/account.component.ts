@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash,faVault, faExclamationTriangle, faEye, faEyeSlash, faCircleExclamation, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash,faVault, faExclamationTriangle, faEye, faEyeSlash, faCircleExclamation, faCircleNotch,faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -28,6 +28,7 @@ export class AccountComponent implements OnInit {
   faExclamationTriangle=faExclamationTriangle;
   faCheck=faCheck;
   faCog=faCog;
+  faLightbulb=faLightbulb;
   faFlask=faFlask;
   faTrash=faTrash;
   faEye=faEye;
@@ -63,6 +64,7 @@ export class AccountComponent implements OnInit {
   loadingAccount=true;
   current_email="";
   current_username="";
+  notification_message:string|undefined;
   constructor(
     private http: HttpClient,
     public userService: UserService,
@@ -82,6 +84,7 @@ export class AccountComponent implements OnInit {
        }
     }
     this.get_whoami();
+    this.get_internal_notification();
   }
 
   get_whoami(){
@@ -658,6 +661,22 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
 
   }
 
+  get_internal_notification(){
+    this.http.get(ApiService.API_URL+"/notification/internal",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      if(response.status == 200){
+        try{
+          const data = JSON.parse(JSON.stringify(response.body))
+          if (data.display_notification){
+            this.notification_message = data.message;
+          }
+        } catch (error){
+          console.log(error);
+        }
+      }
+    }, (error) => {
+      console.log(error);
+    });
+  }
 
 
 
