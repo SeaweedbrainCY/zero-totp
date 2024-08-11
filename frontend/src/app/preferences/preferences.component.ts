@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../common/ApiService/api-service';
@@ -24,6 +24,7 @@ export class PreferencesComponent implements OnInit{
   faHourglassStart=faHourglassStart;
   faCircleNotch=faCircleNotch;
   faCircleExclamation=faCircleExclamation;
+  faLightbulb=faLightbulb;
   faCheck=faCheck;
   faCog=faCog;
   faFlask=faFlask;
@@ -33,6 +34,7 @@ export class PreferencesComponent implements OnInit{
   faviconPolicy=""; // never, always, enabledOnly
   loadingPreferences = true;
   loadingPreferencesError = false;
+  notification_message :string|undefined;
   constructor( 
     private http: HttpClient,
     public userService: UserService,
@@ -51,6 +53,7 @@ export class PreferencesComponent implements OnInit{
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } 
     this.get_preferences()
+    this.get_internal_notification()
   }
 
   get_preferences(){
@@ -125,4 +128,22 @@ export class PreferencesComponent implements OnInit{
   displayAdvancedSettings(){
     this.isDisplayingAdvancedSettings = true;
   }
+
+  get_internal_notification(){
+    this.http.get(ApiService.API_URL+"/notification/internal",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      if(response.status == 200){
+        try{
+          const data = JSON.parse(JSON.stringify(response.body))
+          if (data.display_notification){
+            this.notification_message = data.message;
+          }
+        } catch (error){
+          console.log(error);
+        }
+      }
+    }, (error) => {
+      console.log(error);
+    });
+  }
+
 }
