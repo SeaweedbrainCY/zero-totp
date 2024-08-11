@@ -5,6 +5,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
 import { faLightbulb, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { HttpClient } from '@angular/common/http';
+import { ApiService } from '../common/ApiService/api-service';
 
 @Component({
   selector: 'app-navbar',
@@ -20,6 +22,9 @@ export class NavbarComponent implements OnInit{
   current_language:string = localStorage.getItem('language') || 'en-uk';
   isLangDropdownExpanded = false;
   idleEndSupscription: Subscription | null = null;
+  notification_message :string|undefined;
+  dismissed_notification_key = "hide_notif_banner";
+  waiting_for_internal_notif_key = "internal_notif_banner";
   languages = [
     {
       name:"English", // default one
@@ -37,7 +42,8 @@ export class NavbarComponent implements OnInit{
     private router : Router,
     private route : ActivatedRoute,
     public translate: TranslateService,
-    private idle: Idle
+    private idle: Idle,
+    private http: HttpClient
     ) { 
     router.events.subscribe((url:any) => {
       if (url instanceof NavigationEnd){
@@ -64,7 +70,40 @@ export class NavbarComponent implements OnInit{
   }
 
   ngOnInit(): void {
-   
+   this.get_global_notification()
+  }
+
+  get_global_notification(){
+    this.http.get(ApiService.API_URL+"/notification/global",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      if(response.status == 200){
+        try{
+          const data = JSON.parse(JSON.stringify(response.body))
+          if (data.display_notification){
+            if (!data.authenticated_user_only){
+              const already_dismissed_date = localStorage.getItem(this.dismissed_notification_key);
+              if (already_dismissed_date){
+                if(Number(already_dismissed_date) < data.timestamp){
+                  this.notification_message = data.message;
+                } 
+              } else{ // not dismissed yet
+                this.notification_message = data.message;
+              }
+            } else { // authenticated_user_only
+              localStorage.setItem(this.waiting_for_internal_notif_key, "1");
+            }
+          }
+        } catch (error){
+          console.log(error);
+        }
+      }
+    }, (error) => {
+      console.log(error);
+    });
+  }
+
+  hide_notification(){
+    this.notification_message = undefined;
+    localStorage.setItem(this.dismissed_notification_key, Math.floor(Date.now()/1000).toString()); // unix
   }
 
   navigateToRoute(route:string){
