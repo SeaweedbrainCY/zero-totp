@@ -21,6 +21,17 @@
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6"
                 style="line-height: normal;">{{ 'preference.title' | translate }}
             </h1>
+            <div class="is-flex is-justify-content-center">
+                <div class="notification is-link is-light  m-4 is-flex is-justify-content-space-between" *ngIf="notification_message != undefined" style="max-width: 70vw;">
+                    <div class="is-flex is-justify-content-center is-flex-direction-column">
+                      <div class="is-flex">
+                        <div class="is-flex is-justify-content-center is-flex-direction-column mr">
+                          <fa-icon [icon]="faLightbulb" class="mr-4"></fa-icon>
+                        </div>
+                        <strong>{{notification_message}}</strong></div>
+                    </div>
+                  </div>
+                </div>
 
 
             <div class="is-flex columns is-centered mt-4">

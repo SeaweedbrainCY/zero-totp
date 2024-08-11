@@ -1,5 +1,18 @@
 
-<nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+
+<div class="notification is-link is-light is-fixed-top mb-0 is-flex is-justify-content-space-between" *ngIf="notification_message != undefined">
+  <div class="is-flex is-justify-content-center is-flex-direction-column">
+    <div class="is-flex">
+      <div class="is-flex is-justify-content-center is-flex-direction-column mr">
+        <fa-icon [icon]="faLightbulb" class="mr-4"></fa-icon>
+      </div>
+      <strong>{{notification_message}}</strong></div>
+  </div>
+  <div class="is-flex is-justify-content-center is-flex-direction-column" [ngClass]='{"is-fixed-top":notification_message == undefined}'>
+    <button class="button is-ghost has-text-grey-light" (click)="hide_notification()"> <fa-icon [icon]="faXmark" size="xl" ></fa-icon></button>
+  </div>
+</div>
+<nav class="navbar is-dark " role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item" (click)="navigateToRoute('/')" *ngIf="userService.getId()!=null">
        <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">

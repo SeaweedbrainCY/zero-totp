@@ -129,7 +129,7 @@ class EmailsConfig:
         if "require_email_validation" not in data:
             data["require_email_validation"] = False
         if data["require_email_validation"] == False:
-            logging.info("[FATAL] Load config fail. require_email_validation is disabled. Users will not be asked to verify their email address. You can enable this option by setting the require_email_validation  variable to true at any moment.")
+            logging.warning("require_email_validation is disabled. Users will not be asked to verify their email address. You can enable this option by setting the require_email_validation  variable to true at any moment.")
             self.require_email_validation = False
         else :
             self.require_email_validation = True
