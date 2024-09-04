@@ -41,7 +41,7 @@ def get_credentials(request_url, state): # pragma: no cover
         state=state)
     flow.redirect_uri = conf.environment.callback_URI
 
-    if(conf.environment.type != "development"):
+    if(conf.environment.type != "local"):
         # we force https in production
         authorization_response = request_url.replace('http://', 'https://')
     else:
