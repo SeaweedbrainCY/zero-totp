@@ -49,18 +49,18 @@ jobs:
           run: current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/') && docker build -t $REPO:latest -t $REPO:$current_version . 
         - name: Publish Docker Image
           run: docker push $REPO --all-tags
-    deploy-production-eu:
+    deploy-production-sw:
        needs: [docker-frontend, docker-api] 
-       name: Deploy on production server (EUROPE)
+       name: Deploy on production server (SW)
        environment: 
-        name: Production (EUROPE)
-        url: https://eu.zero-totp.com
+        name: Production (SW)
+        url: https://sw.zero-totp.com
        runs-on: ubuntu-latest
        steps:
-         - name: EU deployment
+         - name: SW deployment
            uses: distributhor/workflow-webhook@v3
            env:
-             webhook_url: ${{ secrets.WEBHOOK_URL_EU }}
+             webhook_url: ${{ secrets.WEBHOOK_URL_SW }}
     deploy-production-ca:
         needs: [docker-frontend, docker-api] 
         name: Deploy on production server (CANADA)
