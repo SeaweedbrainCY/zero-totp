@@ -10,7 +10,7 @@ run_frontend:
 
 install_api: clean
 	echo "Installing API dependencies ..."
-	python3.11 -m venv api/venv
+	python3.12 -m venv api/venv
 	api/venv/bin/pip install -r api/requirements.txt
 
 run_api:
