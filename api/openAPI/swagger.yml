@@ -4,8 +4,7 @@ info:
   description: API for the zero-totp application
   version: "1.0"
 servers:
-  - url: http://zero-totp.local:8080
-    description: local API server
+  - url: /api/v1
 security:
   - JWTAuth: []
 paths:
