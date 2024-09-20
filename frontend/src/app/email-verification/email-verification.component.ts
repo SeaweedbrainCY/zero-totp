@@ -3,7 +3,7 @@ import { faPaperPlane, faArrowRotateLeft, faPen, faEye, faEyeSlash } from '@fort
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ApiService } from '../common/ApiService/api-service';
+
 import { TranslateService } from '@ngx-translate/core';
 import { Utils } from '../common/Utils/utils';
 import { ToastrService } from 'ngx-toastr';
@@ -45,7 +45,7 @@ export class EmailVerificationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.http.get(ApiService.API_URL+"/role", {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/role", {withCredentials: true, observe: 'response'}).subscribe((response) => {
       try{
         const user  = JSON.parse(JSON.stringify(response.body));
         if(user.role != "not_verified"){
@@ -73,7 +73,7 @@ export class EmailVerificationComponent implements OnInit {
     const data = {
       "token": this.code
     }
-    this.http.put(ApiService.API_URL+"/email/verify",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.put("/api/v1/email/verify",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
       if(response.status == 200){
         this.verifyLoading = false;
         this.utils.toastSuccess(this.toastr, this.translate.instant("email_verif.verify.success") ,"");
@@ -105,7 +105,7 @@ export class EmailVerificationComponent implements OnInit {
 
   resend(){
     this.verifyLoading = true;
-    this.http.get(ApiService.API_URL+"/email/send_verification", {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/email/send_verification", {withCredentials: true, observe: 'response'}).subscribe((response) => {
       this.verifyLoading = false;
       this.utils.toastSuccess(this.toastr,this.translate.instant("email_verif.resend.success") ,"");
     }, (error) => {
@@ -149,7 +149,7 @@ export class EmailVerificationComponent implements OnInit {
         return;
       }
       this.emailLoading = true;
-      this.http.put(ApiService.API_URL+"/update/email",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      this.http.put("/api/v1/update/email",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
         this.emailLoading = false;
         this.translate.get("email_verif.popup.success").subscribe((translation:string) => {
           this.utils.toastSuccess(this.toastr,translation,"");

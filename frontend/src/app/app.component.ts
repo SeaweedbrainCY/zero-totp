@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { ApiService } from './common/ApiService/api-service';
 import { Renderer2, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
@@ -32,17 +31,6 @@ export class AppComponent implements OnInit{
 
 
   ngOnInit(): void {
-    if(environment.production){
-      if(location.hostname == "ca.zero-totp.com"){
-        ApiService.API_URL = "https://api.ca.zero-totp.com";
-      } else if (location.hostname == "sw.zero-totp.com"){
-        ApiService.API_URL = "https://api.sw.zero-totp.com";
-      } else if (location.hostname == "dev.zero-totp.com") {
-        ApiService.API_URL = "https://api.dev.zero-totp.com";
-      } else if (location.hostname == "themis.zero-totp.com") {
-        ApiService.API_URL = "https://api.themis.zero-totp.com";
-      }
-    }
   }
 
 }

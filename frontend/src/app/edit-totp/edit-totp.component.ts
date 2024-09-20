@@ -4,7 +4,7 @@ import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
-import { ApiService } from '../common/ApiService/api-service';
+
 import { Crypto } from '../common/Crypto/crypto';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
@@ -219,7 +219,7 @@ export class EditTOTPComponent implements OnInit{
   }
 
   get_preferences(){
-    this.http.get(ApiService.API_URL+"/preferences?fields=favicon_policy", {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/preferences?fields=favicon_policy", {withCredentials: true, observe: 'response'}).subscribe((response) => {
       if(response.body != null){
         const data = JSON.parse(JSON.stringify(response.body));
         if(data.favicon_policy != null){
@@ -251,7 +251,7 @@ export class EditTOTPComponent implements OnInit{
 
   getSecretTOTP(){
     this.uuid = this.secret_uuid!;
-    this.http.get(ApiService.API_URL+"/encrypted_secret/"+this.uuid,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/encrypted_secret/"+this.uuid,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       try{
         const data = JSON.parse(JSON.stringify(response.body));
         this.crypto.decrypt(data.enc_secret, this.userService.get_zke_key()!).then((decrypted_secret)=>{
@@ -395,7 +395,7 @@ export class EditTOTPComponent implements OnInit{
 
   addNewSecret(enc_property:string, property: Map<string,string>){
     this.uuid = window.crypto.randomUUID();
-    this.http.post(ApiService.API_URL + "/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
+    this.http.post("/api/v1//encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
       this.utils.toastSuccess(this.toastr,  this.translate.instant("totp.secret.add.added"),"");
       this.QRCodeService.setLabel('')
       this.QRCodeService.setSecret('')
@@ -422,7 +422,7 @@ export class EditTOTPComponent implements OnInit{
   }
 
   updateSecret(enc_property:string, property: Map<string,string>){
-    this.http.put(ApiService.API_URL + "/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
+    this.http.put("/api/v1//encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
       this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.add.success") ,"");
       this.router.navigate(["/vault"], {relativeTo:this.route.root});
     }, (error) => {
@@ -448,7 +448,7 @@ export class EditTOTPComponent implements OnInit{
 
   delete(){
     this.isDestroying = true;
-    this.http.delete(ApiService.API_URL + "/encrypted_secret/"+this.secret_uuid, {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.delete("/api/v1//encrypted_secret/"+this.secret_uuid, {withCredentials:true, observe: 'response'}).subscribe((response) => {
       if(response.status == 201){
       this.isDestroying = false;
       this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.delete.success"),"");
