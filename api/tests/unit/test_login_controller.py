@@ -15,7 +15,7 @@ class TestLoginController(unittest.TestCase):
         self.application = app
         self.client = self.application.test_client()
         self.loginEndpoint = "/api/v1/login"
-        self.specsEndpoint = "/login/specs?username=test@test.com"
+        self.specsEndpoint = "/api/v1/login/specs?username=test@test.com"
 
 
         self.user1 = User(id=1, username="username", mail= "test@test.com",derivedKeySalt="randomSalt", password="hashed", isVerified=1, passphraseSalt="salt", isBlocked=False, createdAt="01/01/2001 01:01:01", role="user")

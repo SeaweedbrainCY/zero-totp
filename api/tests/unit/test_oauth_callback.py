@@ -24,7 +24,7 @@ class TestOauthCallback(unittest.TestCase):
         self.client = self.application.test_client()
         self.creds = {"secret" : "secret_should_be_encrypted", "expiry": datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
         self.endpoint = "/api/v1/google-drive/oauth/callback"
-        self.setSateSession = "/google-drive/oauth/authorization-flow"
+        self.setSateSession = "/api/v1/google-drive/oauth/authorization-flow"
         self.blocked_user_id = 2
         self.unverified_user_id = 3
 
