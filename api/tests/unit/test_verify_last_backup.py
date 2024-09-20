@@ -26,7 +26,7 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
-        self.endpoint = "/google-drive/last-backup/verify"
+        self.endpoint = "/api/v1/google-drive/last-backup/verify"
         self.user_id = 1
         self.blocked_user_id = 2
         self.unverified_user_id = 3

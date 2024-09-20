@@ -16,7 +16,7 @@ class TestJWT(unittest.TestCase):
                 raise Exception("Test must be run with in memory database")
         self.application = app
         self.client = self.application.test_client()
-        self.loginEndpoint = "/admin/login"
+        self.loginEndpoint = "/api/v1/admin/login"
         self.admin_user_id = 1
         self.admin_user_without_token_id = 2
         self.not_admin_user_id = 3

@@ -16,7 +16,7 @@ class TestAllSecret(unittest.TestCase):
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
-        self.endpoint = "/all_secrets"
+        self.endpoint = "/api/v1/all_secrets"
         
 
         self.get_all_secret = patch("database.totp_secret_repo.TOTP_secret.get_all_enc_secret_by_user_id").start()

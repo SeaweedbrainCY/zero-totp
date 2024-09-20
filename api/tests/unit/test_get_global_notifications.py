@@ -16,7 +16,7 @@ class TestGetGlobalNotification(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
-        self.endpoint = "/notification/global"
+        self.endpoint = "/api/v1/notification/global"
     
        
     def tearDown(self):

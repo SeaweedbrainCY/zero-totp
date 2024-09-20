@@ -16,7 +16,7 @@ class TestGetAllUsers(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.application = app
         self.client = self.application.test_client()
-        self.getAllUsersEndpoint = "/admin/users"
+        self.getAllUsersEndpoint = "/api/v1/admin/users"
         self.admin_user_id = 1
         self.normal_user_id = 2
 

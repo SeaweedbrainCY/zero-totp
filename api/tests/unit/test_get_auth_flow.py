@@ -13,7 +13,7 @@ class TestGetAuthFlow(unittest.TestCase):
                 raise Exception("Test must be run with in memory database")
             self.application = app
             self.client = self.application.test_client()
-            self.roleEndpoint = "/google-drive/oauth/authorization-flow"
+            self.endpoint = "/api/v1/google-drive/oauth/authorization-flow"
             self.admin_user_id = 1
 
             self.get_authorization_url_patch = patch("Oauth.oauth_flow.get_authorization_url").start()
@@ -23,5 +23,5 @@ class TestGetAuthFlow(unittest.TestCase):
         def test_get_auth_flow(self):
             with self.application.app.app_context():
                 self.client.cookies = {"api-key":generate_jwt(self.admin_user_id)}
-                response = self.client.get(self.roleEndpoint)
+                response = self.client.get(self.endpoint)
                 self.assertEqual(response.status_code, 200)

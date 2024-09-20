@@ -16,7 +16,7 @@ class TestVerifyEmailToken(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
-        self.endpoint = "/email/verify"
+        self.endpoint = "/api/v1/email/verify"
         self.user_id = 1
         self.already_verified_user_id = 2
         self.user_without_token_id = 3

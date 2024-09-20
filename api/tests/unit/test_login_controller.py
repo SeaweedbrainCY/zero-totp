@@ -14,7 +14,7 @@ class TestLoginController(unittest.TestCase):
                 raise Exception("Test must be run with in memory database")
         self.application = app
         self.client = self.application.test_client()
-        self.loginEndpoint = "/login"
+        self.loginEndpoint = "/api/v1/login"
         self.specsEndpoint = "/login/specs?username=test@test.com"
 
 
