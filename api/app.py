@@ -18,14 +18,6 @@ from flask import request, redirect, make_response
 
 def create_app():
     app_instance = connexion.FlaskApp(__name__, specification_dir="./openAPI/")
-    app_instance.add_middleware(
-    CORSMiddleware,
-    position=MiddlewarePosition.BEFORE_ROUTING,
-    allow_origins=conf.environment.frontend_URI,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
     app_instance.add_api("swagger.yml")
 
     app = app_instance.app
