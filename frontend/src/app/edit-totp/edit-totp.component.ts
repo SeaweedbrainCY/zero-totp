@@ -395,7 +395,7 @@ export class EditTOTPComponent implements OnInit{
 
   addNewSecret(enc_property:string, property: Map<string,string>){
     this.uuid = window.crypto.randomUUID();
-    this.http.post("/api/v1//encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
+    this.http.post("/api/v1/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
       this.utils.toastSuccess(this.toastr,  this.translate.instant("totp.secret.add.added"),"");
       this.QRCodeService.setLabel('')
       this.QRCodeService.setSecret('')
@@ -422,7 +422,7 @@ export class EditTOTPComponent implements OnInit{
   }
 
   updateSecret(enc_property:string, property: Map<string,string>){
-    this.http.put("/api/v1//encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
+    this.http.put("/api/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
       this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.add.success") ,"");
       this.router.navigate(["/vault"], {relativeTo:this.route.root});
     }, (error) => {
@@ -448,7 +448,7 @@ export class EditTOTPComponent implements OnInit{
 
   delete(){
     this.isDestroying = true;
-    this.http.delete("/api/v1//encrypted_secret/"+this.secret_uuid, {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.delete("/api/v1/encrypted_secret/"+this.secret_uuid, {withCredentials:true, observe: 'response'}).subscribe((response) => {
       if(response.status == 201){
       this.isDestroying = false;
       this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.delete.success"),"");
