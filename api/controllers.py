@@ -290,11 +290,11 @@ def update_email(user_id,body):
    
     email = utils.sanitize_input(body["email"]).strip()
     if not utils.check_email(email):
-        return {"message": "generic_errors.bad_email"}, 400
+        return {"message": "This email doesn't have the right format. Check it and try again"}, 400
          
     userDb = UserDB()
     if userDb.getByEmail(email):
-        return {"message": "generic_errors.email_exists"}, 403
+        return {"message": "This email already exists"}, 403
     old_mail = userDb.getById(user_id).mail
     user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
     if user:

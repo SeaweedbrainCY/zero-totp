@@ -65,7 +65,7 @@
       "subtitle": "You choose where to store your encrypted vault",
       "zero_totp": {
         "title": "Store your encrypted vault on Zero-TOTP's servers",
-        "desc": "This is the default and mandatory option. Your encrypted vault is stored on our servers, hosted in France 🇫🇷 and Canada 🇨🇦. Nobody has access to your data, except you. This option is the one used when your log in to your account on <a href=\"https://zero-totp.com\">zero-totp.com</a>. You cannot disable this option, but you can backup your vault on your computer or on your google drive."
+        "desc": "This is the default and mandatory option. Your encrypted vault is stored on our servers, hosted in Canada 🇨🇦, Swiss 🇨🇭 and Germany 🇩🇪. Nobody has access to your data, except you. This option is the one used when your log in to your account on <a href=\"https://zero-totp.com\">zero-totp.com</a>. You cannot disable this option, but you can backup your vault on your computer or on your google drive."
       },
       "google": {
         "title": "Back up your encrypted vault in your google drive",

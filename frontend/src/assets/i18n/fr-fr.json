@@ -276,7 +276,7 @@
         "title": "Backup ton coffre chiffrée dans ton ordinateur"
       },
       "zero_totp": {
-        "desc": "C'est l'option par défaut et obligatoire. Ton coffre chiffré est stocké sur nos servers, hébergés en France 🇫🇷 et au Canada 🇨🇦. Personne ne peut accéder à tes données, sauf toi. C'est cette méthode qui est utilisée quand tu te connecte sur <a href='https://zero-totp.com'>zero-totp.com</a>. Tu ne peux pas désactiver cette option, mais tu peux toujours sauvegarder ton coffre chiffré sur ton ordinateur ou sur Google Drive.",
+        "desc": "C'est l'option par défaut et obligatoire. Ton coffre chiffré est stocké sur nos servers, hébergés au Canada 🇨🇦, en Suisse 🇨🇭 et en Allemagne 🇩🇪. Personne ne peut accéder à tes données, sauf toi. C'est cette méthode qui est utilisée quand tu te connecte sur <a href='https://zero-totp.com'>zero-totp.com</a>. Tu ne peux pas désactiver cette option, mais tu peux toujours sauvegarder ton coffre chiffré sur ton ordinateur ou sur Google Drive.",
         "title": "Stock ton coffre chiffré sur les serveur de Zero-TOTP"
       }
     },
