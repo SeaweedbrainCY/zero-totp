@@ -614,7 +614,7 @@
   "signup": {
     "subtitle": "Un voyage sûr et fiable",
     "success": "Compte créé avec succès 🎉🎉",
-    "welcome": "Bienvenue à bord",
+    "welcome": "Bienvenue à bord de Zero-TOTP beta ",
     "beta": {
       "warning": {
         "title": "Bienvenue sur la version beta de Zero-TOTP 👋",
