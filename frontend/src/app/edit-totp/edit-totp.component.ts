@@ -422,7 +422,7 @@ export class EditTOTPComponent implements OnInit{
   }
 
   updateSecret(enc_property:string, property: Map<string,string>){
-    this.http.put("/api/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
+    this.http.put("/api/v1/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
       this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.add.success") ,"");
       this.router.navigate(["/vault"], {relativeTo:this.route.root});
     }, (error) => {
