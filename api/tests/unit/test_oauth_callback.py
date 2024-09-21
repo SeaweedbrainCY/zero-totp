@@ -78,7 +78,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI , response.headers["Location"])
             self.assertNotIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNotNone(encrypted_credentials.enc_credentials)
@@ -94,7 +94,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI , response.headers["Location"])
             self.assertIn("error", response.headers["Location"])
 
     def test_oauth_callback_already_token(self):
@@ -105,7 +105,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI , response.headers["Location"])
             self.assertNotIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNotNone(encrypted_credentials.enc_credentials)
@@ -122,7 +122,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI , response.headers["Location"])
             self.assertNotIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNotNone(encrypted_credentials.enc_credentials)
@@ -140,7 +140,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI , response.headers["Location"])
             self.assertIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNotNone(encrypted_credentials.enc_credentials)
@@ -156,7 +156,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI , response.headers["Location"])
             self.assertIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNone(encrypted_credentials)
@@ -170,7 +170,7 @@ class TestOauthCallback(unittest.TestCase):
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
-            self.assertIn(conf.environment.callback_URI[0] , response.headers["Location"])
+            self.assertIn(conf.environment.callback_URI , response.headers["Location"])
             self.assertIn("error", response.headers["Location"])
             encrypted_credentials = self.oauth_tokens.get_by_user_id(1)
             self.assertIsNone(encrypted_credentials)
