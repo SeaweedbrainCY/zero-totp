@@ -56,7 +56,7 @@
           </div>
         </div>
       </div>
-      <div>
+      <div *ngIf="!is_oauth_flow">
        <p class=" is-italic	">{{ 'login.rescue.part1' | translate }}<span class="has-text-danger has-text-weight-bold">{{ 'login.rescue.strong' | translate }}</span> {{ 'login.rescue.part2' | translate }} : </p>
        <p class="has-text-centered">
         <a class="button is-danger is-outlined block mt-2" href="https://rescue.zero-totp.com">  <fa-icon [icon]="faBriefcaseMedical" class="mr-2"></fa-icon> rescue.zero-totp.com</a>
