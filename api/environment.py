@@ -7,13 +7,15 @@ from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Hash import SHA512
 
 class EnvironmentConfig:
-    required_keys = ["type", "config_version"]
+    required_keys = ["type", "config_version", "domain"]
     def __init__(self, data) -> None:
         self.config_version = data["config_version"]
+        self.domain = data["domain"]
         for key in self.required_keys:
             if key not in data:
                 logging.error(f"[FATAL] Load config fail. Was expecting the key environment.{key}")
                 exit(1)
+        
         if data["type"] == "local":
             self.type = "local"
             logging.basicConfig(
@@ -21,9 +23,13 @@ class EnvironmentConfig:
                 level=logging.DEBUG,
                 datefmt='%d-%m-%Y %H:%M:%S')
             logging.debug("Environment set to development")
-            self.frontend_domain = 'zero-totp.local'
-            self.frontend_URI = ['http://localhost:4200']
-            self.callback_URI = 'http://localhost:8080/google-drive/oauth/callback'
+            if "frontend_URI" not in data:
+                logging.error("[FATAL] Load config fail. In local environement, was expecting the key environment.frontend_URI")
+                exit(1)
+            if "API_URI" not in data:
+                logging.error("[FATAL] Load config fail. In local environement, was expecting the key environment.API_URI")
+            self.frontend_URI = data["frontend_URI"]
+            self.callback_URI = f'{data["API_URI"]}/api/v1/google-drive/oauth/callback'
             os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
         elif data["type"] == "development":
             self.type = "development"
@@ -32,9 +38,7 @@ class EnvironmentConfig:
                 level=logging.INFO,
                 datefmt='%d-%m-%Y %H:%M:%S')
             logging.info("Environment set to development")
-            self.frontend_domain = 'dev.zero-totp.com'
-            self.frontend_URI = ['https://dev.zero-totp.com']
-            self.callback_URI = "https://api.dev.zero-totp.com/google-drive/oauth/callback"
+            
         else:
             self.type = "production"
             logging.basicConfig(
@@ -43,9 +47,9 @@ class EnvironmentConfig:
                 format='%(asctime)s %(levelname)-8s %(message)s',
                 level=logging.INFO,
                 datefmt='%d-%m-%Y %H:%M:%S')
-            self.frontend_domain="zero-totp.com"
-            self.frontend_URI = ["https://zero-totp.com", "https://ca.zero-totp.com", "https://sw.zero-totp.com", "https://themis.zero-totp.com"]
-            self.callback_URI = "https://api.zero-totp.com/google-drive/oauth/callback"
+
+        self.frontend_URI = f"https://{data['domain']}"
+        self.callback_URI = f"https://{data['domain']}/api/v1/google-drive/oauth/callback"
 
 class OauthConfig:
     required_keys = ["client_secret_file_path"]
@@ -58,7 +62,7 @@ class OauthConfig:
         self.client_secret_file_path = data["client_secret_file_path"]
 
 class APIConfig:
-    required_keys = [ "jwt_secret", "private_key_path", "public_key_path", "flask_secret_key", "server_side_encryption_key"]
+    required_keys = [ "jwt_secret", "private_key_path", "public_key_path", "flask_secret_key", "server_side_encryption_key", "domain"]
     option_config = ["oauth"]
 
     def __init__(self, data, config_version):
@@ -79,6 +83,7 @@ class APIConfig:
             logging.warning("api.port is not valid. Ignoring it. Setting default value: 8080")
             self.port = 8080
         
+        self.domain = data["domain"]
         self.jwt_secret = data["jwt_secret"]            
         self.private_key_path = data["private_key_path"]
         self.public_key_path = data["public_key_path"]

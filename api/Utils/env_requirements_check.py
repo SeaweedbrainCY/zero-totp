@@ -30,6 +30,8 @@ def test_conf(conf) -> bool:
         
     ## Environment
     assert conf.environment.type in ["local", "development", "production"], f"environment.type is not valid. Was expecting local, development or production, got {conf.environment.type}"
+    if(conf.environment.type != "local"):
+        assert re.match(r"^([a-z0-9|-]+\.)*[a-z0-9|-]+\.[a-z]+$", conf.environment.domain), "environment.domain is not a valid domain. Was expecting something like 'example.com'. Got {conf.environment.domain}"
 
     ## Database
     assert isinstance(conf.database.database_uri, str), "database.database_uri is not a string"
