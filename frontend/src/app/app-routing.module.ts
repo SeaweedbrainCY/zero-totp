@@ -19,7 +19,7 @@ import { PreferencesComponent } from './preferences/preferences.component';
 import { OpenSourceLibraryComponent } from './open-source-library/open-source-library.component';
 import { EmailVerificationComponent } from './email-verification/email-verification.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   {path:'', component: HomeComponent},
   {path:'signup', component: SignupComponent},
   {path:'login', component: LoginComponent},

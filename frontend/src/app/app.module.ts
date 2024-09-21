@@ -41,7 +41,8 @@ import defaultLanguage from "./../assets/i18n/en-uk.json";
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {NgIdleModule} from '@ng-idle/core';
-
+import { RouterModule } from '@angular/router';
+import { routes } from './app-routing.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -86,6 +87,7 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
     FontAwesomeModule,
     HttpClientModule, 
     ClipboardModule,
+    RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' }),
     ZXingScannerModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
