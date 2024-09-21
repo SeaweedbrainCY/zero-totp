@@ -183,6 +183,7 @@ class Config:
     def __init__(self, data):
         for key in self.required_keys:
             if key not in data:
+                logging.error(f"[FATAL] Load config fail. Was expecting the key {key}")
                 exit(1)
         self.environment = EnvironmentConfig(data["environment"] if data["environment"] != None else [])
         self.api = APIConfig(data["api"] if data["api"] != None else [], self.environment.config_version)
@@ -200,8 +201,8 @@ try:
         
         except yaml.YAMLError as exc:
             raise Exception(exc)
-except:
-    logging.error("[FATAL] Load config fail. Could not open config file. Mount the config file to /api/config/config.yml")
+except Exception as e :
+    logging.error(f"[FATAL] API will stop now. Error while checking /api/config/config.yml, {e}")
     exit(1)
 
 
