@@ -6,8 +6,16 @@
 
 
 api:
-    ## The port the API will listen on. Default is 8080.
+    ## The internal port the API will listen on. Default is 8080.
     # port: 8080
+
+    ## Domain used by your API. 
+    ## This is used to enforce the security of the API.
+    ## The API must be served over HTTPS.
+    ## Only include the domain name, without the protocol or path.
+    ## The domain MUST be the same as the one used in the frontend.
+    ## If developing locally, use localhost and specify the port.
+    domain : example.com
 
     ## The secret that will be used to sign JWT tokens. CHANGE THIS VALUE !
     ## A random 128 alphanumeric string is required.
