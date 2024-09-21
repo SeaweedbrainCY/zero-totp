@@ -496,7 +496,7 @@ def get_authorization_flow():
 # GET /google-drive/oauth/callback
 @require_valid_user
 def oauth_callback(user_id):
-    frontend_URI = conf.environment.frontend_URI[0] # keep the default URI, not regionized. 
+    frontend_URI = conf.environment.frontend_URI
     try: 
         credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
 
