@@ -43,7 +43,7 @@ export class SignupComponent implements OnInit {
   derivedKeySalt=""
   passphraseSalt=""
   modal_confim_button_diabled=true;
-  beta=false;
+  beta=true;
   isModalSentenceCompleted=false;
   isPasswordVisible=false;
   isConfirmPasswordVisible=false;
