@@ -10,7 +10,7 @@ elif cat /tmp/alembic_check.log | grep "Target database is not up to date."; the
     tail -f /dev/null
 else
     cat /tmp/alembic_check.log
-    echo "❌  An error occurred while starting the API. Check the error message above to understand what happened."
+    echo "❌  An error occurred while starting the API. Check the error message above to understand what happened. Docker will restart now."
     exit 1
 fi
 echo "🍺  All logs are in /var/log/api"
