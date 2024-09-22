@@ -30,7 +30,6 @@ def test_conf(conf) -> bool:
             raise Exception(f"api.oauth.client_secret_file_path is not a valid path. {e}")
     if conf.api.trusted_proxy != None:
         assert isinstance(conf.api.trusted_proxy, list), "api.trusted_proxy is not a list"
-        ipaddress.ip
         for ip in conf.api.trusted_proxy:
             try:
                 ipaddress.ip_network(ip)
