@@ -136,8 +136,8 @@ def get_ip(request):
 
     if is_remote_ip_a_trusted_proxy:
         if "X-Forwarded-For" in request.headers:
-            forwarded_ip = request.headers.getlist("X-Forwarded-For")[0]
             try:
+                forwarded_ip = re.findall(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', request.headers["X-Forwarded-For"])[0]
                 if test_ip(ipaddress.ip_address(forwarded_ip)):
                     return forwarded_ip
                 else:
