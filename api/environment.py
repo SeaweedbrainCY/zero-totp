@@ -5,6 +5,7 @@ import Utils.env_requirements_check as env_requirements_check
 from CryptoClasses.serverRSAKeys import ServerRSAKeys
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Hash import SHA512
+import ipaddress
 
 class EnvironmentConfig:
     required_keys = ["type", "config_version", "domain"]
@@ -100,6 +101,18 @@ class APIConfig:
             self.oauth = OauthConfig(data["oauth"])
         else:
             self.oauth = None
+
+        self.trusted_proxy = None
+        if "trusted_proxy" in data:
+            self.trusted_proxy = []
+            for ip in data["trusted_proxy"]:
+                try:
+                    self.trusted_proxy.append(ipaddress.ip_network(ip))
+                except Exception as e:
+                    logging.error(f"[FATAL] Load config fail. api.trusted_proxy contains an invalid ip address. {e}")
+                    exit(1)
+            self.trusted_proxy = data["trusted_proxy"]
+                
         
 class DatabaseConfig:
     required_keys = ["database_uri"]
