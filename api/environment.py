@@ -111,7 +111,6 @@ class APIConfig:
                 except Exception as e:
                     logging.error(f"[FATAL] Load config fail. api.trusted_proxy contains an invalid ip address. {e}")
                     exit(1)
-            self.trusted_proxy = data["trusted_proxy"]
                 
         
 class DatabaseConfig:
