@@ -9,6 +9,16 @@ from unittest.mock import patch
 import logging
 import ipaddress
 
+
+class DictRequest :
+    def __init__(self, dict):
+        self.__dict__ = dict
+    
+    def __iter__(self):
+        return iter(self.__dict__)
+    
+    def getlist(self, key):
+        return self.__dict__.get(key, None)
 class TestUtils(unittest.TestCase):
     
     def setUp(self):
@@ -300,7 +310,7 @@ class TestUtils(unittest.TestCase):
     def test_get_forwarded_for_with_trusted_proxy(self):
         request = lambda:None
         request.remote_addr = "192.168.8.1"
-        request.headers = {"X-Forwarded-For": ["1.1.1.1"]}
+        request.headers = DictRequest({"X-Forwarded-For": ["1.1.1.1"]})
         conf.api.trusted_proxy = [ipaddress.ip_network("192.168.8.1")]
         ip = get_ip(request)
         self.assertEqual(ip, "1.1.1.1")
@@ -309,7 +319,7 @@ class TestUtils(unittest.TestCase):
     def test_get_forwarded_for_with_trusted_proxy_invalid_ip(self):
         request = lambda:None
         request.remote_addr = "192.168.8.1"
-        request.headers = {"X-Forwarded-For": ["192.168.8.1"]}
+        request.headers =  DictRequest({"X-Forwarded-For": ["192.168.8.1"]})
         conf.api.trusted_proxy = [ipaddress.ip_network("192.168.8.1")]
         ip = get_ip(request)
         self.assertIsNone(ip)
@@ -318,7 +328,7 @@ class TestUtils(unittest.TestCase):
     def test_get_forwarded_for_with_trusted_proxy_no_forwarded_for(self):
         request = lambda:None
         request.remote_addr = "192.168.8.1"
-        request.headers = {}
+        request.headers =  DictRequest({})
         conf.api.trusted_proxy = [ipaddress.ip_network("192.168.8.1")]
         ip = get_ip(request)
         self.assertIsNone(ip)
@@ -327,7 +337,7 @@ class TestUtils(unittest.TestCase):
     def test_get_forwarded_for_with_trusted_proxy_cidr(self):
         request = lambda:None
         request.remote_addr = "192.168.8.1"
-        request.headers = {"X-Forwarded-For": ["1.1.1.1"]}
+        request.headers =  DictRequest({"X-Forwarded-For": ["1.1.1.1"]})
         conf.api.trusted_proxy = [ipaddress.ip_network("192.168.8.0/24")]
         ip = get_ip(request)
         self.assertEqual(ip, "1.1.1.1")
@@ -336,7 +346,7 @@ class TestUtils(unittest.TestCase):
     def test_get_mutliple_forwarded_for_with_trusted_proxy(self):
         request = lambda:None
         request.remote_addr = "192.168.8.1"
-        request.headers = {"X-Forwarded-For": ["1.1.1.1", "2.2.2.2", "192.168.8.1"]}
+        request.headers =  DictRequest({"X-Forwarded-For": ["1.1.1.1", "2.2.2.2", "192.168.8.1"]})
         conf.api.trusted_proxy = [ipaddress.ip_network("192.168.8.0/24")]
         ip = get_ip(request)
         self.assertEqual(ip, "1.1.1.1")
@@ -345,7 +355,7 @@ class TestUtils(unittest.TestCase):
     def test_get_forwarded_for_with_none_trusted_proxy(self):
         request = lambda:None
         request.remote_addr = "192.168.10.1"
-        request.headers = {"X-Forwarded-For": ["1.1.1.1"]}
+        request.headers =  DictRequest({"X-Forwarded-For": ["1.1.1.1"]})
         conf.api.trusted_proxy = [ipaddress.ip_network("192.168.8.0/24")]
         ip = get_ip(request)
         self.assertIsNone(ip)
