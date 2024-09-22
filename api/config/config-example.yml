@@ -17,6 +17,17 @@ api:
     ## If developing locally, use localhost and specify the port.
     domain : example.com
 
+    ## Trusted proxy IP addresses.
+    ## If the API is behind a reverse proxy, you must specify the IP addresses of the proxy.
+    ## The API will trust the X-Forwarded-For header from these IP addresses.
+    ## MAKE SURE TO CONTROL AT 100% THIS HEADER TO AVOID ANY IP SPOOFING. 
+    ## Read this before anything else : https://esd.io/blog/flask-apps-heroku-real-ip-spoofing.html
+    ## It can be IP or IP subnet
+    #trusted_proxy:
+        # - 192.168.9.5
+        # - 10.80.3.0/24
+        # - 2606:4700:4700::1111
+
     ## The secret that will be used to sign JWT tokens. CHANGE THIS VALUE !
     ## A random 128 alphanumeric string is required.
     jwt_secret: "unsafe_secret"
