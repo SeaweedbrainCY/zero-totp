@@ -141,7 +141,7 @@ def login():
         if ip:
             rate_limiting_db.add_failed_login(ip, None)
         return {"message": "generic_errors.invalid_creds"}, 403
-    logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {ip}. X-Forwarded-For header is {request.headers.get('X-Forwarded-For')}")
+    logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {ip}. X-Forwarded-For header is {request.headers.getlist('X-Forwarded-For')}")
     checked = bcrypt.checkpw(user.password)
     if not checked:
         if ip:
@@ -299,7 +299,7 @@ def update_email(user_id,body):
     user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
     if user:
         try:
-            ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+            ip = utils.get_ip(request)
             thread = threading.Thread(target=utils.send_information_email,args=(ip, old_mail, "Your email address has been updated"))
             thread.start()
         except Exception as e:
@@ -402,7 +402,7 @@ def update_vault(user_id, body):
     returnJson["zke"]=1 if zke else 0
     if errors == 0 and userUpdated and zke:
         try:
-            ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+            ip = utils.get_ip(request)
             thread = threading.Thread(target=utils.send_information_email,args=(ip, user.mail, "Your vault passphrase has been updated"))
             thread.start()
         except Exception as e:
