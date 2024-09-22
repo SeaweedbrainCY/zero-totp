@@ -16,7 +16,7 @@ class TestUpdateEmail(unittest.TestCase):
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
-        self.endpoint = "/update/email"
+        self.endpoint = "/api/v1/update/email"
         
 
         self.update_email = patch("database.user_repo.User.update_email").start()

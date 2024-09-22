@@ -1,6 +1,7 @@
 import re
 from  CryptoClasses.serverRSAKeys import ServerRSAKeys
 import logging
+import ipaddress
 
 def test_conf(conf) -> bool:
     ## API
@@ -27,9 +28,18 @@ def test_conf(conf) -> bool:
             open(conf.api.oauth.client_secret_file_path, "r").close()
         except Exception as e:
             raise Exception(f"api.oauth.client_secret_file_path is not a valid path. {e}")
+    if conf.api.trusted_proxy != None:
+        assert isinstance(conf.api.trusted_proxy, list), "api.trusted_proxy is not a list"
+        for ip in conf.api.trusted_proxy:
+            try:
+                ipaddress.ip_network(ip)
+            except Exception as e:
+                raise Exception(f"api.trusted_proxy contains an invalid ip address. {e}")
         
     ## Environment
     assert conf.environment.type in ["local", "development", "production"], f"environment.type is not valid. Was expecting local, development or production, got {conf.environment.type}"
+    if(conf.environment.type != "local"):
+        assert re.match(r"^([a-z0-9|-]+\.)*[a-z0-9|-]+\.[a-z]+$", conf.environment.domain), "environment.domain is not a valid domain. Was expecting something like 'example.com'. Got {conf.environment.domain}"
 
     ## Database
     assert isinstance(conf.database.database_uri, str), "database.database_uri is not a string"

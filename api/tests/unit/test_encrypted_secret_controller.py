@@ -18,7 +18,7 @@ class TestEncryptedSecretController(unittest.TestCase):
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
-        self.endpoint = "/encrypted_secret/uuid"
+        self.endpoint = "/api/v1/encrypted_secret/uuid"
         
 
         self.getEncSecretByUUID = patch("database.totp_secret_repo.TOTP_secret.get_enc_secret_by_uuid").start()

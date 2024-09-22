@@ -6,7 +6,7 @@ import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
 import { faLightbulb, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../common/ApiService/api-service';
+
 
 @Component({
   selector: 'app-navbar',
@@ -97,7 +97,7 @@ export class NavbarComponent implements OnInit{
     }
   }
   get_global_notification(){
-    this.http.get(ApiService.API_URL+"/notification/global",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/notification/global",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       if(response.status == 200){
         try{
           const data = JSON.parse(JSON.stringify(response.body))
@@ -125,7 +125,7 @@ export class NavbarComponent implements OnInit{
   }
 
   get_internal_notification(){
-    this.http.get(ApiService.API_URL+"/notification/internal",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/notification/internal",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       if(response.status == 200){
         try{
           const data = JSON.parse(JSON.stringify(response.body))

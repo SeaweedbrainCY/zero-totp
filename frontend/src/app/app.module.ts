@@ -38,10 +38,12 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateService, MissingTranslationHandler, MissingTranslationHandlerParams, } from '@ngx-translate/core';
 import defaultLanguage from "./../assets/i18n/en-uk.json";
+import FrenchLanguage from "./../assets/i18n/fr-fr.json";
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {NgIdleModule} from '@ng-idle/core';
-
+import { RouterModule } from '@angular/router';
+import { routes } from './app-routing.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -86,6 +88,7 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
     FontAwesomeModule,
     HttpClientModule, 
     ClipboardModule,
+    RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' }),
     ZXingScannerModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
@@ -114,6 +117,7 @@ export class AppModule {
 
   constructor(translate: TranslateService) {
     translate.addLangs(['fr-fr']);
+    translate.setTranslation('fr-fr', FrenchLanguage);
     translate.setTranslation('en-uk', defaultLanguage);
     translate.setDefaultLang('en-uk');
     if(localStorage.getItem('language') == null){

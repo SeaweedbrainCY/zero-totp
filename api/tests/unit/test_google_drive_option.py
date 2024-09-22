@@ -23,7 +23,7 @@ class TestGoogleDriveOption(unittest.TestCase):
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
-        self.endpoint = "/google-drive/option"
+        self.endpoint = "/api/v1/google-drive/option"
         self.blocked_user_id = 2
         self.not_blocked_user_id = 3
 

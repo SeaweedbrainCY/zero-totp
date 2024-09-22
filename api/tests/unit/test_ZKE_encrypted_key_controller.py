@@ -17,7 +17,7 @@ class TestZKEEncryptedKey(unittest.TestCase):
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
-        self.endpoint = "/zke_encrypted_key"
+        self.endpoint = "/api/v1/zke_encrypted_key"
         
 
         self.get_zke_enc = patch("database.zke_repo.ZKE.getByUserId").start()

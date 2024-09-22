@@ -26,8 +26,8 @@ class TestDeleteAccount(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
-        self.deleteEndpoint = "/account"
-        self.adminDeleteEndpoint = "/admin/account"
+        self.deleteEndpoint = "/api/v1/account"
+        self.adminDeleteEndpoint = "/api/v1/admin/account"
         
         
         self.full_user_id =1

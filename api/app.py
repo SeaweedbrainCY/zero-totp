@@ -18,14 +18,6 @@ from flask import request, redirect, make_response
 
 def create_app():
     app_instance = connexion.FlaskApp(__name__, specification_dir="./openAPI/")
-    app_instance.add_middleware(
-    CORSMiddleware,
-    position=MiddlewarePosition.BEFORE_ROUTING,
-    allow_origins=conf.environment.frontend_URI,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
     app_instance.add_api("swagger.yml")
 
     app = app_instance.app
@@ -88,7 +80,7 @@ def before_request():
 @flask.errorhandler(404)
 def not_found(error):
     logging.warning(f"❌  404 error at {datetime.now()} {request.remote_addr} {request.url}")
-    return make_response(redirect(conf.environment.frontend_URI[0] + "/404",  code=302))
+    return make_response(redirect(f"https://{conf.api.domain}/404",  code=302))
             
 
 

@@ -1,7 +1,7 @@
 import { Component,OnInit } from '@angular/core';
 import { faEnvelope, faLock,  faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../common/ApiService/api-service';
+
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import {Crypto} from '../common/Crypto/crypto';
@@ -268,7 +268,7 @@ this.utils.toastError(this.toastr,translation,"")
     }
 
   hashPassword(){
-    this.http.get(ApiService.API_URL+"/login/specs?username="+encodeURIComponent(this.email),  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/login/specs?username="+encodeURIComponent(this.email),  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       
       try{
         const data = JSON.parse(JSON.stringify(response.body))
@@ -312,7 +312,7 @@ this.utils.toastError(this.toastr,translation,"")
       email: this.email,
       password: this.hashedPassword
     }
-    this.http.post(ApiService.API_URL+"/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.post("/api/v1/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
       try{
         const data = JSON.parse(JSON.stringify(response.body))
         this.userService.setId(data.id);
@@ -408,7 +408,7 @@ this.utils.toastError(this.toastr,error,"")
 
   getZKEKey(): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.http.get(ApiService.API_URL+"/zke_encrypted_key",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      this.http.get("/api/v1/zke_encrypted_key",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         const zke_key_encrypted = data.zke_encrypted_key
         resolve(zke_key_encrypted);

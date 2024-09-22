@@ -17,7 +17,7 @@ class TestGetInternalNotification(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
-        self.endpoint = "/notification/internal"
+        self.endpoint = "/api/v1/notification/internal"
         self.user_id = 1
         user1 = model.User(id=self.user_id,username="username", mail="username@it.it", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001")
         with self.flask_application.app.app_context():

@@ -6,8 +6,27 @@
 
 
 api:
-    ## The port the API will listen on. Default is 8080.
+    ## The internal port the API will listen on. Default is 8080.
     # port: 8080
+
+    ## Domain used by your API. 
+    ## This is used to enforce the security of the API.
+    ## The API must be served over HTTPS.
+    ## Only include the domain name, without the protocol or path.
+    ## The domain MUST be the same as the one used in the frontend.
+    ## If developing locally, use localhost and specify the port.
+    domain : example.com
+
+    ## Trusted proxy IP addresses.
+    ## If the API is behind a reverse proxy, you must specify the IP addresses of the proxy.
+    ## The API will trust the X-Forwarded-For header from these IP addresses.
+    ## MAKE SURE TO CONTROL AT 100% THIS HEADER TO AVOID ANY IP SPOOFING. 
+    ## Read this before anything else : https://esd.io/blog/flask-apps-heroku-real-ip-spoofing.html
+    ## It can be IP or IP subnet
+    #trusted_proxy:
+        # - 192.168.9.5
+        # - 10.80.3.0/24
+        # - 2606:4700:4700::1111
 
     ## The secret that will be used to sign JWT tokens. CHANGE THIS VALUE !
     ## A random 128 alphanumeric string is required.

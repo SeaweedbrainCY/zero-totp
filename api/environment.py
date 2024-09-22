@@ -5,15 +5,18 @@ import Utils.env_requirements_check as env_requirements_check
 from CryptoClasses.serverRSAKeys import ServerRSAKeys
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Hash import SHA512
+import ipaddress
 
 class EnvironmentConfig:
-    required_keys = ["type", "config_version"]
+    required_keys = ["type", "config_version", "domain"]
     def __init__(self, data) -> None:
         self.config_version = data["config_version"]
+        
         for key in self.required_keys:
             if key not in data:
                 logging.error(f"[FATAL] Load config fail. Was expecting the key environment.{key}")
                 exit(1)
+        self.domain = data["domain"]
         if data["type"] == "local":
             self.type = "local"
             logging.basicConfig(
@@ -21,9 +24,13 @@ class EnvironmentConfig:
                 level=logging.DEBUG,
                 datefmt='%d-%m-%Y %H:%M:%S')
             logging.debug("Environment set to development")
-            self.frontend_domain = 'zero-totp.local'
-            self.frontend_URI = ['http://localhost:4200']
-            self.callback_URI = 'http://localhost:8080/google-drive/oauth/callback'
+            if "frontend_URI" not in data:
+                logging.error("[FATAL] Load config fail. In local environement, was expecting the key environment.frontend_URI")
+                exit(1)
+            if "API_URI" not in data:
+                logging.error("[FATAL] Load config fail. In local environement, was expecting the key environment.API_URI")
+            self.frontend_URI = data["frontend_URI"]
+            self.callback_URI = f'{data["API_URI"]}/api/v1/google-drive/oauth/callback'
             os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
         elif data["type"] == "development":
             self.type = "development"
@@ -32,9 +39,7 @@ class EnvironmentConfig:
                 level=logging.INFO,
                 datefmt='%d-%m-%Y %H:%M:%S')
             logging.info("Environment set to development")
-            self.frontend_domain = 'dev.zero-totp.com'
-            self.frontend_URI = ['https://dev.zero-totp.com']
-            self.callback_URI = "https://api.dev.zero-totp.com/google-drive/oauth/callback"
+            
         else:
             self.type = "production"
             logging.basicConfig(
@@ -43,9 +48,9 @@ class EnvironmentConfig:
                 format='%(asctime)s %(levelname)-8s %(message)s',
                 level=logging.INFO,
                 datefmt='%d-%m-%Y %H:%M:%S')
-            self.frontend_domain="zero-totp.com"
-            self.frontend_URI = ["https://zero-totp.com", "https://ca.zero-totp.com", "https://sw.zero-totp.com", "https://themis.zero-totp.com"]
-            self.callback_URI = "https://api.zero-totp.com/google-drive/oauth/callback"
+
+        self.frontend_URI = f"https://{data['domain']}"
+        self.callback_URI = f"https://{data['domain']}/api/v1/google-drive/oauth/callback"
 
 class OauthConfig:
     required_keys = ["client_secret_file_path"]
@@ -96,6 +101,17 @@ class APIConfig:
             self.oauth = OauthConfig(data["oauth"])
         else:
             self.oauth = None
+
+        self.trusted_proxy = None
+        if "trusted_proxy" in data:
+            self.trusted_proxy = []
+            for ip in data["trusted_proxy"]:
+                try:
+                    self.trusted_proxy.append(ipaddress.ip_network(ip))
+                except Exception as e:
+                    logging.error(f"[FATAL] Load config fail. api.trusted_proxy contains an invalid ip address. {e}")
+                    exit(1)
+                
         
 class DatabaseConfig:
     required_keys = ["database_uri"]
@@ -179,6 +195,7 @@ class Config:
     def __init__(self, data):
         for key in self.required_keys:
             if key not in data:
+                logging.error(f"[FATAL] Load config fail. Was expecting the key {key}")
                 exit(1)
         self.environment = EnvironmentConfig(data["environment"] if data["environment"] != None else [])
         self.api = APIConfig(data["api"] if data["api"] != None else [], self.environment.config_version)
@@ -196,8 +213,8 @@ try:
         
         except yaml.YAMLError as exc:
             raise Exception(exc)
-except:
-    logging.error("[FATAL] Load config fail. Could not open config file. Mount the config file to /api/config/config.yml")
+except Exception as e :
+    logging.error(f"[FATAL] API will stop now. Error while checking /api/config/config.yml, {e}")
     exit(1)
 
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../common/ApiService/api-service';
+
 import { faCircleNotch, faGear, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -52,7 +52,7 @@ export class AdminPageComponent implements OnInit {
   } 
 
   getUsers(){
-    this.http.get(ApiService.API_URL+"/admin/users",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/admin/users",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       try{
         const body  = JSON.parse(JSON.stringify(response.body));
         this.users = body.users;
@@ -78,7 +78,7 @@ export class AdminPageComponent implements OnInit {
   }
 
   fetch_role_and_challenge(){
-    this.http.get(ApiService.API_URL+"/role",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/role",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       try{
         const user  = JSON.parse(JSON.stringify(response.body));
         if(user.role == "admin"){
@@ -113,7 +113,7 @@ export class AdminPageComponent implements OnInit {
       const data = {
         token: this.user_token,
       }
-        this.http.post(ApiService.API_URL+"/admin/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+        this.http.post("/api/v1/admin/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
           if (response.status == 200){
             this.isChallengeSolved = true;
             this.start_10m_timer();
@@ -159,7 +159,7 @@ export class AdminPageComponent implements OnInit {
   }
 
   deleteAccount(){
-    this.http.delete(ApiService.API_URL+"/admin/account/"+this.userToDelete.id,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.delete("/api/v1/admin/account/"+this.userToDelete.id,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       this.isDeletionModalActive = false;
       this.getUsers();
       this.utils.toastSuccess(this.toastr, "User deleted","");
@@ -175,7 +175,7 @@ export class AdminPageComponent implements OnInit {
   }
 
   blockAccount(){
-    this.http.put(ApiService.API_URL+"/admin/account/"+this.userToBlock.id+"/block", {}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.put("/api/v1/admin/account/"+this.userToBlock.id+"/block", {}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
       this.getUsers();
       this.utils.toastSuccess(this.toastr, "User blocked","");
     }, (error) => {
@@ -190,7 +190,7 @@ export class AdminPageComponent implements OnInit {
   }
 
   unblockAccount(){
-    this.http.put(ApiService.API_URL+"/admin/account/"+this.userToBlock.id+"/unblock", {}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.put("/api/v1/admin/account/"+this.userToBlock.id+"/unblock", {}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
       this.getUsers();
       this.utils.toastSuccess(this.toastr,"User unblocked","");
     }, (error) => {

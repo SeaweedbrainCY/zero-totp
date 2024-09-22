@@ -55,6 +55,8 @@ environment:
   ## MODIFICATION OF THIS VALUE WILL CAUSE THE API TO FAIL OR NEVER START
   config_version: 1.0
 
+  domain: "test.zero-totp.com"
+
 database:
     ## The URI of the database to connect to.
     ## The URI must be in the format of "mysql://user:password@host/db_name"

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash,faVault, faExclamationTriangle, faEye, faEyeSlash, faCircleExclamation, faCircleNotch,faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ApiService } from '../common/ApiService/api-service';
+
 import { Utils } from '../common/Utils/utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
@@ -88,7 +88,7 @@ export class AccountComponent implements OnInit {
   }
 
   get_whoami(){
-    this.http.get(ApiService.API_URL+"/whoami",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/whoami",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       this.loadingAccount = false;
       const data = JSON.parse(JSON.stringify(response.body))
       this.current_username = data.username;
@@ -128,7 +128,7 @@ export class AccountComponent implements OnInit {
     this.checkUsername();
     if(this.usernameErrorMessage == ""){
       this.buttonLoading["username"] = 1
-      this.http.put(ApiService.API_URL+"/update/username",  {username: this.username}, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      this.http.put("/api/v1/update/username",  {username: this.username}, {withCredentials: true, observe: 'response'}).subscribe((response) => {
         this.buttonLoading["username"] = 0
         this.utils.toastSuccess(this.toastr, this.translate.instant('account.username.success'), "");
         this.get_whoami();
@@ -175,7 +175,7 @@ export class AccountComponent implements OnInit {
     const data = {
       email: this.email
     }
-    this.http.put(ApiService.API_URL+"/update/email",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.put("/api/v1/update/email",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
       this.buttonLoading["email"] = 0
       this.utils.toastSuccess(this.toastr, this.translate.instant('account.email.success'),"");
       this.userService.setEmail(JSON.parse(JSON.stringify(response.body))["message"])
@@ -266,7 +266,7 @@ export class AccountComponent implements OnInit {
   }
 
   getGoogleDriveOption(){
-      this.http.get(ApiService.API_URL+"/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
+      this.http.get("/api/v1/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
         const data = JSON.parse(JSON.stringify(response.body))
         if(data.status == "enabled"){
           this.isGoogleDriveBackupEnabled = true;
@@ -292,7 +292,7 @@ export class AccountComponent implements OnInit {
 
   deleteAllGoogleDriveBackup(): Promise<boolean>{
     return new Promise<boolean>((resolve, reject) => {
-      this.http.delete(ApiService.API_URL+"/google-drive/backup",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      this.http.delete("/api/v1/google-drive/backup",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         resolve(true);
       }, (error) => {
         let errorMessage = "";
@@ -309,7 +309,7 @@ export class AccountComponent implements OnInit {
 
   backup(): Promise<boolean>{
     return new Promise<boolean>((resolve, reject) => {
-      this.http.put(ApiService.API_URL+"/google-drive/backup",  {}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      this.http.put("/api/v1/google-drive/backup",  {}, {withCredentials:true, observe: 'response'}).subscribe((response) => {
         resolve(true);
       }, (error) => {
         let errorMessage = "";
@@ -438,7 +438,7 @@ export class AccountComponent implements OnInit {
       email: this.userService.getEmail()!,
       password: hashedPassword
     }
-      this.http.post(ApiService.API_URL+"/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      this.http.post("/api/v1/login",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
       resolve("ok");
       },
      (error) => {
@@ -453,7 +453,7 @@ export class AccountComponent implements OnInit {
   get_all_secret():Promise<Map<string, Map<string,string>>>{
     return new Promise<Map<string, Map<string,string>>>((resolve, reject) => {
       let vault = new Map<string, Map<string,string>>();
-      this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      this.http.get("/api/v1/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         try{
           const data = JSON.parse(JSON.stringify(response.body))
          if(this.userService.get_zke_key() != null){
@@ -618,7 +618,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
         passphrase_salt: salt,
         derived_key_salt: derivedKeySalt
       }
-      this.http.put(ApiService.API_URL+"/update/vault",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      this.http.put("/api/v1/update/vault",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
         resolve("ok");
       }, error =>{
         if(error.status == 500){
@@ -644,7 +644,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
   sendDeleteAccountRequest(): Promise<string>{
     return new Promise<string>((resolve, reject) => {
       let headers = new HttpHeaders().set('x-hash-passphrase', this.hashedOldPassword);
-      this.http.delete(ApiService.API_URL+"/account",  {headers:headers, withCredentials:true, observe: 'response'}).subscribe((response) => {
+      this.http.delete("/api/v1/account",  {headers:headers, withCredentials:true, observe: 'response'}).subscribe((response) => {
 
        resolve("ok")
       }, (error) => {
@@ -662,7 +662,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
   }
 
   get_internal_notification(){
-    this.http.get(ApiService.API_URL+"/notification/internal",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/notification/internal",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       if(response.status == 200){
         try{
           const data = JSON.parse(JSON.stringify(response.body))

@@ -10,12 +10,12 @@
     </div>
     <div class="has-text-centered	is-full is-flex is-flex-direction-column is-justify-content-center">
       <div class="has-text-centered columns p-5" >
-        <div class="notification is-warning column is-6 is-offset-3 is-light">
+       <!-- <div class="notification is-warning column is-6 is-offset-3 is-light">
           <p>  <fa-icon [icon]="faFlask" size="2xl" ></fa-icon> </p>
           <strong class="block">{{ 'signup.beta.warning.title' | translate }}<br>
           </strong><br>
           <span>{{ 'signup.beta.warning.desc' | translate }}</span>
-        </div>
+        </div>-->
       </div>
       <div class="field is-full is-flex is-justify-content-center has-addons ">
         <p class="control has-icons-left" style="min-width: 30vw;">
@@ -79,19 +79,19 @@
           </a>
         </p>
       </div>
-      <div class="field box">
+      <div class="field">
         <div class="control">
           <label class="checkbox">
             <input type="checkbox" name="terms" [(ngModel)]="terms">
             {{ 'signup.checkbox.privacy_policy' | translate }} <a href="https://zero-totp.com/privacy">{{'privacy_policy' | translate}}</a>
           </label>
-        </div><br/>
-        <div class="control">
+        </div>
+        <!--<div class="control">
       <label class="checkbox" style="max-width: 50vw;">
         <input type="checkbox" name="beta" [(ngModel)]="beta">
         {{ 'signup.checkbox.beta' | translate }}
       </label>
-    </div>
+    </div>-->
   </div>
       </div>
       <div class="has-text-centered	">

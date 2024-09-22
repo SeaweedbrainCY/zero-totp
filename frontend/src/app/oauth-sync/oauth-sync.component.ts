@@ -2,7 +2,7 @@ import { Component, OnInit, Injectable, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../common/ApiService/api-service';
+
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { Crypto } from '../common/Crypto/crypto';
 import { Utils } from '../common/Utils/utils';
@@ -45,7 +45,7 @@ export class OauthSyncComponent implements OnInit {
   }
 
   backupVault(){
-    this.http.put(ApiService.API_URL+"/google-drive/backup", {}, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+    this.http.put("/api/v1/google-drive/backup", {}, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
       this.router.navigate(["/vault"], {relativeTo:this.route.root});
     }, (error) => {
       let errorMessage = "";

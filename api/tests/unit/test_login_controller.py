@@ -14,8 +14,8 @@ class TestLoginController(unittest.TestCase):
                 raise Exception("Test must be run with in memory database")
         self.application = app
         self.client = self.application.test_client()
-        self.loginEndpoint = "/login"
-        self.specsEndpoint = "/login/specs?username=test@test.com"
+        self.loginEndpoint = "/api/v1/login"
+        self.specsEndpoint = "/api/v1/login/specs?username=test@test.com"
 
 
         self.user1 = User(id=1, username="username", mail= "test@test.com",derivedKeySalt="randomSalt", password="hashed", isVerified=1, passphraseSalt="salt", isBlocked=False, createdAt="01/01/2001 01:01:01", role="user")
@@ -141,13 +141,13 @@ class TestLoginController(unittest.TestCase):
         response = self.client.get(self.specsEndpoint)
         self.assertEqual(response.status_code, 400)
         
-        response = self.client.get("/login/specs")
+        response = self.client.get("/api/v1/login/specs")
         self.assertEqual(response.status_code, 400)
 
     
     def test_login_specs_no_user(self):
         with self.application.app.app_context():
-            response = self.client.get("/login/specs?username=unknown@test.com")
+            response = self.client.get("/api/v1/login/specs?username=unknown@test.com")
             self.assertEqual(response.status_code, 200)
             self.assertIn("passphrase_salt", response.json())
 

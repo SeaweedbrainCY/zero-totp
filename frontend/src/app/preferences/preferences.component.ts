@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../common/ApiService/api-service';
+
 import { Utils } from '../common/Utils/utils';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
@@ -57,7 +57,7 @@ export class PreferencesComponent implements OnInit{
   }
 
   get_preferences(){
-    this.http.get(ApiService.API_URL+"/preferences?fields=all", {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/preferences?fields=all", {withCredentials: true, observe: 'response'}).subscribe((response) => {
       if(response.body != null){
         this.loadingPreferences = false;
         const data = JSON.parse(JSON.stringify(response.body));
@@ -97,7 +97,7 @@ export class PreferencesComponent implements OnInit{
     if(policy == "never" || policy == "always" || policy == "enabledOnly"){
       this.buttonLoading.favicon_policy = true;
       const data = {"id" : "favicon_policy", "value" :policy}
-      this.http.put(ApiService.API_URL+"/preferences",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      this.http.put("/api/v1/preferences",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
         this.buttonLoading.favicon_policy = false;
         this.faviconPolicy = policy;
 
@@ -130,7 +130,7 @@ export class PreferencesComponent implements OnInit{
   }
 
   get_internal_notification(){
-    this.http.get(ApiService.API_URL+"/notification/internal",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/notification/internal",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       if(response.status == 200){
         try{
           const data = JSON.parse(JSON.stringify(response.body))

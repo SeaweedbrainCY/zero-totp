@@ -15,7 +15,7 @@ class TestUpdateUsername(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
-        self.endpoint = "/update/username"
+        self.endpoint = "/api/v1/update/username"
         self.user1_id = 1
         self.user2_id = 2
 

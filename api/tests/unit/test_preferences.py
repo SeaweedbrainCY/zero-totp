@@ -26,7 +26,7 @@ class TestPreferences(unittest.TestCase):
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
-        self.endpoint = "/preferences"
+        self.endpoint = "/api/v1/preferences"
         self.user_id =1
         self.new_user_id = 2
         self.blocked_user_id = 3

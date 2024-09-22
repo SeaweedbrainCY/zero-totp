@@ -1,4 +1,5 @@
 import re
+from app import app
 import html
 from environment import logging
 import datetime
@@ -16,6 +17,7 @@ import requests
 from Email import send as send_email
 import ipaddress
 from jsonschema import validate, ValidationError
+from environment import conf
 
 
 
@@ -114,21 +116,45 @@ def get_geolocation(ip):
 def get_ip(request):
     def test_ip(ip):
         try:
-            if(ipaddress.ip_address(ip).is_private):
+            if(ip.is_private):
                 return False
             return True
         except Exception as e:
+            logging.error("Error while testing ip address : " + str(e))
             return False
-        
-    remote_ip = request.remote_addr
-    forwarded_for = request.headers.get("X-Forwarded-For", request.remote_addr)
-    if test_ip(remote_ip):
-        return remote_ip
-    elif test_ip(forwarded_for):
-        return forwarded_for
-    else:
-        logging.error("Could not get ip address from request. Remote ip : " + str(remote_ip) + " Forwarded for : " + str(forwarded_for))
+    try :
+        remote_ip = ipaddress.ip_address(request.remote_addr)
+    except Exception as e:
+        logging.error("Error while getting remote ip address : " + str(e))
         return None
+    is_remote_ip_a_trusted_proxy = False
+    if conf.api.trusted_proxy != None:
+        for ip_network in conf.api.trusted_proxy:
+            if remote_ip in ip_network:
+                is_remote_ip_a_trusted_proxy = True
+                break
+
+    if is_remote_ip_a_trusted_proxy:
+        if "X-Forwarded-For" in request.headers:
+            try:
+                forwarded_ip = re.findall(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', request.headers["X-Forwarded-For"])[0]
+                if test_ip(ipaddress.ip_address(forwarded_ip)):
+                    return forwarded_ip
+                else:
+                    logging.error("Could not get ip address from request. The forwarded IP was not a valid ip address. Forwarded ip : " + str(forwarded_ip))
+                    return None
+            except Exception as e:
+                logging.error("Could not get ip address from request. Error while parsing forwarded ip : " + str(e))
+                return None
+        else:
+            logging.error("Could not get ip address from request. The request was made through a trusted proxy but the X-Forwarded-For header was not set.")
+            return None
+    else:
+        if test_ip(remote_ip):
+            return str(remote_ip)
+        else:
+            logging.error("Could not get ip address from request. The remote IP was NOT a trusted proxy. Remote ip : " + str(remote_ip))
+            return None
 
 def unsafe_json_vault_validation(json:str) -> (bool, str):
     if len(json) > 4 * 1024 *1024:

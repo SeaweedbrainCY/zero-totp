@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark} from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../common/ApiService/api-service';
+
 import { Crypto } from '../common/Crypto/crypto';
 import { Utils } from '../common/Utils/utils';
 import { error } from 'console';
@@ -92,7 +92,7 @@ export class VaultComponent implements OnInit {
       this.reloadSpin = true
       this.vault = new Map<string, Map<string,string>>();
       this.userService.setVaultTags([]);
-      this.http.get(ApiService.API_URL+"/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+      this.http.get("/api/v1/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         this.decrypt_and_display_vault(data.enc_secrets);
       }, (error) => {
@@ -131,7 +131,7 @@ export class VaultComponent implements OnInit {
   }
 
   get_preferences(){
-    this.http.get(ApiService.API_URL+"/preferences?fields=favicon_policy", {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/preferences?fields=favicon_policy", {withCredentials: true, observe: 'response'}).subscribe((response) => {
       if(response.body != null){
         const data = JSON.parse(JSON.stringify(response.body));
         if(data.favicon_policy != null){
@@ -308,7 +308,7 @@ export class VaultComponent implements OnInit {
   }
   
   downloadVault(){
-    this.http.get(ApiService.API_URL+"/vault/export",  {withCredentials:true, observe: 'response',  responseType: 'blob' }, ).subscribe((response) => {
+    this.http.get("/api/v1/vault/export",  {withCredentials:true, observe: 'response',  responseType: 'blob' }, ).subscribe((response) => {
       const blob = new Blob([response.body!], { type: 'text/plain' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -340,7 +340,7 @@ export class VaultComponent implements OnInit {
   }
 
   get_oauth_authorization_url(){
-    this.http.get(ApiService.API_URL+"/google-drive/oauth/authorization-flow",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
+    this.http.get("/api/v1/google-drive/oauth/authorization-flow",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
       const data = JSON.parse(JSON.stringify(response.body))
       sessionStorage.setItem("oauth_state", data.state);
       window.location.href = data.authorization_url;
@@ -360,7 +360,7 @@ export class VaultComponent implements OnInit {
 
 
   get_google_drive_option(){
-    this.http.get(ApiService.API_URL+"/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
+    this.http.get("/api/v1/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
       const data = JSON.parse(JSON.stringify(response.body))
       if(data.status == "enabled"){
         this.isGoogleDriveEnabled = true;
@@ -383,7 +383,7 @@ export class VaultComponent implements OnInit {
   }
 
   backup_vault_to_google_drive(){
-          this.http.put(ApiService.API_URL+"/google-drive/backup", {}, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+          this.http.put("/api/v1/google-drive/backup", {}, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
             this.isGoogleDriveSync = "uptodate";
             this.lastBackupDate =  String(formatDate(new Date(), 'dd/MM/yyyy HH:mm:ss', 'en'));
           }, (error) => {
@@ -401,7 +401,7 @@ export class VaultComponent implements OnInit {
   }
 
   check_last_backup(){
-    this.http.get(ApiService.API_URL+"/google-drive/last-backup/verify",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+    this.http.get("/api/v1/google-drive/last-backup/verify",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
       const data = JSON.parse(JSON.stringify(response.body))
       if(data.status == "ok"){
         if(data.is_up_to_date == true){
@@ -440,7 +440,7 @@ export class VaultComponent implements OnInit {
   }
 
   disable_google_drive(){
-    this.http.delete(ApiService.API_URL+"/google-drive/option",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+    this.http.delete("/api/v1/google-drive/option",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
       this.isGoogleDriveEnabled = false;
       this.isGoogleDriveSync = "false";
       this.utils.toastSuccess(this.toastr, this.translate.instant("vault.google.disabled"),"");

@@ -19,7 +19,7 @@ class TestAllSecret(unittest.TestCase):
         self.application = app
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
-        self.endpoint = "/vault/export"
+        self.endpoint = "/api/v1/vault/export"
 
         self.get_user = patch("database.user_repo.User.getById").start()
         self.get_user.return_value = User(id=1, derivedKeySalt="salt", isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")

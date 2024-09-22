@@ -15,7 +15,7 @@ class TestGetWhoami(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
-        self.endpoint = "/whoami"
+        self.endpoint = "/api/v1/whoami"
         self.user_id = 1
         self.email = "user@test.com"
         self.username = "user"

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash , faFlask} from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../common/ApiService/api-service';
+
 import { Utils } from '../common/Utils/utils';
 import { Crypto } from '../common/Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -43,7 +43,7 @@ export class SignupComponent implements OnInit {
   derivedKeySalt=""
   passphraseSalt=""
   modal_confim_button_diabled=true;
-  beta=false;
+  beta=true;
   isModalSentenceCompleted=false;
   isPasswordVisible=false;
   isConfirmPasswordVisible=false;
@@ -179,7 +179,7 @@ this.closeModal()
       passphraseSalt: this.passphraseSalt
     };
 
-    this.http.post(ApiService.API_URL+"/signup", data,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.post("/api/v1/signup", data,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       this.isLoading=false;
       this.utils.toastSuccess(this.toastr, this.translate.instant("signup.success"),"");
       this.userService.setEmail(this.email)

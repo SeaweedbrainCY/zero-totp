@@ -46,7 +46,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
             self.application = app
             self.jwtCookie = jwt_func.generate_jwt(1)
             self.client = self.application.test_client()
-            self.endpoint = "/vault/export"
+            self.endpoint = "/api/v1/vault/export"
             self.from_authorized_user_info = patch("google.oauth2.credentials.Credentials.from_authorized_user_info").start()
             self.from_authorized_user_info.return_value = "credentials"
             self.build = patch("Oauth.google_drive_api.build").start()

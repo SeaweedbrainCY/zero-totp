@@ -12,6 +12,7 @@ class TestSignupController(unittest.TestCase):
                 raise Exception("Test must be run with in memory database")
         self.application = app
         self.client = self.application.test_client()
+        self.endpoint = "/api/v1/signup"
 
 
         self.getByEmailMocked = patch("database.user_repo.User.getByEmail").start()
@@ -46,7 +47,7 @@ class TestSignupController(unittest.TestCase):
     
 
     def test_signup(self):
-        response = self.client.post("/signup", json=self.json_payload)
+        response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 201)
         self.assertIn("Set-Cookie", response.headers)
         self.assertIn("api-key", response.headers["Set-Cookie"])
@@ -58,7 +59,7 @@ class TestSignupController(unittest.TestCase):
     
     def test_signup_error_while_sending_verification_email(self):
         self.send_verification_email.side_effect = Exception("error")
-        response = self.client.post("/signup", json=self.json_payload)
+        response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 201)
     
 
@@ -66,60 +67,60 @@ class TestSignupController(unittest.TestCase):
         for key in self.json_payload.keys():
             json_payload = self.json_payload.copy()
             del json_payload[key]
-            response = self.client.post("/signup", json=json_payload)
+            response = self.client.post(self.endpoint, json=json_payload)
             self.assertEqual(response.status_code, 400)
         
         for key in self.json_payload.keys():
             json_payload = self.json_payload.copy()
             json_payload[key]=""
-            response = self.client.post("/signup", json=json_payload)
+            response = self.client.post(self.endpoint, json=json_payload)
             self.assertEqual(response.status_code, 400)
     
     def test_signup_forbidden_email(self):
         self.check_email.return_value = False 
-        response = self.client.post("/signup", json=self.json_payload)
+        response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 401)
     
     
     def test_signup_user_already_exists(self):
         self.getByEmailMocked.return_value = True 
-        response = self.client.post("/signup", json=self.json_payload)
+        response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 409)
     
     def test_signup_password_too_long(self):
         self.hashpw.side_effect = ValueError("Pass word too long")
-        response = self.client.post("/signup", json=self.json_payload)
+        response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 400)
 
     def test_signup_error_while_hashing(self):
         self.hashpw.side_effect = Exception("Unknown error")
-        response = self.client.post("/signup", json=self.json_payload)
+        response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 500)
     
     def test_signup_error_while_creating_user_1(self):
         self.create_userMocked.side_effect = Exception("error")
-        response = self.client.post("/signup", json=self.json_payload)
+        response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 500)
     
     def test_signup_error_while_creating_user_2(self):
         self.create_userMocked.return_value = False
-        response = self.client.post("/signup", json=self.json_payload)
+        response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 500)
     
     def test_signup_error_while_storing_zke(self):
         self.create_zkeMocked.side_effect = Exception("error")
-        response = self.client.post("/signup", json=self.json_payload)
+        response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 500)
         self.delete_user.assert_called()
     
     def test_signup_username_already_exists(self):
         self.getByEmailMocked.return_value = True 
-        response = self.client.post("/signup", json=self.json_payload)
+        response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 409)
     
     def test_signup_username_too_long(self):
         self.json_payload["username"] = "a"*322
-        response = self.client.post("/signup", json=self.json_payload)
+        response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 400)
 
     

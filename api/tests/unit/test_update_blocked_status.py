@@ -15,7 +15,7 @@ class TestUpdateBlockedStatus(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.application = app
         self.client = self.application.test_client()
-        self.getUpdateEndpoint = "/admin/account/"
+        self.getUpdateEndpoint = "/api/v1/admin/account/"
         self.admin_user_id = 1
         self.normal_user_id = 2
 

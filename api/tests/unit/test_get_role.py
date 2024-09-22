@@ -16,7 +16,7 @@ class TestGetRole(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
-        self.roleEndpoint = "/role"
+        self.roleEndpoint = "/api/v1/role"
         self.admin_user_id = 1
         self.not_admin_user_id = 2
         self.user_without_role_id = 3

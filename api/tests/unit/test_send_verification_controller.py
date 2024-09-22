@@ -16,7 +16,7 @@ class TestSendVerificationController(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
-        self.endpoint = "/email/send_verification"
+        self.endpoint = "/api/v1/email/send_verification"
         self.user_id = 1
         user = UserModel(id=self.user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="admin")
 

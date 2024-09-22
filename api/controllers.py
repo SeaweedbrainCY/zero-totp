@@ -141,7 +141,7 @@ def login():
         if ip:
             rate_limiting_db.add_failed_login(ip, None)
         return {"message": "generic_errors.invalid_creds"}, 403
-    logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {request.headers.get('X-Forwarded-For', 'None')} ")
+    logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {ip}. X-Forwarded-For header is {request.headers.get('X-Forwarded-For')}")
     checked = bcrypt.checkpw(user.password)
     if not checked:
         if ip:
@@ -290,16 +290,16 @@ def update_email(user_id,body):
    
     email = utils.sanitize_input(body["email"]).strip()
     if not utils.check_email(email):
-        return {"message": "generic_errors.bad_email"}, 400
+        return {"message": "This email doesn't have the right format. Check it and try again"}, 400
          
     userDb = UserDB()
     if userDb.getByEmail(email):
-        return {"message": "generic_errors.email_exists"}, 403
+        return {"message": "This email already exists"}, 403
     old_mail = userDb.getById(user_id).mail
     user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
     if user:
         try:
-            ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+            ip = utils.get_ip(request)
             thread = threading.Thread(target=utils.send_information_email,args=(ip, old_mail, "Your email address has been updated"))
             thread.start()
         except Exception as e:
@@ -402,7 +402,7 @@ def update_vault(user_id, body):
     returnJson["zke"]=1 if zke else 0
     if errors == 0 and userUpdated and zke:
         try:
-            ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+            ip = utils.get_ip(request)
             thread = threading.Thread(target=utils.send_information_email,args=(ip, user.mail, "Your vault passphrase has been updated"))
             thread.start()
         except Exception as e:
@@ -496,7 +496,7 @@ def get_authorization_flow():
 # GET /google-drive/oauth/callback
 @require_valid_user
 def oauth_callback(user_id):
-    frontend_URI = conf.environment.frontend_URI[0] # keep the default URI, not regionized. 
+    frontend_URI = conf.environment.frontend_URI
     try: 
         credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
 
