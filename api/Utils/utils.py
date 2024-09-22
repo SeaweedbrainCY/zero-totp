@@ -116,7 +116,7 @@ def get_geolocation(ip):
 def get_ip(request):
     def test_ip(ip):
         try:
-            if(ipaddress.ip_address(ip).is_private):
+            if(ip.is_private):
                 return False
             return True
         except Exception as e:
