@@ -128,21 +128,23 @@ def get_ip(request):
         logging.error("Error while getting remote ip address : " + str(e))
         return None
     is_remote_ip_a_trusted_proxy = False
-    print("conf.api.trusted_proxy : " + str(conf.api.trusted_proxy))
     if conf.api.trusted_proxy != None:
         for ip_network in conf.api.trusted_proxy:
             if remote_ip in ip_network:
                 is_remote_ip_a_trusted_proxy = True
                 break
-    print("is_remote_ip_a_trusted_proxy : " + str(is_remote_ip_a_trusted_proxy))
 
     if is_remote_ip_a_trusted_proxy:
         if "X-Forwarded-For" in request.headers:
             forwarded_ip = request.headers["X-Forwarded-For"][0]
-            if test_ip(forwarded_ip):
-                return forwarded_ip
-            else:
-                logging.error("Could not get ip address from request. The forwarded IP was not a valid ip address. Forwarded ip : " + str(forwarded_ip))
+            try:
+                if test_ip(ipaddress.ip_address(forwarded_ip)):
+                    return forwarded_ip
+                else:
+                    logging.error("Could not get ip address from request. The forwarded IP was not a valid ip address. Forwarded ip : " + str(forwarded_ip))
+                    return None
+            except Exception as e:
+                logging.error("Could not get ip address from request. Error while parsing forwarded ip : " + str(e))
                 return None
         else:
             logging.error("Could not get ip address from request. The request was made through a trusted proxy but the X-Forwarded-For header was not set.")

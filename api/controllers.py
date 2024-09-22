@@ -141,7 +141,7 @@ def login():
         if ip:
             rate_limiting_db.add_failed_login(ip, None)
         return {"message": "generic_errors.invalid_creds"}, 403
-    logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {ip} ")
+    logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {ip}. X-Forwarded-For header is {request.headers.get('X-Forwarded-For')}")
     checked = bcrypt.checkpw(user.password)
     if not checked:
         if ip:
