@@ -475,6 +475,10 @@
         "long": "Nous utilisons des cookies d'authentification pour gérer vos sessions de manière sécurisée. Aucun cookie de traçage et aucuns traqueurs ne sont utilisés.",
         "short": "Cookies d'authentification:"
       },
+      "li5": {
+        "long": "Nous collectons l'adresse IP et la date et l'heure de chaque connexion à Zero-TOTP. Ces informations sont utilisées à des fins de sécurités, notamment pour vous notifier de connexions inhabituelles, vous fournir des journaux d'audit et mettre en place la politique de rétention des données (cf. 4. Rétention des données et contrôle de l'utilisateur).",
+        "short": "Informations de connexion:"
+      },
       "part1": "Nous collectons les informations suivantes: ",
       "title": "Informations que nous collectons"
     },
@@ -495,6 +499,12 @@
       "desc2": "Nous ne fournissons des garanties qu'en ce qui concerne les algorithmes de chiffrement robustes et les mesures de sécurité que nous utilisons pour protéger vos données pendant le stockage et la transmission.",
       "title": "Déclinaison de responsabilité"
     },
+    "location": {
+    "title": "Lieu de stockage des données",
+    "long1": "Pour maximiser la redondance, la réplication et la disponibilité, nous stockons des données dans trois pays : le Canada, l'Allemagne et la Suisse. Cette pratique est conforme au RGPD, car tous ces pays sont reconnus par l'UE comme acceptables pour le transfert de données. De plus, nous respectons les lois suisses sur la protection de la vie privée et la Loi 25 du Québec sur la protection des données.",
+    "long2": "Veuillez noter que la liste des pays où les données sont stockées peut changer à l'avenir. Si nous ajoutons un nouveau pays qui n'est pas membre de l'UE, le Canada, les États-Unis ou la Suisse, nous informerons les utilisateurs en conséquence."
+   },
+
     "licence": {
       "desc1": "Zero-TOTP est une application open-source distribuée sous la licence GNU General Publique Licence version 3 (GPL 3). Cela signifie que notre code source est disponible publiquement, et vous pouvez le voir, le modifier et le redistribuer selon les termes de la license GPL 3.",
       "desc2": "En choisissant d'utiliser Zero-TOTP, vous reconnaissez et acceptez de vous conformer aux dispositions de la licence GPL 3. Vous pouvez accéder au code source complet de notre application sur",
@@ -507,10 +517,11 @@
     },
     "retention": {
       "correction": {
-        "long": "Vous pouvez rectifier votre nom d'utilisateur, votre email et votre passphrase dans les réglages de votre compte.",
+        "long": "Vous pouvez rectifier votre nom d'utilisateur, votre email, votre passphrase et vos codes (et ses données associées) dans votre compte. Pour tout autre rectification, vous pouvez contacter developer[at]zero-totp.com",
         "short": "Correction des données:"
       },
-      "long": "Nous conservons vos données aussi longtemps que nécessaire pour remplir les objectifs énoncés dans cette politique de confidentialité ou comme requis par la loi en vigueur. Vous pouvez demander la suppression de votre compte et des données associées en nous contactant à l'adresse developer[at]zero-totp.com ou via les paramètres du compte à tout moment.",
+      "long1": "Nous conservons toutes vos données, y compris celles de votre coffre, pendant un maximum de cinq ans après votre dernière connexion afin de respecter la limitation du stockage des données en conformité avec le RGPD. Vous pouvez demander la suppression de votre compte et de toutes les données associées via les paramètres de votre compte à tout moment. Vous êtes responsable de la suppression de toutes les sauvegardes chiffrées de votre coffre-fort que vous avez téléchargées et qui ont été stockées sur Google Drive.",
+      "long2": "Les exigences en matière de récupération après sinistre et de disponibilité des données impliquent que nous avons un intérêt légitime à maintenir des sauvegardes sécurisées et immuables. Les sauvegardes sont conservées pendant un maximum de 60 jours. Les demandes de suppression laisseront ces sauvegardes intactes, et nous ne supprimerons des données des sauvegardes que si nous y sommes légalement contraints.",
       "short": "Rétention des données:",
       "title": "Rétention des données et contrôle de l'utilisateur"
     },
