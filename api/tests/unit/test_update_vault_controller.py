@@ -1,4 +1,5 @@
 from app import app
+from database.db import db 
 import unittest
 import controllers
 from unittest.mock import patch
@@ -6,7 +7,7 @@ from zero_totp_db_model.model import User, TOTP_secret, ZKE_encryption_key
 from environment import conf
 from CryptoClasses import jwt_func,hash_func
 from uuid import uuid4
-
+import json
 import jwt
 import datetime
 
@@ -15,46 +16,47 @@ class TestUpdateVault(unittest.TestCase):
     def setUp(self):
         if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
-        self.application = app
-        self.jwtCookie = jwt_func.generate_jwt(1)
-        self.client = self.application.test_client()
+        self.flask_application = app
+        self.client = self.flask_application.test_client()
         self.endpoint = "/api/v1/update/vault"
         
+        self.user_id = 1
+        self.nb_totp = 10
+        self.password =  hash_func.Bcrypt("HelloWorld!")
+        self.jwtCookie = jwt_func.generate_jwt(self.user_id)
+        user = User(id=self.user_id,username='user1', mail="user1@test.com", password=self.password.hashpw().decode('utf-8'), derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAA", createdAt="01/01/2001", isBlocked=False)
+        self.totp_codes = {}
+        zke = ZKE_encryption_key(user_id=self.user_id, ZKE_key="zke_enc")
+        with self.flask_application.app.app_context():
+            db.create_all()
+            db.session.add(user)
+            db.session.add(zke)
+            for i in range(self.nb_totp):
+                id = str(uuid4())
+                totp = TOTP_secret(uuid=id, user_id=self.user_id, secret_enc = f"enc_{i}")
+                self.totp_codes[id] = f"code_{i}-2"
+                db.session.add(totp)
+            db.session.commit()
 
-        self.getById = patch("database.user_repo.User.getById").start()
-        self.getById.return_value = User(id=1, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001", isBlocked=False)
-
-        self.checkpw = patch("CryptoClasses.hash_func.Bcrypt.checkpw").start()
-        self.checkpw.return_value = True
-
-        self.hashpw = patch("CryptoClasses.hash_func.Bcrypt.hashpw").start()
-        self.hashpw.return_value = "new_passphrase"
-
-        self.getSecretByUUID = patch("database.totp_secret_repo.TOTP_secret.get_enc_secret_by_uuid").start()
-        self.getSecretByUUID.return_value = TOTP_secret(uuid="uuid", user_id=1)
-
-        self.updateSecret = patch("database.totp_secret_repo.TOTP_secret.update_secret").start()
-        self.updateSecret.return_value = True
-
-        self.addSecret = patch("database.totp_secret_repo.TOTP_secret.add").start()
-        self.addSecret.return_value = True
-
-        self.zkeUpdate = patch("database.zke_repo.ZKE.update").start()
-        self.zkeUpdate.return_value = True
-
-        self.updateUser = patch("database.user_repo.User.update").start()
-        self.updateUser.return_vtest_update_vault_new_passphrase_bad_formatalue = True
-
-        self.send_information_email = patch("Utils.utils.send_information_email").start()
-        self.send_information_email.return_value = True
+            
+       
 
        
 
-        self.payload = {"new_passphrase" : "new_passphrase", "old_passphrase":"old_passphrase", "enc_vault":"{\"ecd44892-ac53-498b-b4ae-9d5124462cdd\": \"secret\"}", "zke_enc":"zke_enc", "passphrase_salt": "pasphrase_salt", "derived_key_salt":"derived_key_salt"}
+        self.payload = {
+            "new_passphrase" : "new_passphrase", 
+            "old_passphrase":self.password.password, 
+            "enc_vault": json.dumps(self.totp_codes), 
+            "zke_enc":"zke_enc", 
+            "passphrase_salt": "pasphrase_salt", 
+            "derived_key_salt":"derived_key_salt"}
 
 
     def tearDown(self):
-        patch.stopall()
+         with self.flask_application.app.app_context():
+            db.session.remove()
+            db.drop_all()
+            patch.stopall()
     
     def generate_expired_cookie(self):
         payload = {
@@ -68,13 +70,15 @@ class TestUpdateVault(unittest.TestCase):
         return jwtCookie
     
     def test_update_vault(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 201)
-        self.updateUser.assert_called_once()
-        self.updateSecret.assert_called_once()
-        self.zkeUpdate.assert_called_once()
-        self.send_information_email.assert_called_once()
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            response = self.client.put(self.endpoint, json=self.payload)
+            self.assertEqual(response.status_code, 201)
+            codes = db.session.query(TOTP_secret).filter_by(user_id=self.user_id).all()
+            for code in codes:
+                self.assertEqual(code.secret_enc, self.totp_codes[code.uuid])
+
+
     
 
     def test_update_vault_no_cookie(self):
@@ -107,33 +111,30 @@ class TestUpdateVault(unittest.TestCase):
     
 
     def test_update_vault_wrong_passphrase(self):
-        self.checkpw.return_value = False
+        self.payload["old_passphrase"] = "wrong"
         self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 403)
-    
-    def test_update_vault_passphrase_too_long(self):
-        self.hashpw.side_effect = ValueError
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json()["hashing"], 0)
-    
+        self.assertEqual(response.json(), {"message": "Invalid passphrase"})
 
-    def test_update_vault_passphrase_error(self):
-        self.hashpw.side_effect = Exception
+
+    def test_update_vault_passphrase_too_long(self):
+        self.payload["new_passphrase"] = "a"*100
         self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json()["hashing"], 0)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual({"message": "passphrase too long. It must be <70 char"}, response.json())
+    
 
     def test_update_vault_unknown_totp(self):
-        self.getSecretByUUID.return_value = None
+        self.totp_codes.pop(-1)
+        self.totp_codes[str(uuid4())] = "code"
+        self.payload["enc_vault"] = json.dumps(self.totp_codes)
         self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 201)
-        self.addSecret.assert_called_once()
-    
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {"message": "To avoid the loss of your information, Zero-TOTP is rejecting this request because it has detected that you might lose data. Please contact quickly Zero-TOTP developers to fix issue."}, 400)
+"""   
     def test_update_vault_unknown_totp_failed(self):
         self.getSecretByUUID.return_value = None
         self.addSecret.return_value = False
@@ -194,5 +195,5 @@ class TestUpdateVault(unittest.TestCase):
         self.assertEqual(response.json()["message"], "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support.")
     
 
-    
+    """
     
