@@ -66,6 +66,7 @@
         "hashing": "Une erreur est survenue en hachant ta passphrase. Merci de réessayer ",
         "incorrect": "La passphrase est incorrecte.",
         "length": "Ta passphrase doit contenir au moins 12 caractères.",
+        "light_abort": "Ta passphrase et ton coffre ont bien été modifiés. Mais une erreur est survenue lors des dernières étapes de finition. Voici l'étape qui a échouée :",
         "match": "Les passphrases ne correspondent pas",
         "network": "Serveur injoignable. Merci de vérifier ta connexion internet ou de réessayer. Ne rafraîchis pas la page pour éviter de perdre ta session.",
         "number": "Ta passphrase doit contenir au moins un chiffre",

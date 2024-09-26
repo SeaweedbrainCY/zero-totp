@@ -66,6 +66,7 @@
         "hashing": "An error occured while hashing your password. Please, try again",
         "incorrect": "Your passphrase is incorrect",
         "length": "Your passphrase must be at least 12 characters long",
+        "light_abort": "Your passphrase and vault are updated with success. But an error occured while finishing the process. The following step failed : ",
         "match": "Your passphrases do not match",
         "network": "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session.",
         "number": "Your passphrase must contain at least one number",
