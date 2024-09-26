@@ -9,13 +9,7 @@ api:
     ## The internal port the API will listen on. Default is 8080.
     # port: 8080
 
-    ## Domain used by your API. 
-    ## This is used to enforce the security of the API.
-    ## The API must be served over HTTPS.
-    ## Only include the domain name, without the protocol or path.
-    ## The domain MUST be the same as the one used in the frontend.
-    ## If developing locally, use localhost and specify the port.
-    domain : example.com
+   
 
     ## Trusted proxy IP addresses.
     ## If the API is behind a reverse proxy, you must specify the IP addresses of the proxy.
@@ -74,11 +68,18 @@ environment:
   ## THIS VALUE IS AUTOMATICALLY GENERATED/UPDATED
   ## MODIFICATION OF THIS VALUE WILL CAUSE THE API TO FAIL OR NEVER START
   config_version: 1.0
+   ## Domain used by your app. 
+   ## This is used to enforce the security of the API.
+   ## The API must be served over HTTPS.
+   ## Only include the domain name, without the protocol or path.
+   ## The domain MUST be the same as the one used in the frontend.
+   ## If developing locally, use localhost and specify the port.
+   domain : example.com
 
 database:
     ## The URI of the database to connect to.
-    ## The URI must be in the format of "mysql://user:password@host/db_name"
-    database_uri: "mysql://user:password@localhost/db_name"
+    ## The URI must be in the format of "mysql://user:password@host:port/db_name"
+    database_uri: "mysql://user:password@host:port/db_name"
 
 
 
