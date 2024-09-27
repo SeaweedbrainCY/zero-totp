@@ -380,9 +380,13 @@ def update_vault(user_id, body):
         return returnJson, 500
     
     old_vault = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id)
-    if(len(old_vault) != len(enc_vault)):
-        logging.error(f"DATA LOSS PREVENTION ERROR. The user {user_id} tried to update his vault but the number of secrets is different from the number of secrets in the database. The user sent {len(enc_vault)} secrets and the database has {len(old_vault)} secrets")
+    if len(old_vault) != len(enc_vault):
+        logging.warning(f"User {user_id} tried to update his vault but the number of secrets in the new vault is different from the old one. The update is rejected.")
         return {"message": "To avoid the loss of your information, Zero-TOTP is rejecting this request because it has detected that you might lose data. Please contact quickly Zero-TOTP developers to fix issue."}, 400
+    for secret in old_vault:
+        if secret.uuid not in enc_vault:
+            logging.warning(f"FORBIDDEN. The user {user_id} tried to update but the secret {secret.uuid} is missing in the new vault. The update is rejected.")
+            return {"message": "Forbidden action. Zero-TOTP detected that you were updating object you don't have access to. The request is rejected."}, 403
     
 
     returnJson["hashing"]=1
