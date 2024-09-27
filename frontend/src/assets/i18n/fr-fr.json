@@ -58,7 +58,7 @@
         "decrypt_one_secret": "Clé invalide. Tu ne peux pas déchiffrer ce secret. Ce secret sera ignoré. Déconnecte et reconnecte toi.",
         "derive": "Erreur : Impossible de dériver ta nouvelle passphrase",
         "expired": "Impossible de déchiffrer ton coffre. Ta clé de déchiffrement a expiré. Déconnecte et reconnecte toi.",
-        "fatal": "Une erreur est survenue en mettant à jour ton coffre. Des informations peuvent ne pas avoir été mises à jour. Contacte le support immédiatement avec le code d'erreur : #9",
+        "fatal": "Une erreur est survenue en mettant à jour ton coffre. Des informations peuvent ne pas avoir été mises à jour. ",
         "fatal_light": "Opération abandonnée. Rien n'a été modifié.",
         "fetch_vault": "Erreur : Impossible de récupérer ton coffre depuis le serveur.",
         "full_abort": "Une erreur est survenue. Aucune modification n'a été faite. La mise à jour a été abandonné. Signale le code d'erreur ",

@@ -635,7 +635,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
             reject(error.status)
           } else {
             this.translate.get("account.passphrase.error.fatal").subscribe((translation: string) => {
-              this.utils.toastError(this.toastr,translation +error.error.totp +" "+ error.error.zke + error.error.user ,"");
+              this.utils.toastError(this.toastr,translation, error.error.message);
           });
             reject(error.status)
           }

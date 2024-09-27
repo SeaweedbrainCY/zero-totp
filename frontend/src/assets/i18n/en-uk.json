@@ -58,7 +58,7 @@
         "decrypt_one_secret": "Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.",
         "derive": "Error : Impossible to derive your new passphrase",
         "expired": "Impossible to decrypt your vault, you're decryption key has expired. Please log out and log in again.",
-        "fatal": "An error occured while updating your vault. Some information may not be updated\n Contact the support ASAP with the following error code : #9",
+        "fatal": "An error occured while updating your vault. Some information may not be updated\n ",
         "fatal_light": "Operation aborted. Nothing have been updated. ",
         "fetch_vault": "Error : Impossible to retrieve your vault from the server",
         "full_abort": "An error occured. No update has been made. Update aborted. Report the error code ",
