@@ -21,6 +21,8 @@ class TestUpdateVault(unittest.TestCase):
         self.endpoint = "/api/v1/update/vault"
         
         self.user_id = 1
+        self.other_user_id = 2
+        self.foreign_totp_id = str(uuid4())
         self.nb_totp = 10
         self.password =  hash_func.Bcrypt("HelloWorld!")
         self.jwtCookie = jwt_func.generate_jwt(self.user_id)
@@ -36,6 +38,8 @@ class TestUpdateVault(unittest.TestCase):
                 totp = TOTP_secret(uuid=id, user_id=self.user_id, secret_enc = f"enc_{i}")
                 self.totp_codes[id] = f"code_{i}-2"
                 db.session.add(totp)
+            self.foreign_totp = TOTP_secret(uuid=self.foreign_totp_id, user_id=self.other_user_id, secret_enc = "enc")
+            db.session.add(self.foreign_totp)
             db.session.commit()
 
             
@@ -77,7 +81,12 @@ class TestUpdateVault(unittest.TestCase):
             codes = db.session.query(TOTP_secret).filter_by(user_id=self.user_id).all()
             for code in codes:
                 self.assertEqual(code.secret_enc, self.totp_codes[code.uuid])
-
+            user = db.session.query(User).filter_by(id=self.user_id).first()
+            self.assertEqual(user.passphraseSalt, self.payload["passphrase_salt"])
+            self.assertTrue(hash_func.Bcrypt(self.payload["new_passphrase"]).checkpw(user.password.decode('utf-8')))
+            self.assertEqual(user.derivedKeySalt, self.payload["derived_key_salt"])
+            zke = db.session.query(ZKE_encryption_key).filter_by(user_id=self.user_id).first()
+            self.assertEqual(zke.ZKE_key, self.payload["zke_enc"])
 
     
 
@@ -127,63 +136,66 @@ class TestUpdateVault(unittest.TestCase):
     
 
     def test_update_vault_unknown_totp(self):
-        self.totp_codes.pop(-1)
+        self.totp_codes.pop(list(self.totp_codes.keys())[0])
+        self.totp_codes[str(uuid4())] = "code"
+        self.payload["enc_vault"] = json.dumps(self.totp_codes)
+        self.client.cookies = {"api-key": self.jwtCookie}
+        response = self.client.put(self.endpoint, json=self.payload)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json(), {"message": "Forbidden action. Zero-TOTP detected that you were updating object you don't have access to. The request is rejected."}, 403)
+
+    def test_update_vault_of_another_user(self):
+        self.totp_codes.pop(list(self.totp_codes.keys())[0])
+        self.totp_codes[self.foreign_totp_id] = "code"
+        self.payload["enc_vault"] = json.dumps(self.totp_codes)
+        self.client.cookies = {"api-key": self.jwtCookie}
+        response = self.client.put(self.endpoint, json=self.payload)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.json(), {"message": "Forbidden action. Zero-TOTP detected that you were updating object you don't have access to. The request is rejected."}, 403)
+    
+    def test_update_vault_too_many_totp(self):
         self.totp_codes[str(uuid4())] = "code"
         self.payload["enc_vault"] = json.dumps(self.totp_codes)
         self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {"message": "To avoid the loss of your information, Zero-TOTP is rejecting this request because it has detected that you might lose data. Please contact quickly Zero-TOTP developers to fix issue."}, 400)
-"""   
-    def test_update_vault_unknown_totp_failed(self):
-        self.getSecretByUUID.return_value = None
-        self.addSecret.return_value = False
+    
+    def test_update_vault_too_few_totp(self):
+        self.totp_codes.pop(list(self.totp_codes.keys())[0])
+        self.payload["enc_vault"] = json.dumps(self.totp_codes)
         self.client.cookies = {"api-key": self.jwtCookie}
         response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json()["totp"], 0)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {"message": "To avoid the loss of your information, Zero-TOTP is rejecting this request because it has detected that you might lose data. Please contact quickly Zero-TOTP developers to fix issue."}, 400)
 
-    def test_update_vault_wrong_totp_user_id(self):
-        self.getSecretByUUID.return_value = TOTP_secret(user_id=2)
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json()["totp"], 0)
     
-    def test_update_vault_update_totp_failed(self):
-        self.updateSecret.return_value = None 
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json()["totp"], 0)
-    
-    def test_update_vault_failed_update_zke(self):
-        self.zkeUpdate.return_value = None 
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json()["zke"], 0)
-    
-    def test_update_vault_failed_update_user(self):
-        self.updateUser.return_value = None 
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json()["user"], 0)
     
     def test_update_vault_unverified_user(self):
-        self.getById.return_value = User(id=1, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001", isBlocked=False)
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], "Not verified")
+        with self.flask_application.app.app_context():
+            user = db.session.query(User).filter_by(id=self.user_id).first()
+            user.isVerified = False
+            db.session.commit()
+            self.client.cookies = {"api-key": self.jwtCookie}
+            response = self.client.put(self.endpoint, json=self.payload)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], "Not verified")
+            user = db.session.query(User).filter_by(id=self.user_id).first()
+            user.isVerified = True
+            db.session.commit()
     
     def test_update_vault_blocked_user(self):
-        self.getById.return_value = User(id=1, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001", isBlocked=True)
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], "User is blocked")
+        with self.flask_application.app.app_context():
+            user = db.session.query(User).filter_by(id=self.user_id).first()
+            user.isBlocked = True
+            db.session.commit()
+            self.client.cookies = {"api-key": self.jwtCookie}
+            response = self.client.put(self.endpoint, json=self.payload)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], "User is blocked")
+            user = db.session.query(User).filter_by(id=self.user_id).first()
+            user.isBlocked = False
+            db.session.commit()
     
     def test_update_invalid_vault(self):
         self.client.cookies = {"api-key": self.jwtCookie}
@@ -193,7 +205,4 @@ class TestUpdateVault(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         
         self.assertEqual(response.json()["message"], "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support.")
-    
-
-    """
     
