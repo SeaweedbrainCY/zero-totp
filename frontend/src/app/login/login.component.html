@@ -14,7 +14,7 @@
         </div>
       </div>
       <div class="has-text-centered	is-full ">
-        <div class="field block">
+        <div class="field block"  *ngIf="!is_oauth_flow">
           <p class="control has-icons-left has-icons-right">
              <input class="input " type="email" placeholder="{{'email' | translate}}" name="email" [(ngModel)]="email"/>
             <span class="icon is-small is-left">
@@ -33,14 +33,14 @@
               <fa-icon [icon]="faKey"></fa-icon>
             </span>
           </p>
-          <div class="control">
+          <div class="control" >
             <a class="button" (click)="isPassphraseVisible = !isPassphraseVisible">
               <fa-icon [icon]="faEyeSlash" *ngIf="isPassphraseVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isPassphraseVisible" size="sm"></fa-icon>
             </a>
             
           </div>
         </div>
-        <div class="control has-text-left" style="margin-top: -20px;">
+        <div class="control has-text-left" style="margin-top: -20px;" *ngIf="!is_oauth_flow">
           <label class="checkbox">
             <input type="checkbox" name="remember" [(ngModel)]="remember">
             {{ 'login.remember' | translate }} 

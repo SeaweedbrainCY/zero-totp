@@ -7,72 +7,38 @@
   },
   "abort": "Abandonné",
   "about": "À propos",
-  "always": "Toujours",
-  "available_soon": "Disponible bientôt !",
-  "blue": "Bleu",
-  "cancel": "Retour",
-  "changelog": "Changelog",
-  "close": "Fermer",
-  "continue": "Continuer",
-  "copied": "Copié !",
-  "delete": "Supprimer",
-  "email": "Email",
-  "green": "Vert",
-  "less": "Moins",
-  "loading": "Chargement ...",
-  "logout": "Déconnexion",
-  "log_in": "Connexion",
-  "more": "Plus",
-  "my_vault": "Mon coffre",
-  "name": "Nom",
-  "never": "Jamais",
-  "orange": "Orange",
-  "passphrase": "Passphrase",
-  "privacy_policy": "Politique de confidentialité",
-  "red": "Rouge",
-  "save": "Sauvegarder",
-  "seconds": "secondes",
-  "sign_up": "Inscription",
-  "start": "Commencer",
-  "stop": "Arrêter",
-  "unlock": "Déverrouiller",
-  "update": "Mettre à jour",
-  "username": "Nom d'utilisateur",
-  "verify": "Vérifier",
   "account": {
-    "loading": "Récupération de ta saveur de glace préférée ... ",
-    "title": "Ton compte ⚙️",
     "delete": {
       "button": "Supprimer mon compte",
-      "success": "Merci d'avoir utilisé Zero-TOTP. Ton compte a été supprimé. Au revoir 👋",
-      "title": "Suppression de compte",
-      "warning": "Une fois ton compte supprimé, tu ne pourras pas revenir en arrière. Sois en sûr. ",
       "error": {
         "aborted": "Opération abandonnée.",
         "wrong_passphrase": "Passphrase incorrecte. Opération abandonnée."
       },
       "popup": {
+        "button": {
+          "destroy": "Détruire mon compte définitivement",
+          "return": "Retour en sécurité"
+        },
         "confirm": "Pour supprimer ton compte, confirme ta passphrase :",
         "title": "Es-tu sûr ? ",
         "warn1": "Tu ne seras pas en mesure d'annuler cette action. Tu n'auras plus d'accès à ton coffre TOTP.",
         "warn2": "Tu vas perdre TOUS tes secrets",
-        "warn3": "TOUTES les backups sur Google Drive vont être DÉTRUITES",
-        "button": {
-          "destroy": "Détruire mon compte définitivement",
-          "return": "Retour en sécurité"
-        }
-      }
+        "warn3": "TOUTES les backups sur Google Drive vont être DÉTRUITES"
+      },
+      "success": "Merci d'avoir utilisé Zero-TOTP. Ton compte a été supprimé. Au revoir 👋",
+      "title": "Suppression de compte",
+      "warning": "Une fois ton compte supprimé, tu ne pourras pas revenir en arrière. Sois en sûr. "
     },
     "email": {
       "current": "Ton email actuel est",
       "error": "Une erreur est survenue. Merci de réessayer plus yatd",
-      "success": "Email mis à jour avec succès",
-      "title": "Modification d'email",
       "errors": {
         "char": "&, <, >, \" et ' sont interdits",
         "invalid": "Es-tu sûr de ton adresse email ? ",
         "match": "Tes emails ne correspondent pas !"
       },
+      "success": "Email mis à jour avec succès",
+      "title": "Modification d'email",
       "update": {
         "confirm": "Confirme ton email",
         "label": "Nouvel email"
@@ -82,26 +48,25 @@
       "network": "Impossible de discuter avec le serveur. Vérifie ta connexion internet et status.zero-totp.com",
       "unknown": "Oups, une erreur est survenue. Réponse du serveur : "
     },
+    "loading": "Récupération de ta saveur de glace préférée ... ",
     "passphrase": {
       "confirm": "Confirme ta passphrase",
       "current": "Ta passphrase actuelle",
-      "new": "Ta nouvelle passphrase",
-      "no_former_passphrase": "Ta passphrase actuelle est requise pour être modifiée",
-      "title": "Modifier ta passphrase",
       "error": {
         "char": "' \\\" < et > sont interdits dans les passphrase",
         "decrypt": "Erreur : Impossible de chiffrer ton coffre.",
         "decrypt_one_secret": "Clé invalide. Tu ne peux pas déchiffrer ce secret. Ce secret sera ignoré. Déconnecte et reconnecte toi.",
         "derive": "Erreur : Impossible de dériver ta nouvelle passphrase",
         "expired": "Impossible de déchiffrer ton coffre. Ta clé de déchiffrement a expiré. Déconnecte et reconnecte toi.",
-        "fatal": "Une erreur est survenue en mettant à jour ton coffre. Des informations peuvent ne pas avoir été mises à jour. Contacte le support immédiatement avec le code d'erreur : #9",
+        "fatal": "Une erreur est survenue en mettant à jour ton coffre. Des informations peuvent ne pas avoir été mises à jour. ",
         "fatal_light": "Opération abandonnée. Rien n'a été modifié.",
         "fetch_vault": "Erreur : Impossible de récupérer ton coffre depuis le serveur.",
         "full_abort": "Une erreur est survenue. Aucune modification n'a été faite. La mise à jour a été abandonné. Signale le code d'erreur ",
-        "hashing": "Une erreur est survenue en hachant ta passphrase. Merci de réessayer ",
         "hash_new": "Une erreur est survenue en hachant ta nouvelle passphrase. Ton coffre et ta passphrase n'ont pas été modifiées. Tu peux réessayer.",
+        "hashing": "Une erreur est survenue en hachant ta passphrase. Merci de réessayer ",
         "incorrect": "La passphrase est incorrecte.",
         "length": "Ta passphrase doit contenir au moins 12 caractères.",
+        "light_abort": "Ta passphrase et ton coffre ont bien été modifiés. Mais une erreur est survenue lors des dernières étapes de finition. Voici l'étape qui a échouée :",
         "match": "Les passphrases ne correspondent pas",
         "network": "Serveur injoignable. Merci de vérifier ta connexion internet ou de réessayer. Ne rafraîchis pas la page pour éviter de perdre ta session.",
         "number": "Ta passphrase doit contenir au moins un chiffre",
@@ -110,12 +75,13 @@
         "wrong_key": "Mauvaise clé. Tu ne peux pas déchiffrer ces secrets. Les secrets affichés pourraient ne pas être complets. Déconnecte et reconnecte toi.",
         "wrong_key_vault": "Clé invalide. Tu ne peux pas déchiffrer ce coffre."
       },
+      "new": "Ta nouvelle passphrase",
+      "no_former_passphrase": "Ta passphrase actuelle est requise pour être modifiée",
       "popup": {
         "google": {
           "backup_error": "Erreur : Impossible de backup ton coffre sur Google Drive.",
           "delete_error": "Une erreur est survenue en supprimant ta backup de Google Drive",
           "fetch_error": "Erreur : Impossible de vérifier des préférences Google Drive.",
-          "title": "Oh ! Tu as des backups sur Google Drive",
           "option": {
             "delete": {
               "info": "(Recommandé si ton ancienne passphrase n'est plus sûre)",
@@ -124,7 +90,8 @@
             "keep": {
               "strong": "Garder mes vieilles backups avec ma vieille passphrase et faire une nouvelle backup"
             }
-          }
+          },
+          "title": "Oh ! Tu as des backups sur Google Drive"
         },
         "updating": {
           "derivation": "Dérivation de ta nouvelle passphrase",
@@ -150,12 +117,12 @@
           "warn4": "Si tu perds cette nouvelle passphrase, il n'y a aucuns moyens de la récupérer",
           "warn5": "Si tu change ta passphrase pour des raisons de sécurité, supprime tes backups immédiatement"
         }
-      }
+      },
+      "title": "Modifier ta passphrase"
     },
+    "title": "Ton compte ⚙️",
     "username": {
       "current": "Ton nom d'utilisateur actuel est : ",
-      "success": "Nom d'utilisateur mis à jour 🎉",
-      "title": "Modifier ton nom d'utilisateur ",
       "error": {
         "char": "&, <, >, \" et ' sont interdits",
         "missing": "Oups, ça ne peut pas rester vide !",
@@ -163,11 +130,23 @@
       },
       "new": {
         "label": "Nouveau nom d'utilisateur"
-      }
+      },
+      "success": "Nom d'utilisateur mis à jour 🎉",
+      "title": "Modifier ton nom d'utilisateur "
     }
   },
+  "add": "Ajouter",
+  "always": "Toujours",
+  "available_soon": "Disponible bientôt !",
+  "blue": "Bleu",
+  "cancel": "Retour",
+  "changelog": "Changelog",
+  "close": "Fermer",
+  "continue": "Continuer",
+  "copied": "Copié !",
+  "delete": "Supprimer",
+  "email": "Email",
   "email_verif": {
-    "title": "Vérifie ton adresse email",
     "code": {
       "placeholder": "Entre le code ici"
     },
@@ -188,17 +167,17 @@
       "failed": "Mauvais code de vérification. Il te reste {{left_attempts}} essai(s) avant d'invalider ton code de vérification.",
       "generic": "Code invalide ou expiré",
       "no_active_code": "Tu n'as pas de code de vérification actif. Pour vérifier ton adresse mail, demande en un nouveau.",
+      "no_email": "Pour commencer, connecte toi",
       "rate_limited": "Tu es rate limité ! Tu as demandé trop de codes de vérification en peu de temps. Tu pourras demander de nouveaux codes dans {{time}} min.",
       "too_many_failed": "Trop de tentatives échouées. Demande un nouveau code de vérification.",
-      "unknown": "Une erreur est survenue ! Déconnecte et reconnecte toi ❌",
-      "no_email": "Pour commencer, connecte toi"
+      "unknown": "Une erreur est survenue ! Déconnecte et reconnecte toi ❌"
     },
     "popup": {
-      "error": "Une erreur est survenue. Tu peux réessayer",
-      "success": "Email mis à jour avec succès. Tu devrais recevoir un email de vérification bientôt ! ✅",
       "button": {
         "update": "Modifier mon adresse mail"
-      }
+      },
+      "error": "Une erreur est survenue. Tu peux réessayer",
+      "success": "Email mis à jour avec succès. Tu devrais recevoir un email de vérification bientôt ! ✅"
     },
     "resend": {
       "error": "Une erreur est survenue ! ❌",
@@ -208,9 +187,10 @@
       "part1": "Nous avons envoyé un mail à",
       "part2": "pour vérifier ton adresse email."
     },
+    "title": "Vérifie ton adresse email",
     "verify": {
-      "success": "Email vérifié ! ✅",
-      "already_verified": "Email déjà vérifié !"
+      "already_verified": "Email déjà vérifié !",
+      "success": "Email vérifié ! ✅"
     }
   },
   "footer": {
@@ -224,18 +204,11 @@
     "invalid_creds": "Identifiants invalides",
     "invalid_request": "Requête invalide",
     "missing_params": "Des paramètres sont manquants",
-    "username_exists": "Nom d'utilisateur déjà existant",
-    "user_not_found": "Utilisateur non trouvé"
+    "user_not_found": "Utilisateur non trouvé",
+    "username_exists": "Nom d'utilisateur déjà existant"
   },
+  "green": "Vert",
   "home": {
-    "subtitle": "Zero-TOTP est une plateforme",
-    "subtitle.and": "et basée sur une",
-    "subtitle.opensource": "100% open-source",
-    "subtitle.platform": "",
-    "subtitle.zke": "Zero-Knowledge Infrastructure.",
-    "title": "Garde tes codes TOTP dans un ",
-    "title.strong": "endroit sûr",
-    "trust.no.one": "N'ai confiance en personne, sauf en TOI.",
     "about": {
       "title": "À propos de la Zero-Knowledge Encryption",
       "zke_def": "Le chiffrement à connaissance nulle (ZKE) désigne une mesure de sécurité robuste qui garantit une protection maximale de tes données. Avec le ZKE, tes informations sont chiffrées localement sur ton appareil avant d'être envoyées vers nos serveurs, et seul toi détiens les clés de chiffrement, assurant ainsi que personne, y compris le fournisseur de services (nous), ne peut accéder à tes données. Cela te donne un contrôle total sur tes informations sensibles tout en profitant de la commodité et de la flexibilité du stockage dans le cloud."
@@ -243,8 +216,6 @@
     "backup": {
       "desc": "On devrait toujours pouvoir accéder à nos codes TOTP. C'est pourquoi",
       "desc_strong": "Zero-TOTP est disponible sur 4 plateformes indépendantes via lesquelles tu peux déchiffrer ton coffre",
-      "title": "Toujours avoir un ",
-      "title_strong": "plan de secours",
       "option": {
         "available": "Déjà disponible !",
         "beta": "Disponible en beta",
@@ -253,7 +224,9 @@
         "rescue": "Un site web très simple, minimaliste et ULTRA stable, hébergé sur github pages où tu pourras upload une backup de ton coffre et le déchiffrer. Ainsi, même si les serveurs de Zero-TOTP rencontrent un problème, tu pourras toujours ouvrir les backups de ton coffre.",
         "soon": "Arrive bientôt",
         "zero_totp": "La version complète de Zero-TOTP  avec toutes ses fonctionnalités."
-      }
+      },
+      "title": "Toujours avoir un ",
+      "title_strong": "plan de secours"
     },
     "button": {
       "buy_me_a_coffee": "m'offrir un café",
@@ -265,8 +238,6 @@
       "desc": "Les application open source & auto-hébergés sont possible grâce à ton support. Si tu aimes ce projet, tu peux"
     },
     "data": {
-      "subtitle": "Choisis où stocker ton coffre chiffré",
-      "title": "Ne perds jamais tes données",
       "google": {
         "desc": "Tu peux synchroniser ton coffre chiffré avec Google Drive. Cette option n'est pas obligatoire mais vivement recommandée. Si jamais nos serveurs ont un problèmes, tu pourras quand même récupérer ton coffre chiffré depuis Google Drive.<br>Dans tous les cas, ton coffre est toujours chiffré et seule ta passphrase peut le déchiffrer. Cette passphrase n'est jamais stockée quelque part.",
         "title": "Backup ton coffre chiffré sur Google Drive"
@@ -275,34 +246,43 @@
         "desc": "Tu peux télécharger ton coffre chiffré et le stocker sur ton ordinateur (ou n'importe où ailleurs). Cette option n'est pas obligatoire mais vivement recommandée. Si nos serveurs rencontrent un problème, tu pourras récupérer ton coffre chiffrée depuis ton ordinateur.<br>Comme toujours, ton coffre reste chiffré et seule ta passphrase peut le déchiffrer. Cette passphrase n'est jamais stockées quelque part.",
         "title": "Backup ton coffre chiffrée dans ton ordinateur"
       },
+      "subtitle": "Choisis où stocker ton coffre chiffré",
+      "title": "Ne perds jamais tes données",
       "zero_totp": {
         "desc": "C'est l'option par défaut et obligatoire. Ton coffre chiffré est stocké sur nos servers, hébergés au Canada 🇨🇦, en Suisse 🇨🇭 et en Allemagne 🇩🇪. Personne ne peut accéder à tes données, sauf toi. C'est cette méthode qui est utilisée quand tu te connecte sur <a href='https://zero-totp.com'>zero-totp.com</a>. Tu ne peux pas désactiver cette option, mais tu peux toujours sauvegarder ton coffre chiffré sur ton ordinateur ou sur Google Drive.",
         "title": "Stock ton coffre chiffré sur les serveur de Zero-TOTP"
       }
     },
     "project": {
-      "title": "Le projet",
       "desc": {
         "contributions": "Tous les contributions sont les bienvenues !",
         "part1": "Zero-TOTP a été lancé en 2023 par",
         "part2": "avec l'ambition de fournir une alternative 100% open-source, sûre et fiable aux clients TOTP propriétaires. Ce projet est toujours en développement et est actuellement en beta."
-      }
+      },
+      "title": "Le projet"
     },
+    "subtitle": "Zero-TOTP est une plateforme",
+    "subtitle.and": "et basée sur une",
+    "subtitle.opensource": "100% open-source",
+    "subtitle.platform": "",
+    "subtitle.zke": "Zero-Knowledge Infrastructure.",
+    "title": "Garde tes codes TOTP dans un ",
+    "title.strong": "endroit sûr",
+    "trust.no.one": "N'ai confiance en personne, sauf en TOI.",
     "tuto": {
       "2FA": "authentification à 2 facteurs",
       "accounts": "pour sécuriser tes comptes (gmail, facebook, twitter, github, etc ...). C'est comme un code de validation SMS, mais plus sécurisé et plus pratique !",
       "title": "Ajoute une couche de sécurité à tes comptes",
       "tmp_codes": "des codes temporaires",
       "totp_are": "Les codes TOTP sont",
-      "totp_time": "Un code TOTP est seulement valide ",
-      "use_as": "que tu peux utiliser comme",
       "totp_client": {
         "desc": "À chaque fois que tu te connectes à un de tes comptes, tu devras entrer un nouveau code. Ce code est généré par une application sur ton téléphone ou ton ordinateur. Cette application est un",
         "name": "client TOTP"
-      }
+      },
+      "totp_time": "Un code TOTP est seulement valide ",
+      "use_as": "que tu peux utiliser comme"
     },
     "why": {
-      "title": "Pourquoi Zero-TOTP ?",
       "key": {
         "desc1": "Seule ta passphrase peut déchiffrer ton coffre.",
         "desc2": "Tous les chiffrements sont effectués dans ton navigateur, et tes données sont protégées avant même qu'elles aient quitté ton appareil !",
@@ -319,42 +299,43 @@
         "strong": "Toutes tes données sont chiffrées",
         "title": "Chiffrement robuste"
       },
+      "title": "Pourquoi Zero-TOTP ?",
       "zke": {
-        "title": "Zero-Knowledge Encryption",
         "desc": {
           "1": "Zero-TOTP utilise du chiffrement Zero-Knwoledge ce qui veut dire que ",
           "2": "sauf toi. Même les administrateurs des serveurs n'ont pas accès à tes données. Toi et seulement toi est capable de déchiffrer ton coffre.",
           "strong": "personne ne peut accéder à tes données"
-        }
+        },
+        "title": "Zero-Knowledge Encryption"
       }
     }
   },
+  "less": "Moins",
+  "loading": "Chargement ...",
+  "log_in": "Connexion",
   "login": {
     "authorize": "Autoriser",
-    "open_button": "Ouvrir mon coffre",
-    "subtitle": "Cette fois, c'est toi qui fais la magie 🪄",
-    "title": "Il est temps d'ouvrir ton coffre !",
     "backup": {
-      "open_button": "Ouvrir une backup",
-      "subtitle": "Tu peux ouvrir un coffre Zero-TOTP sauvegardé sur ton ordinateur 💻",
-      "vault_backup": "Backup de ton coffre",
       "open": {
         "popup": {
           "title": "Déverrouille ton coffre"
         }
       },
+      "open_button": "Ouvrir une backup",
+      "subtitle": "Tu peux ouvrir un coffre Zero-TOTP sauvegardé sur ton ordinateur 💻",
       "unsecure": {
         "popup": {
+          "button": {
+            "cancel": "Retour en sécurité"
+          },
           "continue": "Je fais confiance à cette backup",
           "desc": "Ce coffre peut avoir été modifié par quelque d'autre ou ne provient pas de Zero-TOTP.",
           "strong": "La vérification de l'authenticité du coffre a échouée ",
           "strong2": "Importer un coffre non sécurisé peut mener à des problèmes de sécurités et ne doit pas être considéré comme fiable",
-          "title": "Votre backup pourrait ne pas être sécurisée",
-          "button": {
-            "cancel": "Retour en sécurité"
-          }
+          "title": "Votre backup pourrait ne pas être sécurisée"
         }
-      }
+      },
+      "vault_backup": "Backup de ton coffre"
     },
     "errors": {
       "account_blocked": "Ton compte a été bloqué pour des raisons de sécurités. Contact un administrateur via developer[at]zero-totp.com pour le débloquer.",
@@ -362,13 +343,6 @@
       "email": "Es-tu sûr de ton adresse mail ? ",
       "empty": "Tu n'as pas oublié quelque chose ?",
       "hashing": "Une erreur est survenue en hachant ton mot de passe. Merci de réessayer.",
-      "no_connection": "Impossible de discuter avec le server ! Vérifie ta connexion internet et status.zero-totp.com",
-      "oauth": "Une dernière étape, confirme ta passphrase pour compléter la synchronisation",
-      "rate_limited": "Tu es rate limité ! Ton adresse IP a généré trop de connexion échoué en peu de temps. Tu pourras essayer de te connecter à nouveau dans {{time}} min. Si tu utilises un VPN, essaye une autre localisation ou désactive le.",
-      "server_error": "Erreur : Impossible de récupérer les informations depuis le serveur",
-      "session_end": "Pour ta sécurité, chaque session doit être renouvelée toutes les heures",
-      "session_killed": "Pour ta sécurité tu as été déconnecté car tu as rafraichi ou fermé l'onglet ",
-      "session_timeout": "Pour ta sécurité, tu as été déconnecté après 10min d'inactivité",
       "import_vault": {
         "error_unknown": "Erreur : Impossible d'importer ton coffre. Erreur inconnue.",
         "invalid_arg": "Erreur : Impossible d'importer ton coffre. Il semble corrompu.",
@@ -380,30 +354,46 @@
         "no_signature": "Erreur : impossible d'importer ton coffre. Aucune signature n'a été trouvée.",
         "parse_fail": "Erreur : impossible d'importer ton coffre. Impossible de parser le fichier",
         "wrong_passphrase": "Mauvaise passphrase"
-      }
+      },
+      "no_connection": "Impossible de discuter avec le server ! Vérifie ta connexion internet et status.zero-totp.com",
+      "no_session": "Ta session a expiré. Connecte toi de nouveau pour compléter la synchronisation",
+      "oauth": "Une dernière étape, confirme ta passphrase pour compléter la synchronisation",
+      "rate_limited": "Tu es rate limité ! Ton adresse IP a généré trop de connexion échoué en peu de temps. Tu pourras essayer de te connecter à nouveau dans {{time}} min. Si tu utilises un VPN, essaye une autre localisation ou désactive le.",
+      "server_error": "Erreur : Impossible de récupérer les informations depuis le serveur",
+      "session_end": "Pour ta sécurité, chaque session doit être renouvelée toutes les heures",
+      "session_killed": "Pour ta sécurité tu as été déconnecté car tu as rafraichi ou fermé l'onglet ",
+      "session_timeout": "Pour ta sécurité, tu as été déconnecté après 10min d'inactivité"
     },
+    "open_button": "Ouvrir mon coffre",
+    "remember": "Mémoriser mon adresse email",
     "rescue": {
       "part1": "🛟 Des problèmes pour se connecter à ton compte ? Ouvre une backup sur notre ",
       "part2": "Rescue Zero-TOTP",
       "strong": "plateforme ultra stable"
     },
-    "remember": "Mémoriser mon adresse email",
-    "success": "Coffre déchiffré ✅"
+    "subtitle": "Cette fois, c'est toi qui fais la magie 🪄",
+    "success": "Coffre déchiffré ✅",
+    "title": "Il est temps d'ouvrir ton coffre !"
   },
+  "logout": "Déconnexion",
+  "more": "Plus",
+  "my_vault": "Mon coffre",
+  "name": "Nom",
   "navbar": {
     "account": "Compte",
     "add": "Ajouter un code",
     "admin": "Admin",
     "backup": "Plan de secours",
     "how": "Les TOTP ?",
+    "lang": {
+      "suggest": "Suggérer d'autres"
+    },
     "lose": "Résilience",
     "preferences": "Préférences",
     "vault_backup": "Backup du coffre",
-    "why": "Pourquoi Zero-TOTP",
-    "lang": {
-      "suggest": "Suggérer d'autres"
-    }
+    "why": "Pourquoi Zero-TOTP"
   },
+  "never": "Jamais",
   "oauth": {
     "error": {
       "impossible": "Erreur : Impossible de backup ton coffre. Réessaye de synchroniser ton compte Google Drive."
@@ -412,10 +402,9 @@
       "loading": "Synchronisation, ne ferme pas cette page ... "
     }
   },
+  "orange": "Orange",
+  "passphrase": "Passphrase",
   "preference": {
-    "loading": "Récupération de ton parfum de glace préféré ...",
-    "more_info": "Plus d'info",
-    "title": "Tes préférences 🔧",
     "advanced": {
       "button": "Afficher les préférences avancées",
       "subtitle": "Paramètres pour gérer plus précisément ton compte Zero-TOTP.",
@@ -439,23 +428,26 @@
     "iteration": {
       "title": "Nombre d'itérations utilisées par PBKDF2 pour dériver les clés"
     },
+    "loading": "Récupération de ton parfum de glace préféré ...",
+    "more_info": "Plus d'info",
     "tag": {
       "global": "Paramètre global",
       "sync_only": "Comptes synchronisés seulement"
     },
+    "title": "Tes préférences 🔧",
     "vault": {
       "display": {
-        "subtitle": "Paramètres généraux sur l'affichage de ton coffre.",
-        "title": "Paramètre d'affichage du coffre",
         "favicon": {
           "info1": "Lorsqu'il est activé, ton navigateur tentera de récupérer la favicon du site que tu ajoutes à ton coffre. En cas d'échec, il affichera une icône par défaut.",
           "info2": "La favicon est récupérée par votre navigateur en utilisant l'API DuckDuckGo (un moteur de recherche respectueux de la vie privée). Zero-TOTP ne transmet aucune information à DuckDuckGo (mise à part l'URL du site) ni au site web cible . L'URI ou le nom de domaine n'est jamais transmis aux serveurs de zero-totp.",
           "info3": "Tu peux désactiver cette fonctionnalité globalement, l'activer globalement, ou utiliser les paramètres individuels pour chaque secret.",
-          "title": "Afficher les favicon des sites web à côté de leur nom",
           "option": {
             "enabled": "Si activé seulement"
-          }
-        }
+          },
+          "title": "Afficher les favicon des sites web à côté de leur nom"
+        },
+        "subtitle": "Paramètres généraux sur l'affichage de ton coffre.",
+        "title": "Paramètre d'affichage du coffre"
       }
     },
     "warning": {
@@ -463,15 +455,11 @@
     }
   },
   "privacy": {
-    "title": "Politique de confidentialité de Zero-TOTP",
-    "update": "Dernière mise-à-jour ",
     "changes": {
       "desc": "Nous pouvons mettre à jours cette Politique de Confidentialité pour refléter nos pratiques ou des requis légaux. Nous vous notifierons de tout changements significatifs par mail ou via notre site web.",
       "title": "Modifications de cette Politique"
     },
     "collect": {
-      "part1": "Nous collectons les informations suivantes: ",
-      "title": "Informations que nous collectons",
       "li1": {
         "long": "Nous collectons ton adresse mail, ton nom d'utilisateur et la date de création de ton compte afin de créer et gérer ton compte Zero-TOTP.",
         "short": "Information du compte utilisateur: "
@@ -487,7 +475,9 @@
       "li4": {
         "long": "Nous utilisons des cookies d'authentification pour gérer vos sessions de manière sécurisée. Aucun cookie de traçage et aucuns traqueurs ne sont utilisés.",
         "short": "Cookies d'authentification:"
-      }
+      },
+      "part1": "Nous collectons les informations suivantes: ",
+      "title": "Informations que nous collectons"
     },
     "contact": {
       "desc1": "Si vous avez des questions ou des inquiétudes concernant cette Politique de Confidentialité ou vos données, contactez nous à ",
@@ -517,26 +507,25 @@
       "short": "Portabilité des données: "
     },
     "retention": {
-      "long": "Nous conservons vos données aussi longtemps que nécessaire pour remplir les objectifs énoncés dans cette politique de confidentialité ou comme requis par la loi en vigueur. Vous pouvez demander la suppression de votre compte et des données associées en nous contactant à l'adresse developer[at]zero-totp.com ou via les paramètres du compte à tout moment.",
-      "short": "Rétention des données:",
-      "title": "Rétention des données et contrôle de l'utilisateur",
       "correction": {
         "long": "Vous pouvez rectifier votre nom d'utilisateur, votre email et votre passphrase dans les réglages de votre compte.",
         "short": "Correction des données:"
-      }
+      },
+      "long": "Nous conservons vos données aussi longtemps que nécessaire pour remplir les objectifs énoncés dans cette politique de confidentialité ou comme requis par la loi en vigueur. Vous pouvez demander la suppression de votre compte et des données associées en nous contactant à l'adresse developer[at]zero-totp.com ou via les paramètres du compte à tout moment.",
+      "short": "Rétention des données:",
+      "title": "Rétention des données et contrôle de l'utilisateur"
     },
     "rights": {
-      "desc": "Vous disposez des droits suivants:",
-      "desc2": "Merci de nous contacter par mail à developer[at]zero-totp.com pour exercer ces droits.",
-      "long": "Obtenir l'accès à vos informations personnelles. ",
-      "title": "Vos droits",
       "access": {
         "short": "Accès:"
       },
+      "desc": "Vous disposez des droits suivants:",
+      "desc2": "Merci de nous contacter par mail à developer[at]zero-totp.com pour exercer ces droits.",
       "erasure": {
         "long": "Demander la suppression des données de votre compte.",
         "short": "Suppression: "
       },
+      "long": "Obtenir l'accès à vos informations personnelles. ",
       "objection": {
         "long": "S'opposer à la collecte de vos données dans un but spécific.",
         "short": "Objection:"
@@ -544,7 +533,8 @@
       "rectification": {
         "long": "Demander la correction d'une imprécision ou de données incomplètes.",
         "short": "Rectification:"
-      }
+      },
+      "title": "Vos droits"
     },
     "security": {
       "desc": "Nous employons des mesures de sécurités respectant les standards de sécurités pour protéger vos données. Les passphrase sont hachés en utilisant l'algorithme BCRYPT et la dérivation des clés utilise l'algorithme PBKDF2 avec 700 000 itérations. Les données sont chiffrées à l'aide d'un chiffrement AES et une clé de 256 bits.",
@@ -560,9 +550,9 @@
       "part1": "Si l'utilisateur active l'intégration avec Google Drive, nous pouvons intégrer des services tiers pour la commodité de l'utilisateur, tels que Google Drive. Veuillez consulter les politiques de confidentialité de ces services, car nous n'avons aucun contrôle sur leurs pratiques de traitement des données.",
       "titles": "Services tiers"
     },
+    "title": "Politique de confidentialité de Zero-TOTP",
+    "update": "Dernière mise-à-jour ",
     "usage": {
-      "part1": "Nous utilisons vos informations pour les finalités suivantes:",
-      "title": "Utilisation de vos informations",
       "auth": {
         "long": "Pour vérifier votre identité et sécuriser votre compte.",
         "short": "Authentification de l'utilisateur: "
@@ -577,19 +567,20 @@
       "hoohle": {
         "long": "Si activé, pour permettre les backup de vos données chiffrées sur Google Drive."
       },
+      "part1": "Nous utilisons vos informations pour les finalités suivantes:",
       "support": {
         "long": "Pour répondre à vos demandes et vos requêtes envoyées à ",
         "short": "Support utilisateur:"
-      }
+      },
+      "title": "Utilisation de vos informations"
     }
   },
+  "privacy_policy": "Politique de confidentialité",
   "qrcode": {
-    "back": "Retour",
-    "starting": "Le scanner de QRCode démarre ...",
-    "title": "Scanne le QRCode de l'application dont tu souhaites activer le 2FA TOTP",
     "add": {
       "manually": "Ajouter le secret TOTP manuellement"
     },
+    "back": "Retour",
     "configure": {
       "manually": "Configurer manuellement"
     },
@@ -602,23 +593,27 @@
     },
     "permission": {
       "bigdeal": "Ce n'est pas grave ! Copie simplement le secret depuis l'application tierce et entre le manuellement",
-      "not_possible": "Impossible ?",
       "no_camera": "Impossible de détecter une caméra",
+      "not_possible": "Impossible ?",
       "part1": "Assure toi d'avoir donné la permission au navigateur d'utiliser ta caméra",
       "part2": "Tu dois donner la permission d'utiliser la caméra pour pouvoir scanner le QRCode",
       "part3": "Une caméra est requise pour scanner un QRCode",
       "refused": "Tu as refusé l'accès à Zero-TOTP à ta caméra",
       "strong": "Un soucis ?"
-    }
+    },
+    "starting": "Le scanner de QRCode démarre ...",
+    "title": "Scanne le QRCode de l'application dont tu souhaites activer le 2FA TOTP"
   },
+  "red": "Rouge",
+  "save": "Sauvegarder",
+  "seconds": "secondes",
+  "session_expired": "Oups, ta session a expirée !",
+  "sign_up": "Inscription",
   "signup": {
-    "subtitle": "Un voyage sûr et fiable",
-    "success": "Compte créé avec succès 🎉🎉",
-    "welcome": "Bienvenue à bord de Zero-TOTP beta ",
     "beta": {
       "warning": {
-        "title": "Bienvenue sur la version beta de Zero-TOTP 👋",
-        "desc": "Merci de nous avoir rejoint ! Nous sommes une petite équipe et nous travaillons dur pour faire de Zero-TOTP le meilleur client TOTP. Nous sommes encore en version bêta, donc certaines fonctionnalités ne sont pas encore implémentées, des bugs peuvent survenir et nous avons besoin de votre aide pour améliorer Zero-TOTP. Veuillez signaler tout problème que vous rencontrez. Merci pour votre compréhension et votre aide !"
+        "desc": "Merci de nous avoir rejoint ! Nous sommes une petite équipe et nous travaillons dur pour faire de Zero-TOTP le meilleur client TOTP. Nous sommes encore en version bêta, donc certaines fonctionnalités ne sont pas encore implémentées, des bugs peuvent survenir et nous avons besoin de votre aide pour améliorer Zero-TOTP. Veuillez signaler tout problème que vous rencontrez. Merci pour votre compréhension et votre aide !",
+        "title": "Bienvenue sur la version beta de Zero-TOTP 👋"
       }
     },
     "button": {
@@ -655,21 +650,26 @@
     "popup": {
       "instruction": "Pour créer ton coffre, recopie la phrase suivante",
       "phrase": "Ma passphrase est forte et je ne l'oublierai pas",
-      "title": "Es-tu sûr ?",
       "subititle": {
         "part2": "Toi et seulement toi peut ouvrir ton coffre."
       },
       "subtitle": {
         "part1": "Zero-TOTP utilise du chiffrement dit \"Zero-Knowledge\" ce qui veut dire qu'il sera",
         "strong": "impossible de récupérer ta passphrase si tu la perds !"
-      }
+      },
+      "title": "Es-tu sûr ?"
     },
+    "subtitle": "Un voyage sûr et fiable",
+    "success": "Compte créé avec succès 🎉🎉",
     "username": {
       "error": {
         "forbidden": "Les caractères ' \" < > sont interdits dans des noms d'utilisateur"
       }
-    }
+    },
+    "welcome": "Bienvenue à bord de Zero-TOTP beta "
   },
+  "start": "Commencer",
+  "stop": "Arrêter",
   "totp": {
     "delete": {
       "popup": {
@@ -680,6 +680,7 @@
     },
     "error": {
       "char": "<, >, \\\" et ' sont interdits",
+      "code": "Secret invalide. ",
       "decryption": "Une erreur est survenue en déchiffrant ton secret",
       "deleting": "Une erreur est survenue en supprimant ton secret.",
       "encryption": "Une erreur est survenue en chiffrant ton secret",
@@ -694,22 +695,21 @@
       "preferences": "Une erreur est survenue en récupérant tes préférences",
       "ro": "Tu en mode lecture-seulement. Tu ne peux rien modifier sur un coffre local.",
       "secret_empty": "Un secret ne peut pas être vide",
-      "update": "Une erreur est survenue en ajoutant un nouveau code à ton coffre.",
-      "update_pref": "Impossible de mettre à jour tes préférences.",
-      "code": "Secret invalide. ",
       "tag_empty": "Le tag ne peut pas être vide",
       "tag_exists": "Ce tag existe déjà",
-      "tag_length": "Nom de tag trop long"
+      "tag_length": "Nom de tag trop long",
+      "update": "Une erreur est survenue en ajoutant un nouveau code à ton coffre.",
+      "update_pref": "Impossible de mettre à jour tes préférences."
     },
     "favicon": {
-      "label": "Afficher la favicon",
       "add": {
-        "label": "Ajouter le logo favicon du site web.",
         "desc": {
           "part2": "Tu peux configurer cette politique globale dans tes préférences. La politique globale remplace ce paramètre.",
           "strong": "Le nom de domaine ou l'URI n'est jamais transmis aux serveurs de Zero-TOTP. Votre navigateur utilise l'API DuckDuckGo pour récupérer le favicon. Aucune autre information que l'URI n'est transmise par Zero-TOTP à DuckDuckGo ou au site web cible."
-        }
+        },
+        "label": "Ajouter le logo favicon du site web."
       },
+      "label": "Afficher la favicon",
       "policy": {
         "always": "Politique globale : Toujours",
         "never": "Politique globale : Jamais"
@@ -727,14 +727,15 @@
     },
     "tag": {
       "popup": {
-        "title": "Ajouter un tag",
-        "placeholder": "Nom du tag"
+        "placeholder": "Nom du tag",
+        "title": "Ajouter un tag"
       }
     }
   },
+  "unlock": "Déverrouiller",
+  "update": "Mettre à jour",
+  "username": "Nom d'utilisateur",
   "vault": {
-    "downloaded": "Coffre chiffré téléchargé ! 🧳\\n Garde le en endroit sûr 🔒",
-    "subtitle": "Toi et seulement toi peut accéder à ces données. Toute la magie est faite par ton ordinateur.",
     "add": {
       "manual": "L'entrer manuellement",
       "scan": "Scanner un QRCode",
@@ -744,23 +745,29 @@
       "add": "Ajouter un nouveau code TOTP",
       "reload": "Rafraichir mon coffre"
     },
+    "downloaded": "Coffre chiffré téléchargé ! 🧳\\n Garde le en endroit sûr 🔒",
     "error": {
+      "backup": {
+        "part1": "Erreur : Impossible de backup ce coffre.",
+        "part2": "Essaye de re-synchroniser ton compte google."
+      },
       "decryption": "Une erreur est survenue en déchiffrant les secrets.",
       "decryption_vault": "Impossible de déchiffrer ton coffre. Déconnecte puis reconnecte toi.",
+      "google": {
+        "disable": "Erreur : Impossible de désactiver Google Drive",
+        "unreadable": "Erreur : La backup de ton coffre est illisible. Essaye de backup ton coffre tu Google Drive, à nouveau.",
+        "verify": "Impossible de vérifier les backup de ton coffre."
+      },
       "preferences": "Une erreur est survenue en récupérant tes préférences",
       "retrieve_vault": "Impossible de récupérer ton coffre depuis le serveur",
       "server": "Impossible de récupérer ton coffre depuis le serveur",
       "server_unreachable": "Serveur injoignable. Merci de verifier ta connexion internet ou de réessayer. Ne rafraichis pas cette page pour éviter de perdre ta session actuelle.",
       "wrong_key": "Clé invalide. Tu ne peux pas déchiffrer ces secrets. Les secrets affichés peuvent ne pas être complets. Déconnecte plus connecte toi à nouveau",
-      "wrong_key_vault": "Clé incorrecte. Tu ne peux pas déchiffrer ce coffre.",
-      "backup": {
-        "part1": "Erreur : Impossible de backup ce coffre.",
-        "part2": "Essaye de re-synchroniser ton compte google."
-      },
-      "google": {
-        "disable": "Erreur : Impossible de désactiver Google Drive",
-        "unreadable": "Erreur : La backup de ton coffre est illisible. Essaye de backup ton coffre tu Google Drive, à nouveau.",
-        "verify": "Impossible de vérifier les backup de ton coffre."
+      "wrong_key_vault": "Clé incorrecte. Tu ne peux pas déchiffrer ce coffre."
+    },
+    "filter": {
+      "tag": {
+        "title": "Filtrer par tag"
       }
     },
     "google": {
@@ -774,21 +781,25 @@
         "part3": "dans les options de stockage"
       }
     },
+    "oauth": {
+      "error": {
+        "server": "Impossible de lancer le flow Oauth"
+      }
+    },
     "storage": {
-      "title": "Tes options de stockage",
       "google": {
-        "info": "Plus d'info",
-        "last_backup": "Dernière modification sauvegardée :",
-        "resync": "Essayer de re-synchroniser",
-        "stop_sync": "Arrêter la synchronisation",
-        "sync": "Synchroniser",
         "about": {
           "desc1": "Une backup est effectuée à chaque fois qu'une modification est faite à ton coffre.",
           "desc2": "Tu peux modifier la politique de backup dans les préférences."
         },
         "error": {
           "check": "Une erreur est survenue pendant la vérification de tes backups"
-        }
+        },
+        "info": "Plus d'info",
+        "last_backup": "Dernière modification sauvegardée :",
+        "resync": "Essayer de re-synchroniser",
+        "stop_sync": "Arrêter la synchronisation",
+        "sync": "Synchroniser"
       },
       "local": {
         "open": "Ouvrir un coffre local",
@@ -797,26 +808,17 @@
         "save": "Télécharger une backup",
         "title": "Backup locale"
       },
+      "title": "Tes options de stockage",
       "zero_totp": {
         "reload": "Rafraîchir le coffre",
         "title": "Serveur Zero-TOTP"
       }
     },
+    "subtitle": "Toi et seulement toi peut accéder à ces données. Toute la magie est faite par ton ordinateur.",
     "title": {
       "backup": "Backup du",
       "main": "Et voilà ton coffre TOTP"
-    },
-    "filter": {
-      "tag": {
-        "title": "Filtrer par tag"
-      }
-    },
-    "oauth": {
-      "error": {
-        "server": "Impossible de lancer le flow Oauth"
-      }
     }
   },
-  "session_expired": "Oups, ta session a expirée !",
-  "add": "Ajouter"
+  "verify": "Vérifier"
 }
