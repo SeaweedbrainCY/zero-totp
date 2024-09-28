@@ -39,8 +39,7 @@ class EnvironmentConfig:
                 level=logging.INFO,
                 datefmt='%d-%m-%Y %H:%M:%S')
             logging.info("Environment set to development")
-            self.frontend_URI = f"https://{data['domain']}"
-            self.callback_URI = f"https://{data['domain']}/api/v1/google-drive/oauth/callback"
+            
         else:
             self.type = "production"
             logging.basicConfig(
@@ -49,11 +48,10 @@ class EnvironmentConfig:
                 format='%(asctime)s %(levelname)-8s %(message)s',
                 level=logging.INFO,
                 datefmt='%d-%m-%Y %H:%M:%S')
-            self.frontend_URI = f"https://{data['domain']}"
-            self.callback_URI = f"https://{data['domain']}/api/v1/google-drive/oauth/callback"
 
+        self.frontend_URI = f"https://{data['domain']}"
+        self.callback_URI = f"https://{data['domain']}/api/v1/google-drive/oauth/callback"
 
-        
 class OauthConfig:
     required_keys = ["client_secret_file_path"]
 
