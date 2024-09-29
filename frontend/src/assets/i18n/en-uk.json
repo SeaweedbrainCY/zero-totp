@@ -476,8 +476,8 @@
         "short": "Authentication Cookies: "
       },
       "li5": {
-         "long": "We collect the IP address and the date and time of each login to Zero-TOTP. This information is used for security purposes, including notifying you of unusual logins, providing audit logs, and implementing the data retention policy (see 4. Data Retention and User Control).",
-        "short": "Login information:"
+         "long": "We retain the datetime of your last login on Zero-TOTP. Once you log in again, the previous date in erased by the new one. This information is used for implementing the data retention policy (see 4. Data Retention and User Control).",
+        "short": "Last login date:"
       },
       "part1": "We collect the following information:",
       "title": " Information We Collect"

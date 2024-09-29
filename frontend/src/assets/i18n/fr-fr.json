@@ -476,8 +476,8 @@
         "short": "Cookies d'authentification:"
       },
       "li5": {
-        "long": "Nous collectons l'adresse IP et la date et l'heure de chaque connexion à Zero-TOTP. Ces informations sont utilisées à des fins de sécurités, notamment pour vous notifier de connexions inhabituelles, vous fournir des journaux d'audit et mettre en place la politique de rétention des données (cf. 4. Rétention des données et contrôle de l'utilisateur).",
-        "short": "Informations de connexion:"
+        "long": "Nous conservons la date et l'heure de votre dernière connexion sur Zero-TOTP. Une fois que vous vous reconnectez, la date précédente est remplacée par la nouvelle. Cette information est utilisée pour mettre en œuvre la politique de conservation des données (voir 4. Conservation des données et contrôle utilisateur).",
+        "short": "Dernière date de connexion:"
       },
       "part1": "Nous collectons les informations suivantes: ",
       "title": "Informations que nous collectons"
