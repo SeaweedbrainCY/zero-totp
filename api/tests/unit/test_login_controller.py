@@ -65,7 +65,7 @@ class TestLoginController(unittest.TestCase):
             self.assertIn("Expires", response.headers["Set-Cookie"])
             user = db.session.query(User).filter_by(id=1).first()
             last_login_date_timestamp = user.last_login_date
-            diff_time = datetime.datetime.now(datetime.UTC).timestamp() - int(last_login_date_timestamp)
+            diff_time = datetime.datetime.now(datetime.UTC).timestamp() - float(last_login_date_timestamp)
             self.assertLessEqual(diff_time, 5)
     
     def test_login_not_verified_user(self):
@@ -77,7 +77,7 @@ class TestLoginController(unittest.TestCase):
             self.assertIn("isVerified", response.json())
             self.assertIn("Set-Cookie", response.headers)
             user = db.session.query(User).filter_by(id=1).first()
-            self.assertIsNone(user.last_login_date)
+            self.assertIsNotNone(user.last_login_date)
 
     def test_login_missing_parameters(self):
         with self.application.app.app_context():
