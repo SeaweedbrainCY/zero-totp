@@ -88,7 +88,6 @@ export class LoginComponent implements OnInit {
           this.userService.clear();
           this.is_oauth_flow=true;
           this.login_button="login.authorize" 
-          this.get_user_email_oauth_flow();
           break;
         }
         case 'confirmPassphrase':{
@@ -122,18 +121,6 @@ export class LoginComponent implements OnInit {
     } else {
       return true;
     }
-  }
-
-  get_user_email_oauth_flow(){
-    this.http.get("/api/v1/whoami",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
-      const data = JSON.parse(JSON.stringify(response.body))
-      this.email = data.email;
-    }, (error) => {
-      this.translate.get("login.errors.no_session").subscribe((translation)=>{
-        this.utils.toastError(this.toastr, translation, "");
-        this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
-      });
-    });
   }
 
   

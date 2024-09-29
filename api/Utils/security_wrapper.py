@@ -79,7 +79,6 @@ def require_valid_user(func):
         if user == None:
             return {"error": "Unauthorized"}, 401
         if not user.isVerified and conf.features.emails.require_email_validation:
-            logging.info(f"User {user_id} is not verified. Request rejected")
             return {"error": "Not verified"}, 403
         return func(user_id, *args, **kwargs)
     return wrapper
@@ -99,10 +98,9 @@ def require_passphrase_verification(func):
         if user_obj == None:
             logging.info("User " + str(user_id) + " tried to login but does not exist. A fake password is checked to avoid timing attacks")
             fake_password = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
-            bcrypt.checkpw(fake_password)      
+            bcrypt.checkpw(fake_password)
             return {"message": "Invalid credentials"}, 403
         if bcrypt.checkpw(user_obj.password):
             return func(user_id, *args, **kwargs)
-        logging.info(f"User {user_id} tried to login with wrong password. require_passphrase_verification wrapper rejected the request")
         return {"error": "Unauthorized"}, 403
     return wrapper
