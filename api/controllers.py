@@ -10,7 +10,6 @@ from database.preferences_repo import Preferences as PreferencesDB
 from database.admin_repo import Admin as Admin_db
 from database.notif_repo import Notifications as Notifications_db
 from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
-from database.loginlogs_repo import LoginLogs as LoginLogs_db 
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging, conf
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
@@ -142,17 +141,13 @@ def login():
         if ip:
             rate_limiting_db.add_failed_login(ip, None)
         return {"message": "generic_errors.invalid_creds"}, 403
-    login_logs = LoginLogs_db()
-    log_id = login_logs.create_login_log(source_ip=ip, user_id=user.id)
     logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {ip}. X-Forwarded-For header is {request.headers.get('X-Forwarded-For')}")
     checked = bcrypt.checkpw(user.password)
     if not checked:
         if ip:
             rate_limiting_db.add_failed_login(ip, user.id)
-        login_logs.update_login_status(id=log_id, status=False, outcome="Bad password")
         return {"message": "generic_errors.invalid_creds"}, 403
     if user.isBlocked: # only authenticated users can see the blocked status
-        login_logs.update_login_status(id=log_id, status=False, outcome="User blocked")
         return {"message": "blocked"}, 403
     
     if ip:
@@ -165,7 +160,7 @@ def login():
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":user.isVerified}))
     else:
         response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
-    login_logs.update_login_status(id=log_id, status=True, outcome="Success")
+    userDB.update_last_login_date(user.id)
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
 
