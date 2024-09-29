@@ -3,6 +3,7 @@ Zero-TOTP Privacy Policy
 
 Last Updated: 25/09/2024 11h45
 
+
 1\. Introduction
 ----------------
 
@@ -25,6 +26,7 @@ We collect the following information:
 *   Authentication Cookies: We use authentication cookies to securely manage your sessions. No tracking cookies are used.
 *   Last login date: We retain the datetime of your last login on Zero-TOTP. Once you log in again, the previous date in erased by the new one. This information is used for implementing the data retention policy (see 4. Data Retention and User Control).
 
+
 3\. Use of Information
 ----------------------
 
@@ -39,6 +41,7 @@ We use your information for the following purposes:
 
 4\. Data Retention and User Control
 -----------------------------------
+
 
 Data Retention: We retain all data, including vault information, for a maximum of five years after your last login to comply with GDPR's data storage limitations. You can request the deletion of your account and all associated data through the account settings at any time. You are responsible of the deletion of all the encrypted backups of your vault that you downloaded and that have been stored on Google Drive.  
   
@@ -60,6 +63,7 @@ Please note that the list of countries where data is stored may change in the fu
 
 We employ industry-standard security measures to protect your data. Passwords are hashed using BCRYPT, and key derivation uses PBKDF2 with 700,000 iterations. Data is encrypted using AES 256-bit encryption.
 
+
 7\. Third-Party Services
 ------------------------
 
@@ -69,12 +73,16 @@ If the user enables the Google Drive integration, we may integrate with third-pa
 
 If the user enables the favicon preview, your browser will use the DuckDuckGo API to retrieve the favicon of the website. Please review the privacy policies of DuckDuckGo, as we have no control over their data handling practices. Zero-TOTP does not store any data related to the favicon preview, and the DuckDuckGo API is only used to retrieve the favicon of the website. The only data sent to DuckDuckGo is the URL of the website by your browser. Zero-TOTP does not access or store without encryption this data.
 
+
 8\. Cookies
+
 -----------
 
 We only use authentication cookies for session management. No tracking cookies are used.
 
+
 9\. Your Rights
+
 ---------------
 
 You have the following rights:
@@ -91,8 +99,10 @@ You have the following rights:
 
 Please contact us at developer\[at\]zero-totp.com to exercise these rights.
 
+
 10\. Changes to this Privacy Policy
 -----------------------------------
+
 
 We may update this Privacy Policy to reflect changes in our practices or legal requirements. We will notify you of any significant changes via email or through our website.
 
@@ -107,6 +117,7 @@ We only provide assurance regarding the robust encryption algorithms and securit
 
   
 
+
 12\. Open Source and GPL 3 License
 ----------------------------------
 
@@ -119,6 +130,7 @@ By choosing to use Zero-TOTP, you acknowledge and agree to comply with the provi
   
 
 Please note that while the source code is open and freely available, the use of Zero-TOTP as a service provided by us is subject to the terms outlined in this Privacy Policy.
+
 
 13\. Contact Us
 ---------------

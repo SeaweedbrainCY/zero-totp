@@ -352,8 +352,10 @@ def update_vault(user_id, body):
         logging.error(e)
         return '{"message": "Invalid request"}', 400
 
-    if not newPassphrase or not old_passphrase or not enc_vault or not zke_key or not passphrase_salt or not derivedKeySalt:
+    if not newPassphrase or not old_passphrase or not zke_key or not passphrase_salt or not derivedKeySalt:
         return {"message": "Missing parameters"}, 400
+    
+    
     
     is_vault_valid, vault_validation_msg = utils.unsafe_json_vault_validation(enc_vault)
     if not is_vault_valid:
@@ -365,19 +367,29 @@ def update_vault(user_id, body):
     user = userDb.getById(user_id)
     bcrypt = Bcrypt(old_passphrase)
     if not bcrypt.checkpw(user.password):
+        logging.info("User " + str(user_id) + " tried to update his vault but provided passphrase is wrong.")
         return {"message": "Invalid passphrase"}, 403
     bcrypt = Bcrypt(newPassphrase)
     try :
         hashedpw = bcrypt.hashpw()
     except ValueError as e:
-        logging.debug(e)
-        returnJson["hashing"]=0
-        return returnJson, 500
+        logging.warning(e)
+        return {"message": "passphrase too long. It must be <70 char"}, 400
     except Exception as e:
         logging.warning("Uknown error occured while hashing password" + str(e))
         returnJson["hashing"]=0
         return returnJson, 500
     
+    old_vault = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id)
+    if len(old_vault) != len(enc_vault):
+        logging.warning(f"User {user_id} tried to update his vault but the number of secrets in the new vault is different from the old one. The update is rejected.")
+        return {"message": "To avoid the loss of your information, Zero-TOTP is rejecting this request because it has detected that you might lose data. Please contact quickly Zero-TOTP developers to fix issue."}, 400
+    for secret in old_vault:
+        if secret.uuid not in enc_vault:
+            logging.warning(f"FORBIDDEN. The user {user_id} tried to update but the secret {secret.uuid} is missing in the new vault. The update is rejected.")
+            return {"message": "Forbidden action. Zero-TOTP detected that you were updating object you don't have access to. The request is rejected."}, 403
+    
+
     returnJson["hashing"]=1
     errors = 0
     for secret in enc_vault.keys():

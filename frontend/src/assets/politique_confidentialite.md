@@ -1,7 +1,8 @@
 Politique de confidentialité de Zero-TOTP
 =========================================
 
-Dernière mise-à-jour : 25/09/2024 11h45
+
+Dernière mise-à-jour : 15/01/2024 11h45
 
 1\. Préambule
 -------------
@@ -25,6 +26,7 @@ Nous collectons les informations suivantes:
 *   Cookies d'authentification: Nous utilisons des cookies d'authentification pour gérer vos sessions de manière sécurisée. Aucun cookie de traçage et aucuns traqueurs ne sont utilisés.
 *   Dernière date de connexion: Nous conservons la date et l'heure de votre dernière connexion sur Zero-TOTP. Une fois que vous vous reconnectez, la date précédente est remplacée par la nouvelle. Cette information est utilisée pour mettre en œuvre la politique de conservation des données (voir 4. Conservation des données et contrôle utilisateur).
 
+
 3\. Utilisation de vos informations
 -----------------------------------
 
@@ -39,6 +41,7 @@ Nous utilisons vos informations pour les finalités suivantes:
 
 4\. Rétention des données et contrôle de l'utilisateur
 ------------------------------------------------------
+
 
 Rétention des données: Nous conservons toutes vos données, y compris celles de votre coffre, pendant un maximum de cinq ans après votre dernière connexion afin de respecter la limitation du stockage des données en conformité avec le RGPD. Vous pouvez demander la suppression de votre compte et de toutes les données associées via les paramètres de votre compte à tout moment. Vous êtes responsable de la suppression de toutes les sauvegardes chiffrées de votre coffre-fort que vous avez téléchargées et qui ont été stockées sur Google Drive.  
   
@@ -56,11 +59,14 @@ Pour maximiser la redondance, la réplication et la disponibilité, nous stockon
 Veuillez noter que la liste des pays où les données sont stockées peut changer à l'avenir. Si nous ajoutons un nouveau pays qui n'est pas membre de l'UE, le Canada, les États-Unis ou la Suisse, nous informerons les utilisateurs en conséquence.
 
 6\. Sécurité
+
 ------------
 
 Nous employons des mesures de sécurités respectant les standards de sécurités pour protéger vos données. Les passphrase sont hachés en utilisant l'algorithme BCRYPT et la dérivation des clés utilise l'algorithme PBKDF2 avec 700 000 itérations. Les données sont chiffrées à l'aide d'un chiffrement AES et une clé de 256 bits.
 
+
 7\. Services tiers
+
 ------------------
 
 Si l'utilisateur active l'intégration avec Google Drive, nous pouvons intégrer des services tiers pour la commodité de l'utilisateur, tels que Google Drive. Veuillez consulter les politiques de confidentialité de ces services, car nous n'avons aucun contrôle sur leurs pratiques de traitement des données.
@@ -69,12 +75,16 @@ Si l'utilisateur active l'intégration avec Google Drive, nous pouvons intégrer
 
 Si l'utilisateur active l'aperçu de favicon, votre navigateur utilisera l'API DuckDuckGo pour récupérer le favicon du site web. Veuillez consulter les politiques de confidentialité de DuckDuckGo, car nous n'avons aucun contrôle sur leurs pratiques de traitement des données. Zero-TOTP ne stocke aucune donnée liée à l'aperçu du favicon, et l'API DuckDuckGo est uniquement utilisée pour récupérer le favicon du site web. Les seules données envoyées à DuckDuckGo sont l'URL du site web par votre navigateur. Zero-TOTP n'accède pas à ces données et ne les stocke que de manière chiffrée.
 
+
 8\. Cookies
+
 -----------
 
 Nous utilisons uniquement des cookies d'authentification à des fins de gestion de session. Aucuns traqueurs ne sont utilisés.
 
+
 9\. Vos droits
+
 --------------
 
 Vous disposez des droits suivants:
@@ -91,8 +101,10 @@ Vous disposez des droits suivants:
 
 Merci de nous contacter par mail à developer\[at\]zero-totp.com pour exercer ces droits.
 
+
 10\. Modifications de cette Politique
 -------------------------------------
+
 
 Nous pouvons mettre à jours cette Politique de Confidentialité pour refléter nos pratiques ou des requis légaux. Nous vous notifierons de tout changements significatifs par mail ou via notre site web.
 
@@ -107,7 +119,9 @@ Nous ne fournissons des garanties qu'en ce qui concerne les algorithmes de chiff
 
   
 
+
 12\. Open source et License GPL3
+
 --------------------------------
 
 Zero-TOTP est une application open-source distribuée sous la licence GNU General Publique Licence version 3 (GPL 3). Cela signifie que notre code source est disponible publiquement, et vous pouvez le voir, le modifier et le redistribuer selon les termes de la license GPL 3.
@@ -120,7 +134,9 @@ En choisissant d'utiliser Zero-TOTP, vous reconnaissez et acceptez de vous confo
 
 Merci de noter que si le code source est disponible gratuitement et en source ouverte, l'utilisation de Zero-TOTP en tant que service fournis par ce site web est sujet aux termes dictés par cette politique de confidentialité.
 
+
 13\. Contactez-nous
+
 -------------------
 
 Si vous avez des questions ou des inquiétudes concernant cette Politique de Confidentialité ou vos données, contactez nous à developer\[at\]zero-totp.com.

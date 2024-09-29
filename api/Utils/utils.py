@@ -77,6 +77,7 @@ def delete_user_from_database(user_id):
     TOTP_secret_repo().delete_all(user_id)
     ZKE_encryption_key_repo().delete(user_id)
     User_repo().delete(user_id)
+    EmailVerificationToken().delete(user_id)
     logging.info("User " + str(user_id) + " deleted from database")
 
 
