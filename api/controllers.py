@@ -160,6 +160,7 @@ def login():
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":user.isVerified}))
     else:
         response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
+    userDB.update_last_login_date(user.id)
     response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
     return response
 

@@ -476,6 +476,10 @@
         "long": "We use authentication cookies to securely manage your sessions. No tracking cookies are used.",
         "short": "Authentication Cookies: "
       },
+      "li5": {
+         "long": "We retain the datetime of your last login on Zero-TOTP. Once you log in again, the previous date in erased by the new one. This information is used for implementing the data retention policy (see 4. Data Retention and User Control).",
+        "short": "Last login date:"
+      },
       "part1": "We collect the following information:",
       "title": " Information We Collect"
     },
@@ -506,12 +510,18 @@
       "long": " To receive your data in a structured, machine-readable format.",
       "short": "Data Portability:"
     },
+    "location":{
+      "title": "Data storage location", 
+      "long1": "To maximize redundancy, replication, and availability, we store data in three countries: Canada, Germany, and Switzerland. This practice is compliant with the GDPR, as all these countries are recognized by the EU as acceptable for data transfer. Additionally, we adhere to Swiss privacy laws and Quebec's Law 25 on data protection.", 
+      "long2":"Please note that the list of countries where data is stored may change in the future. If we add a new country that is not an EU member, Canada, the USA, or Switzerland, we will notify users accordingly."
+    },
     "retention": {
       "correction": {
-        "long": "You can rectify your username, email, and passphrase in your account settings.",
+        "long": "You can update your username, email, passphrase, and codes (along with their associated data) in your account. For any other corrections, you can contact developer[at]zero-totp.com.",
         "short": "Data Correction:"
       },
-      "long": "We retain your data for as long as necessary to fulfill the purposes outlined in this Privacy Policy or as required by applicable law. You can request the deletion of your account and associated data by contacting us at developer[at]zero-totp.com or through the account settings at any time.",
+      "long1": "We retain all data, including vault information, for a maximum of five years after your last login to comply with GDPR's data storage limitations. You can request the deletion of your account and all associated data through the account settings at any time. You are responsible of the deletion of all the encrypted backups of your vault that you downloaded and that have been stored on Google Drive.",
+      "long2": "Disaster recovery and data availability requirements mean that we have a legitimate interest in maintaining secure and immutable backups. Backups are kept for maxmimum 60 days. Erasure requests will leave those backups untouched, and we will only remove data from backups if legally compelled to.",
       "short": "Data Retention:",
       "title": "Data Retention and User Control"
     },

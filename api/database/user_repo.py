@@ -1,6 +1,7 @@
 from database.db import db 
 from zero_totp_db_model.model import User as UserModel
 from environment import logging
+import datetime as dt
 
 class User:
 
@@ -75,5 +76,13 @@ class User:
         if user == None:
             return None
         user.isBlocked = block_status
+        db.session.commit()
+        return user
+    
+    def update_last_login_date(self, user_id):
+        user = db.session.query(UserModel).filter_by(id=user_id).first()
+        if user == None:
+            return None
+        user.last_login_date = dt.datetime.now(dt.UTC).timestamp()
         db.session.commit()
         return user

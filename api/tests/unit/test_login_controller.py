@@ -63,6 +63,10 @@ class TestLoginController(unittest.TestCase):
             self.assertIn("Secure", response.headers["Set-Cookie"])
             self.assertIn("SameSite=Lax", response.headers["Set-Cookie"])
             self.assertIn("Expires", response.headers["Set-Cookie"])
+            user = db.session.query(User).filter_by(id=1).first()
+            last_login_date_timestamp = user.last_login_date
+            diff_time = datetime.datetime.now(datetime.UTC).timestamp() - float(last_login_date_timestamp)
+            self.assertLessEqual(diff_time, 5)
     
     def test_login_not_verified_user(self):
         with self.application.app.app_context():
@@ -72,6 +76,8 @@ class TestLoginController(unittest.TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIn("isVerified", response.json())
             self.assertIn("Set-Cookie", response.headers)
+            user = db.session.query(User).filter_by(id=1).first()
+            self.assertIsNotNone(user.last_login_date)
 
     def test_login_missing_parameters(self):
         with self.application.app.app_context():
@@ -86,12 +92,15 @@ class TestLoginController(unittest.TestCase):
                 json_payload[key]=""
                 response = self.client.post(self.loginEndpoint, json=json_payload)
                 self.assertEqual(response.status_code, 400)
+            
     
     def test_login_forbidden_email(self):
         with self.application.app.app_context():
             self.check_email.return_value = False
             response = self.client.post(self.loginEndpoint, json=self.json_payload)
             self.assertEqual(response.status_code, 403)
+            user = db.session.query(User).filter_by(id=1).first()
+            self.assertIsNone(user.last_login_date)
     
     
     def test_login_no_user(self):
@@ -110,6 +119,8 @@ class TestLoginController(unittest.TestCase):
             self.assertEqual(response.status_code, 403)
             self.checkpw.assert_called_once()
             self.assertEqual(response.json()["message"], "generic_errors.invalid_creds")
+            user = db.session.query(User).filter_by(id=1).first()
+            self.assertIsNone(user.last_login_date)
     
     def test_login_as_blocked_user(self):
         with self.application.app.app_context():
@@ -119,6 +130,8 @@ class TestLoginController(unittest.TestCase):
             self.assertEqual(response.status_code, 403)
             self.assertEqual(response.json()["message"], "blocked") # key for the frontend
             self.assertNotIn("Set-Cookie", response.headers)
+            user = db.session.query(User).filter_by(id=1).first()
+            self.assertIsNone(user.last_login_date)
 
     def test_login_as_blocked_user_with_bad_passphrase(self):
         with self.application.app.app_context():
@@ -129,6 +142,8 @@ class TestLoginController(unittest.TestCase):
             self.assertEqual(response.status_code, 403)
             self.assertNotIn("Set-Cookie", response.headers)
             self.assertEqual(response.json()["message"], "generic_errors.invalid_creds")
+            user = db.session.query(User).filter_by(id=1).first()
+            self.assertIsNone(user.last_login_date)
 
 
     def test_login_specs(self):
