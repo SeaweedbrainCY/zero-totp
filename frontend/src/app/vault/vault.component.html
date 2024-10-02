@@ -35,7 +35,7 @@
                                     <div class="tags has-addons mb-0" (click)="storageOptionOpen = true"
                                         style="align-items: normal;" aria-haspopup="true"
                                         aria-controls="dropdown-menu4">
-                                        <span class="tag is-medium is-dark has-text-weight-bold " id="totp-tag">🇨🇦🇨🇭🇩🇪
+                                        <span class="tag is-medium is-dark has-text-weight-bold" id="totp-tag"><fa-icon [icon]="faServer" class="pr-1"></fa-icon>
                                             {{ 'vault.storage.zero_totp.title' | translate }} </span>
                                         <span class="tag is-success is-medium" id="totp-status-tag"> <fa-icon
                                                 [icon]="faCheckCircle"></fa-icon></span>
@@ -43,6 +43,9 @@
                                     </div>
                                 </div>
                                 <div [hidden]="!storageOptionOpen" class="mb-3">
+                                    <div class="is-flex is-flex-wrap-wrap is-justify-content-center mb-1">
+                                    <p class="is-size-7 ">{{ 'vault.storage.zero_totp.location' | translate }}</p>
+                                    </div>
                                     <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
                                         <button class="button is-outlined is-dark" (click)="reload()"><fa-icon [icon]="faRotateRight"
                                                 class="mr-3"></fa-icon> {{ 'vault.storage.zero_totp.reload' | translate }}</button>
@@ -85,6 +88,8 @@
                                             class="button  is-outlined is-dark mb-3 mr-2 ml-2" disabled><fa-icon
                                                 [icon]="faCircleInfo" class="mr-3"></fa-icon> {{ 'vault.storage.google.info' | translate }}</button>
 
+                                       
+                                    
                                         <div *ngIf="isGoogleDriveSync == 'uptodate'" class="has-text-centered">
                                             <div class="is-size-7 ">{{ 'vault.storage.google.last_backup' | translate }} {{lastBackupDate}} 
                                                 <div class="dropdown is-hoverable">
@@ -111,7 +116,7 @@
                                             </p>
                                         </div>
                                         <div *ngIf="isGoogleDriveSync == 'error'" class="has-text-centered">
-                                            <p class="has-text-danger is-size-7 ">{{ 'vault.storage.google.error.check' | translate }}</p>
+                                            <p class="has-text-danger is-size-7 ">{{google_drive_error_message}}</p>
                                             <p class="has-text-centered mt-1">
                                                 <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
                                                     (click)="resync_after_error()"><fa-icon [icon]="faLink"

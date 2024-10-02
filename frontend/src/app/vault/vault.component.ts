@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark} from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer} from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
@@ -23,6 +23,7 @@ export class VaultComponent implements OnInit {
   faSquarePlus = faSquarePlus;
   faCopy = faCopy;
   faGoogleDrive=faGoogleDrive;
+  faServer=faServer;
   faCircleXmark= faCircleXmark;
   faCheckCircle = faCheckCircle;
   faRotateRight = faRotateRight;
@@ -56,6 +57,7 @@ export class VaultComponent implements OnInit {
   lastBackupDate = "";
   faviconPolicy = "";
   filter="";
+  google_drive_error_message = "";
   selectedTags:string[]=[];
   constructor(
     public userService: UserService,
@@ -431,10 +433,10 @@ export class VaultComponent implements OnInit {
         errorMessage = error.error.message;
       } else if(error.error.detail != null){
         errorMessage = error.error.detail;
+      } else if(error.error.error != null){
+        errorMessage = error.error.error;
       }
-      this.translate.get("vault.error.google.verify").subscribe((translation: string) => {
-        this.utils.toastError(this.toastr,  translation + ". "+ errorMessage,"");
-    });
+      this.google_drive_error_message = "An error occured while checking your backup. Got error " + error.status + ". " + errorMessage;
     }
     });
   }
