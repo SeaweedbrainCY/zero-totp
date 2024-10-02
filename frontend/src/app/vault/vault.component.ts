@@ -473,6 +473,7 @@ export class VaultComponent implements OnInit {
 
   resync_after_error(){
     this.disable_google_drive();
+    this.isGoogleDriveSync = "loading";
     setTimeout(()=> {
       this.get_oauth_authorization_url();
   }, 2000);
