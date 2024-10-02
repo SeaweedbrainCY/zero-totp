@@ -821,6 +821,7 @@
       },
       "title": "Tes options de stockage",
       "zero_totp": {
+        "location": "Serveurs Zero-TOTP au Canada 🇨🇦, en Suisse 🇨🇭 et en Europe 🇪🇺",
         "reload": "Rafraîchir le coffre",
         "title": "Serveur Zero-TOTP"
       }
