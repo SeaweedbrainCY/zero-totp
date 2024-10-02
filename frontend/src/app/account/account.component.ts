@@ -360,15 +360,13 @@ export class AccountComponent implements OnInit {
                                     this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success") ,"");
                                     this.router.navigate(["/login"], {relativeTo:this.route.root});
                                   }, error =>{
-                                    this.updateAbortedWithSuccess('#8 Backup of your vault on Google drive. Reason : '+error)
-                                    this.router.navigate(["/login"], {relativeTo:this.route.root});
+                                    this.updateAborted('#8. Reason : '+error)
                                   });
                                 }
                                 this.utils.toastSuccess(this.toastr,this.translate.instant("account.passphrase.popup.updating.success") ,"");
                                 this.router.navigate(["/login"], {relativeTo:this.route.root});
                               }, error =>{
-                                this.updateAbortedWithSuccess('#7 Deletion of your all google drive backup. Reason : '+error)
-                                this.router.navigate(["/login"], {relativeTo:this.route.root});
+                                this.updateAborted('#7. Reason : '+error)
                               });
                             } else {
                               if(this.isGoogleDriveBackupEnabled){
@@ -377,8 +375,7 @@ export class AccountComponent implements OnInit {
                                   this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success") ,"");
                                   this.router.navigate(["/login"], {relativeTo:this.route.root});
                                 }, error =>{
-                                  this.updateAbortedWithSuccess('#8 Backup of your vault on Google drive. . Reason : '+error.message)
-                                  this.router.navigate(["/login"], {relativeTo:this.route.root});
+                                  this.updateAborted('#8. Reason : '+error)
                                 });
                               } else {
                                 this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success") ,"");
@@ -413,11 +410,6 @@ export class AccountComponent implements OnInit {
   updateAborted(errorCode: string){
     this.buttonLoading["passphrase"] = 0
     this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.full_abort") + " " + errorCode,"");
-  }
-
-  updateAbortedWithSuccess(errorCode: string){
-    this.buttonLoading["passphrase"] = 0
-    this.utils.toastWarning(this.toastr, this.translate.instant("account.passphrase.error.light_abort") + " " + errorCode,"");
   }
 
 
@@ -496,7 +488,7 @@ export class AccountComponent implements OnInit {
         }
       }, (error) => {
         if(error.status == 404){
-          resolve(new Map<string, Map<string,string>>());
+          this.userService.setVault(new Map<string, Map<string,string>>());
         } else {
           let errorMessage = "";
           if(error.error.message != null){
@@ -635,7 +627,7 @@ deriveNewPassphrase(newDerivedKeySalt:string):Promise<CryptoKey>{
             reject(error.status)
           } else {
             this.translate.get("account.passphrase.error.fatal").subscribe((translation: string) => {
-              this.utils.toastError(this.toastr,translation, error.error.message);
+              this.utils.toastError(this.toastr,translation +error.error.totp +" "+ error.error.zke + error.error.user ,"");
           });
             reject(error.status)
           }

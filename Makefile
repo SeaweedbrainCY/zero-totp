@@ -23,11 +23,7 @@ run_database:
 
 test:
 	echo "Running tests ..."
-	mv api/config/config.yml api/config/.secret/config.yml
-	cp api/tests/ressources/test-config.yml api/config/config.yml
-	cd api && . venv/bin/activate && \
-	python -m pytest --cov=. --cov-report=term --cov-report=html -s 
-	mv -f api/config/.secret/config.yml api/config/config.yml
+	. .env && . api/venv/bin/activate && cd api && python3 -m pytest -vvv
 
 run:
 	make run_database & \
