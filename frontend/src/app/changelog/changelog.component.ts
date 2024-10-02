@@ -18,7 +18,7 @@ export class ChangelogComponent {
       version: "b3.0.0",
       added: [
         "This is an import release that brings a lot of under-the-hood changes to Zero-TOTP. We have made a lot of changes to the codebase to make it more maintainable and to prepare it for the future.",
-        "Zero-TOTP is now present in Swiss and Germany alongside Canada to improve the data redundancy.",
+        "Zero-TOTP is now present in Switzerland and Germany alongside Canada to improve the data redundancy.",
         "Zero-TOTP is now far more reliable with a better load balancing and a better failover system.",
         "The security of how Zero-TOTP communicates with its API and how the API handles each client has been reviewed to be more efficient and more strict.",
         "Zero-TOTP is more reliable, resilient and secure than ever."
