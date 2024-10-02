@@ -477,7 +477,7 @@
         "short": "Authentication Cookies: "
       },
       "li5": {
-         "long": "We retain the datetime of your last login on Zero-TOTP. Once you log in again, the previous date in erased by the new one. This information is used for implementing the data retention policy (see 4. Data Retention and User Control).",
+        "long": "We retain the datetime of your last login on Zero-TOTP. Once you log in again, the previous date in erased by the new one. This information is used for implementing the data retention policy (see 4. Data Retention and User Control).",
         "short": "Last login date:"
       },
       "part1": "We collect the following information:",
@@ -506,14 +506,14 @@
       "desc3": "Please note that while the source code is open and freely available, the use of Zero-TOTP as a service provided by us is subject to the terms outlined in this Privacy Policy.",
       "title": "Open Source and GPL 3 License"
     },
+    "location": {
+      "long1": "To maximize redundancy, replication, and availability, we store data in three countries: Canada, Germany, and Switzerland. This practice is compliant with the GDPR, as all these countries are recognized by the EU as acceptable for data transfer. Additionally, we adhere to Swiss privacy laws and Quebec's Law 25 on data protection.",
+      "long2": "Please note that the list of countries where data is stored may change in the future. If we add a new country that is not an EU member, Canada, the USA, or Switzerland, we will notify users accordingly.",
+      "title": "Data storage location"
+    },
     "portability": {
       "long": " To receive your data in a structured, machine-readable format.",
       "short": "Data Portability:"
-    },
-    "location":{
-      "title": "Data storage location", 
-      "long1": "To maximize redundancy, replication, and availability, we store data in three countries: Canada, Germany, and Switzerland. This practice is compliant with the GDPR, as all these countries are recognized by the EU as acceptable for data transfer. Additionally, we adhere to Swiss privacy laws and Quebec's Law 25 on data protection.", 
-      "long2":"Please note that the list of countries where data is stored may change in the future. If we add a new country that is not an EU member, Canada, the USA, or Switzerland, we will notify users accordingly."
     },
     "retention": {
       "correction": {
@@ -820,6 +820,7 @@
       },
       "title": "Your storage options",
       "zero_totp": {
+        "location": "Zero-TOTP servers in Canada 🇨🇦, Switzerland 🇨🇭 and Europe 🇪🇺",
         "reload": "Reload the vault ",
         "title": "Zero-TOTP servers"
       }

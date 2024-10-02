@@ -500,17 +500,16 @@
       "desc2": "Nous ne fournissons des garanties qu'en ce qui concerne les algorithmes de chiffrement robustes et les mesures de sécurité que nous utilisons pour protéger vos données pendant le stockage et la transmission.",
       "title": "Déclinaison de responsabilité"
     },
-    "location": {
-    "title": "Lieu de stockage des données",
-    "long1": "Pour maximiser la redondance, la réplication et la disponibilité, nous stockons des données dans trois pays : le Canada, l'Allemagne et la Suisse. Cette pratique est conforme au RGPD, car tous ces pays sont reconnus par l'UE comme acceptables pour le transfert de données. De plus, nous respectons les lois suisses sur la protection de la vie privée et la Loi 25 du Québec sur la protection des données.",
-    "long2": "Veuillez noter que la liste des pays où les données sont stockées peut changer à l'avenir. Si nous ajoutons un nouveau pays qui n'est pas membre de l'UE, le Canada, les États-Unis ou la Suisse, nous informerons les utilisateurs en conséquence."
-   },
-
     "licence": {
       "desc1": "Zero-TOTP est une application open-source distribuée sous la licence GNU General Publique Licence version 3 (GPL 3). Cela signifie que notre code source est disponible publiquement, et vous pouvez le voir, le modifier et le redistribuer selon les termes de la license GPL 3.",
       "desc2": "En choisissant d'utiliser Zero-TOTP, vous reconnaissez et acceptez de vous conformer aux dispositions de la licence GPL 3. Vous pouvez accéder au code source complet de notre application sur",
       "desc3": "Merci de noter que si le code source est disponible gratuitement et en source ouverte, l'utilisation de Zero-TOTP en tant que service fournis par ce site web est sujet aux termes dictés par cette politique de confidentialité.",
       "title": "Open source et License GPL3"
+    },
+    "location": {
+      "long1": "Pour maximiser la redondance, la réplication et la disponibilité, nous stockons des données dans trois pays : le Canada, l'Allemagne et la Suisse. Cette pratique est conforme au RGPD, car tous ces pays sont reconnus par l'UE comme acceptables pour le transfert de données. De plus, nous respectons les lois suisses sur la protection de la vie privée et la Loi 25 du Québec sur la protection des données.",
+      "long2": "Veuillez noter que la liste des pays où les données sont stockées peut changer à l'avenir. Si nous ajoutons un nouveau pays qui n'est pas membre de l'UE, le Canada, les États-Unis ou la Suisse, nous informerons les utilisateurs en conséquence.",
+      "title": "Lieu de stockage des données"
     },
     "portability": {
       "long": "Recevoir vos données structurés et lisible par une machine.",
@@ -821,6 +820,7 @@
       },
       "title": "Tes options de stockage",
       "zero_totp": {
+        "location": "Serveurs Zero-TOTP au Canada 🇨🇦, en Suisse 🇨🇭 et en Europe 🇪🇺",
         "reload": "Rafraîchir le coffre",
         "title": "Serveur Zero-TOTP"
       }
