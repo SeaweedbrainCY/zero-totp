@@ -197,12 +197,6 @@ export class AccountComponent implements OnInit {
     const number = /[0-9]/;
     const forbidden = /["\'<>]/
     let isOk = true;
-    if(this.password == ""){
-      this.translate.get("account.passphrase.no_former_passphrase").subscribe((translation: string) => {
-      this.utils.toastError(this.toastr,translation,"")
-    });
-      isOk = false;
-    }
     if(forbidden.test(this.newPassword)){
       this.newPasswordErrorMessage.push("account.passphrase.error.char");
       isOk = false;
@@ -225,6 +219,12 @@ export class AccountComponent implements OnInit {
     }
     if(this.newPassword != "" && this.confirmNewPassword != "" && this.newPassword != this.confirmNewPassword){
       this.newPasswordConfirmErrorMessage.push("account.passphrase.error.match");
+      isOk = false;
+    }
+    if(this.password == "" && isOk){
+      this.translate.get("account.passphrase.no_former_passphrase").subscribe((translation: string) => {
+      this.utils.toastError(this.toastr,translation,"")
+    });
       isOk = false;
     }
     return isOk;

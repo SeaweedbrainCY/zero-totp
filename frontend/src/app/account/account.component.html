@@ -136,7 +136,7 @@
                                 <input class="input"  type="{{isNewConfirmPassphraseVisible ? 'text' : 'password'}}"  placeholder="{{ 'account.passphrase.confirm' | translate }}" name="confirmNewPassword" [(ngModel)]="confirmNewPassword" [ngClass]="{'is-danger' : newPasswordConfirmErrorMessage.length >1}" (keyup)="checkNewPassword()">
                                <span class="help has-text-left is-danger" *ngIf="newPasswordConfirmErrorMessage.length >1">
                                     <span *ngFor="let error of newPasswordConfirmErrorMessage" >
-                                        <span *ngIf="error!=''">{{error}}<br></span>
+                                        <span *ngIf="error!=''">{{error | translate}}<br></span>
                                     </span>
                                 </span> 
                                 <span class="icon is-small is-left">
