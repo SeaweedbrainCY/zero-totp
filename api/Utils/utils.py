@@ -1,5 +1,4 @@
 import re
-from app import app
 import html
 from environment import logging
 import datetime
