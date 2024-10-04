@@ -137,14 +137,23 @@ def get_ip(request):
     if is_remote_ip_a_trusted_proxy:
         if "X-Forwarded-For" in request.headers:
             try:
-                forwarded_ip = re.findall(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', request.headers["X-Forwarded-For"])[0]
+                #Ipv6 in priority
+                forwarded_ip = re.search(r'\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])){3}))|:)))(%.+)?\s*', request.headers["X-Forwarded-For"])
+                if forwarded_ip != None:
+                    forwarded_ip = forwarded_ip.group(0)
+                else:
+                    # Ipv4
+                    forwarded_ip = re.findall(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', request.headers["X-Forwarded-For"])[0]
+                    if forwarded_ip == []:
+                        logging.error("Could not get ip address from request. The forwarded IP was not a valid ip address. Forwarded ip : " + str(request.headers["X-Forwarded-For"]))
+                        return None
                 if test_ip(ipaddress.ip_address(forwarded_ip)):
                     return forwarded_ip
                 else:
                     logging.error("Could not get ip address from request. The forwarded IP was not a valid ip address. Forwarded ip : " + str(forwarded_ip))
                     return None
             except Exception as e:
-                logging.error("Could not get ip address from request. Error while parsing forwarded ip : " + str(e))
+                logging.error("Could not get ip address from request. Error while parsing forwarded ip : " + str(e) + ". Forwarded ip : " + str(request.headers["X-Forwarded-For"]))
                 return None
         else:
             logging.error("Could not get ip address from request. The request was made through a trusted proxy but the X-Forwarded-For header was not set.")

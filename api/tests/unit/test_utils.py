@@ -361,3 +361,13 @@ class TestUtils(unittest.TestCase):
         ip = get_ip(request)
         self.assertIsNone(ip)
         conf.api.trusted_proxy = None
+    
+    def test_get_forwarded_for_with_trusted_proxy_ipv6(self):
+        request = lambda:None
+        request.remote_addr = "2001:db8::1"
+        request.headers = {"X-Forwarded-For": "2001:db8::2"}
+        conf.api.trusted_proxy = [ipaddress.ip_network("2001:db8::/32")]
+        ip = get_ip(request)
+        self.assertEqual(ip, "2001:db8::2")
+        conf.api.trusted_proxy = None
+        
