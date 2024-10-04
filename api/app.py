@@ -14,7 +14,7 @@ from monitoring.sentry import sentry_configuration
 from flask_migrate import Migrate
 from datetime import datetime
 from flask import request, redirect, make_response
-from Utils import utils
+
 
 def create_app():
     app_instance = connexion.FlaskApp(__name__, specification_dir="./openAPI/")
@@ -79,6 +79,7 @@ def before_request():
 
 @flask.errorhandler(404)
 def not_found(error):
+    from Utils import utils
     logging.warning(f"error=404 ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url}")
     return make_response(redirect(f"https://{conf.environment.domain}/404",  code=302))
             
