@@ -144,12 +144,12 @@ def get_ip(request):
                     # Ipv4
                     forwarded_ip = re.findall(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', request.headers["X-Forwarded-For"])[0]
                     if forwarded_ip == []:
-                        logging.error("Could not get ip address from request. The forwarded IP was not a valid ip address. Forwarded ip : " + str(request.headers["X-Forwarded-For"]))
+                        logging.error("Could not get ip address from request. No IPv6 or IPv4 found in the header. Forwarded ip : " + str(request.headers["X-Forwarded-For"]))
                         return None
                 if test_ip(ipaddress.ip_address(forwarded_ip)):
                     return forwarded_ip
                 else:
-                    logging.error("Could not get ip address from request. The forwarded IP was not a valid ip address. Forwarded ip : " + str(forwarded_ip))
+                    logging.error("Could not get ip address from request. The forwarded IP was not a valid ip address. Test didn't pass, IP very likely to be private. Forwarded ip : " + str(forwarded_ip))
                     return None
             except Exception as e:
                 logging.error("Could not get ip address from request. Error while parsing forwarded ip : " + str(e) + ". Forwarded ip : " + str(request.headers["X-Forwarded-For"]))
