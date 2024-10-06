@@ -42,6 +42,7 @@ export class PreferencesComponent implements OnInit{
   autolock_display_error=false;
   autolock_is_updating = false;
   autolock_update_done_animation = false;
+  autolock_value_updated = false;
   constructor( 
     private http: HttpClient,
     public userService: UserService,
@@ -174,6 +175,7 @@ export class PreferencesComponent implements OnInit{
   autolockDelayUpdate(){
     this.autolock_is_updating = true;
     this.http.put("/api/v1/preferences", {"id":"autolock_delay", "value":this.autolock_delay}, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      this.autolock_value_updated = true;
       this.autolockDelayUpdateDone();
     }, (error) => {
       this.autolock_is_updating = false;
@@ -202,6 +204,14 @@ export class PreferencesComponent implements OnInit{
     setTimeout(() => {
       this.autolock_update_done_animation = false;
     }, 1000);
+  }
+
+  input_auto_compute_size(value:any){
+    let size = 5;
+    if(value != null){
+      size += value.toString().length;
+    }
+    return size;
   }
 
 }

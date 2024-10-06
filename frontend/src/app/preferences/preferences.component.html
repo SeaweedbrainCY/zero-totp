@@ -55,7 +55,7 @@
                                 </div>
                                 <div class="field has-addons ">
                                     <div class="control">
-                                      <input class="input" [style.width.ch]="autolock_delay.toString().length + 5" type="number" placeholder="10" name="autolock_delay" [(ngModel)]="autolock_delay" min="1" max="60" (change)="autolockDelayChange()">
+                                      <input class="input" [style.width.ch]="input_auto_compute_size(autolock_delay)" type="number" placeholder="10" name="autolock_delay" [(ngModel)]="autolock_delay" min="1" max="60" (change)="autolockDelayChange()">
                                     </div>
                                     <div class="control">
                                       <button class="button is-info is-outlined" [ngClass]="{'is-loading':autolock_is_updating, 'is-info':!autolock_update_done_animation, 'is-success':autolock_update_done_animation}" (click)="autolockDelayUpdate()" >
@@ -66,6 +66,9 @@
                                   </div>
                                   <span class="help has-text-left is-danger" *ngIf="autolock_display_error">
                                         <span>{{'preference.account.security.autolock.error' | translate}}<br></span>
+                                    </span>  
+                                    <span class="help has-text-left is-success" *ngIf="autolock_value_updated">
+                                        <span>{{'preference.account.security.autolock.success' | translate}}<br></span>
                                     </span>  
                             </div>
                             

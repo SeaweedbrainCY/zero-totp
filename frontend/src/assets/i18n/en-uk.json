@@ -410,6 +410,7 @@
         "autolock": {
           "error": "1min minimum, 60min maximum",
           "label": "Maximum time of inactivity before your vault autolocks  (min)",
+          "success": "Success ! This new value will be applied at your next login",
           "title": "Autolock your vault after inactivity"
         },
         "subtitle": "Settings related to your account security",
