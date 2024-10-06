@@ -362,7 +362,7 @@
       "server_error": "Erreur : Impossible de récupérer les informations depuis le serveur",
       "session_end": "Pour ta sécurité, chaque session doit être renouvelée toutes les heures",
       "session_killed": "Pour ta sécurité tu as été déconnecté car tu as rafraichi ou fermé l'onglet ",
-      "session_timeout": "Pour ta sécurité, tu as été déconnecté après 10min d'inactivité"
+      "session_timeout": "Pour ta sécurité, tu as été déconnecté car tu étais inactif. Tu peux personnaliser la durée d'inactivité maximum dans tes préférences."
     },
     "open_button": "Ouvrir mon coffre",
     "remember": "Mémoriser mon adresse email",
@@ -409,7 +409,8 @@
       "security": {
         "autolock": {
           "error": "Minimum 1min, maximum 60min",
-          "title": "Temps avant le verrouillage automatique de ton coffre "
+          "title": "Auto-verrouillage du coffre après inactivité",
+          "label": "Temps maximum d'inactivité avant que ton coffre ne s'auto verrouille (min)"
         },
         "subtitle": "Paramètres liés à la sécurité de ton compte",
         "title": "Paramètres de sécurité de ton compte"
