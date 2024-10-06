@@ -35,7 +35,7 @@ export class PreferencesComponent implements OnInit{
   moreHelpDisplayed = {"favicon_settings":false}
   isDisplayingAdvancedSettings = false;
   faviconPolicy=""; // never, always, enabledOnly
-  loadingPreferences = false;//true;
+  loadingPreferences =true;
   loadingPreferencesError = false;
   notification_message :string|undefined;
   autolock_delay=10;
@@ -57,7 +57,7 @@ export class PreferencesComponent implements OnInit{
   
   ngOnInit(): void {
      if(this.userService.getId() == null){
-     // this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+     this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } 
     this.get_preferences()
     this.get_internal_notification()
@@ -68,6 +68,11 @@ export class PreferencesComponent implements OnInit{
       if(response.body != null){
         this.loadingPreferences = false;
         const data = JSON.parse(JSON.stringify(response.body));
+        if(data.autolock_delay != null){
+          this.autolock_delay = data.autolock_delay;
+        } else {
+          this.autolock_delay = 10;
+        }
         if(data.favicon_policy != null){
           this.faviconPolicy = data.favicon_policy;
         } else {
@@ -168,7 +173,27 @@ export class PreferencesComponent implements OnInit{
 
   autolockDelayUpdate(){
     this.autolock_is_updating = true;
-    this.autolockDelayUpdateDone()
+    this.http.put("/api/v1/preferences", {"id":"autolock_delay", "value":this.autolock_delay}, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      this.autolockDelayUpdateDone();
+    }, (error) => {
+      this.autolock_is_updating = false;
+      let errorMessage = "";
+          if(error.error.message != null){
+            errorMessage = error.error.message;
+          } else if(error.error.detail != null){
+            errorMessage = error.error.detail;
+          }
+          if(error.status == 0){
+            errorMessage = "vault.error.server_unreachable"
+          } else if (error.status == 401){
+            this.userService.clear();
+            this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
+            return;
+          }
+          this.translate.get('preference.error.update').subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
+          });
+    });
   }
 
   autolockDelayUpdateDone(){
