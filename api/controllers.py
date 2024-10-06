@@ -655,7 +655,7 @@ def delete_google_drive_option(user_id):
 
 @require_valid_user
 def get_preferences(user_id,fields):
-    valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
+    valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum", "autolock_delay"]
     all_field = fields == "all" 
     fields_asked = []
     if not all_field:
@@ -680,6 +680,8 @@ def get_preferences(user_id,fields):
         user_preferences["backup_lifetime"] = preferences.backup_lifetime
     if "backup_minimum" in fields_asked or all_field:
         user_preferences["backup_minimum"] = preferences.minimum_backup_kept
+    if "autolock_delay" in fields_asked or all_field:
+        user_preferences["autolock_delay"] = preferences.vault_autolock_delay_min
     return user_preferences, 200
 
 
