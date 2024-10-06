@@ -90,7 +90,7 @@ def signup():
         except Exception as e:
            zke_key = None
         if zke_key:
-            jwt_token = jwt_auth.generate_jwt(user.id)
+            jwt_token, jti = jwt_auth.generate_jwt(user.id)
             if conf.features.emails.require_email_validation:
                 try:
 
@@ -153,7 +153,7 @@ def login():
     if ip:
         rate_limiting_db.flush_login_limit(ip)
 
-    jwt_token = jwt_auth.generate_jwt(user.id)
+    jwt_token, jti = jwt_auth.generate_jwt(user.id)
     if not conf.features.emails.require_email_validation: # we fake the isVerified status if email validation is not required
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True}))
     elif user.isVerified:
@@ -490,7 +490,7 @@ def admin_login(user_id, body):
     if float(admin_user.token_expiration)  < datetime.datetime.utcnow().timestamp():
         logging.info("User " + str(user_id) + " tried to login as admin but provided token is expired. Connexion rejected.")
         return {"message": "Token expired"}, 403
-    admin_jwt = jwt_auth.generate_jwt(user_id, admin=True)
+    admin_jwt, jti = jwt_auth.generate_jwt(user_id, admin=True)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
     response.set_cookie("admin-api-key", admin_jwt, httponly=True, secure=True, samesite="Lax", max_age=600)
     logging.info("User " + str(user_id) + " logged in as admin")

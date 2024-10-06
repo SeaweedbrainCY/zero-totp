@@ -14,7 +14,7 @@ class TestAllSecret(unittest.TestCase):
         if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
         self.application = app
-        self.jwtCookie = jwt_func.generate_jwt(1)
+        self.jwtCookie = jwt_func.generate_jwt(1)[0]
         self.client = self.application.test_client()
         self.endpoint = "/api/v1/all_secrets"
         

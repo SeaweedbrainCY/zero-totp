@@ -52,7 +52,7 @@ class TestGetAllUsers(unittest.TestCase):
 
     def test_get_all_users_success(self):
         with self.application.app.app_context():
-           self.client.cookies = {"api-key":generate_jwt(self.admin_user_id),"admin-api-key":generate_jwt(self.admin_user_id, admin=True)}
+           self.client.cookies = {"api-key":generate_jwt(self.admin_user_id),"admin-api-key":generate_jwt(self.admin_user_id, admin=True)[0]}
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 200)
            self.assertIn("users", response.json())
@@ -60,13 +60,13 @@ class TestGetAllUsers(unittest.TestCase):
     
     def test_get_all_users_no_admin_cookie_but_admin(self):
         with self.application.app.app_context():
-           self.client.cookies = {"api-key":generate_jwt(self.admin_user_id)}
+           self.client.cookies = {"api-key":generate_jwt(self.admin_user_id)[0]}
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 403)
     
     def test_get_all_users_no_admin(self):
         with self.application.app.app_context():
-           self.client.cookies = {"api-key":generate_jwt(self.normal_user_id)}
+           self.client.cookies = {"api-key":generate_jwt(self.normal_user_id)[0]}
            response = self.client.get(self.getAllUsersEndpoint)
            self.assertEqual(response.status_code, 403)
     

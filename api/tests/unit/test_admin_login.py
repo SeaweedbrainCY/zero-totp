@@ -65,7 +65,7 @@ class TestJWT(unittest.TestCase):
     def test_admin_login_success(self):
         with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.cookies = {"api-key":generate_jwt(self.admin_user_id)}
+            self.client.cookies = {"api-key":generate_jwt(self.admin_user_id)[0]}
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 200)
             self.assertIn("admin-api-key", response.headers["Set-Cookie"])
@@ -80,7 +80,7 @@ class TestJWT(unittest.TestCase):
     def test_admin_login_but_bad_token(self):
         with self.application.app.app_context():
             self.checkpw.return_value = False
-            self.client.cookies = {"api-key":generate_jwt(self.admin_user_id)}
+            self.client.cookies = {"api-key":generate_jwt(self.admin_user_id)[0]}
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)
 
@@ -88,14 +88,14 @@ class TestJWT(unittest.TestCase):
     def test_admin_login_but_no_token(self):
         with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.cookies = {"api-key":generate_jwt(self.admin_user_without_token_id)}
+            self.client.cookies = {"api-key":generate_jwt(self.admin_user_without_token_id)[0]}
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)
     
     def test_admin_login_but_no_admin_role(self):
         with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.cookies = {"api-key":generate_jwt(self.not_admin_user_id)}
+            self.client.cookies = {"api-key":generate_jwt(self.not_admin_user_id)[0]}
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)
     
@@ -107,20 +107,20 @@ class TestJWT(unittest.TestCase):
     def test_admin_login_but_expired_cookie(self):
          with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.cookies = {"api-key":self.generate_expired_cookie(self.admin_user_id)} 
+            self.client.cookies = {"api-key":self.generate_expired_cookie(self.admin_user_id)[0]} 
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)
     
     def test_admin_login_but_no_user(self):
         with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.cookies = {"api-key":generate_jwt(-1)} 
+            self.client.cookies = {"api-key":generate_jwt(-1)[0]} 
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)
     
     def test_admin_with_expired_token(self):
         with self.application.app.app_context():
             self.checkpw.return_value = True
-            self.client.cookies = {"api-key":generate_jwt(self.admin_with_expired_token_id)}
+            self.client.cookies = {"api-key":generate_jwt(self.admin_with_expired_token_id)[0]}
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
             self.assertEqual(response.status_code, 403)

@@ -115,7 +115,7 @@ class TestDeleteAccount(unittest.TestCase):
 
     def test_delete_user_with_google_drive(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id)}
+            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id)[0]}
             self.client.headers = {"x-hash-passphrase": "passphrase"}
             response = self.client.delete(self.deleteEndpoint)
             self.assertEqual(response.status_code, 200)
@@ -130,7 +130,7 @@ class TestDeleteAccount(unittest.TestCase):
     
     def test_delete_user_without_google_drive(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_without_google_drive)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_without_google_drive)[0]}
             self.client.headers = {"x-hash-passphrase": "passphrase"}
             response = self.client.delete(self.deleteEndpoint)
             self.assertEqual(response.status_code, 200)
@@ -145,7 +145,7 @@ class TestDeleteAccount(unittest.TestCase):
     
     def test_delete_admin(self):
          with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id)[0]}
             self.client.headers = {"x-hash-passphrase": "passphrase"}
             response = self.client.delete(self.deleteEndpoint)
             self.assertEqual(response.status_code, 403)
@@ -157,7 +157,7 @@ class TestDeleteAccount(unittest.TestCase):
 
     def test_delete_bad_passphrase(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id)}
+            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id)[0]}
             self.client.headers = {"x-hash-passphrase": "badPassphrase"}
             self.checkpw.return_value = False
             response = self.client.delete(self.deleteEndpoint)
@@ -166,7 +166,7 @@ class TestDeleteAccount(unittest.TestCase):
     
     def test_delete_no_passphrase_header(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id)}
+            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id)[0]}
             response = self.client.delete(self.deleteEndpoint)
             self.assertEqual(response.status_code, 401)
             self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
@@ -187,7 +187,7 @@ class TestDeleteAccount(unittest.TestCase):
 
     def test_delete_user_doesnt_exists(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(10)}
+            self.client.cookies= {"api-key" :generate_jwt(10)[0]}
             self.client.headers = {"x-hash-passphrase": "badPassphrase"}
             response = self.client.delete(self.deleteEndpoint)
             self.assertEqual(response.status_code, 401)
@@ -195,7 +195,7 @@ class TestDeleteAccount(unittest.TestCase):
     
     def test_delete_user_error_with_google_drive(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id)}
+            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id)[0]}
             self.client.headers = {"x-hash-passphrase": "passphrase"}
             self.delete_google_drive_backup.side_effect = Exception("error")
             response = self.client.delete(self.deleteEndpoint)
@@ -210,7 +210,7 @@ class TestDeleteAccount(unittest.TestCase):
 
     def test_delete_user_error_while_deleting_from_db(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id)}
+            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id)[0]}
             self.client.headers = {"x-hash-passphrase": "passphrase"}
             self.secrets_delete_all = patch("database.totp_secret_repo.TOTP_secret.delete_all").start()
             self.secrets_delete_all.side_effect = Exception("error")
@@ -219,7 +219,7 @@ class TestDeleteAccount(unittest.TestCase):
     
     def test_delete_user_not_verified(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_not_verified)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_not_verified)[0]}
             self.client.headers = {"x-hash-passphrase": "passphrase"}
             response = self.client.delete(self.deleteEndpoint)
             self.assertEqual(response.status_code, 403)
@@ -227,7 +227,7 @@ class TestDeleteAccount(unittest.TestCase):
     
     def test_delete_user_blocked(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_blocked)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_blocked)[0]}
             self.client.headers = {"x-hash-passphrase": "passphrase"}
             response = self.client.delete(self.deleteEndpoint)
             self.assertEqual(response.status_code, 403)
@@ -239,7 +239,7 @@ class TestDeleteAccount(unittest.TestCase):
 
     def test_delete_as_admin(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)[0]}
             response = self.client.delete(self.adminDeleteEndpoint + "/" + str(self.full_user_id))
             self.assertEqual(response.status_code, 200)
             self.delete_google_drive_backup.assert_called_once_with({"user":self.full_user_id}, self.full_user_id, {"user":self.full_user_id})
@@ -254,28 +254,28 @@ class TestDeleteAccount(unittest.TestCase):
 
     def test_delete_as_admin_but_not_admin(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id), "admin-api-key":generate_jwt(self.full_user_id, admin=True)}
+            self.client.cookies= {"api-key" :generate_jwt(self.full_user_id), "admin-api-key":generate_jwt(self.full_user_id, admin=True)[0]}
             response = self.client.delete(self.adminDeleteEndpoint + "/" + str(self.user_without_google_drive))
             self.assertEqual(response.status_code, 403)
             self.assertNotEqual(self.user_repo.getById(self.user_without_google_drive), None)
     
     def test_delete_as_admin_but_not_admin_cookie(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id)[0]}
             response = self.client.delete(self.adminDeleteEndpoint + "/" + str(self.full_user_id))
             self.assertEqual(response.status_code, 403)
             self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
     
     def test_delete_as_admin_but_not_admin_cookie_and_not_admin(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_without_google_drive)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_without_google_drive)[0]}
             response = self.client.delete(self.adminDeleteEndpoint + "/" + str(self.full_user_id))
             self.assertEqual(response.status_code, 403)
             self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
     
     def test_delete_as_admin_bad_admin_cookie(self):
          with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.full_user_id, admin=False)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.full_user_id, admin=False)[0]}
             response = self.client.delete(self.adminDeleteEndpoint + "/" + str(self.full_user_id))
             self.assertEqual(response.status_code, 403)
             self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
@@ -288,26 +288,26 @@ class TestDeleteAccount(unittest.TestCase):
     
     def test_delete_as_admin_bad_cookie(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :"badCookie", "admin-api-key":generate_jwt(self.user_admin_id, admin=True)}
+            self.client.cookies= {"api-key" :"badCookie", "admin-api-key":generate_jwt(self.user_admin_id, admin=True)[0]}
             response = self.client.delete(self.adminDeleteEndpoint + "/" + str(self.full_user_id))
             self.assertEqual(response.status_code, 403)
             self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
     
     def test_delete_as_admin_user_doesnt_exists(self):
          with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)[0]}
             response = self.client.delete(self.adminDeleteEndpoint + "/" + str(1000))
             self.assertEqual(response.status_code, 404)
     
     def test_delete_as_admin_but_user_id_admin(self):
          with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)[0]}
             response = self.client.delete(self.adminDeleteEndpoint + "/" + str(self.user_admin_id2))
             self.assertEqual(response.status_code, 403)
     
     def test_delete_as_admin_not_google_drive_user(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)[0]}
             response = self.client.delete(self.adminDeleteEndpoint + "/" + str(self.user_without_google_drive))
             self.assertEqual(response.status_code, 200)
             self.delete_google_drive_backup.assert_called_once_with({"user":self.user_without_google_drive}, self.user_without_google_drive, {"user":self.user_without_google_drive})
@@ -324,6 +324,6 @@ class TestDeleteAccount(unittest.TestCase):
     def test_delete_as_admin_but_admin_are_forbidden(self):
         conf.features.admins.admin_can_delete_users = False
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)}
+            self.client.cookies= {"api-key" :generate_jwt(self.user_admin_id), "admin-api-key":generate_jwt(self.user_admin_id, admin=True)[0]}
             response = self.client.delete(self.adminDeleteEndpoint + "/" + str(self.user_without_google_drive))
             self.assertEqual(response.status_code, 403)
