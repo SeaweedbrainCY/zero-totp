@@ -521,7 +521,7 @@ paths:
           schema:
             type: string
           required: true
-          description: The field to retrieve. Can be "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum". Fields can be separated by a comma.
+          description: The field to retrieve. Can be "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum", " " or "all". Fields can be separated by a comma.
       responses:
         "200": # status code
           description: Return the user's role
