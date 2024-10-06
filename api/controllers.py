@@ -746,7 +746,7 @@ def set_preference(user_id, body):
         elif value > 60:
             return {"message": "autolock delay must be at most of 60"}, 400
         preferences = preferences_db.update_autolock_delay(user_id, value)
-        if preferences:
+        if preferences:# pragma: no cover
             return {"message": "Preference updated"}, 201
         return {"message": "Unknown error while updating preference"}, 500
     else: # pragma: no cover

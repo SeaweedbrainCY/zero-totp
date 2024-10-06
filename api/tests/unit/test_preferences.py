@@ -183,9 +183,9 @@ class TestPreferences(unittest.TestCase):
             self.assertEqual(response.json()["message"], "Not verified")
 
 
-##########
-## POST ##
-##########
+#########
+## PUT ##
+#########
 
     def test_put_favicon_policy(self):
         with self.application.app.app_context():
@@ -227,7 +227,6 @@ class TestPreferences(unittest.TestCase):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "backup_lifetime", "value": 10})
-            print(response.json())
             self.assertEqual(response.status_code, 201)
             preferences = self.preferences_repo.get_preferences_by_user_id(user_id=1)
             self.assertEqual(preferences.favicon_preview_policy, self.favicon_policy_default_value)
@@ -310,16 +309,44 @@ class TestPreferences(unittest.TestCase):
             response = self.client.put(self.endpoint, json={"id": "backup_minimum", "value": 0})
             self.assertEqual(response.status_code, 400)
 
-    def test_get_preference_blocked_user(self):
+    def test_put_preference_blocked_user(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": jwt_func.generate_jwt(self.blocked_user_id)}
             response = self.client.put(self.endpoint, json={"id": "backup_minimum" , "value": "10", "id": "backup_lifetime" , "value": "10"})
             self.assertEqual(response.status_code, 403)
             self.assertEqual(response.json()["error"], "User is blocked")
     
-    def test_get_preference_unverified_user(self):
+    def test_put_preference_unverified_user(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": jwt_func.generate_jwt(self.unverified_user_id)}
             response = self.client.put(self.endpoint, json={"id": "backup_minimum" , "value": "10", "id": "backup_lifetime" , "value": "10"})
             self.assertEqual(response.status_code, 403)
             self.assertEqual(response.json()["error"], "Not verified")
+    
+    def test_put_autolock_delay(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            response = self.client.put(self.endpoint, json={"id": "autolock_delay", "value": 10})
+            self.assertEqual(response.status_code, 201)
+            preferences = self.preferences_repo.get_preferences_by_user_id(user_id=1)
+            self.assertEqual(preferences.vault_autolock_delay_min, 10)
+    
+    def test_put_autolock_delay_low_value(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            response = self.client.put(self.endpoint, json={"id": "autolock_delay", "value": 0})
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.json()["message"], "autolock delay must be at least of 1")
+
+    def test_put_autolock_delay_high_value(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            response = self.client.put(self.endpoint, json={"id": "autolock_delay", "value": 61})
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.json()["message"], "autolock delay must be at most of 60")
+    
+    def test_put_autolock_delay_bad_value(self):
+        with self.application.app.app_context():
+            self.client.cookies = {"api-key": self.jwtCookie}
+            response = self.client.put(self.endpoint, json={"id": "autolock_delay", "value": "badValue"})
+            self.assertEqual(response.status_code, 400)
