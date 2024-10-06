@@ -405,6 +405,15 @@
   "orange": "Orange",
   "passphrase": "Passphrase",
   "preference": {
+    "account": {
+      "security": {
+        "autolock": {
+          "title": "Temps avant le verrouillage automatique de ton coffre "
+        },
+        "subtitle": "Paramètres liés à la sécurité de ton compte",
+        "title": "Paramètres de sécurité de ton compte"
+      }
+    },
     "advanced": {
       "button": "Afficher les préférences avancées",
       "subtitle": "Paramètres pour gérer plus précisément ton compte Zero-TOTP.",

@@ -405,6 +405,16 @@
   "orange": "Orange",
   "passphrase": "Passphrase",
   "preference": {
+    "account": {
+      "security": {
+        "autolock": {
+          "label": "Autolock delay (min)",
+          "title": "Time before your vault autolock"
+        },
+        "subtitle": "Settings related to your account security",
+        "title": "Account security settings"
+      }
+    },
     "advanced": {
       "button": "Display advanced settings",
       "subtitle": "Settings to manage more precisely your Zero-TOTP account.",

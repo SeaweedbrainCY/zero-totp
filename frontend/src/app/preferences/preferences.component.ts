@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb, faVault, faSliders, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -20,7 +20,10 @@ export class PreferencesComponent implements OnInit{
   faLock=faLock;
   faShield=faShield;
   faCircleInfo=faCircleInfo;
+  faVault=faVault;
   faArrowsRotate=faArrowsRotate;
+  faShieldHalved=faShieldHalved;
+  faSliders=faSliders;
   faHourglassStart=faHourglassStart;
   faCircleNotch=faCircleNotch;
   faCircleExclamation=faCircleExclamation;
@@ -32,9 +35,10 @@ export class PreferencesComponent implements OnInit{
   moreHelpDisplayed = {"favicon_settings":false}
   isDisplayingAdvancedSettings = false;
   faviconPolicy=""; // never, always, enabledOnly
-  loadingPreferences = true;
+  loadingPreferences = false;//true;
   loadingPreferencesError = false;
   notification_message :string|undefined;
+  autolock_delay=10;
   constructor( 
     private http: HttpClient,
     public userService: UserService,
@@ -50,7 +54,7 @@ export class PreferencesComponent implements OnInit{
   
   ngOnInit(): void {
      if(this.userService.getId() == null){
-      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+     // this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     } 
     this.get_preferences()
     this.get_internal_notification()
@@ -92,6 +96,7 @@ export class PreferencesComponent implements OnInit{
         });
     });
   }
+
 
   changeFaviconSettings(policy: string){
     if(policy == "never" || policy == "always" || policy == "enabledOnly"){
