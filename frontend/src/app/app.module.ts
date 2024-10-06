@@ -44,6 +44,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {NgIdleModule} from '@ng-idle/core';
 import { RouterModule } from '@angular/router';
 import { routes } from './app-routing.module';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './common/http/http-interceptor';
+
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -106,10 +109,21 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
     }),
     HttpClientModule,
   ],
-  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, {
-    provide: CSP_NONCE,
-    useValue: 'random-nonce-placeholder'
-  },
+  providers: [
+    UserService, 
+    Utils, 
+    Crypto, 
+    QrCodeTOTP, 
+    LocalVaultV1Service, 
+    {
+      provide: CSP_NONCE,
+      useValue: 'random-nonce-placeholder'
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
 ],
   bootstrap: [AppComponent],
 })
