@@ -688,7 +688,7 @@ def set_preference(user_id, body):
     field = body["id"]
     value = body["value"]
     
-    valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
+    valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum", "autolock_delay"]
     if field not in valid_fields:
         return {"message": "Invalid request"}, 400
     preferences_db = PreferencesDB()
@@ -736,7 +736,20 @@ def set_preference(user_id, body):
             return {"message": "Preference updated"}, 201
         else:# pragma: no cover
             return {"message": "Unknown error while updating preference"}, 500
-    else:# pragma: no cover
+    elif field == "autolock_delay":
+        try:
+            value = int(value)
+        except:
+            return {"message": "Invalid request"}, 400
+        if value < 1 :
+            return {"message": "autolock delay must be at least of 1"}, 400
+        elif value > 60:
+            return {"message": "autolock delay must be at most of 60"}, 400
+        preferences = preferences_db.update_autolock_delay(user_id, value)
+        if preferences:
+            return {"message": "Preference updated"}, 201
+        return {"message": "Unknown error while updating preference"}, 500
+    else: # pragma: no cover
         return {"message": "Invalid request"}, 400
 
 
