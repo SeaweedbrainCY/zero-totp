@@ -12,7 +12,7 @@ paths:
     post:
       operationId: controllers.signup
       tags:
-        - User
+        - Auth
       summary: Sign a user up to the application
       security: []
       requestBody:
@@ -53,7 +53,7 @@ paths:
     post:
       operationId: controllers.login
       tags:
-        - User
+        - Auth
       summary: Log a user in the application
       security: []
       requestBody:
@@ -98,7 +98,7 @@ paths:
     get:
       operationId: controllers.get_login_specs
       tags:
-        - User
+        - Auth
       summary: Return the login specs for this user
       security: []
       parameters:
