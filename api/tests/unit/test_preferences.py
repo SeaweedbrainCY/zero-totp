@@ -182,14 +182,14 @@ class TestPreferences(unittest.TestCase):
             self.client.cookies = {"api-key": jwt_func.generate_jwt(self.blocked_user_id)}
             response = self.client.get(self.endpoint+"?fields=all")
             self.assertEqual(response.status_code, 403)
-            self.assertEqual(response.json()["message"], "User is blocked")
+            self.assertEqual(response.json()["error"], "User is blocked")
     
     def test_get_preference_unverified_user(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": jwt_func.generate_jwt(self.unverified_user_id)}
             response = self.client.get(self.endpoint+"?fields=all")
             self.assertEqual(response.status_code, 403)
-            self.assertEqual(response.json()["message"], "Not verified")
+            self.assertEqual(response.json()["error"], "Not verified")
 
 
 #########
