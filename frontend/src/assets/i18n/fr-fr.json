@@ -408,6 +408,7 @@
     "account": {
       "security": {
         "autolock": {
+          "error": "Minimum 1min, maximum 60min",
           "title": "Temps avant le verrouillage automatique de ton coffre "
         },
         "subtitle": "Paramètres liés à la sécurité de ton compte",

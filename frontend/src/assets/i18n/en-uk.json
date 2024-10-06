@@ -408,6 +408,7 @@
     "account": {
       "security": {
         "autolock": {
+          "error": "1min minimum, 60min maximum",
           "label": "Autolock delay (min)",
           "title": "Time before your vault autolock"
         },

@@ -39,6 +39,9 @@ export class PreferencesComponent implements OnInit{
   loadingPreferencesError = false;
   notification_message :string|undefined;
   autolock_delay=10;
+  autolock_display_error=false;
+  autolock_is_updating = false;
+  autolock_update_done_animation = false;
   constructor( 
     private http: HttpClient,
     public userService: UserService,
@@ -149,6 +152,31 @@ export class PreferencesComponent implements OnInit{
     }, (error) => {
       console.log(error);
     });
+  }
+
+  autolockDelayChange(){
+    if(this.autolock_delay < 1){
+      this.autolock_delay = 1;
+      this.autolock_display_error = true;
+    } else if(this.autolock_delay > 60){
+      this.autolock_delay = 60;
+      this.autolock_display_error = true;
+    } else {
+      this.autolock_display_error = false;
+    }
+  }
+
+  autolockDelayUpdate(){
+    this.autolock_is_updating = true;
+    this.autolockDelayUpdateDone()
+  }
+
+  autolockDelayUpdateDone(){
+    this.autolock_is_updating = false
+    this.autolock_update_done_animation = true;
+    setTimeout(() => {
+      this.autolock_update_done_animation = false;
+    }, 1000);
   }
 
 }
