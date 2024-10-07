@@ -39,7 +39,48 @@
 
                     <div class="form-container ">
                         <h1 class="has-text-info has-text-weight-bold is-size-3">
-                           {{ 'preference.vault.display.title' | translate }}
+                            <fa-icon [icon]="faShieldHalved" class="mr-2"></fa-icon> {{ 'preference.account.security.title' | translate }}
+                        </h1>
+                        <div style="border-bottom: 1px solid silver"></div>
+                        <p class="has-text-grey pb-3">{{ 'preference.account.security.subtitle' | translate }}
+                        </p>
+                        <div class="box">
+                            <strong class="mr-1 label is-size-4	">
+                                {{ 'preference.account.security.autolock.title' | translate }} 
+                            </strong> 
+                        
+                            <div >
+                                <div>
+                                <label class="has-text-weight-bold">  {{ 'preference.account.security.autolock.label' | translate }} </label>
+                                </div>
+                                <div class="field has-addons ">
+                                    <div class="control">
+                                      <input class="input" [style.width.ch]="input_auto_compute_size(autolock_delay)" type="number" placeholder="10" name="autolock_delay" [(ngModel)]="autolock_delay" min="1" max="60" (change)="autolockDelayChange()">
+                                    </div>
+                                    <div class="control">
+                                      <button class="button is-info is-outlined" [ngClass]="{'is-loading':autolock_is_updating, 'is-info':!autolock_update_done_animation, 'is-success':autolock_update_done_animation}" (click)="autolockDelayUpdate()" >
+                                        <span *ngIf="!autolock_update_done_animation">{{'update' | translate}}</span>
+                                        <fa-icon *ngIf="autolock_update_done_animation" [icon]="faCheck"></fa-icon>
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <span class="help has-text-left is-danger" *ngIf="autolock_display_error">
+                                        <span>{{'preference.account.security.autolock.error' | translate}}<br></span>
+                                    </span>  
+                                    <span class="help has-text-left is-success" *ngIf="autolock_value_updated">
+                                        <span>{{'preference.account.security.autolock.success' | translate}}<br></span>
+                                    </span>  
+                            </div>
+                            
+                            </div>
+
+                            
+                          
+                    </div>
+
+                    <div class="form-container mt-6">
+                        <h1 class="has-text-info has-text-weight-bold is-size-3">
+                            <fa-icon [icon]="faVault" class="mr-2"></fa-icon>  {{ 'preference.vault.display.title' | translate }}
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
                         <p class="has-text-grey pb-3">{{ 'preference.vault.display.subtitle' | translate }}
@@ -49,7 +90,7 @@
                                 {{ 'preference.vault.display.favicon.title' | translate }} <span class="tag is-rounded is-info">{{ 'preference.tag.global' | translate }}
                                 </span>
                             </strong> 
-                        <br><br>
+                        
                             <div class="buttons has-addons">
                                 <button class="button "   [ngClass]="{'is-selected is-success':faviconPolicy == 'always'}" (click)="changeFaviconSettings('always')" [disabled]="this.buttonLoading.favicon_policy == true">
                                     {{ 'always' | translate }}
@@ -91,7 +132,7 @@
                     
                     <div class="mt-6">
                         <h1 class="has-text-info has-text-weight-bold is-size-3">
-                            {{ 'preference.advanced.title' | translate }}
+                            <fa-icon [icon]="faSliders" class="mr-2"></fa-icon>  {{ 'preference.advanced.title' | translate }}
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
                         <p class="has-text-grey pb-3">{{ 'preference.advanced.subtitle' | translate }}
