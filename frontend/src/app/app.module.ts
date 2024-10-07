@@ -8,7 +8,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { SignupComponent } from './signup/signup.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { HttpClientModule,HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
 import { VaultComponent } from './vault/vault.component';
@@ -57,62 +57,54 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
 
 
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    SignupComponent,
-    NavbarComponent,
-    LoginComponent,
-    VaultComponent,
-    EditTOTPComponent,
-    LogoutComponent,
-    FooterComponent,
-    PagenotfoundComponent,
-    QrcodeReaderComponent,
-    DevComponent,
-    AccountComponent,
-    PrivacyPolicyComponent,
-    ChangelogComponent,
-    AdminPageComponent,
-    CallbackComponent,
-    OauthSyncComponent,
-    PreferencesComponent,
-    OpenSourceLibraryComponent,
-    EmailVerificationComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    FontAwesomeModule,
-    HttpClientModule, 
-    ClipboardModule,
-    RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' }),
-    ZXingScannerModule,
-    BrowserAnimationsModule,
-    ToastrModule.forRoot(),
-    NgIdleModule.forRoot(),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-          useFactory: HttpLoaderFactory,
-          deps: [HttpClient],
-      },
-      missingTranslationHandler: {
-        provide: MissingTranslationHandler,
-        useClass: MissingTranslationHelper
-      },
-    }),
-    HttpClientModule,
-  ],
-  providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, {
-    provide: CSP_NONCE,
-    useValue: 'random-nonce-placeholder'
-  },
-],
-  bootstrap: [AppComponent],
-})
+@NgModule({ declarations: [
+        AppComponent,
+        HomeComponent,
+        SignupComponent,
+        NavbarComponent,
+        LoginComponent,
+        VaultComponent,
+        EditTOTPComponent,
+        LogoutComponent,
+        FooterComponent,
+        PagenotfoundComponent,
+        QrcodeReaderComponent,
+        DevComponent,
+        AccountComponent,
+        PrivacyPolicyComponent,
+        ChangelogComponent,
+        AdminPageComponent,
+        CallbackComponent,
+        OauthSyncComponent,
+        PreferencesComponent,
+        OpenSourceLibraryComponent,
+        EmailVerificationComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        FontAwesomeModule,
+        HttpClientModule,
+        ClipboardModule,
+        RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' }),
+        ZXingScannerModule,
+        BrowserAnimationsModule,
+        ToastrModule.forRoot(),
+        NgIdleModule.forRoot(),
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient],
+            },
+            missingTranslationHandler: {
+                provide: MissingTranslationHandler,
+                useClass: MissingTranslationHelper
+            },
+        })], providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, {
+            provide: CSP_NONCE,
+            useValue: 'random-nonce-placeholder'
+        }, provideHttpClient(withInterceptorsFromDi()),] })
 export class AppModule { 
 
   constructor(translate: TranslateService) {
