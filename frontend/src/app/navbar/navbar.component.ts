@@ -51,20 +51,29 @@ export class NavbarComponent implements OnInit{
       if (url instanceof NavigationEnd){
       this.currentUrl = url.url;
       if(this.userService.getId() && !this.userService.getIsVaultLocal() && !this.idle.isRunning()){
-        this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
-        this.idle.setIdle(600);
-        this.idle.setTimeout(20);
-        this.idle.onTimeout.subscribe(() => {
-          // As idle.stop() doesn't work (issue #167, we need to check if the user is still logged in before redirecting to the login page)
-          if(this.userService.getId() && !this.userService.getIsVaultLocal()){ 
-            console.log("Idle timeout " +  this.currentUrl )
-            this.userService.clear();
-            this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
+        this.get_autolock_delay().subscribe((response) => {
+          const data = JSON.parse(JSON.stringify(response.body))
+          let autolock_delay = 600;
+          if(data.autolock_delay != null){
+            autolock_delay = data.autolock_delay*60;
           }
-        });
-        if(!this.idle.isRunning()){
+          this.idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
+          this.idle.setIdle(autolock_delay);
+          this.idle.setTimeout(20);
+          this.idle.onTimeout.subscribe(() => {
+          // As idle.stop() doesn't work (issue #167, we need to check if the user is still logged in before redirecting to the login page)
+            if(this.userService.getId() && !this.userService.getIsVaultLocal()){ 
+              console.log("Idle timeout " +  this.currentUrl )
+              this.userService.clear();
+              this.router.navigate(['/login/sessionTimeout'], {relativeTo:this.route.root});
+            }
+          });
+          if(!this.idle.isRunning()){
           this.idle.watch();
-        }
+          }
+        }, (error) => {
+          console.log(error);
+        });
       }
     }
     translate.use(this.current_language)
@@ -146,6 +155,10 @@ export class NavbarComponent implements OnInit{
     }, (error) => {
       console.log(error);
     });
+  }
+
+  get_autolock_delay(){
+    return this.http.get("/api/v1/preferences?fields=autolock_delay",  {withCredentials:true, observe: 'response'})
   }
 
   hide_notification(){
