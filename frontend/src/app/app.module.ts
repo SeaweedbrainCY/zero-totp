@@ -84,7 +84,6 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
         AppRoutingModule,
         FormsModule,
         FontAwesomeModule,
-        HttpClientModule,
         ClipboardModule,
         RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' }),
         ZXingScannerModule,

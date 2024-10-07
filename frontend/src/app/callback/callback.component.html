@@ -4,7 +4,7 @@
             <p class="has-text-weight-bold is-size-5">{{errorMessage}}</p>
           </div>
           <div *ngIf="errorMessage ==''">
-            <p class="has-text-dark has-text-centered"><fa-icon [icon]="faCircleNotch" size="2xl" [spin]="true" class="is-dark"></fa-icon></p>
+            <p class="has-text-dark has-text-centered"><fa-icon [icon]="faCircleNotch" size="2xl" [animation]="true ? 'spin' : undefined" class="is-dark"></fa-icon></p>
             <p class="has-text-dark has-text-centered">Redirecting...</p>
           </div>
           
