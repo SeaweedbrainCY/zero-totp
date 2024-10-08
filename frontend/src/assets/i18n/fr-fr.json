@@ -362,7 +362,7 @@
       "server_error": "Erreur : Impossible de récupérer les informations depuis le serveur",
       "session_end": "Pour ta sécurité, chaque session doit être renouvelée toutes les heures",
       "session_killed": "Pour ta sécurité tu as été déconnecté car tu as rafraichi ou fermé l'onglet ",
-      "session_timeout": "Pour ta sécurité, tu as été déconnecté après 10min d'inactivité"
+      "session_timeout": "Pour ta sécurité, tu as été déconnecté car tu étais inactif. Tu peux personnaliser la durée d'inactivité maximum dans tes préférences."
     },
     "open_button": "Ouvrir mon coffre",
     "remember": "Mémoriser mon adresse email",
@@ -405,6 +405,18 @@
   "orange": "Orange",
   "passphrase": "Passphrase",
   "preference": {
+    "account": {
+      "security": {
+        "autolock": {
+          "error": "Minimum 1min, maximum 60min",
+          "label": "Temps maximum d'inactivité avant que ton coffre ne s'auto verrouille (min)",
+          "success": "Succès ! Cette nouvelle valeur sera appliquée à ta prochaine connexion",
+          "title": "Auto-verrouillage du coffre après inactivité"
+        },
+        "subtitle": "Paramètres liés à la sécurité de ton compte",
+        "title": "Paramètres de sécurité de ton compte"
+      }
+    },
     "advanced": {
       "button": "Afficher les préférences avancées",
       "subtitle": "Paramètres pour gérer plus précisément ton compte Zero-TOTP.",

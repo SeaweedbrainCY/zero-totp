@@ -2,7 +2,7 @@
     <article class="hero-body is-flex is-justify-content-center" >
         <div>
         <p class="is-light has-text-centered">{{ 'account.loading' | translate }}<br>
-            <fa-icon [icon]="faCircleNotch" [spin]="true" style="color:#000000;" size="2xl"></fa-icon > </p>
+            <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#000000;" size="2xl"></fa-icon > </p>
         
         </div>
     </article>
@@ -236,40 +236,40 @@
             <progress class="progress is-small is-success" max="100"></progress>
             <p class="">
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('verifyOldPassword')" class="has-text-success"></fa-icon > 
-                <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('verifyOldPassword')"></fa-icon > 
+                <fa-icon [icon]="faCog" [animation]="true ? 'spin' : undefined" *ngIf="!stepsDone.includes('verifyOldPassword')"></fa-icon > 
                 <span [ngClass]="{'has-text-success': stepsDone.includes('verifyOldPassword')}"> {{ 'account.passphrase.popup.updating.verif' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('getVault')"></fa-icon > 
-                <fa-icon *ngIf="!stepsDone.includes('getVault')" [icon]="faCog" [spin]="true" ></fa-icon> 
+                <fa-icon *ngIf="!stepsDone.includes('getVault')" [icon]="faCog" [animation]="true ? 'spin' : undefined" ></fa-icon> 
                 <span [ngClass]="{'has-text-success': stepsDone.includes('getVault')}"> {{ 'account.passphrase.popup.updating.download' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('getVault')"></fa-icon > 
-                <fa-icon *ngIf="!stepsDone.includes('getVault')" [icon]="faCog" [spin]="true"></fa-icon > 
+                <fa-icon *ngIf="!stepsDone.includes('getVault')" [icon]="faCog" [animation]="true ? 'spin' : undefined"></fa-icon > 
                     <span [ngClass]="{'has-text-success': stepsDone.includes('getVault')}"> {{ 'account.passphrase.popup.updating.descryption' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('derivation')"></fa-icon > 
-                <fa-icon *ngIf="!stepsDone.includes('derivation')" [icon]="faCog" [spin]="true"></fa-icon > 
+                <fa-icon *ngIf="!stepsDone.includes('derivation')" [icon]="faCog" [animation]="true ? 'spin' : undefined"></fa-icon > 
                 <span [ngClass]="{'has-text-success': stepsDone.includes('derivation')}"> {{ 'account.passphrase.popup.updating.derivation' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('encryption')"></fa-icon > 
-                <fa-icon *ngIf="!stepsDone.includes('encryption')" [icon]="faCog" [spin]="true"></fa-icon > 
+                <fa-icon *ngIf="!stepsDone.includes('encryption')" [icon]="faCog" [animation]="true ? 'spin' : undefined"></fa-icon > 
                 <span [ngClass]="{'has-text-success': stepsDone.includes('encryption')}"> {{ 'account.passphrase.popup.updating.encryption' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('verification')"></fa-icon > 
-                <fa-icon [icon]="faCog" [spin]="true"  *ngIf="!stepsDone.includes('verification')"></fa-icon> 
+                <fa-icon [icon]="faCog" [animation]="true ? 'spin' : undefined"  *ngIf="!stepsDone.includes('verification')"></fa-icon> 
                 <span [ngClass]="{'has-text-success': stepsDone.includes('verification')}"> {{ 'account.passphrase.popup.updating.verif_new' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('upload')"></fa-icon > 
-                <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('upload')"></fa-icon > 
+                <fa-icon [icon]="faCog" [animation]="true ? 'spin' : undefined" *ngIf="!stepsDone.includes('upload')"></fa-icon > 
                 <span [ngClass]="{'has-text-success': stepsDone.includes('upload')}"> {{ 'account.passphrase.popup.updating.upload' | translate }}</span><br>
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('deleteBackup')"></fa-icon > 
-                    <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('deleteBackup') && deleteGoogleDriveBackup"></fa-icon > 
+                    <fa-icon [icon]="faCog" [animation]="true ? 'spin' : undefined" *ngIf="!stepsDone.includes('deleteBackup') && deleteGoogleDriveBackup"></fa-icon > 
                     <span [ngClass]="{'has-text-success': stepsDone.includes('deleteBackup')}" *ngIf="deleteGoogleDriveBackup"> {{ 'account.passphrase.popup.updating.destroy' | translate }}</span><br *ngIf="deleteGoogleDriveBackup">
 
 
                 <fa-icon [icon]="faCheck" class="has-text-success" *ngIf="stepsDone.includes('backup')"></fa-icon > 
-                        <fa-icon [icon]="faCog" [spin]="true" *ngIf="!stepsDone.includes('backup') && isGoogleDriveBackupEnabled"></fa-icon > 
+                        <fa-icon [icon]="faCog" [animation]="true ? 'spin' : undefined" *ngIf="!stepsDone.includes('backup') && isGoogleDriveBackupEnabled"></fa-icon > 
                         <span [ngClass]="{'has-text-success': stepsDone.includes('backup')}" *ngIf="isGoogleDriveBackupEnabled">
                             {{  "account.passphrase.popup.updating.upload_google" | translate}} 
                         </span><br>

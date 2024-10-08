@@ -8,7 +8,7 @@ import { Utils  } from '../common/Utils/utils';
 import { Crypto } from '../common/Crypto/crypto';
 import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
-import  * as URLParse from 'url-parse';
+import URLParse from 'url-parse';
 import { dom } from '@fortawesome/fontawesome-svg-core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';

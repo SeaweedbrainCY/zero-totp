@@ -73,7 +73,7 @@
                                                 [icon]="faCheckCircle"></fa-icon>
                                             <fa-icon *ngIf="isGoogleDriveSync == 'error'" [icon]="faCircleExclamation"
                                                 animation="fade"></fa-icon>
-                                            <fa-icon *ngIf="isGoogleDriveSync== 'loading'" [spin]="true"
+                                            <fa-icon *ngIf="isGoogleDriveSync== 'loading'" [animation]="true ? 'spin' : undefined"
                                                 [icon]="faCircleNotch"></fa-icon></span>
                                     </div>
                                 </div>
@@ -200,11 +200,11 @@
               </div>
             <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault"
                 *ngIf="!this.userService.getIsVaultLocal()">{{ 'vault.button.reload' | translate }} <fa-icon [icon]="faRotateRight" class="pl-1"
-                    [spin]=reloadSpin></fa-icon></span>
+                    [animation]="reloadSpin ? 'spin' : undefined"></fa-icon></span>
             <article class="hero is-halfheight" *ngIf="reloadSpin" style="min-height: 40vh;">
                 <article class="hero-body is-flex is-justify-content-center" >
                   <div>
-                      <fa-icon [icon]="faCircleNotch" [spin]="true" style="color:#000000;" size="2xl"></fa-icon >
+                      <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#000000;" size="2xl"></fa-icon >
                   </div>
               </article>
               </article>
