@@ -15,6 +15,16 @@ export class ChangelogComponent {
   changelogs = [
     {
       date: "22/09/2024",
+      version: "b3.1.0",
+      added: [
+        "You can now choose yourself the maximum inactivity time before your vault autolocks. The auto-lock can occur from 1min of inactivity to 1h of inactivity. In future releases, this maximum time will be increased to 24h. You can customize this time in your preferences page.",
+      ],
+      fixed:[
+       
+      ]
+    },
+    {
+      date: "22/09/2024",
       version: "b3.0.0",
       added: [
         "This is an import release that brings a lot of under-the-hood changes to Zero-TOTP. We have made a lot of changes to the codebase to make it more maintainable and to prepare it for the future.",
