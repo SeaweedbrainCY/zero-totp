@@ -117,7 +117,7 @@ class TestPreferences(unittest.TestCase):
     
     def test_get_some_default_pref_with_invalid_field(self):
         with self.application.app.app_context():
-            possible_value = ["favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum"]
+            possible_value = ["favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum", "autolock_delay"]
             self.client.cookies = {"api-key": self.jwtCookie}
             random.shuffle(possible_value)
             nb_fields = random.randint(1, self.number_of_preferences)
