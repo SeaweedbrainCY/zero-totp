@@ -67,15 +67,16 @@ def clean_rate_limiting_from_db():
         logging.info(f"✅  Rate limits cleaned at {datetime.utcnow()}")
 
 
-@flask.before_request
-def before_request():
-    if not conf.database.are_all_tables_created:
-        with app.app.app_context():
-            db.create_all()
-            db.session.commit()
-            logging.info("✅  Tables created")
-            logging.info(db.metadata.tables.keys())
-            conf.database.are_all_tables_created = True
+# DEPRECATED
+#@flask.before_request
+#def before_request():
+#    if not conf.database.are_all_tables_created:
+#        with app.app.app_context():
+#            db.create_all()
+#            db.session.commit()
+#            logging.info("✅  Tables created")
+#            logging.info(db.metadata.tables.keys())
+#            conf.database.are_all_tables_created = True
 
 @flask.errorhandler(404)
 def not_found(error):
