@@ -1,0 +1,35 @@
+{
+  "name": "Zero-TOTP",
+  "short_name": "Zero-TOTP",
+  "theme_color": "#FFFFFF",
+  "background_color": "#16262E",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "assets/totp_square_dark.png",
+      "sizes": "800x800",
+      "type": "image/png"
+    }, 
+    {
+      "src": "favicon.ico",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ], 
+  "screenshots": [
+    {
+      "src": "assets/pwa_desktop.png",
+      "sizes": "1309x750",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "assets/pwa_phone.png",
+      "sizes": "413x824",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ]
+}
