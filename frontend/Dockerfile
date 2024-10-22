@@ -13,6 +13,10 @@ RUN npm ci --ignore-scripts
 COPY . .
 
 RUN ng build --configuration production --subresource-integrity
+RUN chmod o+x ./generate_CSP_hashes.sh
+RUN ./generate_CSP_hashes.sh > nginx.conf
+RUN rm generate_CSP_hashes.sh
+
 
 EXPOSE 80
 FROM nginx:alpine
