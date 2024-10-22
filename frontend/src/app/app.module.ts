@@ -1,4 +1,4 @@
-import { NgModule, CSP_NONCE, isDevMode } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
@@ -107,10 +107,7 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
           // Register the ServiceWorker as soon as the application is stable
           // or after 30 seconds (whichever comes first).
           registrationStrategy: 'registerWhenStable:30000'
-        })], providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, {
-            provide: CSP_NONCE,
-            useValue: 'random-nonce-placeholder'
-        }, provideHttpClient(withInterceptorsFromDi()),] })
+        })], providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, provideHttpClient(withInterceptorsFromDi()),] })
 export class AppModule { 
 
   constructor(translate: TranslateService) {
