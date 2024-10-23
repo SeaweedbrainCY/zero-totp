@@ -14,7 +14,7 @@ COPY . .
 
 RUN ng build --configuration production --subresource-integrity
 RUN chmod o+x ./generate_CSP_hashes.sh
-RUN ./generate_CSP_hashes.sh > nginx.conf
+RUN ./generate_CSP_hashes.sh
 RUN rm generate_CSP_hashes.sh
 
 
@@ -23,6 +23,6 @@ FROM nginx:alpine
 RUN  touch /var/run/nginx.pid && \
      chown -R nginx:nginx /var/cache/nginx /var/run/nginx.pid
 USER nginx
-COPY  nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /app/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /app/dist /usr/share/nginx/html/
 
