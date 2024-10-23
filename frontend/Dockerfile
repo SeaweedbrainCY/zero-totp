@@ -13,9 +13,9 @@ RUN npm ci --ignore-scripts
 COPY . .
 
 RUN ng build --configuration production --subresource-integrity
-RUN chmod o+x ./generate_CSP_hashes.sh
-RUN ./generate_CSP_hashes.sh
-RUN rm generate_CSP_hashes.sh
+RUN chmod o+x ./generate_nginx_conf.sh
+RUN ./generate_nginx_conf.sh
+RUN rm generate_nginx_conf.sh
 
 
 EXPOSE 80
