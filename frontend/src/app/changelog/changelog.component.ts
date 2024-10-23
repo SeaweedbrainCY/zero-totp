@@ -14,6 +14,17 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "23/09/2024",
+      version: "b4.0.1",
+      added: [
+        
+      ],
+      fixed:[
+        "Fix the issue causing the favicon to not load properly in the vault page.",
+       "Fix a low CVE in frontend dependencies."
+      ]
+    },
+    {
       date: "22/09/2024",
       version: "b4.0.0",
       added: [
