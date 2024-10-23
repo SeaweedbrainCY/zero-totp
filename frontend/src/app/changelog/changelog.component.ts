@@ -15,6 +15,16 @@ export class ChangelogComponent {
   changelogs = [
     {
       date: "22/09/2024",
+      version: "b4.0.0",
+      added: [
+        "Zero-TOTP is now available as a PWA (Progressive Web App) ! You can now install Zero-TOTP on your device and use it as a native application. You can install Zero-TOTP on your device by clicking on the install button in the address bar of your browser or Add to Home Screen in the settings of your browser.",
+      ],
+      fixed:[
+       "Fix a high CVE in api dependencies."
+      ]
+    },
+    {
+      date: "22/09/2024",
       version: "b3.1.0",
       added: [
         "You can now choose yourself the maximum inactivity time before your vault autolocks. The auto-lock can occur from 1min of inactivity to 1h of inactivity. In future releases, this maximum time will be increased to 24h. You can customize this time in your preferences page.",
