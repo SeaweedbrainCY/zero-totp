@@ -39,7 +39,7 @@ def generate_jwt(user_id, admin=False):
             "sub": user_id,
             "iat": datetime.datetime.utcnow(),
             "nbf": datetime.datetime.utcnow(),
-            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+            "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=conf.api.access_token_validity),
             "jti": str(uuid4())
         }
         if admin:
