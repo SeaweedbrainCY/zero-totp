@@ -164,7 +164,7 @@ def login():
     else:
         response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
     userDB.update_last_login_date(user.id)
-    response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=conf.api.access_token_validity)
+    response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=conf.api.access_token_validity, path="/api/")
     response.set_cookie("refresh-token", refresh_token, httponly=True, secure=True, samesite="Lax", max_age=conf.api.refresh_token_validity, path="/api/v1/auth/refresh")
     return response
 
