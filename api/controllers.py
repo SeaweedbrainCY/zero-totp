@@ -22,6 +22,7 @@ from database.email_verification_repo import EmailVerificationToken as EmailVeri
 import CryptoClasses.jwt_func as jwt_auth
 from CryptoClasses.sign_func import API_signature
 import CryptoClasses.jwt_func as jwt_auth
+from CryptoClasses import refresh_token as refresh_token_func
 import Oauth.oauth_flow as oauth_flow
 import Utils.utils as utils
 import os
@@ -154,6 +155,8 @@ def login():
         rate_limiting_db.flush_login_limit(ip)
 
     jwt_token = jwt_auth.generate_jwt(user.id)
+    jti = jwt_auth.get_jti_from_jwt(jwt_token)
+    refresh_token = refresh_token_func.generate_refresh_token(user.id, jti)
     if not conf.features.emails.require_email_validation: # we fake the isVerified status if email validation is not required
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True}))
     elif user.isVerified:
@@ -161,7 +164,8 @@ def login():
     else:
         response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
     userDB.update_last_login_date(user.id)
-    response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
+    response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=conf.api.access_token_validity)
+    response.set_cookie("refresh-token", refresh_token, httponly=True, secure=True, samesite="Lax", max_age=conf.api.refresh_token_validity, path="/api/v1/auth/refresh")
     return response
 
 #GET /login/specs
