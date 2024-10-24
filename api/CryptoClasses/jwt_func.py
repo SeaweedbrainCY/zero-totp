@@ -1,7 +1,7 @@
 import jwt
 from environment import conf
 from functools import wraps
-import uuid
+from uuid import uuid4
 import jwt
 import datetime
 from flask import jsonify, request
@@ -29,7 +29,8 @@ def verify_jwt(jwt_token):
        logging.warning("Invalid token : " + str(e))
        raise Forbidden("Invalid token")
 
-
+def get_jti_from_jwt(jwt_token):
+    return verify_jwt(jwt_token)["jti"]
 
 def generate_jwt(user_id, admin=False):
     try:
@@ -39,11 +40,12 @@ def generate_jwt(user_id, admin=False):
             "iat": datetime.datetime.utcnow(),
             "nbf": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+            "jti": str(uuid4())
         }
         if admin:
             payload["admin"] = True
             payload["exp"] = datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
-        return jwt.encode(payload, conf.api.jwt_secret, algorithm=ALG)
+        return jwt.encode(payload, conf.api.jwt_secret, algorithm=ALG), payload["jti"]
     except Exception as e:
         logging.warning("Error while generating JWT : " + str(e))
         raise e
