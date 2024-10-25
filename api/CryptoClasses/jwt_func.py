@@ -26,7 +26,7 @@ def verify_jwt(jwt_token):
                               "verify_iat":True})
         return data
    except Exception as e:
-       logging.warning("Invalid token : " + str(e))
+       logging.warning("Token verification failed. Invalid token : " + str(e))
        raise Forbidden("Invalid token")
 
 def get_jti_from_jwt(jwt_token):
@@ -45,7 +45,7 @@ def generate_jwt(user_id, admin=False):
         if admin:
             payload["admin"] = True
             payload["exp"] = datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
-        return jwt.encode(payload, conf.api.jwt_secret, algorithm=ALG), payload["jti"]
+        return jwt.encode(payload, conf.api.jwt_secret, algorithm=ALG)
     except Exception as e:
         logging.warning("Error while generating JWT : " + str(e))
         raise e
