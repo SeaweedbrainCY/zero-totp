@@ -12,7 +12,7 @@ class TestJWT(unittest.TestCase):
         self.timezone = datetime.timezone.utc
         self.timeFormat = "%Y-%m-%d %H:%M:%S"
         self.validPayload = {
-            "iss": "https://api.zero-totp.com",
+            "iss": "https://zero-totp.com",
             "sub": 1,
             "iat": datetime.datetime.utcnow(),
             "nbf": datetime.datetime.utcnow(),

@@ -9,7 +9,7 @@ import logging
 from connexion.exceptions import Forbidden
 
 ALG = 'HS256'
-ISSUER = "https://api.zero-totp.com"
+ISSUER = conf.environment.frontend_URI + "/api/v1"
 
 # Verification performed by openAPI
 def verify_jwt(jwt_token): 
