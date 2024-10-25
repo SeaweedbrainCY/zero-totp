@@ -181,4 +181,3 @@ def unsafe_json_vault_validation(json:str) -> (bool, str):
         logging.error("Error while validating vault json : " + str(e))
         print(e)
         return False, "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support."
-    
