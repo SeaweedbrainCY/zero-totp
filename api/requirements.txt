@@ -96,5 +96,5 @@ watchfiles==0.21.0
 websockets==12.0
 Werkzeug==3.0.3
 wrapt==1.16.0
-zero-totp-db-model==1.9.dev1
+zero-totp-db-model==1.9.dev2
 zipp==3.19.1
