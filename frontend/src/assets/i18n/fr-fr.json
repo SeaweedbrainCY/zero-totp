@@ -362,7 +362,8 @@
       "server_error": "Erreur : Impossible de récupérer les informations depuis le serveur",
       "session_end": "Pour ta sécurité, chaque session doit être renouvelée toutes les heures",
       "session_killed": "Pour ta sécurité tu as été déconnecté car tu as rafraichi ou fermé l'onglet ",
-      "session_timeout": "Pour ta sécurité, tu as été déconnecté car tu étais inactif. Tu peux personnaliser la durée d'inactivité maximum dans tes préférences."
+      "session_timeout": "Pour ta sécurité, tu as été déconnecté car tu étais inactif. Tu peux personnaliser la durée d'inactivité maximum dans tes préférences.",
+      "general_error": "Une erreur est survenue."
     },
     "open_button": "Ouvrir mon coffre",
     "remember": "Mémoriser mon adresse email",
