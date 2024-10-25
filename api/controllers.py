@@ -1,4 +1,5 @@
-from flask import request, Response, redirect, make_response
+from flask import request, redirect, make_response
+from Utils.http_response import Response
 import flask
 import connexion
 import json
@@ -164,8 +165,7 @@ def login():
     else:
         response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
     userDB.update_last_login_date(user.id)
-    response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=conf.api.refresh_token_validity, path="/api/")
-    response.set_cookie("refresh-token", refresh_token, httponly=True, secure=True, samesite="Lax", max_age=conf.api.refresh_token_validity, path="/api/v1/auth/refresh")
+    response.set_auth_cookies(jwt_token, refresh_token)
     return response
 
 #GET /login/specs
@@ -942,3 +942,19 @@ def get_internal_notification():
             "message":notif.message,
             "timestamp":float(notif.timestamp)
         }
+
+
+# PUT /auth/refresh
+@require_valid_user
+def auth_refresh_token(user_id):
+    jwt = request.cookies.get("api-key")
+    token = request.cookies.get("refresh-token")
+    if not jwt or not token:
+        return {"message": "Missing token"}, 401
+    jti = jwt_auth.get_jti_from_jwt(jwt)
+    if not jti:
+        return {"message": "Invalid token"}, 401
+    new_jwt, new_refresh_token = refresh_token_func.refresh_token_flow(user_id=user_id, jti=jti, token=token)
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
+    response.set_auth_cookies(new_jwt, new_refresh_token)
+    return response
