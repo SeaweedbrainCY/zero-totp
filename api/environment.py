@@ -113,7 +113,7 @@ class APIConfig:
                 except Exception as e:
                     logging.error(f"[FATAL] Load config fail. api.trusted_proxy contains an invalid ip address. {e}")
                     exit(1)
-        self.access_token_validity = 3600
+        self.access_token_validity = 600
         if "access_token_validity" in data:
             try:
                 self.access_token_validity = int(data["access_token_validity"])
