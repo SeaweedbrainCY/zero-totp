@@ -59,10 +59,30 @@ class TestLoginController(unittest.TestCase):
             self.assertIn("isVerified", response.json())
             self.assertIn("Set-Cookie", response.headers)
             self.assertIn("api-key", response.headers["Set-Cookie"])
-            self.assertIn("HttpOnly", response.headers["Set-Cookie"])
-            self.assertIn("Secure", response.headers["Set-Cookie"])
-            self.assertIn("SameSite=Lax", response.headers["Set-Cookie"])
-            self.assertIn("Expires", response.headers["Set-Cookie"])
+            self.assertIn("refresh-token", response.headers["Set-Cookie"])
+            cookies = response.headers["Set-Cookie"].split("api-key=")
+            self.assertEqual(len(cookies), 2, "api-key found multiple times in the response")
+            if "refresh-token" in cookies[1]:
+                cookies = cookies[1].split("refresh-token=")
+                api_key = cookies[0]
+                refresh_token = cookies[1]
+            else:
+                refresh_token = cookies[0]
+                api_key = cookies[1]
+
+            
+            self.assertIn("HttpOnly", api_key)
+            self.assertIn("Secure", api_key)
+            self.assertIn("SameSite=Lax", api_key)
+            self.assertIn("Expires", api_key)
+            self.assertIn("Path=/api/", api_key)
+            
+            self.assertIn("HttpOnly", refresh_token)
+            self.assertIn("Secure", refresh_token)
+            self.assertIn("SameSite=Lax", refresh_token)
+            self.assertIn("Expires", refresh_token)
+            self.assertIn("Path=/api/v1/auth/refresh", refresh_token)
+
             user = db.session.query(User).filter_by(id=1).first()
             last_login_date_timestamp = user.last_login_date
             diff_time = datetime.datetime.now(datetime.UTC).timestamp() - float(last_login_date_timestamp)
