@@ -10,6 +10,7 @@ from database.google_drive_integration_repo import GoogleDriveIntegration as Goo
 from database.preferences_repo import Preferences as PreferencesDB
 from database.admin_repo import Admin as Admin_db
 from database.notif_repo import Notifications as Notifications_db
+from database.refresh_token_repo import RefreshTokenRepo as RefreshToken_db
 from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging, conf
@@ -156,7 +157,7 @@ def login():
         rate_limiting_db.flush_login_limit(ip)
 
     jwt_token = jwt_auth.generate_jwt(user.id)
-    jti = jwt_auth.get_jti_from_jwt(jwt_token)
+    jti = jwt_auth.verify_jwt(jwt_token)["jti"]
     refresh_token = refresh_token_func.generate_refresh_token(user.id, jti)
     if not conf.features.emails.require_email_validation: # we fake the isVerified status if email validation is not required
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True}))
@@ -945,16 +946,24 @@ def get_internal_notification():
 
 
 # PUT /auth/refresh
-@require_valid_user
-def auth_refresh_token(user_id):
+def auth_refresh_token():
     jwt = request.cookies.get("api-key")
     token = request.cookies.get("refresh-token")
     if not jwt or not token:
         return {"message": "Missing token"}, 401
-    jti = jwt_auth.get_jti_from_jwt(jwt)
+    try:
+        jwt_info = jwt_auth.verify_jwt(jwt, verify_exp=False)
+    except Exception as e:
+        raise e
+    jti =  jwt_info["jti"]
+    jwt_user_id = jwt_info["sub"]
     if not jti:
         return {"message": "Invalid token"}, 401
-    new_jwt, new_refresh_token = refresh_token_func.refresh_token_flow(user_id=user_id, jti=jti, token=token)
+    refresh_token = RefreshToken_db().get_refresh_token_by_hash(sha256(token.encode("utf-8")).hexdigest())
+    if not refresh_token:
+        logging.warning(f"JWT of user {jwt_user_id} tried to be refreshed with an refresh token (not present in the db)")
+        return {"message": "Access denied"}, 403
+    new_jwt, new_refresh_token = refresh_token_func.refresh_token_flow(jti=jti, rt=refresh_token, jwt_user_id=jwt_user_id)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
     response.set_auth_cookies(new_jwt, new_refresh_token)
     return response
