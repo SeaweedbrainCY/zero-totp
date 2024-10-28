@@ -114,6 +114,7 @@ paths:
   /auth/refresh:
     put:
       operationId: controllers.auth_refresh_token
+      security: []
       tags:
         - Auth
       summary: Refresh the user's JWT
