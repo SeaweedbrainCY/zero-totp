@@ -30,7 +30,7 @@ import Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user, require_userid
+from Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user, require_userid, ip_rate_limit
 import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
@@ -114,14 +114,9 @@ def signup():
 
 
 # POST /login
+@ip_rate_limit
 def login():
-    ip = utils.get_ip(request)
-    rate_limiting_db = Rate_Limiting_DB()
-    if ip:
-        if rate_limiting_db.is_login_rate_limited(ip):
-            return {"message": "Too many requests", 'ban_time':conf.features.rate_limiting.login_ban_time}, 429
-    else:
-        logging.error("The remote IP used to login is private. The headers are not set correctly")
+    
     try:
         data = request.get_json()
         passphrase = data["password"].strip()

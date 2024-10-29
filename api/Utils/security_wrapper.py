@@ -5,6 +5,8 @@ from environment import logging, conf
 from CryptoClasses.hash_func import Bcrypt
 import random
 import string
+import Utils.utils as utils
+from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
 
 def require_admin_role(func):
     def wrapper(context_, user, token_info,*args, **kwargs):
@@ -105,4 +107,16 @@ def require_passphrase_verification(func):
             return func(user_id, *args, **kwargs)
         logging.info(f"User {user_id} tried to login with wrong password. require_passphrase_verification wrapper rejected the request")
         return {"error": "Unauthorized"}, 403
+    return wrapper
+
+def ip_rate_limit(func):
+    def wrapper(*args, **kwargs):
+        ip = utils.get_ip(connexion.request)
+        rate_limiting_db = Rate_Limiting_DB()
+        if ip:
+            if rate_limiting_db.is_login_rate_limited(ip):
+                return {"message": "Too many requests", 'ban_time':conf.features.rate_limiting.login_ban_time}, 429
+        else:
+            logging.error("The remote IP used to login is private. The headers are not set correctly")
+        return func(*args, **kwargs)
     return wrapper
