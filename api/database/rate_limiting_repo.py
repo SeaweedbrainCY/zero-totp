@@ -3,7 +3,9 @@ from zero_totp_db_model.model import RateLimiting
 import datetime
 from environment import conf
 class RateLimitingRepo:
-    def add_failed_login(self, ip, user_id):
+    def add_failed_login(self, ip, user_id=None):
+        if ip == None:
+            return None
         rl = RateLimiting(ip=ip, user_id=user_id, action_type="failed_login", timestamp= datetime.datetime.utcnow())
         db.session.add(rl)
         db.session.commit()
