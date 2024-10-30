@@ -310,6 +310,7 @@
       }
     }
   },
+  "hour": "heure",
   "less": "Moins",
   "loading": "Chargement ...",
   "log_in": "Connexion",
@@ -342,6 +343,7 @@
       "confirm_passphrase": "Pour continuer, confirm ta passphrase",
       "email": "Es-tu sûr de ton adresse mail ? ",
       "empty": "Tu n'as pas oublié quelque chose ?",
+      "general_error": "Une erreur est survenue.",
       "hashing": "Une erreur est survenue en hachant ton mot de passe. Merci de réessayer.",
       "import_vault": {
         "error_unknown": "Erreur : Impossible d'importer ton coffre. Erreur inconnue.",
@@ -362,8 +364,7 @@
       "server_error": "Erreur : Impossible de récupérer les informations depuis le serveur",
       "session_end": "Pour ta sécurité, chaque session doit être renouvelée toutes les heures",
       "session_killed": "Pour ta sécurité tu as été déconnecté car tu as rafraichi ou fermé l'onglet ",
-      "session_timeout": "Pour ta sécurité, tu as été déconnecté car tu étais inactif. Tu peux personnaliser la durée d'inactivité maximum dans tes préférences.",
-      "general_error": "Une erreur est survenue."
+      "session_timeout": "Pour ta sécurité, tu as été déconnecté car tu étais inactif. Tu peux personnaliser la durée d'inactivité maximum dans tes préférences."
     },
     "open_button": "Ouvrir mon coffre",
     "remember": "Mémoriser mon adresse email",
@@ -410,7 +411,7 @@
       "security": {
         "autolock": {
           "error": "Minimum 1min, maximum 60min",
-          "label": "Temps maximum d'inactivité avant que ton coffre ne s'auto verrouille (min)",
+          "label": "Temps maximum d'inactivité avant que ton coffre ne s'auto verrouille",
           "success": "Succès ! Cette nouvelle valeur sera appliquée à ta prochaine connexion",
           "title": "Auto-verrouillage du coffre après inactivité"
         },

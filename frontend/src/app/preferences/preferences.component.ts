@@ -43,6 +43,7 @@ export class PreferencesComponent implements OnInit{
   autolock_is_updating = false;
   autolock_update_done_animation = false;
   autolock_value_updated = false;
+  duration_unit = "";
   constructor( 
     private http: HttpClient,
     public userService: UserService,
@@ -62,6 +63,7 @@ export class PreferencesComponent implements OnInit{
     } 
     this.get_preferences()
     this.get_internal_notification()
+    this.duration_unit = "hour";
   }
 
   get_preferences(){
@@ -164,7 +166,7 @@ export class PreferencesComponent implements OnInit{
     if(this.autolock_delay < 1){
       this.autolock_delay = 1;
       this.autolock_display_error = true;
-    } else if(this.autolock_delay > 60){
+    } else if(this.autolock_delay > 60*24){
       this.autolock_delay = 60;
       this.autolock_display_error = true;
     } else {
@@ -212,6 +214,16 @@ export class PreferencesComponent implements OnInit{
       size += value.toString().length;
     }
     return size;
+  }
+
+  change_duration_unit(value:string){
+    if(value == "minute"){
+      this.duration_unit = "minute";
+      this.autolock_delay *= 60;
+    } else  if(value == "hour"){
+      this.duration_unit = "hour";
+      this.autolock_delay /= 60;
+    } 
   }
 
 }

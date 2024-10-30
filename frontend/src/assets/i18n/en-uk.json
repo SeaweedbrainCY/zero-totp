@@ -310,6 +310,7 @@
       }
     }
   },
+  "hour": "hour",
   "less": "Less",
   "loading": "Loading ...",
   "log_in": "Log in",
@@ -342,6 +343,7 @@
       "confirm_passphrase": "To continue, please confirm your passphrase",
       "email": "Are your sure about your email ?",
       "empty": "Did you forget to fill something ?",
+      "general_error": "An error occured. Please, try again.",
       "hashing": "An error occured while hashing your password. Please, try again",
       "import_vault": {
         "error_unknown": "Error : Impossible to import your vault. Unknown error",
@@ -362,8 +364,7 @@
       "server_error": "Error : Impossible ro retrieve information from the server",
       "session_end": "For your safety, your session must be renewed every hour.",
       "session_killed": "For your safety, you have been disconnected because you have reloaded or closed the tab",
-      "session_timeout": "For your safety, you have been disconnected after due to inactivity. You can customize this delay in your preferences",
-      "general_error": "An error occured. Please, try again."
+      "session_timeout": "For your safety, you have been disconnected after due to inactivity. You can customize this delay in your preferences"
     },
     "open_button": "Open my vault",
     "remember": "Remember my email address",
@@ -410,7 +411,7 @@
       "security": {
         "autolock": {
           "error": "1min minimum, 60min maximum",
-          "label": "Maximum time of inactivity before your vault autolocks  (min)",
+          "label": "Maximum time of inactivity before your vault autolocks",
           "success": "Success ! This new value will be applied at your next login",
           "title": "Autolock your vault after inactivity"
         },
