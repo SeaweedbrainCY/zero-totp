@@ -2,8 +2,9 @@ import unittest
 from app import app
 from database.db import db 
 from environment import conf
-from zero_totp_db_model.model import User as UserModel, RefreshToken as RefreshTokenModel
+from zero_totp_db_model.model import User as UserModel
 from database.refresh_token_repo import RefreshTokenRepo
+from database.rate_limiting_repo import RateLimitingRepo
 from unittest.mock import patch
 from CryptoClasses.jwt_func import generate_jwt, ISSUER, ALG, verify_jwt
 import datetime
@@ -247,6 +248,20 @@ class TestRefreshAuthToken(unittest.TestCase):
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 403)
     
+    def test_refresh_roken_rate_limited(self):
+        get_ip = patch("Utils.utils.get_ip").start()
+        get_ip.return_value = "1.1.1.1"
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"api-key": self.generate_self_signed_jwt(self.user_id), "refresh-token": self.refresh_token}
+            for _ in range(conf.features.rate_limiting.login_attempts_limit_per_ip):    
+                
+                response = self.client.put(self.endpoint)
+                self.assertEqual(response.status_code, 403)
+
+            response = self.client.put(self.endpoint)
+            self.assertEqual(response.status_code, 429)
+            self.assertTrue(RateLimitingRepo().is_login_rate_limited("1.1.1.1"))
+            
 
     
 

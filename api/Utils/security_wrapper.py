@@ -115,6 +115,7 @@ def ip_rate_limit(func):
         rate_limiting_db = Rate_Limiting_DB()
         if ip:
             if rate_limiting_db.is_login_rate_limited(ip):
+                logging.info(f"IP {ip} is rate limited")
                 return {"message": "Too many requests", 'ban_time':conf.features.rate_limiting.login_ban_time}, 429
         else:
             logging.error("The remote IP used to login is private. The headers are not set correctly")
