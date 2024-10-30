@@ -163,7 +163,7 @@ class TestPreferences(unittest.TestCase):
          with self.application.app.app_context():
             self.client.cookies = {"api-key": self.generate_expired_cookie()}
             response = self.client.get(self.endpoint+"?fields=all")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
     
     def test_get_preference_new_user(self):
         with self.application.app.app_context():

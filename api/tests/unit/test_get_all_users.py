@@ -86,7 +86,7 @@ class TestGetAllUsers(unittest.TestCase):
         with self.application.app.app_context():
            self.client.cookies = {"api-key":self.generate_expired_cookie(self.admin_user_id), "admin-api-key":generate_jwt(self.admin_user_id, admin=True)}
            response = self.client.get(self.getAllUsersEndpoint)
-           self.assertEqual(response.status_code, 403)
+           self.assertEqual(response.status_code, 401)
     
     def test_get_all_users_bad_admin_cookie(self):
         with self.application.app.app_context():
