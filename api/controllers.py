@@ -136,6 +136,8 @@ def login():
         logging.info("User " + str(email) + " tried to login but does not exist. A fake password is checked to avoid timing attacks")
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fakePassword)
+        ip = utils.get_ip(connexion.request)
+        rate_limiting_db = Rate_Limiting_DB()
         if ip:
             rate_limiting_db.add_failed_login(ip, None)
         return {"message": "generic_errors.invalid_creds"}, 403
