@@ -118,5 +118,5 @@ def ip_rate_limit(func):
                 return {"message": "Too many requests", 'ban_time':conf.features.rate_limiting.login_ban_time}, 429
         else:
             logging.error("The remote IP used to login is private. The headers are not set correctly")
-        return func(*args, **kwargs)
+        return func(ip, *args, **kwargs)
     return wrapper
