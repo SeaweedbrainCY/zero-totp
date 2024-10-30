@@ -233,7 +233,7 @@
             is-one-third-tablet
             is-one-third-desktop
             is-one-third-widescreen
-            is-one-quarter-fullhd" *ngFor="let uuid of vaultDomain">
+            is-one-quarter-fullhd" *ngFor="let uuid of vaultUUIDs">
                     <div class="card has-text-white has-background-info" [ngClass]="{   'has-background-success': vault!.get(uuid)?.get('color') == 'success',
                                                                     'has-background-danger': vault!.get(uuid)?.get('color') == 'danger',   
                                                                     'has-background-warning': vault!.get(uuid)?.get('color') == 'warning',
