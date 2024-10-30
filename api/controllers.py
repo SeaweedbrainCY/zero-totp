@@ -115,16 +115,10 @@ def signup():
 
 # POST /login
 @ip_rate_limit
-def login():
-    
-    try:
-        data = request.get_json()
-        passphrase = data["password"].strip()
-        email = utils.sanitize_input(data["email"]).strip()
-    except Exception as e:
-        logging.info(e)
-        return {"message": "generic_errors.invalid_request"}, 400
-    
+def login(ip, body):
+    passphrase = body["password"].strip()
+    email = utils.sanitize_input(body["email"]).strip()
+    rate_limiting_db = Rate_Limiting_DB()
     if not passphrase or not email:
         return {"message": "generic_errors.missing_params"}, 400
     if(not utils.check_email(email) ):
@@ -136,8 +130,7 @@ def login():
         logging.info("User " + str(email) + " tried to login but does not exist. A fake password is checked to avoid timing attacks")
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fakePassword)
-        ip = utils.get_ip(connexion.request)
-        rate_limiting_db = Rate_Limiting_DB()
+        
         if ip:
             rate_limiting_db.add_failed_login(ip, None)
         return {"message": "generic_errors.invalid_creds"}, 403
