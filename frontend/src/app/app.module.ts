@@ -45,6 +45,7 @@ import {NgIdleModule} from '@ng-idle/core';
 import { RouterModule } from '@angular/router';
 import { routes } from './app-routing.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { httpInterceptorProviders } from './helpers/auth.interceptor';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -107,7 +108,7 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
           // Register the ServiceWorker as soon as the application is stable
           // or after 30 seconds (whichever comes first).
           registrationStrategy: 'registerWhenStable:30000'
-        })], providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, provideHttpClient(withInterceptorsFromDi()),] })
+        })], providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, httpInterceptorProviders, provideHttpClient(withInterceptorsFromDi()),] })
 export class AppModule { 
 
   constructor(translate: TranslateService) {
