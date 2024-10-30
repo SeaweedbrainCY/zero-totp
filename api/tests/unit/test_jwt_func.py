@@ -3,7 +3,7 @@ import unittest
 from CryptoClasses.jwt_func import verify_jwt, generate_jwt
 import datetime
 from environment import conf
-from connexion.exceptions import Forbidden
+from connexion.exceptions import Forbidden, Unauthorized
 
 
 class TestJWT(unittest.TestCase):
@@ -46,7 +46,7 @@ class TestJWT(unittest.TestCase):
     def test_verify_jwt_invalid_exp(self):
         self.validPayload["exp"] = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
         validJWT = jwt.encode(self.validPayload, self.secret, algorithm=self.algorithm)
-        self.assertRaises(Forbidden, verify_jwt, validJWT)
+        self.assertRaises(Unauthorized, verify_jwt, validJWT)
     
 
     def test_verify_jwt_invalid_signature(self):
