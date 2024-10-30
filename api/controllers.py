@@ -131,21 +131,17 @@ def login(ip, body):
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fakePassword)
         
-        if ip:
-            rate_limiting_db.add_failed_login(ip, None)
+        rate_limiting_db.add_failed_login(ip)
         return {"message": "generic_errors.invalid_creds"}, 403
     logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {ip}. X-Forwarded-For header is {request.headers.get('X-Forwarded-For')}")
     checked = bcrypt.checkpw(user.password)
     if not checked:
-        if ip:
-            rate_limiting_db.add_failed_login(ip, user.id)
+        rate_limiting_db.add_failed_login(ip, user.id)
         return {"message": "generic_errors.invalid_creds"}, 403
     if user.isBlocked: # only authenticated users can see the blocked status
         return {"message": "blocked"}, 403
     
-    if ip:
-        rate_limiting_db.flush_login_limit(ip)
-
+    rate_limiting_db.flush_login_limit(ip)
     jwt_token = jwt_auth.generate_jwt(user.id)
     jti = jwt_auth.verify_jwt(jwt_token)["jti"]
     refresh_token = refresh_token_func.generate_refresh_token(user.id, jti)
