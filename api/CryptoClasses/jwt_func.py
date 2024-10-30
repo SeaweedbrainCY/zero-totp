@@ -6,7 +6,7 @@ import jwt
 import datetime
 from flask import jsonify, request
 import logging
-from connexion.exceptions import Forbidden
+from connexion.exceptions import Forbidden, Unauthorized
 
 ALG = 'HS256'
 ISSUER = conf.environment.frontend_URI + "/api/v1"
@@ -25,6 +25,8 @@ def verify_jwt(jwt_token, verify_exp=True):
                               "verify_exp": verify_exp, 
                               "verify_iat":True})
         return data
+   except jwt.ExpiredSignatureError as e:
+       raise Unauthorized("API key expired")
    except Exception as e:
        logging.warning("Token verification failed. Invalid token : " + str(e))
        raise Forbidden("Invalid token")
