@@ -933,7 +933,7 @@ def get_internal_notification():
 
 # PUT /auth/refresh
 @ip_rate_limit
-def auth_refresh_token(ip, _):
+def auth_refresh_token(ip, *args, **kwargs):
     jwt = request.cookies.get("api-key")
     token = request.cookies.get("refresh-token")
     rate_limiting = Rate_Limiting_DB()
