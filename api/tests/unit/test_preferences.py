@@ -345,14 +345,16 @@ class TestPreferences(unittest.TestCase):
             self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "autolock_delay", "value": 0})
             self.assertEqual(response.status_code, 400)
-            self.assertEqual(response.json()["message"], "autolock delay must be at least of 1")
+            self.assertEqual(response.json()["message"], "invalid_duration")
+            self.assertIsNotNone(int(response.json()["minimum_duration_min"]))
 
     def test_put_autolock_delay_high_value(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "autolock_delay", "value": 61})
             self.assertEqual(response.status_code, 400)
-            self.assertEqual(response.json()["message"], "autolock delay must be at most of 60")
+            self.assertEqual(response.json()["message"], "invalid_duration")
+            self.assertIsNotNone(int(response.json()["maximum_duration_min"]))
     
     def test_put_autolock_delay_bad_value(self):
         with self.application.app.app_context():
