@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb, faVault, faSliders, faShieldHalved } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb, faVault, faSliders, faShieldHalved, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -22,6 +22,7 @@ export class PreferencesComponent implements OnInit{
   faCircleInfo=faCircleInfo;
   faVault=faVault;
   faArrowsRotate=faArrowsRotate;
+  faXmark=faXmark;
   faShieldHalved=faShieldHalved;
   faSliders=faSliders;
   faHourglassStart=faHourglassStart;
@@ -42,15 +43,17 @@ export class PreferencesComponent implements OnInit{
   autolock_display_error=false;
   autolock_is_updating = false;
   autolock_update_done_animation = false;
+  autolock_update_failed_animation= false;
   autolock_value_updated = false;
   duration_unit = "";
+  minimum_duration = -1;
+  maximum_duration = -1;
   constructor( 
     private http: HttpClient,
     public userService: UserService,
     private utils: Utils,
     private router: Router,
     private route: ActivatedRoute,
-    private crypto:Crypto,
     private translate: TranslateService,
     private toastr: ToastrService,
     ){
@@ -72,9 +75,16 @@ export class PreferencesComponent implements OnInit{
         this.loadingPreferences = false;
         const data = JSON.parse(JSON.stringify(response.body));
         if(data.autolock_delay != null){
-          this.autolock_delay = data.autolock_delay;
+          if(Math.floor(data.autolock_delay/60) == data.autolock_delay/60){
+            this.autolock_delay = data.autolock_delay/60;
+            this.duration_unit = "hour";
+          } else {
+            this.autolock_delay = data.autolock_delay;
+            this.duration_unit = "minute";
+          }
         } else {
           this.autolock_delay = 10;
+          this.duration_unit = "minute";
         }
         if(data.favicon_policy != null){
           this.faviconPolicy = data.favicon_policy;
@@ -162,25 +172,34 @@ export class PreferencesComponent implements OnInit{
     });
   }
 
-  autolockDelayChange(){
-    if(this.autolock_delay < 1){
-      this.autolock_delay = 1;
-      this.autolock_display_error = true;
-    } else if(this.autolock_delay > 60*24){
-      this.autolock_delay = 60;
-      this.autolock_display_error = true;
+
+  autolockDelayToMinutes(){
+    if(this.duration_unit == "hour"){
+      return this.autolock_delay * 60;
     } else {
-      this.autolock_display_error = false;
+      return this.autolock_delay;
     }
   }
 
   autolockDelayUpdate(){
+    this.autolock_display_error = false;
+    this.autolock_value_updated = false;
     this.autolock_is_updating = true;
-    this.http.put("/api/v1/preferences", {"id":"autolock_delay", "value":this.autolock_delay}, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    const autolock_delay_minutes = this.autolockDelayToMinutes();
+    this.http.put("/api/v1/preferences", {"id":"autolock_delay", "value":autolock_delay_minutes}, {withCredentials: true, observe: 'response'}).subscribe((response) => {
       this.autolock_value_updated = true;
       this.autolockDelayUpdateDone();
     }, (error) => {
       this.autolock_is_updating = false;
+      if(error.status == 400){
+        if(error.error.message == "invalid_duration"){
+          this.autolock_display_error = true;
+          this.autolockDelayUpdateFailed()
+          this.minimum_duration = error.error.minimum_duration_min;
+          this.maximum_duration = error.error.maximum_duration_min/60;
+          return;
+        }
+      }
       let errorMessage = "";
           if(error.error.message != null){
             errorMessage = error.error.message;
@@ -205,6 +224,14 @@ export class PreferencesComponent implements OnInit{
     this.autolock_update_done_animation = true;
     setTimeout(() => {
       this.autolock_update_done_animation = false;
+    }, 1000);
+  }
+
+  autolockDelayUpdateFailed(){
+    this.autolock_is_updating = false
+    this.autolock_update_failed_animation = true;
+    setTimeout(() => {
+      this.autolock_update_failed_animation = false;
     }, 1000);
   }
 

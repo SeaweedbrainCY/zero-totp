@@ -410,7 +410,7 @@
     "account": {
       "security": {
         "autolock": {
-          "error": "Minimum 1min, maximum 60min",
+          "error": "Minimum {{min}}min, maximum {{max}}h",
           "label": "Temps maximum d'inactivité avant que ton coffre ne s'auto verrouille",
           "success": "Succès ! Cette nouvelle valeur sera appliquée à ta prochaine connexion",
           "title": "Auto-verrouillage du coffre après inactivité"
