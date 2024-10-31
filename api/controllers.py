@@ -730,14 +730,14 @@ def set_preference(user_id, body):
         else:# pragma: no cover
             return {"message": "Unknown error while updating preference"}, 500
     elif field == "autolock_delay":
+        minimum_delay = 1
+        maximum_delay = conf.api.refresh_token_validity/60 # autolock is limited by the ability to refresh the token
         try:
             value = int(value)
         except:
             return {"message": "Invalid request"}, 400
-        if value < 1 :
-            return {"message": "autolock delay must be at least of 1"}, 400
-        elif value > 60:
-            return {"message": "autolock delay must be at most of 60"}, 400
+        if value < 1 or value > maximum_delay:
+            return {"message": "invalid_duration", "minimum_duration_min":minimum_delay, "maximum_duration_min": maximum_delay}, 400
         preferences = preferences_db.update_autolock_delay(user_id, value)
         if preferences:# pragma: no cover
             return {"message": "Preference updated"}, 201
