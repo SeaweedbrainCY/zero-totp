@@ -35,6 +35,17 @@ def test_conf(conf) -> bool:
                 ipaddress.ip_network(ip)
             except Exception as e:
                 raise Exception(f"api.trusted_proxy contains an invalid ip address. {e}")
+    
+    if conf.api.access_token_validity != None:
+        assert isinstance(conf.api.access_token_validity, int), "api.access_token_validity is not an integer"
+        assert conf.api.access_token_validity > 0, "api.access_token_validity must be greater than 0"
+    if conf.api.refresh_token_validity != None:
+        assert isinstance(conf.api.refresh_token_validity, int), "api.refresh_token_validity is not an integer"
+        assert conf.api.refresh_token_validity > 0, "api.refresh_token_validity must be greater than 0"
+
+        if conf.api.access_token_validity != None:
+            assert conf.api.refresh_token_validity > conf.api.access_token_validity, "api.refresh_token_validity must be greater than api.access_token"
+
         
     ## Environment
     assert conf.environment.type in ["local", "development", "production"], f"environment.type is not valid. Was expecting local, development or production, got {conf.environment.type}"

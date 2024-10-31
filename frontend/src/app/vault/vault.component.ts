@@ -42,7 +42,7 @@ export class VaultComponent implements OnInit {
   faCircleQuestion=faCircleQuestion;
   faUpload=faUpload;
   vault: Map<string, Map<string,string>> | undefined;
-  vaultDomain : string[] = [];
+  vaultUUIDs : string[] = [];
   remainingTime = 0;
   totp = require('totp-generator');
   isModalActive = false
@@ -93,6 +93,7 @@ export class VaultComponent implements OnInit {
 
       this.reloadSpin = true
       this.vault = new Map<string, Map<string,string>>();
+      this.vaultUUIDs = [];
       this.userService.setVaultTags([]);
       this.http.get("/api/v1/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         const data = JSON.parse(JSON.stringify(response.body))
@@ -165,6 +166,7 @@ export class VaultComponent implements OnInit {
   decrypt_and_display_vault(encrypted_vault:any){
     this.reloadSpin = true
       this.vault = new Map<string, Map<string,string>>();
+      this.vaultUUIDs = [];
     try{
      if(this.userService.get_zke_key() != null){
       try{
@@ -187,7 +189,7 @@ export class VaultComponent implements OnInit {
                   this.userService.setVault(this.vault!);
 
                   this.filterVault(); // to display all the vault
-                  for (let uuid of this.vaultDomain){
+                  for (let uuid of this.vaultUUIDs){
                     // display all tags, always
                     if(this.vault!.get(uuid)!.has("tags")){
                       const secret_tags = this.utils.parseTags(this.vault!.get(uuid)!.get("tags")!);
@@ -239,26 +241,28 @@ export class VaultComponent implements OnInit {
   }
 
   generateCode(){
-    for(let domain of this.vaultDomain){
-      const secret = this.vault!.get(domain)!.get("secret")!;
+    if(this.vault == undefined){
+      return;
+    }
+    for(let uuid of this.vaultUUIDs){
+      const secret = this.vault!.get(uuid)!.get("secret")!;
       try{
         let code=this.totp(secret); 
-        this.vault!.get(domain)!.set("code", code);
+        this.vault!.get(uuid)!.set("code", code);
       } catch (e){
         let code = "Error"
-        this.vault!.get(domain)!.set("code", code);
+        this.vault!.get(uuid)!.set("code", code);
       }
-   
     }
 
 
   }
 
   filterVault(){
-    this.vaultDomain = [];
+    this.vaultUUIDs = [];
     let tmp_vault =  Array.from(this.vault!.keys()) as string[];
     if (this.filter == "" && this.selectedTags.length == 0){
-      this.vaultDomain = tmp_vault;
+      this.vaultUUIDs = tmp_vault;
       return;
     }
     this.filter = this.filter.replace(/[^a-zA-Z0-9-_]/g, '');
@@ -286,11 +290,11 @@ export class VaultComponent implements OnInit {
       //filter on search filter
       if(regex.test(this.get_favicon_url(this.vault!.get(uuid)?.get('domain')).toLowerCase()))
       {
-        this.vaultDomain.push(uuid);
+        this.vaultUUIDs.push(uuid);
       } else if (this.vault!.get(uuid)?.get('name')){
         if(regex.test(this.vault!.get(uuid)?.get('name')!.toLowerCase()!))
         {
-          this.vaultDomain.push(uuid);
+          this.vaultUUIDs.push(uuid);
         }
       }
     }

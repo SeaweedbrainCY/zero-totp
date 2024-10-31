@@ -163,7 +163,7 @@ class TestPreferences(unittest.TestCase):
          with self.application.app.app_context():
             self.client.cookies = {"api-key": self.generate_expired_cookie()}
             response = self.client.get(self.endpoint+"?fields=all")
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
     
     def test_get_preference_new_user(self):
         with self.application.app.app_context():
@@ -345,14 +345,16 @@ class TestPreferences(unittest.TestCase):
             self.client.cookies = {"api-key": self.jwtCookie}
             response = self.client.put(self.endpoint, json={"id": "autolock_delay", "value": 0})
             self.assertEqual(response.status_code, 400)
-            self.assertEqual(response.json()["message"], "autolock delay must be at least of 1")
+            self.assertEqual(response.json()["message"], "invalid_duration")
+            self.assertIsNotNone(int(response.json()["minimum_duration_min"]))
 
     def test_put_autolock_delay_high_value(self):
         with self.application.app.app_context():
             self.client.cookies = {"api-key": self.jwtCookie}
-            response = self.client.put(self.endpoint, json={"id": "autolock_delay", "value": 61})
+            response = self.client.put(self.endpoint, json={"id": "autolock_delay", "value": 1441})
             self.assertEqual(response.status_code, 400)
-            self.assertEqual(response.json()["message"], "autolock delay must be at most of 60")
+            self.assertEqual(response.json()["message"], "invalid_duration")
+            self.assertIsNotNone(int(response.json()["maximum_duration_min"]))
     
     def test_put_autolock_delay_bad_value(self):
         with self.application.app.app_context():

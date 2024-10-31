@@ -75,7 +75,7 @@ class TestUpdateEmail(unittest.TestCase):
     def test_update_email_expired_jwt(self):
         self.client.cookies = {"api-key": self.generate_expired_cookie()}
         response = self.client.put(self.endpoint)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
     
     def test_update_email_bad_format(self):
         self.client.cookies = {"api-key": self.jwtCookie}

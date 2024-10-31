@@ -111,6 +111,18 @@ paths:
       responses:
         "200": # status code
           description: Return the login specs
+  /auth/refresh:
+    put:
+      operationId: controllers.auth_refresh_token
+      security: []
+      tags:
+        - Auth
+      summary: Refresh the user's JWT
+      responses:
+        "200": # status code
+          description: Return the new JWT
+        "401":
+          description: Unauthorized
   /zke_encrypted_key:
     get:
       operationId: controllers.get_ZKE_encrypted_key

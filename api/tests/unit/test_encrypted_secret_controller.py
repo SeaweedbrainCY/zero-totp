@@ -77,7 +77,7 @@ class TestEncryptedSecretController(unittest.TestCase):
         jwtCookie = self.generate_expired_cookie()
         self.client.cookies = {"api-key": jwtCookie}
         response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
     
     def test_get_encrypted_secret_no_secret(self):
         self.client.cookies = {"api-key": self.jwtCookie}
@@ -130,7 +130,7 @@ class TestEncryptedSecretController(unittest.TestCase):
     def test_post_encrypted_secret_JWT_expired(self):
         self.client.cookies = {"api-key": self.generate_expired_cookie()}
         response = self.client.post(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
     
     def test_post_encrypted_secret_secret_already_exists(self):
         self.client.cookies = {"api-key": self.jwtCookie}
@@ -181,7 +181,7 @@ class TestEncryptedSecretController(unittest.TestCase):
     def test_update_encrypted_secret_expired_cookie(self):
         self.client.cookies = {"api-key": self.generate_expired_cookie()}
         response = self.client.put(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
     
     def test_update_encrypted_secret_no_exists(self):
         self.client.cookies = {"api-key": self.jwtCookie}
@@ -240,7 +240,7 @@ class TestEncryptedSecretController(unittest.TestCase):
     def test_delete_encrypted_secret_expired_cookie(self):
         self.client.cookies = {'api-key': self.generate_expired_cookie()}
         response = self.client.delete(self.endpoint)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
     
     def test_delete_encrypted_secret_no_exists(self):
         self.client.cookies = {"api-key": self.jwtCookie}

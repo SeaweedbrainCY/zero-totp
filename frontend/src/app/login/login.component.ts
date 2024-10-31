@@ -366,7 +366,8 @@ this.utils.toastError(this.toastr,translation,"")
       });
       } else {
         this.translate.get("generic_errors.error").subscribe((translation)=>{
-          this.utils.toastError(this.toastr,translation + " : "+ this.translate.instant((error.error.message) ? error.error.message : ""),"")
+          let message = translation + " : " + error.status + " " + error.statusText+  ". "  + (error.error.message);
+          this.utils.toastError(this.toastr,message,"")
         });
       }
       

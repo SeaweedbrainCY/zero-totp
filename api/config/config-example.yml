@@ -54,6 +54,17 @@ api:
           ## See https://developers.google.com/identity/protocols/oauth2 for more information.
         # client_secret_file_path: "path/to/client_secret.json"
 
+    ## Token validity in seconds.
+    ## The access token is used to authenticate the user.
+    ## Default: 10 minutes
+    # access_token_validity: 600 # 10 minutes
+
+    ## The refresh token is used to generate new access tokens.
+    ## Default: 1day 
+    # refresh_token_validity: 86400 
+
+
+
 
 
 

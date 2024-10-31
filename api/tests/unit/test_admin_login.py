@@ -109,7 +109,7 @@ class TestJWT(unittest.TestCase):
             self.checkpw.return_value = True
             self.client.cookies = {"api-key":self.generate_expired_cookie(self.admin_user_id)} 
             response = self.client.post(self.loginEndpoint, json={"token": "token"})
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
     
     def test_admin_login_but_no_user(self):
         with self.application.app.app_context():
