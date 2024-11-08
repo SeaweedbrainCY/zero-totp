@@ -7,12 +7,12 @@ import datetime
 from flask import jsonify, request
 import logging
 from connexion.exceptions import Forbidden, Unauthorized
-
+from database.refresh_token_repo import RefreshTokenRepo
 ALG = 'HS256'
 ISSUER = conf.environment.frontend_URI + "/api/v1"
 
 # Verification performed by openAPI
-def verify_jwt(jwt_token, verify_exp=True): 
+def verify_jwt(jwt_token, verify_exp=True, verify_revoked=True): 
    try:
         data = jwt.decode(jwt_token,
                            conf.api.jwt_secret, 
@@ -24,6 +24,10 @@ def verify_jwt(jwt_token, verify_exp=True):
                               "verify_nbf": True, 
                               "verify_exp": verify_exp, 
                               "verify_iat":True})
+        if verify_revoked:
+            associated_refresh_token = RefreshTokenRepo().get_refresh_token_by_jti(data["jti"])
+            if associated_refresh_token.revoke_timestamp is not None:
+                raise Forbidden("Token revoked")
         return data
    except jwt.ExpiredSignatureError as e:
        raise Unauthorized("API key expired")

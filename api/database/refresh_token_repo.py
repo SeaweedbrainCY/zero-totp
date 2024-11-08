@@ -18,6 +18,9 @@ class RefreshTokenRepo:
 
     def get_refresh_token_by_hash(self, hashed_token):
         return RefreshToken.query.filter_by(hashed_token=hashed_token).first()
+
+    def get_refresh_token_by_jti(self, jti):
+        return RefreshToken.query.filter_by(jti=jti).first()
     
     def revoke(self, id):
         rt = RefreshToken.query.filter_by(id=id).first()
