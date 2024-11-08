@@ -155,6 +155,21 @@ def login(ip, body):
     response.set_auth_cookies(jwt_token, refresh_token)
     return response
 
+#POST logout
+@require_valid_user
+def logout(_):
+    jwt = request.cookies.get("api-key")
+    jti = jwt_auth.verify_jwt(jwt)["jti"]
+    refresh_tokens_db = RefreshToken_db()
+    refresh_token = refresh_tokens_db.get_refresh_token_by_jti(jti)
+    if refresh_token:
+        refresh_tokens_db.revoke(refresh_token.id)
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"message": "Logged out"}))
+    response.delete_cookie("api-key")
+    response.delete_cookie("refresh-token")
+    return response
+
+
 #GET /login/specs
 def get_login_specs(username):
     rate_limiting_db = Rate_Limiting_DB()
@@ -941,7 +956,7 @@ def auth_refresh_token(ip, *args, **kwargs):
         rate_limiting.add_failed_login(ip)
         return {"message": "Missing token"}, 401
     try:
-        jwt_info = jwt_auth.verify_jwt(jwt, verify_exp=False)
+        jwt_info = jwt_auth.verify_jwt(jwt, verify_exp=False, verify_revoked=False)
     except Exception as e:
         rate_limiting.add_failed_login(ip)
         raise e

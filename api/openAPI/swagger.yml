@@ -94,6 +94,17 @@ paths:
           description: Missing required parameters
         "403":
           description: Authentication failed
+  /logout:
+    post:
+      operationId: controllers.logout
+      tags:
+        - Auth
+      summary: Log a user out of the application
+      responses:
+        "200": # status code
+          description: successful logout
+        "401":
+          description: Unauthorized
   /login/specs:
     get:
       operationId: controllers.get_login_specs
