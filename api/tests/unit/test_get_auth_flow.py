@@ -1,5 +1,6 @@
 import unittest
 from app import app
+from database.db import db
 from environment import conf
 from CryptoClasses.jwt_func import generate_jwt
 from controllers import flask
@@ -18,6 +19,9 @@ class TestGetAuthFlow(unittest.TestCase):
 
             self.get_authorization_url_patch = patch("Oauth.oauth_flow.get_authorization_url").start()
             self.get_authorization_url_patch.return_value = "https://www.google.com", "state"
+            with self.application.app.app_context():
+                db.create_all()
+                db.session.commit()
         
         
         def test_get_auth_flow(self):

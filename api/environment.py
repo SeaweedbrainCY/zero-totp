@@ -113,6 +113,21 @@ class APIConfig:
                 except Exception as e:
                     logging.error(f"[FATAL] Load config fail. api.trusted_proxy contains an invalid ip address. {e}")
                     exit(1)
+        self.access_token_validity = 600
+        if "access_token_validity" in data:
+            try:
+                self.access_token_validity = int(data["access_token_validity"])
+            except Exception as e:
+                logging.error(f"[FATAL] Load config fail. api.access_token_validity is not valid. {e}")
+                exit(1)
+        
+        self.refresh_token_validity = 86400
+        if "refresh_token_validity" in data:
+            try:
+                self.refresh_token_validity = int(data["refresh_token_validity"])
+            except Exception as e:
+                logging.error(f"[FATAL] Load config fail. api.refresh_token_validity is not valid. {e}")
+                exit(1)
                 
         
 class DatabaseConfig:

@@ -84,7 +84,7 @@ class TestGetRole(unittest.TestCase):
         with self.flask_application.app.app_context():
             self.client.cookies = {"api-key":self.generate_expired_cookie(self.user_without_role_id)}
             response = self.client.get(self.roleEndpoint)
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
     
     def test_user_not_found(self):
         with self.flask_application.app.app_context():

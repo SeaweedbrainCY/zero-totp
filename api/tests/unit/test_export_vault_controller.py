@@ -81,7 +81,7 @@ class TestAllSecret(unittest.TestCase):
     def test_export_vault_expired_cookie(self):
         self.client.cookies = {"api-key": self.generate_expired_cookie()}
         response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     
     def test_export_vault_user_not_found(self):

@@ -1,4 +1,5 @@
-from flask import request, Response, redirect, make_response
+from flask import request, redirect, make_response
+from Utils.http_response import Response
 import flask
 import connexion
 import json
@@ -9,6 +10,7 @@ from database.google_drive_integration_repo import GoogleDriveIntegration as Goo
 from database.preferences_repo import Preferences as PreferencesDB
 from database.admin_repo import Admin as Admin_db
 from database.notif_repo import Notifications as Notifications_db
+from database.refresh_token_repo import RefreshTokenRepo as RefreshToken_db
 from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging, conf
@@ -22,12 +24,13 @@ from database.email_verification_repo import EmailVerificationToken as EmailVeri
 import CryptoClasses.jwt_func as jwt_auth
 from CryptoClasses.sign_func import API_signature
 import CryptoClasses.jwt_func as jwt_auth
+from CryptoClasses import refresh_token as refresh_token_func
 import Oauth.oauth_flow as oauth_flow
 import Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user, require_userid
+from Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user, require_userid, ip_rate_limit
 import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
@@ -111,22 +114,11 @@ def signup():
 
 
 # POST /login
-def login():
-    ip = utils.get_ip(request)
+@ip_rate_limit
+def login(ip, body):
+    passphrase = body["password"].strip()
+    email = utils.sanitize_input(body["email"]).strip()
     rate_limiting_db = Rate_Limiting_DB()
-    if ip:
-        if rate_limiting_db.is_login_rate_limited(ip):
-            return {"message": "Too many requests", 'ban_time':conf.features.rate_limiting.login_ban_time}, 429
-    else:
-        logging.error("The remote IP used to login is private. The headers are not set correctly")
-    try:
-        data = request.get_json()
-        passphrase = data["password"].strip()
-        email = utils.sanitize_input(data["email"]).strip()
-    except Exception as e:
-        logging.info(e)
-        return {"message": "generic_errors.invalid_request"}, 400
-    
     if not passphrase or not email:
         return {"message": "generic_errors.missing_params"}, 400
     if(not utils.check_email(email) ):
@@ -138,22 +130,21 @@ def login():
         logging.info("User " + str(email) + " tried to login but does not exist. A fake password is checked to avoid timing attacks")
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fakePassword)
-        if ip:
-            rate_limiting_db.add_failed_login(ip, None)
+        
+        rate_limiting_db.add_failed_login(ip)
         return {"message": "generic_errors.invalid_creds"}, 403
     logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {ip}. X-Forwarded-For header is {request.headers.get('X-Forwarded-For')}")
     checked = bcrypt.checkpw(user.password)
     if not checked:
-        if ip:
-            rate_limiting_db.add_failed_login(ip, user.id)
+        rate_limiting_db.add_failed_login(ip, user.id)
         return {"message": "generic_errors.invalid_creds"}, 403
     if user.isBlocked: # only authenticated users can see the blocked status
         return {"message": "blocked"}, 403
     
-    if ip:
-        rate_limiting_db.flush_login_limit(ip)
-
+    rate_limiting_db.flush_login_limit(ip)
     jwt_token = jwt_auth.generate_jwt(user.id)
+    jti = jwt_auth.verify_jwt(jwt_token)["jti"]
+    refresh_token = refresh_token_func.generate_refresh_token(user.id, jti)
     if not conf.features.emails.require_email_validation: # we fake the isVerified status if email validation is not required
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True}))
     elif user.isVerified:
@@ -161,8 +152,23 @@ def login():
     else:
         response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
     userDB.update_last_login_date(user.id)
-    response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
+    response.set_auth_cookies(jwt_token, refresh_token)
     return response
+
+#POST logout
+@require_valid_user
+def logout(_):
+    jwt = request.cookies.get("api-key")
+    jti = jwt_auth.verify_jwt(jwt)["jti"]
+    refresh_tokens_db = RefreshToken_db()
+    refresh_token = refresh_tokens_db.get_refresh_token_by_jti(jti)
+    if refresh_token:
+        refresh_tokens_db.revoke(refresh_token.id)
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"message": "Logged out"}))
+    response.delete_cookie("api-key")
+    response.delete_cookie("refresh-token")
+    return response
+
 
 #GET /login/specs
 def get_login_specs(username):
@@ -739,14 +745,14 @@ def set_preference(user_id, body):
         else:# pragma: no cover
             return {"message": "Unknown error while updating preference"}, 500
     elif field == "autolock_delay":
+        minimum_delay = 1
+        maximum_delay = conf.api.refresh_token_validity/60 # autolock is limited by the ability to refresh the token
         try:
             value = int(value)
         except:
             return {"message": "Invalid request"}, 400
-        if value < 1 :
-            return {"message": "autolock delay must be at least of 1"}, 400
-        elif value > 60:
-            return {"message": "autolock delay must be at most of 60"}, 400
+        if value < 1 or value > maximum_delay:
+            return {"message": "invalid_duration", "minimum_duration_min":minimum_delay, "maximum_duration_min": maximum_delay}, 400
         preferences = preferences_db.update_autolock_delay(user_id, value)
         if preferences:# pragma: no cover
             return {"message": "Preference updated"}, 201
@@ -938,3 +944,32 @@ def get_internal_notification():
             "message":notif.message,
             "timestamp":float(notif.timestamp)
         }
+
+
+# PUT /auth/refresh
+@ip_rate_limit
+def auth_refresh_token(ip, *args, **kwargs):
+    jwt = request.cookies.get("api-key")
+    token = request.cookies.get("refresh-token")
+    rate_limiting = Rate_Limiting_DB()
+    if not jwt or not token:
+        rate_limiting.add_failed_login(ip)
+        return {"message": "Missing token"}, 401
+    try:
+        jwt_info = jwt_auth.verify_jwt(jwt, verify_exp=False, verify_revoked=False)
+    except Exception as e:
+        rate_limiting.add_failed_login(ip)
+        raise e
+    jti =  jwt_info["jti"]
+    jwt_user_id = jwt_info["sub"]
+    if not jti:
+        return {"message": "Invalid token"}, 401
+    refresh_token = RefreshToken_db().get_refresh_token_by_hash(sha256(token.encode("utf-8")).hexdigest())
+    if not refresh_token:
+        rate_limiting.add_failed_login(ip, user_id=jwt_user_id)
+        logging.warning(f"JWT of user {jwt_user_id} tried to be refreshed with an refresh token (not present in the db)")
+        return {"message": "Access denied"}, 403
+    new_jwt, new_refresh_token = refresh_token_func.refresh_token_flow(jti=jti, rt=refresh_token, jwt_user_id=jwt_user_id, ip=ip)
+    response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
+    response.set_auth_cookies(new_jwt, new_refresh_token)
+    return response

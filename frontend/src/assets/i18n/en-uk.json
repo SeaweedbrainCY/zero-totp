@@ -310,6 +310,7 @@
       }
     }
   },
+  "hour": "hour",
   "less": "Less",
   "loading": "Loading ...",
   "log_in": "Log in",
@@ -342,6 +343,7 @@
       "confirm_passphrase": "To continue, please confirm your passphrase",
       "email": "Are your sure about your email ?",
       "empty": "Did you forget to fill something ?",
+      "general_error": "An error occured. Please, try again.",
       "hashing": "An error occured while hashing your password. Please, try again",
       "import_vault": {
         "error_unknown": "Error : Impossible to import your vault. Unknown error",
@@ -408,8 +410,8 @@
     "account": {
       "security": {
         "autolock": {
-          "error": "1min minimum, 60min maximum",
-          "label": "Maximum time of inactivity before your vault autolocks  (min)",
+          "error": "{{min}}min minimum, {{max}}h maximum",
+          "label": "Maximum time of inactivity before your vault autolocks",
           "success": "Success ! This new value will be applied at your next login",
           "title": "Autolock your vault after inactivity"
         },

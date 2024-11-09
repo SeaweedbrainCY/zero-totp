@@ -54,18 +54,27 @@
                                 <label class="has-text-weight-bold">  {{ 'preference.account.security.autolock.label' | translate }} </label>
                                 </div>
                                 <div class="field has-addons ">
+                                    <p class="control">
+                                        <span class="select">
+                                          <select  #duration_unit_select (change)="change_duration_unit(duration_unit_select.value)" (name)="duration_unit" [ngModel]="duration_unit" value="Unit">
+                                            <option >minute</option>
+                                            <option value="hour" >{{'hour' | translate}}</option>
+                                          </select>
+                                        </span>
+                                      </p>
                                     <div class="control">
-                                      <input class="input" [style.width.ch]="input_auto_compute_size(autolock_delay)" type="number" placeholder="10" name="autolock_delay" [(ngModel)]="autolock_delay" min="1" max="60" (change)="autolockDelayChange()">
+                                      <input class="input" [style.width.ch]="input_auto_compute_size(autolock_delay)" type="number" placeholder="10" name="autolock_delay" [(ngModel)]="autolock_delay" min="1" max="60">
                                     </div>
                                     <div class="control">
-                                      <button class="button is-info is-outlined" [ngClass]="{'is-loading':autolock_is_updating, 'is-info':!autolock_update_done_animation, 'is-success':autolock_update_done_animation}" (click)="autolockDelayUpdate()" >
-                                        <span *ngIf="!autolock_update_done_animation">{{'update' | translate}}</span>
+                                      <button class="button is-info is-outlined" [ngClass]="{'is-loading':autolock_is_updating, 'is-info':!autolock_update_done_animation && !autolock_update_failed_animation, 'is-success':autolock_update_done_animation, 'is-danger':autolock_update_failed_animation}" (click)="autolockDelayUpdate()" >
+                                        <span *ngIf="!autolock_update_done_animation && !autolock_update_failed_animation">{{'update' | translate}}</span>
                                         <fa-icon *ngIf="autolock_update_done_animation" [icon]="faCheck"></fa-icon>
+                                        <fa-icon *ngIf="autolock_update_failed_animation" [icon]="faXmark"></fa-icon>
                                       </button>
                                     </div>
                                   </div>
                                   <span class="help has-text-left is-danger" *ngIf="autolock_display_error">
-                                        <span>{{'preference.account.security.autolock.error' | translate}}<br></span>
+                                        <span>{{'preference.account.security.autolock.error' | translate : {min:minimum_duration, max:maximum_duration} }}<br></span>
                                     </span>  
                                     <span class="help has-text-left is-success" *ngIf="autolock_value_updated">
                                         <span>{{'preference.account.security.autolock.success' | translate}}<br></span>

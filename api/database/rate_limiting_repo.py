@@ -3,7 +3,9 @@ from zero_totp_db_model.model import RateLimiting
 import datetime
 from environment import conf
 class RateLimitingRepo:
-    def add_failed_login(self, ip, user_id):
+    def add_failed_login(self, ip, user_id=None):
+        if ip == None:
+            return None
         rl = RateLimiting(ip=ip, user_id=user_id, action_type="failed_login", timestamp= datetime.datetime.utcnow())
         db.session.add(rl)
         db.session.commit()
@@ -47,5 +49,10 @@ class RateLimitingRepo:
         max_ban_time = max(conf.features.rate_limiting.login_ban_time, conf.features.rate_limiting.email_ban_time)
         time_period = datetime.datetime.utcnow() - datetime.timedelta(minutes=max_ban_time) 
         db.session.query(RateLimiting).filter(RateLimiting.timestamp < time_period).delete()
+        db.session.commit()
+        return True
+
+    def flush_by_user_id(self, user_id):
+        db.session.query(RateLimiting).filter_by(user_id=user_id).delete()
         db.session.commit()
         return True

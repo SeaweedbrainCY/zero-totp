@@ -5,7 +5,7 @@
   "background_color": "#16262E",
   "display": "standalone",
   "scope": "./",
-  "start_url": "./",
+  "start_url": "./login",
   "icons": [
     {
       "src": "assets/totp_square_dark.png",

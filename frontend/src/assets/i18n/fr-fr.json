@@ -310,6 +310,7 @@
       }
     }
   },
+  "hour": "heure",
   "less": "Moins",
   "loading": "Chargement ...",
   "log_in": "Connexion",
@@ -342,6 +343,7 @@
       "confirm_passphrase": "Pour continuer, confirm ta passphrase",
       "email": "Es-tu sûr de ton adresse mail ? ",
       "empty": "Tu n'as pas oublié quelque chose ?",
+      "general_error": "Une erreur est survenue.",
       "hashing": "Une erreur est survenue en hachant ton mot de passe. Merci de réessayer.",
       "import_vault": {
         "error_unknown": "Erreur : Impossible d'importer ton coffre. Erreur inconnue.",
@@ -408,8 +410,8 @@
     "account": {
       "security": {
         "autolock": {
-          "error": "Minimum 1min, maximum 60min",
-          "label": "Temps maximum d'inactivité avant que ton coffre ne s'auto verrouille (min)",
+          "error": "Minimum {{min}}min, maximum {{max}}h",
+          "label": "Temps maximum d'inactivité avant que ton coffre ne s'auto verrouille",
           "success": "Succès ! Cette nouvelle valeur sera appliquée à ta prochaine connexion",
           "title": "Auto-verrouillage du coffre après inactivité"
         },

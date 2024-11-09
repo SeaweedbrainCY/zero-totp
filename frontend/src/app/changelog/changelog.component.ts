@@ -14,7 +14,18 @@ export class ChangelogComponent {
 
   changelogs = [
     {
-      date: "23/09/2024",
+      date: "08/11/2024",
+      version: "b4.1.0",
+      added: [
+        "You can now extend the maximum inactivity time before your vault autolocks to 24h. You can customize this time in your preferences page. This enables you to keep your vault open for a longer period of time, especially when you are using installed Zero-TOTP as a PWA.",
+      ],
+      fixed:[
+        "Alongside with new duration, the overall security of the application has been improved with new very short session access tokens.",
+        "2 moderate CVEs in the API dependencies has been fixed."
+      ]
+    },
+    {
+      date: "23/10/2024",
       version: "b4.0.1",
       added: [
         
