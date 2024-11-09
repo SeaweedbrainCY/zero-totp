@@ -51,3 +51,8 @@ class RateLimitingRepo:
         db.session.query(RateLimiting).filter(RateLimiting.timestamp < time_period).delete()
         db.session.commit()
         return True
+
+    def flush_by_user_id(self, user_id):
+        db.session.query(RateLimiting).filter_by(user_id=user_id).delete()
+        db.session.commit()
+        return True

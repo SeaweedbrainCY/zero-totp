@@ -27,3 +27,8 @@ class RefreshTokenRepo:
         rt.revoke_timestamp = datetime.datetime.now(datetime.UTC).timestamp()
         db.session.commit()
         return rt
+
+    def delete_by_user_id(self, user_id):
+        RefreshToken.query.filter_by(user_id=user_id).delete()
+        db.session.commit()
+        return True

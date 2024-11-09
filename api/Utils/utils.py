@@ -9,6 +9,8 @@ from database.zke_repo import ZKE as ZKE_encryption_key_repo
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
 from database.preferences_repo import Preferences as Preferences_repo
 from database.email_verification_repo import EmailVerificationToken
+from database.rate_limiting_repo import RateLimitingRepo 
+from database.refresh_token_repo import RefreshTokenRepo
 import os
 from hashlib import sha256
 from base64 import b64encode
@@ -76,6 +78,9 @@ def delete_user_from_database(user_id):
     TOTP_secret_repo().delete_all(user_id)
     ZKE_encryption_key_repo().delete(user_id)
     User_repo().delete(user_id)
+    EmailVerificationToken().delete(user_id)
+    RateLimitingRepo().flush_by_user_id(user_id)
+    RefreshTokenRepo().delete_by_user_id(user_id)
     logging.info("User " + str(user_id) + " deleted from database")
 
 
