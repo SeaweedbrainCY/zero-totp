@@ -364,6 +364,10 @@ this.utils.toastError(this.toastr,translation,"")
         this.translate.get("login.errors.account_blocked").subscribe((translation)=>{
         this.utils.toastError(this.toastr,translation,"")
       });
+      } else if(error.error.message == "generic_errors.invalid_creds"){
+        this.translate.get(error.error.message).subscribe((translation)=>{
+        this.utils.toastError(this.toastr,translation, "")
+        });
       } else {
         this.translate.get("generic_errors.error").subscribe((translation)=>{
           let message = translation + " : " + error.status + " " + error.statusText+  ". "  + (error.error.message);
