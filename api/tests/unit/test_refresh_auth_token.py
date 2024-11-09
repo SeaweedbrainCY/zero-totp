@@ -24,23 +24,15 @@ class TestRefreshAuthToken(unittest.TestCase):
         self.endpoint = "/api/v1/auth/refresh"
         self.user_id = 1
         self.jwt_token = generate_jwt(self.user_id)
-        self.jti = verify_jwt(self.jwt_token)["jti"]
-        self.refresh_token = str(uuid4())
-        self.hashed_refresh_token = sha256(self.refresh_token.encode('utf-8')).hexdigest()
-
-    
-
-        user = UserModel(id=self.user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
-
-
-        
-       
-
         with self.flask_application.app.app_context():
+            user = UserModel(id=self.user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
             db.create_all()
             db.session.add(user)
             db.session.commit()
-    
+        self.jti = verify_jwt(self.jwt_token)["jti"]
+        self.refresh_token = str(uuid4())
+        self.hashed_refresh_token = sha256(self.refresh_token.encode('utf-8')).hexdigest()
+ 
        
     def tearDown(self):
         with self.flask_application.app.app_context():

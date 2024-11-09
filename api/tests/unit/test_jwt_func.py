@@ -1,9 +1,12 @@
 import jwt 
 import unittest
+from app import app
+from database.db import db
 from CryptoClasses.jwt_func import verify_jwt, generate_jwt
 import datetime
 from environment import conf
 from connexion.exceptions import Forbidden, Unauthorized
+from uuid import uuid4
 
 
 class TestJWT(unittest.TestCase):
@@ -17,9 +20,13 @@ class TestJWT(unittest.TestCase):
             "iat": datetime.datetime.utcnow(),
             "nbf": datetime.datetime.utcnow(),
             "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+            "jti": str(uuid4())
         }
         self.secret = conf.api.jwt_secret
         self.algorithm = "HS256"
+        with app.app.app_context():
+            db.create_all()
+            db.session.commit()
 
     def test_verify_jwt_correct(self):
         validJWT = jwt.encode(self.validPayload, self.secret, algorithm=self.algorithm)

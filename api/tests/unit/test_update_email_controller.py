@@ -1,4 +1,5 @@
 from app import app
+from database.db import db 
 import unittest
 import controllers
 from unittest.mock import patch
@@ -17,6 +18,9 @@ class TestUpdateEmail(unittest.TestCase):
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
         self.endpoint = "/api/v1/update/email"
+        with self.application.app.app_context():
+            db.create_all()
+            db.session.commit()
         
 
         self.update_email = patch("database.user_repo.User.update_email").start()

@@ -1,5 +1,6 @@
 import unittest
 from app import app
+from database.db import db
 import controllers
 from unittest.mock import patch
 from zero_totp_db_model.model import User, TOTP_secret
@@ -17,6 +18,9 @@ class TestAllSecret(unittest.TestCase):
         self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
         self.endpoint = "/api/v1/all_secrets"
+        with self.application.app.app_context():
+            db.create_all()
+            db.session.commit()
         
 
         self.get_all_secret = patch("database.totp_secret_repo.TOTP_secret.get_all_enc_secret_by_user_id").start()
