@@ -4,7 +4,7 @@ from functools import wraps
 from uuid import uuid4
 import jwt
 import datetime
-from flask import jsonify, request
+from app import app
 import logging
 from connexion.exceptions import Forbidden, Unauthorized
 from database.refresh_token_repo import RefreshTokenRepo
@@ -25,9 +25,10 @@ def verify_jwt(jwt_token, verify_exp=True, verify_revoked=True):
                               "verify_exp": verify_exp, 
                               "verify_iat":True})
         if verify_revoked:
-            associated_refresh_token = RefreshTokenRepo().get_refresh_token_by_jti(data["jti"])
-            if associated_refresh_token and associated_refresh_token.revoke_timestamp is not None:
-                raise Forbidden("Token revoked")
+            with app.app.app_context():
+                associated_refresh_token = RefreshTokenRepo().get_refresh_token_by_jti(data["jti"])
+                if associated_refresh_token and associated_refresh_token.revoke_timestamp is not None:
+                    raise Forbidden("Token revoked")
         return data
    except jwt.ExpiredSignatureError as e:
        raise Unauthorized("API key expired")
