@@ -26,7 +26,7 @@ def verify_jwt(jwt_token, verify_exp=True, verify_revoked=True):
                               "verify_iat":True})
         if verify_revoked:
             associated_refresh_token = RefreshTokenRepo().get_refresh_token_by_jti(data["jti"])
-            if associated_refresh_token.revoke_timestamp is not None:
+            if associated_refresh_token and associated_refresh_token.revoke_timestamp is not None:
                 raise Forbidden("Token revoked")
         return data
    except jwt.ExpiredSignatureError as e:
