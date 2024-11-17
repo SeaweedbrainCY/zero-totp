@@ -12,6 +12,7 @@ from database.admin_repo import Admin as Admin_db
 from database.notif_repo import Notifications as Notifications_db
 from database.refresh_token_repo import RefreshTokenRepo as RefreshToken_db
 from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
+from database.session_token_repo import SessionTokenRepo 
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging, conf
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
@@ -21,9 +22,7 @@ import random
 import string
 from Email import send as send_email
 from database.email_verification_repo import EmailVerificationToken as EmailVerificationToken_db
-import CryptoClasses.jwt_func as jwt_auth
 from CryptoClasses.sign_func import API_signature
-import CryptoClasses.jwt_func as jwt_auth
 from CryptoClasses import refresh_token as refresh_token_func
 import Oauth.oauth_flow as oauth_flow
 import Utils.utils as utils
@@ -93,15 +92,14 @@ def signup():
         except Exception as e:
            zke_key = None
         if zke_key:
-            jwt_token = jwt_auth.generate_jwt(user.id)
+            _,session_token = SessionTokenRepo().generate_session_token(user.id)
             if conf.features.emails.require_email_validation:
                 try:
-
                     send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
                 except Exception as e:
                     logging.error("Unknown error while sending verification email" + str(e))
             response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created"}))
-            response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
+            response.set_cookie("session-token", session_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
             return response
         else :
             userDB.delete(user.id)
@@ -142,9 +140,8 @@ def login(ip, body):
         return {"message": "blocked"}, 403
     
     rate_limiting_db.flush_login_limit(ip)
-    jwt_token = jwt_auth.generate_jwt(user.id)
-    jti = jwt_auth.verify_jwt(jwt_token)["jti"]
-    refresh_token = refresh_token_func.generate_refresh_token(user.id, jti)
+    session_id, session_token = SessionTokenRepo().generate_session_token(user.id)
+    refresh_token = refresh_token_func.generate_refresh_token(user.id, session_id)
     if not conf.features.emails.require_email_validation: # we fake the isVerified status if email validation is not required
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True}))
     elif user.isVerified:
@@ -152,7 +149,7 @@ def login(ip, body):
     else:
         response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
     userDB.update_last_login_date(user.id)
-    response.set_auth_cookies(jwt_token, refresh_token)
+    response.set_auth_cookies(session_token, refresh_token)
     return response
 
 #POST logout
