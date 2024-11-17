@@ -159,7 +159,7 @@ def login(ip, body):
 @require_valid_user
 def logout(_):
     jwt = request.cookies.get("api-key")
-    jti = jwt_auth.verify_jwt(jwt)["jti"]
+    jti = jwt_auth.verify_jwt(jwt)["jti"] # Frontend doesn't check error. If expired, we considered the user as logged out
     refresh_tokens_db = RefreshToken_db()
     refresh_token = refresh_tokens_db.get_refresh_token_by_jti(jti)
     if refresh_token:

@@ -22,7 +22,7 @@ class EnvironmentConfig:
             logging.basicConfig(
                 format='%(asctime)s %(levelname)-8s %(message)s',
                 level=logging.DEBUG,
-                datefmt='%d-%m-%Y %H:%M:%S')
+                datefmt='%Y-%m-%dT%H:%M:%SZ%z')
             logging.debug("Environment set to development")
             if "frontend_URI" not in data:
                 logging.error("[FATAL] Load config fail. In local environement, was expecting the key environment.frontend_URI")
@@ -35,9 +35,11 @@ class EnvironmentConfig:
         elif data["type"] == "development":
             self.type = "development"
             logging.basicConfig(
+                 filename="/var/log/api/api.log",
+                filemode='a',
                 format='%(asctime)s %(levelname)-8s %(message)s',
                 level=logging.INFO,
-                datefmt='%d-%m-%Y %H:%M:%S')
+                datefmt='%Y-%m-%dT%H:%M:%SZ%z')
             logging.info("Environment set to development")
             self.frontend_URI = f"https://{data['domain']}"
             self.callback_URI = f"https://{data['domain']}/api/v1/google-drive/oauth/callback"
@@ -48,7 +50,7 @@ class EnvironmentConfig:
                 filemode='a',
                 format='%(asctime)s %(levelname)-8s %(message)s',
                 level=logging.INFO,
-                datefmt='%d-%m-%Y %H:%M:%S')
+                datefmt='%Y-%m-%dT%H:%M:%SZ%z')
             self.frontend_URI = f"https://{data['domain']}"
             self.callback_URI = f"https://{data['domain']}/api/v1/google-drive/oauth/callback"
 
