@@ -6,21 +6,23 @@ import datetime as dt
 from CryptoClasses.jwt_func import generate_jwt, verify_jwt
 from connexion.exceptions import Forbidden, Unauthorized
 from database.rate_limiting_repo import RateLimitingRepo
+from database.session_token_repo import SessionTokenRepo
 
 
 
-def generate_refresh_token(user_id, jti, expiration=-1):
+def generate_refresh_token(user_id, session_token_id, expiration=-1):
     token = str(uuid4())
     hashed_token = sha256(token.encode()).hexdigest()
     rt_repo = RefreshTokenRepo()
-    rt = rt_repo.create_refresh_token(user_id, jti, hashed_token, expiration=expiration)
+    rt = rt_repo.create_refresh_token(user_id, session_token_id, hashed_token, expiration=expiration)
     return token if rt else None
     
     
-def refresh_token_flow(jti, rt, jwt_user_id, ip):
+def refresh_token_flow(session_token_id, rt, jwt_user_id, ip):
         rate_limiting = RateLimitingRepo()
         rt_repo = RefreshTokenRepo()
-        if rt.jti == jti and rt.user_id == jwt_user_id:
+        session_repo = SessionTokenRepo()
+        if rt.session_token_id == session_token_id and rt.user_id == jwt_user_id:
             if rt.revoke_timestamp == None:
                 if float(rt.expiration) > dt.datetime.now(dt.UTC).timestamp():
                     new_jwt = generate_jwt(rt.user_id)
