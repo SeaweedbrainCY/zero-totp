@@ -95,7 +95,7 @@ paths:
         "403":
           description: Authentication failed
   /logout:
-    post:
+    put:
       operationId: controllers.logout
       tags:
         - Auth
