@@ -6,7 +6,7 @@ info:
 servers:
   - url: /api/v1
 security:
-  - JWTAuth: []
+  - SessionToken: []
 paths:
   /signup:
     post:
@@ -72,7 +72,7 @@ paths:
                   type: string
       responses:
         "200": # status code
-          description: successful login. The JWT is returned in the response body
+          description: successful login. The session and refresh tokens is returned in the response body
           content:
             application/json:
               schema:
@@ -128,10 +128,10 @@ paths:
       security: []
       tags:
         - Auth
-      summary: Refresh the user's JWT
+      summary: Refresh the user's session
       responses:
         "200": # status code
-          description: Return the new JWT
+          description: Return the new session and refresh tokens
         "401":
           description: Unauthorized
   /zke_encrypted_key:
@@ -824,9 +824,9 @@ paths:
           description: Internal server error
 components:
   securitySchemes:
-    JWTAuth:
+    SessionToken:
       type: apiKey
       in: cookie
-      name: api-key
-      x-apikeyInfoFunc: CryptoClasses.jwt_func.verify_jwt
+      name: session-token
+      x-apikeyInfoFunc: CryptoClasses.session_verification.verify_session
       
