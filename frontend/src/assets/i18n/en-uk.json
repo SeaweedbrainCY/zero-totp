@@ -314,6 +314,9 @@
   "less": "Less",
   "loading": "Loading ...",
   "log_in": "Log in",
+  "logging-out": {
+    "loading": "Logging you out ..."
+  },
   "login": {
     "authorize": "Authorize",
     "backup": {

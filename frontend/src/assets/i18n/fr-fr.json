@@ -314,6 +314,9 @@
   "less": "Moins",
   "loading": "Chargement ...",
   "log_in": "Connexion",
+  "logging-out": {
+    "loading": "Déconnexion ..."
+  },
   "login": {
     "authorize": "Autoriser",
     "backup": {
