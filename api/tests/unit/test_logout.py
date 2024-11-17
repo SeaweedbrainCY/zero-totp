@@ -62,7 +62,6 @@ class TestLogout(unittest.TestCase):
         with self.flask_application.app.app_context():
             self.client.cookies = {"api-key": self.jwt_token}
             response = self.client.put(self.endpoint)
-            print(response.json())
             self.assertEqual(response.status_code, 200)
             self.assertIsNotNone(RefreshTokenRepo().get_refresh_token_by_jti(self.jti).revoke_timestamp)
 
