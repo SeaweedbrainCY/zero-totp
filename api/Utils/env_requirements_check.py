@@ -36,15 +36,15 @@ def test_conf(conf) -> bool:
             except Exception as e:
                 raise Exception(f"api.trusted_proxy contains an invalid ip address. {e}")
     
-    if conf.api.access_token_validity != None:
-        assert isinstance(conf.api.access_token_validity, int), "api.access_token_validity is not an integer"
-        assert conf.api.access_token_validity > 0, "api.access_token_validity must be greater than 0"
+    if conf.api.session_token_validity != None:
+        assert isinstance(conf.api.session_token_validity, int), "api.session_token_validity is not an integer"
+        assert conf.api.session_token_validity > 0, "api.session_token_validity must be greater than 0"
     if conf.api.refresh_token_validity != None:
         assert isinstance(conf.api.refresh_token_validity, int), "api.refresh_token_validity is not an integer"
         assert conf.api.refresh_token_validity > 0, "api.refresh_token_validity must be greater than 0"
 
-        if conf.api.access_token_validity != None:
-            assert conf.api.refresh_token_validity > conf.api.access_token_validity, "api.refresh_token_validity must be greater than api.access_token"
+        if conf.api.session_token_validity != None:
+            assert conf.api.refresh_token_validity > conf.api.session_token_validity, "api.refresh_token_validity must be greater than api.access_token"
 
         
     ## Environment

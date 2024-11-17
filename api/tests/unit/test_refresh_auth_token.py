@@ -47,7 +47,7 @@ class TestRefreshAuthToken(unittest.TestCase):
                 "sub": user_id,
                 "iat": datetime.datetime.now(datetime.UTC),
                 "nbf": datetime.datetime.now(datetime.UTC),
-                "exp": datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=conf.api.access_token_validity),
+                "exp": datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=conf.api.session_token_validity),
                 "jti": str(uuid4())
             }
             return jwt.encode(payload, conf.api.jwt_secret, algorithm=ALG)
@@ -62,7 +62,7 @@ class TestRefreshAuthToken(unittest.TestCase):
                 "sub": user_id,
                 "iat": datetime.datetime.now(datetime.UTC),
                 "nbf": datetime.datetime.now(datetime.UTC),
-                "exp": datetime.datetime.now(datetime.UTC) + datetime.timedelta(seconds=conf.api.access_token_validity),
+                "exp": datetime.datetime.now(datetime.UTC) + datetime.timedelta(seconds=conf.api.session_token_validity),
                 "jti": str(uuid4())
             }
             return jwt.encode(payload, str(uuid4()), algorithm=ALG)
