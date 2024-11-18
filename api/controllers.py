@@ -154,14 +154,18 @@ def login(ip, body):
 #POST logout
 @require_valid_user
 def logout(_):
-    jwt = request.cookies.get("api-key")
-    jti = jwt_auth.verify_jwt(jwt)["jti"] # Frontend doesn't check error. If expired, we considered the user as logged out
+    session_token = request.cookies.get("session-token")
+    session_repo = SessionTokenRepo()
+    session = session_repo.get_session_token(session_token)
+    if not session:
+        return {"message": "Session not found"}, 404
+    session_repo.revoke(session.id)
     refresh_tokens_db = RefreshToken_db()
-    refresh_token = refresh_tokens_db.get_refresh_token_by_jti(jti)
+    refresh_token = refresh_tokens_db.get_refresh_token_by_session_id(session.id)
     if refresh_token:
         refresh_tokens_db.revoke(refresh_token.id)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"message": "Logged out"}))
-    response.delete_cookie("api-key")
+    response.delete_cookie("session-token")
     response.delete_cookie("refresh-token")
     return response
 
@@ -858,27 +862,25 @@ def get_internal_notification():
 # PUT /auth/refresh
 @ip_rate_limit
 def auth_refresh_token(ip, *args, **kwargs):
-    jwt = request.cookies.get("api-key")
-    token = request.cookies.get("refresh-token")
+    session_token = request.cookies.get("session-token")
+    refresh_token = request.cookies.get("refresh-token")
     rate_limiting = Rate_Limiting_DB()
-    if not jwt or not token:
+    if not session_token or not refresh_token:
         rate_limiting.add_failed_login(ip)
         return {"message": "Missing token"}, 401
-    try:
-        jwt_info = jwt_auth.verify_jwt(jwt, verify_exp=False, verify_revoked=False)
-    except Exception as e:
+    session = SessionTokenRepo().get_session_token(session_token)
+    if not session:
         rate_limiting.add_failed_login(ip)
-        raise e
-    jti =  jwt_info["jti"]
-    jwt_user_id = jwt_info["sub"]
-    if not jti:
         return {"message": "Invalid token"}, 401
-    refresh_token = RefreshToken_db().get_refresh_token_by_hash(sha256(token.encode("utf-8")).hexdigest())
-    if not refresh_token:
-        rate_limiting.add_failed_login(ip, user_id=jwt_user_id)
-        logging.warning(f"JWT of user {jwt_user_id} tried to be refreshed with an refresh token (not present in the db)")
+    if session.revoke_timestamp is not None:
+        rate_limiting.add_failed_login(ip)
+        return {"message": "Token revoked"}, 401
+    refresh = RefreshToken_db().get_refresh_token_by_hash(sha256(refresh_token.encode("utf-8")).hexdigest())
+    if not refresh:
+        rate_limiting.add_failed_login(ip, user_id=session.user_id)
+        logging.warning(f"JWT of user {session.user_id} tried to be refreshed with an refresh token (not present in the db)")
         return {"message": "Access denied"}, 403
-    new_jwt, new_refresh_token = refresh_token_func.refresh_token_flow(jti=jti, rt=refresh_token, jwt_user_id=jwt_user_id, ip=ip)
+    new_session_token, new_refresh_token = refresh_token_func.refresh_token_flow(refresh=refresh, session=session, ip=ip)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
-    response.set_auth_cookies(new_jwt, new_refresh_token)
+    response.set_auth_cookies(new_session_token, new_refresh_token)
     return response
