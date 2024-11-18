@@ -18,3 +18,9 @@ class SessionTokenRepo:
     
     def get_session_token(self, token):
         return SessionToken.query.filter_by(token=token).first()
+
+    def revoke(self, id):
+        session_token = SessionToken.query.filter_by(id=id).first()
+        session_token.revoke_timestamp = datetime.datetime.now(datetime.UTC).timestamp()
+        db.session.commit()
+        return session_token
