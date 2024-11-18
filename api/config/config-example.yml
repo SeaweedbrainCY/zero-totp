@@ -96,13 +96,6 @@ database:
 
 features:
 
-    ## Optional 
-    ## Admin features configuration
-    # admins:
-        ## THIS SHOULD BE USED AS A TEMPORARY FEATURE ONLY 
-        ## This will allow the admin to delete users, and all their data.
-        ## This should be disabled in production, most of the time.
-        # admin_can_delete_users: false
     
     ## Email notifications configuration
     emails:

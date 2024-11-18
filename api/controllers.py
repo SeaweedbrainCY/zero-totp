@@ -8,7 +8,6 @@ from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
 from database.preferences_repo import Preferences as PreferencesDB
-from database.admin_repo import Admin as Admin_db
 from database.notif_repo import Notifications as Notifications_db
 from database.refresh_token_repo import RefreshTokenRepo as RefreshToken_db
 from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
@@ -29,7 +28,7 @@ import Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user, require_userid, ip_rate_limit
+from Utils.security_wrapper import  require_valid_user, require_passphrase_verification,require_valid_user, require_userid, ip_rate_limit
 import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
@@ -460,45 +459,6 @@ def get_role(user_id, *args, **kwargs):
     return {"role": user.role}, 200
 
 
-@require_admin_token
-def get_users_list(user_id, *args, **kwargs):
-    logging.info("Admin " + str(user_id) + " requested users list")
-    users = UserDB().get_all()
-    if not users:
-        return {"message" : "No user found"}, 404
-    users_list = []
-    for user in users:
-        isGoogleDriveSync = GoogleDriveIntegrationDB().is_google_drive_enabled(user.id) 
-        nb_codes = len(TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user.id))
-        users_list.append({"id": user.id,"username": user.username, "email": user.mail, "role": user.role, "createdAt": user.createdAt, "isBlocked": user.isBlocked, "isVerified": user.isVerified, "isGoogleDriveSync": isGoogleDriveSync, "nbCodesSaved": nb_codes })
-    return {"users": users_list}, 200
-
-
-@require_admin_role
-def admin_login(user_id, body):
-    token = body["token"].strip()
-    admin_user = Admin_db().get_by_user_id(user_id)
-    
-    bcrypt = Bcrypt(token)
-    if not admin_user:
-        logging.info("User " + str(user_id) + " tried to login as admin but is not an admin. A fake password is checked to avoid timing attacks. It has the admin role but no login token.")
-        fake_pass = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
-        bcrypt.checkpw(fake_pass)
-        return {"message": "Invalid credentials"}, 403
-    checked = bcrypt.checkpw(admin_user.token_hashed)
-    print("admin_user expiration", admin_user.token_expiration)
-    if not checked:
-        logging.info("User " + str(user_id) + " tried to login as admin but provided token is wrong. Connexion rejected.")
-        return {"message": "Invalid credentials"}, 403
-    if float(admin_user.token_expiration)  < datetime.datetime.utcnow().timestamp():
-        logging.info("User " + str(user_id) + " tried to login as admin but provided token is expired. Connexion rejected.")
-        return {"message": "Token expired"}, 403
-    admin_jwt = jwt_auth.generate_jwt(user_id, admin=True)
-    response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
-    response.set_cookie("admin-api-key", admin_jwt, httponly=True, secure=True, samesite="Lax", max_age=600)
-    logging.info("User " + str(user_id) + " logged in as admin")
-    return response
-    
     
 # GET /google-drive/oauth/authorization_flow
 def get_authorization_flow():
@@ -806,54 +766,6 @@ def delete_account(user_id):
         return {"message": "Error while deleting account"}, 500
     
     
-
-@require_admin_token
-def delete_account_admin(user_id, account_id_to_delete):
-    if not conf.features.admins.admin_can_delete_users:
-        logging.error("Admin " + str(user_id) + " tried to delete user " + str(account_id_to_delete) + " but admin cannot delete users. To enable this feature change the env variable and reload the API.")
-        return {"message": "Admin cannot delete users. To enable this feature change the env variable and reload the API."}, 403
-    logging.info("Deleting account for user " + str(account_id_to_delete) + " by admin " + str(user_id))
-    user_obj = UserDB().getById(account_id_to_delete)
-    if user_obj == None:
-        return {"message": "User not found"}, 404
-    if user_obj.role == "admin":
-        return {"message": "Admin cannot be deleted"}, 403
-    try: # we try to delete the user backups if possible. If not, this is not a blocking error.
-        context = {"user": account_id_to_delete}
-        delete_google_drive_backup(context, account_id_to_delete, context)
-        delete_google_drive_option(context, account_id_to_delete, context)
-    except Exception as e:
-        logging.warning("Error while deleting backups for user " + str(account_id_to_delete) + ". Exception : " + str(e))
-    try:
-        utils.delete_user_from_database(account_id_to_delete)
-        return {"message": "Account deleted"}, 200
-    except Exception as e:
-        logging.warning("Error while deleting user from database for user " + str(account_id_to_delete) + ". Exception : " + str(e))
-        return {"message": "Error while deleting account"}, 500
-
-@require_admin_token
-def update_blocked_status(user_id, account_id_to_update, action):
-    logging.info("Admin " + str(user_id) + " requested to " + action + " user " + str(account_id_to_update))
-    user_obj = UserDB().getById(account_id_to_update)
-    if user_obj == None:
-        return {"message": "User not found"}, 404
-    if user_obj.role == "admin":
-        return {"message": "Admin cannot be blocked"}, 403
-
-    if action == "block":
-        user = UserDB().update_block_status(account_id_to_update, True)
-        if user:
-            return {"message": "User blocked"}, 201
-        else: # pragma: no cover
-            return {"message": "Unknown error while blocking user"}, 500
-    elif action == "unblock":
-        user = UserDB().update_block_status(account_id_to_update, False)
-        if user:
-            return {"message": "User unblocked"}, 201
-        else:
-            return {"message": "Unknown error while unblocking user"}, 500
-    else:
-        return {"message": "Invalid request"}, 400
 
 
 @require_userid

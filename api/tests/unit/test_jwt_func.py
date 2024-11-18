@@ -70,12 +70,7 @@ class TestJWT(unittest.TestCase):
         self.assertEqual(verify_jwt(jwt)["sub"], 1)
         self.assertEqual("admin" not in verify_jwt(jwt), True)
     
-    def test_generate_jwt_admin(self):
-        jwt = generate_jwt(user_id=1, admin=True)
-        self.assertTrue(jwt)
-        self.assertTrue(verify_jwt(jwt))
-        self.assertEqual(verify_jwt(jwt)["sub"], 1)
-        self.assertEqual(verify_jwt(jwt)["admin"], 1)
+
 
     def test_generate_jwt_invalid_key(self):
         realSecret = conf.api.jwt_secret

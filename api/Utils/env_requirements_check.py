@@ -57,9 +57,6 @@ def test_conf(conf) -> bool:
     assert re.match(r"mysql:\/\/.*:.*@.*:[0-9]*\/.*", conf.database.database_uri) or conf.database.database_uri == "sqlite:///:memory:", "database.database_uri is not a valid uri. Was expecting something like 'mysql://user:password@hostname:port/dbname'"
 
     ## Features
-    ## Admins 
-    assert isinstance(conf.features.admins.admin_can_delete_users, bool), "features.admins.admin_can_delete_users is not a boolean"
-
     ## Emails
     assert isinstance(conf.features.emails.require_email_validation, bool), "features.emails.require_email_validation is not a boolean"
     if conf.features.emails.require_email_validation:
