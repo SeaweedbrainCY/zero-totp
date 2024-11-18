@@ -74,18 +74,18 @@ environment:
   ## This value is used to determine the logging level, CORS and other settings.
   ## Possible values are "local", "development" and "production".
   ## Running non production type can cause security issues.
-  type: "production"
+    type: "production"
   ## DO NOT MODIFY THIS VALUE
   ## THIS VALUE IS AUTOMATICALLY GENERATED/UPDATED
   ## MODIFICATION OF THIS VALUE WILL CAUSE THE API TO FAIL OR NEVER START
-  config_version: 1.0
+    config_version: 1.0
    ## Domain used by your app. 
    ## This is used to enforce the security of the API.
    ## The API must be served over HTTPS.
    ## Only include the domain name, without the protocol or path.
    ## The domain MUST be the same as the one used in the frontend.
    ## If developing locally, use localhost and specify the port.
-   domain : example.com
+    domain : example.com
 
 database:
     ## The URI of the database to connect to.
