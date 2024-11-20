@@ -2,10 +2,13 @@ import unittest
 from app import app
 import controllers
 from unittest.mock import patch
-from zero_totp_db_model.model import User, RateLimiting
+from zero_totp_db_model.model import User, RateLimiting, SessionToken, RefreshToken
+from database.session_token_repo import SessionTokenRepo
 from environment import conf
 from database.db import db 
 import datetime
+from uuid import uuid4
+from hashlib import sha256
 
 class TestLoginController(unittest.TestCase):
 
@@ -58,24 +61,24 @@ class TestLoginController(unittest.TestCase):
             self.assertIn("role", response.json())
             self.assertIn("isVerified", response.json())
             self.assertIn("Set-Cookie", response.headers)
-            self.assertIn("api-key", response.headers["Set-Cookie"])
+            self.assertIn("session-token", response.headers["Set-Cookie"])
             self.assertIn("refresh-token", response.headers["Set-Cookie"])
-            cookies = response.headers["Set-Cookie"].split("api-key=")
-            self.assertEqual(len(cookies), 2, "api-key found multiple times in the response")
+            cookies = response.headers["Set-Cookie"].split("session-token=")
+            self.assertEqual(len(cookies), 2, "session-token found multiple times in the response")
             if "refresh-token" in cookies[1]:
                 cookies = cookies[1].split("refresh-token=")
-                api_key = cookies[0]
+                session_token = cookies[0]
                 refresh_token = cookies[1]
             else:
                 refresh_token = cookies[0]
-                api_key = cookies[1]
+                session_token = cookies[1]
 
             
-            self.assertIn("HttpOnly", api_key)
-            self.assertIn("Secure", api_key)
-            self.assertIn("SameSite=Lax", api_key)
-            self.assertIn("Expires", api_key)
-            self.assertIn("Path=/api/", api_key)
+            self.assertIn("HttpOnly", session_token)
+            self.assertIn("Secure", session_token)
+            self.assertIn("SameSite=Lax", session_token)
+            self.assertIn("Expires", session_token)
+            self.assertIn("Path=/api/", session_token)
             
             self.assertIn("HttpOnly", refresh_token)
             self.assertIn("Secure", refresh_token)
@@ -87,6 +90,25 @@ class TestLoginController(unittest.TestCase):
             last_login_date_timestamp = user.last_login_date
             diff_time = datetime.datetime.now(datetime.UTC).timestamp() - float(last_login_date_timestamp)
             self.assertLessEqual(diff_time, 5)
+            
+            session = db.session.query(SessionToken).filter_by(user_id=1).first()
+            
+            self.assertIsNotNone(session)
+            self.assertEqual(session.user_id, 1)
+            self.assertIn(session.token, session_token)
+            self.assertAlmostEqual(float(session.expiration), datetime.datetime.now(datetime.UTC).timestamp() + conf.api.session_token_validity, delta=60)
+            self.assertIsNone(session.revoke_timestamp)
+
+            refresh = db.session.query(RefreshToken).filter_by(user_id=1).first()
+            self.assertIsNotNone(refresh)
+            self.assertEqual(refresh.user_id, 1)
+            self.assertAlmostEqual(float(refresh.expiration), datetime.datetime.now(datetime.UTC).timestamp() + conf.api.refresh_token_validity, delta=60)
+            self.assertIsNone(refresh.revoke_timestamp)
+            self.assertEqual(refresh.session_token_id, session.id)
+
+
+
+
     
     def test_login_not_verified_user(self):
         with self.application.app.app_context():
@@ -98,6 +120,8 @@ class TestLoginController(unittest.TestCase):
             self.assertIn("Set-Cookie", response.headers)
             user = db.session.query(User).filter_by(id=1).first()
             self.assertIsNotNone(user.last_login_date)
+            self.assertIsNotNone(db.session.query(SessionToken).filter_by(user_id=1).first())
+            self.assertIsNotNone(db.session.query(RefreshToken).filter_by(user_id=1).first())
 
     def test_login_missing_parameters(self):
         with self.application.app.app_context():
@@ -106,12 +130,16 @@ class TestLoginController(unittest.TestCase):
                 del json_payload[key]
                 response = self.client.post(self.loginEndpoint, json=json_payload)
                 self.assertEqual(response.status_code, 400)
+                self.assertIsNone(db.session.query(SessionToken).filter_by(user_id=1).first())
+                self.assertIsNone(db.session.query(RefreshToken).filter_by(user_id=1).first())
 
             for key in self.json_payload.keys():
                 json_payload = self.json_payload.copy()
                 json_payload[key]=""
                 response = self.client.post(self.loginEndpoint, json=json_payload)
                 self.assertEqual(response.status_code, 400)
+                self.assertIsNone(db.session.query(SessionToken).filter_by(user_id=1).first())
+                self.assertIsNone(db.session.query(RefreshToken).filter_by(user_id=1).first())
             
     
     def test_login_forbidden_email(self):
@@ -121,6 +149,8 @@ class TestLoginController(unittest.TestCase):
             self.assertEqual(response.status_code, 403)
             user = db.session.query(User).filter_by(id=1).first()
             self.assertIsNone(user.last_login_date)
+            self.assertIsNone(db.session.query(SessionToken).filter_by(user_id=1).first())
+            self.assertIsNone(db.session.query(RefreshToken).filter_by(user_id=1).first())
     
     
     def test_login_no_user(self):
@@ -141,6 +171,8 @@ class TestLoginController(unittest.TestCase):
             self.assertEqual(response.json()["message"], "generic_errors.invalid_creds")
             user = db.session.query(User).filter_by(id=1).first()
             self.assertIsNone(user.last_login_date)
+            self.assertIsNone(db.session.query(SessionToken).filter_by(user_id=1).first())
+            self.assertIsNone(db.session.query(RefreshToken).filter_by(user_id=1).first())
     
     def test_login_as_blocked_user(self):
         with self.application.app.app_context():
@@ -152,6 +184,8 @@ class TestLoginController(unittest.TestCase):
             self.assertNotIn("Set-Cookie", response.headers)
             user = db.session.query(User).filter_by(id=1).first()
             self.assertIsNone(user.last_login_date)
+            self.assertIsNone(db.session.query(SessionToken).filter_by(user_id=1).first())
+            self.assertIsNone(db.session.query(RefreshToken).filter_by(user_id=1).first())
 
     def test_login_as_blocked_user_with_bad_passphrase(self):
         with self.application.app.app_context():
@@ -164,6 +198,17 @@ class TestLoginController(unittest.TestCase):
             self.assertEqual(response.json()["message"], "generic_errors.invalid_creds")
             user = db.session.query(User).filter_by(id=1).first()
             self.assertIsNone(user.last_login_date)
+            self.assertIsNone(db.session.query(SessionToken).filter_by(user_id=1).first())
+            self.assertIsNone(db.session.query(RefreshToken).filter_by(user_id=1).first())
+            
+    def test_login_with_existing_session(self):
+        with self.application.app.app_context():
+            session_repo = SessionTokenRepo()
+            session_repo.generate_session_token(1)
+            response = self.client.post(self.loginEndpoint, json=self.json_payload)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(len(db.session.query(SessionToken).filter_by(user_id=1).all()), 2)
+
 
 
     def test_login_specs(self):
