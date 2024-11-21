@@ -7,7 +7,7 @@ from uuid import uuid4
 
 class RefreshTokenRepo:
 
-    def create_refresh_token(self, user_id, session_id, hashed_token, expiration=-1):
+    def create_refresh_token(self, user_id, session_id, hashed_token, expiration=-1) -> RefreshToken:
         expiration_timestamp = (datetime.datetime.now(datetime.UTC) + datetime.timedelta(seconds=conf.api.refresh_token_validity)).timestamp() if expiration == -1 else expiration
         id = str(uuid4()) 
         rt = RefreshToken(id=id, user_id=user_id, session_token_id=session_id, hashed_token=hashed_token, expiration=expiration_timestamp)
@@ -18,6 +18,9 @@ class RefreshTokenRepo:
 
     def get_refresh_token_by_hash(self, hashed_token):
         return RefreshToken.query.filter_by(hashed_token=hashed_token).first()
+    
+    def get_refresh_token_by_id(self, id):
+        return RefreshToken.query.filter_by(id=id).first()
 
     def get_refresh_token_by_session_id(self, session_id):
         return RefreshToken.query.filter_by(session_token_id=session_id).first()
