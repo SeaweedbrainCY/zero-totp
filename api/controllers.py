@@ -159,11 +159,7 @@ def logout(_):
     session = session_repo.get_session_token(session_token)
     if not session:
         return {"message": "Session not found"}, 404
-    session_repo.revoke(session.id)
-    refresh_tokens_db = RefreshToken_db()
-    refresh_token = refresh_tokens_db.get_refresh_token_by_session_id(session.id)
-    if refresh_token:
-        refresh_tokens_db.revoke(refresh_token.id)
+    utils.revoke_session(session_id=session.id)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"message": "Logged out"}))
     response.delete_cookie("session-token")
     response.delete_cookie("refresh-token")
@@ -878,7 +874,7 @@ def auth_refresh_token(ip, *args, **kwargs):
     refresh = RefreshToken_db().get_refresh_token_by_hash(sha256(refresh_token.encode("utf-8")).hexdigest())
     if not refresh:
         rate_limiting.add_failed_login(ip, user_id=session.user_id)
-        logging.warning(f"JWT of user {session.user_id} tried to be refreshed with an refresh token (not present in the db)")
+        logging.warning(f"Session of user {session.user_id} tried to be refreshed with an refresh token (not present in the db)")
         return {"message": "Access denied"}, 403
     new_session_token, new_refresh_token = refresh_token_func.refresh_token_flow(refresh=refresh, session=session, ip=ip)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
