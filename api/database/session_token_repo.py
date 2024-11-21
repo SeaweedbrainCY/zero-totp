@@ -18,6 +18,9 @@ class SessionTokenRepo:
     
     def get_session_token(self, token):
         return SessionToken.query.filter_by(token=token).first()
+    
+    def get_session_token_by_id(self, id):
+        return SessionToken.query.filter_by(id=id).first()
 
     def revoke(self, id):
         session_token = SessionToken.query.filter_by(id=id).first()
