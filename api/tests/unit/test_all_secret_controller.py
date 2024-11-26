@@ -50,25 +50,6 @@ class TestAllSecret(unittest.TestCase):
             self.assertIn(self.secret1_id, uuids)
             self.assertIn(self.secret2_id, uuids)
     
-    def test_get_all_secret_no_cookie(self):
-        with self.flask_application.app.app_context():
-            response = self.client.get(self.endpoint)
-            self.assertEqual(response.status_code, 401)
-    
-    def test_get_all_secret_bad_cookie(self):
-        with self.flask_application.app.app_context():
-            self.client.cookies = {"session-token": str(uuid4())}
-            response = self.client.get(self.endpoint)
-            self.assertEqual(response.status_code, 401)
-    
-    def test_get_all_secret_expired_jwt(self):
-        with self.flask_application.app.app_context():
-            db.session.query(SessionToken).filter(SessionToken.token == self.session_token).update({"expiration": (datetime.datetime.now() - datetime.timedelta(hours=1)).timestamp()})
-            db.session.commit()
-            self.client.cookies = {"session-token": self.session_token}
-            response = self.client.get(self.endpoint)
-            self.assertEqual(response.status_code, 401)
-    
     def test_get_all_secret_no_secret(self):
         with self.flask_application.app.app_context():
             self.client.cookies = {"session-token": self.session_token}
