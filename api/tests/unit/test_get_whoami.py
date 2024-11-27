@@ -3,9 +3,9 @@ from app import app
 from database.db import db 
 from environment import conf
 from unittest.mock import patch
-from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
 from zero_totp_db_model.model import User as UserModel
+from database.session_token_repo import SessionTokenRepo
 
 
 class TestGetWhoami(unittest.TestCase):
@@ -19,12 +19,16 @@ class TestGetWhoami(unittest.TestCase):
         self.user_id = 1
         self.email = "user@test.com"
         self.username = "user"
+
+        self.session_repo = SessionTokenRepo()
         
         user1 = UserModel(id=self.user_id,username=self.username, mail=self.email, password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001")
         with self.flask_application.app.app_context():
             db.create_all()
             db.session.add(user1)
             db.session.commit()
+
+            _, self.session_token = self.session_repo.generate_session_token(self.user_id)
     
     def tearDown(self):
         with self.flask_application.app.app_context():
@@ -35,29 +39,29 @@ class TestGetWhoami(unittest.TestCase):
     
     def test_get_whoami(self):
         with self.flask_application.app.app_context():
-            self.client.cookies = {"api-key": generate_jwt(self.user_id)}
+            self.client.cookies = { "session-token": self.session_token}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json(), {"username": self.username, "email": self.email, "id": self.user_id})
     
-    def test_get_whoami_no_cookie(self):
-        with self.flask_application.app.app_context():
-            response = self.client.get(self.endpoint)
-            self.assertEqual(response.status_code, 401)
     
-    def test_get_whoami_bad_cookie(self):
-        with self.flask_application.app.app_context():
-            self.client.cookies = {"api-key": "bad"}
-            response = self.client.get(self.endpoint)
-            self.assertEqual(response.status_code, 403)
-    
-    def test_get_whoami_disabled_user(self):
+    def test_get_whoami_not_verified_user(self):
         with self.flask_application.app.app_context():
             user = db.session.query(UserModel).filter_by(id=self.user_id).first()
             user.isVerified = False
             db.session.commit()
-            self.client.cookies = {"api-key": generate_jwt(self.user_id)}
+            self.client.cookies = { "session-token": self.session_token}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
             self.assertEqual(response.json(), {"error": "Not verified"})
+    
+    def test_get_whoami_blocked_user(self):
+        with self.flask_application.app.app_context():
+            user = db.session.query(UserModel).filter_by(id=self.user_id).first()
+            user.isBlocked = True
+            db.session.commit()
+            self.client.cookies = { "session-token": self.session_token}
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json(), {"error": "User is blocked"})
     
