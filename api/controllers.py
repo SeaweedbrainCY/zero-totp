@@ -844,8 +844,8 @@ def get_global_notification():
         }
     
     
-
-def get_internal_notification():
+@require_valid_user
+def get_internal_notification(user_id):
     notif = Notifications_db().get_last_active_notification()
     if notif is None : 
         return {"display_notification":False}
