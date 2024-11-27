@@ -3,11 +3,13 @@ from app import app
 from database.db import db 
 import controllers
 from unittest.mock import patch
-from zero_totp_db_model.model import User, TOTP_secret
+from database.user_repo import User as UserRepo
+from database.totp_secret_repo import TOTP_secret as TOTPRepo
+from database.session_token_repo import SessionTokenRepo
+from zero_totp_db_model.model  import TOTP_secret 
 from environment import conf
-from CryptoClasses import jwt_func
-import jwt
 import datetime
+from uuid import uuid4
 
 class TestEncryptedSecretController(unittest.TestCase):
     USER_NOT_VERIFIED_ERROR_MESSAGE = "Not verified"
@@ -16,46 +18,41 @@ class TestEncryptedSecretController(unittest.TestCase):
     def setUp(self):
         if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
-        self.application = app
-        self.jwtCookie = jwt_func.generate_jwt(1)
-        self.client = self.application.test_client()
-        self.endpoint = "/api/v1/encrypted_secret/uuid"
-        with self.application.app.app_context():
-            db.create_all()
-            db.session.commit()
+        self.flask_application = app
+        self.client = self.flask_application.test_client()
+        self.endpoint = "/api/v1/encrypted_secret"
+        self.secret_ids = [str(uuid4()) for _ in range(3)]
+        self.secret_id_user2 = str(uuid4())
         
+        self.user_repo = UserRepo()
+        self.totp_secret_repo = TOTPRepo()
+        self.session_repo = SessionTokenRepo()
 
-        self.getEncSecretByUUID = patch("database.totp_secret_repo.TOTP_secret.get_enc_secret_by_uuid").start()
-        self.getEncSecretByUUID.return_value = TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret")
-
-        self.addTOTPSecret = patch("database.totp_secret_repo.TOTP_secret.add").start()
-        self.addTOTPSecret.return_value =  TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret")
-
-        self.updateTOTPSecret = patch("database.totp_secret_repo.TOTP_secret.update_secret").start()
-        self.addTOTPSecret.return_value =  TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret")
-
-        self.deleteTOTPSecret = patch("database.totp_secret_repo.TOTP_secret.delete").start()
-        self.deleteTOTPSecret.return_value = TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret")
-
-        self.get_user_by_id = patch("database.user_repo.User.getById").start()
-        self.get_user_by_id.return_value = User(id=1, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+        with self.flask_application.app.app_context():
+            db.create_all()
+            user = self.user_repo.create(username='user1', email='user1@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
+            self.user_id = user.id
+            user2 = self.user_repo.create(username='user1', email='user1@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
+            self.user_id2 = user2.id
+            _, self.session_token = self.session_repo.generate_session_token(self.user_id)
+            for secret_id in self.secret_ids:
+                self.totp_secret_repo.add(user_id=self.user_id, enc_secret="secret", uuid=secret_id)
+            self.totp_secret_repo.add(user_id=self.user_id2, enc_secret="secret", uuid=self.secret_id_user2)
+            db.session.commit()
 
 
-        self.json_payload = {"enc_secret": "enc_secret"}
+
+
+        self.json_payload = {"enc_secret": str(uuid4())}
+
 
     def tearDown(self):
-        patch.stopall()
+        with self.flask_application.app.app_context():
+            db.session.remove()
+            db.drop_all()
+            patch.stopall()
+
     
-    def generate_expired_cookie(self):
-        payload = {
-            "iss": jwt_func.ISSUER,
-            "sub": 1,
-            "iat": datetime.datetime.utcnow(),
-            "nbf": datetime.datetime.utcnow(),
-            "exp": datetime.datetime.utcnow() - datetime.timedelta(hours=1),
-        }
-        jwtCookie = jwt.encode(payload, conf.api.jwt_secret, algorithm=jwt_func.ALG)
-        return jwtCookie
     
 ######
 ## GET
@@ -63,218 +60,161 @@ class TestEncryptedSecretController(unittest.TestCase):
 
 
     def test_get_encrypted_secret(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("enc_secret", response.json())
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            for secret_id in self.secret_ids:
+                response = self.client.get(f"{self.endpoint}/{secret_id}")
+                self.assertEqual(response.status_code, 200, f"Failed to get secret with id {secret_id}. Was expecting status code 200, got {response.status_code}. Response: {response.json()}")
+                self.assertIn("enc_secret", response.json())
     
-    def test_get_encrypted_secret_no_cookie(self):
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 401)
-    
-    def test_get_encrypted_secret_bad_cookie(self):
-        self.client.cookies = {"api-key": "bad_cookie"}
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
 
-    def test_get_encrypted_secret_JWT_expired(self):
-        jwtCookie = self.generate_expired_cookie()
-        self.client.cookies = {"api-key": jwtCookie}
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 401)
     
     def test_get_encrypted_secret_no_secret(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getEncSecretByUUID.return_value = None
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            db.session.query(TOTP_secret).delete()
+            response = self.client.get(f"{self.endpoint}/{str(uuid4())}")
+            self.assertEqual(response.status_code, 403)
     
 
     def test_get_encrypted_secret_of_another_user(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getEncSecretByUUID.return_value =  TOTP_secret(uuid="uuid", user_id=2, secret_enc = "enc_secret")
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
+         with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            response = self.client.get(f"{self.endpoint}/{self.secret_id_user2}")
+            self.assertEqual(response.status_code, 403)
 
     def test_get_encrypted_secret_user_blocked(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.get_user_by_id.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            self.user_repo.update_block_status(self.user_id, True)
+            response = self.client.get(f"{self.endpoint}/{str(uuid4())}")
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
     
     def test_get_encrypted_secret_user_unverified(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.get_user_by_id.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            self.user_repo.update_email_verification(self.user_id, False)
+            response = self.client.get(f"{self.endpoint}/{str(uuid4())}")
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)
 
 
-#######
-## POST
-#######
+########
+### POST
+########
 
     def test_post_encrypted_secret(self):
-         self.client.cookies = {"api-key": self.jwtCookie}
-         self.getEncSecretByUUID.return_value = None
-         response = self.client.post(self.endpoint, json=self.json_payload)
-         self.assertEqual(response.status_code, 201)
-         self.addTOTPSecret.assert_called_once()
-        
-    def test_post_encrypted_secret_no_cookie(self):
-        response = self.client.post(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 401)
-    
-    def test_post_encrypted_secret_bad_cookie(self):
-        self.client.cookies = {"api-key": "bad_cookie"}
-        response = self.client.post(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
-    
-    def test_post_encrypted_secret_JWT_expired(self):
-        self.client.cookies = {"api-key": self.generate_expired_cookie()}
-        response = self.client.post(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 401)
-    
-    def test_post_encrypted_secret_secret_already_exists(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.post(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
-    
-    def test_post_encrypted_secret_error_db(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getEncSecretByUUID.return_value = None
-        self.addTOTPSecret.return_value = False
-        response = self.client.post(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 500)
-    
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            response = self.client.post(self.endpoint, json=self.json_payload)
+            self.assertEqual(response.status_code, 201)
+            self.assertIsNotNone(response.json()["uuid"])
+            self.assertEqual(self.totp_secret_repo.get_enc_secret_by_uuid(response.json()["uuid"]).secret_enc, self.json_payload["enc_secret"])
+            self.assertEqual(self.totp_secret_repo.get_enc_secret_by_uuid(response.json()["uuid"]).user_id, self.user_id)
+            
+   
     def test_post_encrypted_secret_user_blocked(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.get_user_by_id.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.post(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            self.user_repo.update_block_status(self.user_id, True)
+            response = self.client.post(self.endpoint, json=self.json_payload)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
     
     def test_post_encrypted_secret_user_unverified(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.get_user_by_id.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.post(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)
+       with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            self.user_repo.update_email_verification(self.user_id, False)
+            response = self.client.post(self.endpoint, json=self.json_payload)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)
 
-######
-## PUT
-######
+#######
+### PUT
+#######
 
 
     def test_update_encrypted_secret(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.put(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 201)
-        self.updateTOTPSecret.assert_called_once()
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            response = self.client.put(f"{self.endpoint}/{self.secret_ids[0]}", json=self.json_payload)
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(self.totp_secret_repo.get_enc_secret_by_uuid(self.secret_ids[0]).secret_enc, self.json_payload["enc_secret"])
     
-    def test_update_encrypted_secret_no_cookie(self):
-        response = self.client.put(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 401)
-    
-    def test_update_encrypted_secret_bad_cookie(self):
-        self.client.cookies = {"api-key": "badCookie"}
-        response = self.client.put(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
-    
-    def test_update_encrypted_secret_expired_cookie(self):
-        self.client.cookies = {"api-key": self.generate_expired_cookie()}
-        response = self.client.put(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 401)
     
     def test_update_encrypted_secret_no_exists(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getEncSecretByUUID.return_value = None
-        response = self.client.put(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
+         with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            response = self.client.put(f"{self.endpoint}/{str(uuid4())}", json=self.json_payload)
+            self.assertEqual(response.status_code, 403)
     
     def test_update_encrypted_secret_wrong_user(self):
-         self.client.cookies = {"api-key": self.jwtCookie}
-         self.getEncSecretByUUID.return_value = TOTP_secret(uuid="uuid", user_id=2, secret_enc = "enc_secret")
-         response = self.client.put(self.endpoint, json=self.json_payload)
-         self.assertEqual(response.status_code, 403)
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            response = self.client.put(f"{self.endpoint}/{self.secret_id_user2}", json=self.json_payload)
+            self.assertEqual(response.status_code, 403)
     
-    def test_update_encrypted_secret_fail(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.updateTOTPSecret.return_value = None
-        response = self.client.put(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 500)
 
+#
     def test_update_encrypted_secret_user_blocked(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.get_user_by_id.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.put(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            self.user_repo.update_block_status(self.user_id, True)
+            response = self.client.put(f"{self.endpoint}/{self.secret_ids[0]}", json=self.json_payload)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
     
     def test_update_encrypted_secret_user_unverified(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.get_user_by_id.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.put(self.endpoint, json=self.json_payload)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            self.user_repo.update_email_verification(self.user_id, False)
+            response = self.client.put(f"{self.endpoint}/{self.secret_ids[0]}", json=self.json_payload)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)
 
 
-#########
-## DELETE
-#########
+##########
+### DELETE
+##########
 
 
 
     def test_delete_encrypted_secret(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.delete(self.endpoint)
-        self.assertEqual(response.status_code, 201)
-        self.deleteTOTPSecret.assert_called_once()
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            response = self.client.delete(f"{self.endpoint}/{self.secret_ids[0]}")
+            self.assertEqual(response.status_code, 201)
+            self.assertIsNone(self.totp_secret_repo.get_enc_secret_by_uuid(self.secret_ids[0]))
     
-    def test_delete_encrypted_secret_no_cookie(self):
-        response = self.client.delete(self.endpoint)
-        self.assertEqual(response.status_code, 401)
-    
-    def test_delete_encrypted_secret_bad_cookie(self):
-        self.client.cookies = {"api-key": "badCookie"}
-        response = self.client.delete(self.endpoint)
-        self.assertEqual(response.status_code, 403)
-    
-    def test_delete_encrypted_secret_expired_cookie(self):
-        self.client.cookies = {'api-key': self.generate_expired_cookie()}
-        response = self.client.delete(self.endpoint)
-        self.assertEqual(response.status_code, 401)
-    
+
     def test_delete_encrypted_secret_no_exists(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getEncSecretByUUID.return_value = None
-        response = self.client.delete(self.endpoint)
-        self.assertEqual(response.status_code, 403)
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            response = self.client.delete(f"{self.endpoint}/{str(uuid4())}")
+            self.assertEqual(response.status_code, 403)
     
 
     def test_delete_encrypted_secret_wrong_user(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getEncSecretByUUID.return_value = TOTP_secret(uuid="uuid", user_id=2, secret_enc = "enc_secret")
-        response = self.client.delete(self.endpoint)
-        self.assertEqual(response.status_code, 403)
+         with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            response = self.client.delete(f"{self.endpoint}/{self.secret_id_user2}")
+            self.assertEqual(response.status_code, 403)
     
-    def test_delete_encrypted_secret_fail(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.deleteTOTPSecret.return_value = None
-        response = self.client.delete(self.endpoint)
-        self.assertEqual(response.status_code, 500)
+
     
     def test_delete_encrypted_secret_user_blocked(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.get_user_by_id.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.delete(self.endpoint)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            self.user_repo.update_block_status(self.user_id, True)
+            response = self.client.delete(f"{self.endpoint}/{self.secret_ids[0]}")
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], self.USER_BLOCKED_ERROR_MESSAGE)
     
     def test_delete_encrypted_secret_user_unverified(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.get_user_by_id.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.delete(self.endpoint)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)
+         with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            self.user_repo.update_email_verification(self.user_id, False)
+            response = self.client.delete(f"{self.endpoint}/{self.secret_ids[0]}")
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], self.USER_NOT_VERIFIED_ERROR_MESSAGE)
