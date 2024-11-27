@@ -5,11 +5,14 @@ class TOTP_secret:
     def get_all_enc_secret_by_user_id(self, user_id):
         return db.session.query(TOTP_secret_model).filter_by(user_id=user_id).all()
 
-    def get_enc_secret_by_uuid(self, user_id, uuid):
+    def get_enc_secret_of_user_by_uuid(self, user_id, uuid):
         return db.session.query(TOTP_secret_model).filter_by(user_id=user_id, uuid=uuid).first()
     
+    def get_enc_secret_by_uuid(self, uuid):
+        return db.session.query(TOTP_secret_model).filter_by(uuid=uuid).first()
+    
     def add(self, user_id, enc_secret, uuid):
-        enc_secret = TOTP_secret_model(user_id=user_id, secret_enc=enc_secret, uuid=uuid);
+        enc_secret = TOTP_secret_model(user_id=user_id, secret_enc=enc_secret, uuid=uuid)
         db.session.add(enc_secret)
         db.session.commit()
         return enc_secret
