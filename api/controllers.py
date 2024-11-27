@@ -34,6 +34,8 @@ from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
 from database.db import db
 import threading
+from uuid import uuid4
+
 
 
 
@@ -191,7 +193,7 @@ def get_login_specs(username):
 @require_valid_user
 def get_encrypted_secret(user_id, uuid):
     totp_secretDB =  TOTP_secretDB()
-    enc_secret = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
+    enc_secret = totp_secretDB.get_enc_secret_of_user_by_uuid(user_id, uuid)
     if not enc_secret:
         return {"message": "Forbidden"}, 403
     else:
@@ -201,21 +203,22 @@ def get_encrypted_secret(user_id, uuid):
             logging.warning("User " + str(user_id) + " tried to access secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
         
-#POST /encrypted_secret/{uuid}
+#POST /encrypted_secret
 @require_valid_user
-def add_encrypted_secret(user_id,uuid, body):
+def add_encrypted_secret(user_id, body):
     enc_secret = utils.sanitize_input(body["enc_secret"]).strip()
-    if(uuid == ""):
-        return {"message": "Invalid request"}, 400
+    secret_uuid = ""
     totp_secretDB =  TOTP_secretDB()
-    if totp_secretDB.get_enc_secret_by_uuid(user_id, uuid):
-        return {"message": "Forbidden"}, 403
-    else:
-        if totp_secretDB.add(user_id, enc_secret, uuid):
-            return {"message": "Encrypted secret added"}, 201
-        else :
-            logging.warning("Unknown error while adding encrypted secret for user " + str(user_id))
-            return {"message": "Unknown error while adding encrypted secret"}, 500
+    while secret_uuid == "":
+        tmp_uuid = str(uuid4())
+        if not totp_secretDB.get_enc_secret_by_uuid(tmp_uuid):
+            secret_uuid = tmp_uuid
+        
+    if totp_secretDB.add(user_id, enc_secret, secret_uuid):
+        return {"uuid": secret_uuid}, 201
+    else :
+        logging.warning("Unknown error while adding encrypted secret for user " + str(user_id))
+        return {"message": "Unknown error while adding encrypted secret"}, 500
 
 #PUT /encrypted_secret/{uuid}
 @require_valid_user
@@ -223,7 +226,7 @@ def update_encrypted_secret(user_id,uuid, body):
     enc_secret = body["enc_secret"]
     
     totp_secretDB =  TOTP_secretDB()
-    totp = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
+    totp = totp_secretDB.get_enc_secret_of_user_by_uuid(user_id, uuid)
     if not totp:
         logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " which does not exist")
         return {"message": "Forbidden"}, 403
@@ -244,7 +247,7 @@ def delete_encrypted_secret(user_id,uuid):
     if(uuid == ""):
         return {"message": "Invalid request"}, 400
     totp_secretDB =  TOTP_secretDB()
-    totp = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
+    totp = totp_secretDB.get_enc_secret_of_user_by_uuid(user_id, uuid)
     if not totp:
         logging.debug("User " + str(user_id) + " tried to delete secret " + str(uuid) + " which does not exist")
         return {"message": "Forbidden"}, 403
@@ -395,7 +398,7 @@ def update_vault(user_id, body):
     returnJson["hashing"]=1
     errors = 0
     for secret in enc_vault.keys():
-        totp = totp_secretDB.get_enc_secret_by_uuid(user_id, secret)
+        totp = totp_secretDB.get_enc_secret_of_user_by_uuid(user_id, secret)
         if not totp:
             totp = totp_secretDB.add(user_id=user_id, enc_secret=enc_vault[secret], uuid=secret)
             if not totp:
