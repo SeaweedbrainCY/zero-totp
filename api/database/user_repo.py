@@ -25,7 +25,7 @@ class User:
         db.session.commit()
         return True
     
-    def update_email(self, user_id, email, isVerified=False):
+    def update_email(self, user_id, email, isVerified=False) -> UserModel | None:
         user = db.session.query(UserModel).filter_by(id=user_id).first()
         if user == None:
             return None
