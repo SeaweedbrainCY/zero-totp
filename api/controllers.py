@@ -299,8 +299,12 @@ def update_email(user_id,body):
         return {"message": "This email doesn't have the right format. Check it and try again"}, 400
          
     userDb = UserDB()
-    if userDb.getByEmail(email):
-        return {"message": "This email already exists"}, 403
+    already_existing_user = userDb.getByEmail(email)
+    if already_existing_user:
+        if already_existing_user.id == user_id:
+            return {"message":email},201
+        else:
+            return {"message": "This email already exists"}, 403
     old_mail = userDb.getById(user_id).mail
     user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
     if user:
