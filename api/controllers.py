@@ -336,8 +336,12 @@ def update_username(user_id,body):
     userDb = UserDB()
     if len(username) > 250:
         return {"message": "Username is too long"}, 400
-    if userDb.getByUsername(username):
-        return {"message": "generic_errors.username_exists"}, 409
+    already_existing_user = userDb.getByUsername(username)
+    if already_existing_user:
+        if already_existing_user.id == user_id:
+            return {"message":username},201
+        else:
+            return {"message": "generic_errors.username_exists"}, 409
     user = userDb.update_username(user_id=user_id, username=username)
     if user:
         return {"message":user.username},201
