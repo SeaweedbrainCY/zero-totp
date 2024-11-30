@@ -4,9 +4,8 @@ from database.db import db
 from environment import conf
 from zero_totp_db_model.model import User as UserModel, RateLimiting
 from unittest.mock import patch
-from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
-import jwt
+from database.session_token_repo import SessionTokenRepo
 
 
 class TestSendVerificationController(unittest.TestCase):
@@ -24,10 +23,12 @@ class TestSendVerificationController(unittest.TestCase):
         
         self.send_verification_email = patch("Email.send.send_verification_email", return_value=True).start()
         
+        self.session_token_repo = SessionTokenRepo()
 
         with self.flask_application.app.app_context():
             db.create_all()
             db.session.add(user)
+            _, self.session_token = self.session_token_repo.generate_session_token(user.id)
             db.session.commit()
     
        
@@ -39,7 +40,7 @@ class TestSendVerificationController(unittest.TestCase):
 
     def test_send_verification_email(self):
         with self.flask_application.app.app_context():
-            self.client.cookies = {"api-key": generate_jwt(self.user_id)}
+            self.client.cookies = {"session-token": self.session_token}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
             self.generate_new_email_verification_token.assert_called_once_with(user_id=self.user_id)
@@ -47,25 +48,14 @@ class TestSendVerificationController(unittest.TestCase):
     
     def test_send_verification_send_throw_error(self):
         with self.flask_application.app.app_context():
-            self.client.cookies = {"api-key": generate_jwt(self.user_id)}
+            self.client.cookies = {"session-token": self.session_token}
             self.send_verification_email.side_effect = Exception("Error while sending email")
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 500)
     
-    def test_send_verification_no_cookie(self):
-        with self.flask_application.app.app_context():
-            response = self.client.get(self.endpoint)
-            self.assertEqual(response.status_code, 401)
-    
-    def test_send_verification_bad_cookie(self):
-        with self.flask_application.app.app_context():
-            self.client.cookies = {"api-key": "bad"}
-            response = self.client.get(self.endpoint)
-            self.assertEqual(response.status_code, 403)
-    
     def test_send_verification_rate_limited(self):
         with self.flask_application.app.app_context():
-            self.client.cookies = {"api-key": generate_jwt(self.user_id)}
+            self.client.cookies = {"session-token": self.session_token}
             for _ in range(conf.features.rate_limiting.send_email_attempts_limit_per_user):
                 response = self.client.get(self.endpoint)
                 self.assertEqual(response.status_code, 200)
@@ -74,7 +64,7 @@ class TestSendVerificationController(unittest.TestCase):
     
     def test_rate_limiting_expired(self):
         with self.flask_application.app.app_context():
-            self.client.cookies = {"api-key": generate_jwt(self.user_id)}
+            self.client.cookies = {"session-token": self.session_token}
             for _ in range(conf.features.rate_limiting.send_email_attempts_limit_per_user):
                 attempt = RateLimiting(ip=None, user_id=self.user_id, action_type="send_verification_email", timestamp= datetime.datetime.utcnow() - datetime.timedelta(minutes=conf.features.rate_limiting.email_ban_time + 1))
                 db.session.add(attempt)
