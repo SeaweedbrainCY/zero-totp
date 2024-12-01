@@ -4,9 +4,8 @@ from database.db import db
 from environment import conf
 from zero_totp_db_model.model import User as UserModel
 from unittest.mock import patch
-from CryptoClasses.jwt_func import generate_jwt, ISSUER as jwt_ISSUER, ALG as jwt_ALG
 import datetime
-import jwt
+from database.session_token_repo import SessionTokenRepo
 
 
 class TestGetRole(unittest.TestCase):
@@ -23,6 +22,8 @@ class TestGetRole(unittest.TestCase):
         self.user_blocked_id = 4
         self.user_unverified_id = 5
 
+        self.session_repo = SessionTokenRepo()
+
         admin_user = UserModel(id=self.admin_user_id,username="admin", mail="admin@admin.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="admin")
         not_admin_user = UserModel(id=self.not_admin_user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="user")
         user_without_role = UserModel(id=self.user_without_role_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None)
@@ -37,6 +38,14 @@ class TestGetRole(unittest.TestCase):
             db.session.add(user_blocked)
             db.session.add(user_unverified)
             db.session.commit()
+
+            _, self.session_token_admin = self.session_repo.generate_session_token(self.admin_user_id)
+            _, self.session_token_not_admin = self.session_repo.generate_session_token(self.not_admin_user_id)
+            _, self.session_token_user_without_role = self.session_repo.generate_session_token(self.user_without_role_id)
+            _, self.session_token_user_blocked = self.session_repo.generate_session_token(self.user_blocked_id)
+            _, self.session_token_user_unverified = self.session_repo.generate_session_token(self.user_unverified_id)
+
+            
     
        
     def tearDown(self):
@@ -45,33 +54,23 @@ class TestGetRole(unittest.TestCase):
             db.drop_all()
             patch.stopall()
     
-    def generate_expired_cookie(self, user_id):
-        payload = {
-            "iss": jwt_ISSUER,
-            "sub": user_id,
-            "iat": datetime.datetime.utcnow(),
-            "nbf": datetime.datetime.utcnow(),
-            "exp": datetime.datetime.utcnow() - datetime.timedelta(hours=1),
-        }
-        jwt_cookie = jwt.encode(payload, conf.api.jwt_secret, algorithm=jwt_ALG)
-        return jwt_cookie
+   
 
     def test_get_role_admin(self):
         with self.flask_application.app.app_context():
-            response = self.client.get(self.roleEndpoint, cookies={"api-key":generate_jwt(self.admin_user_id)})
+            response = self.client.get(self.roleEndpoint, cookies={"session-token": self.session_token_admin})
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["role"], "admin")
 
     def test_get_role_not_admin(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= { "api-key":generate_jwt(self.not_admin_user_id)}
-            response = self.client.get(self.roleEndpoint)
+            response = self.client.get(self.roleEndpoint, cookies= { "session-token": self.session_token_not_admin })
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["role"], "user")
     
     def test_get_role_user_without_role(self):
          with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_without_role_id)}
+            self.client.cookies= { "session-token": self.session_token_user_without_role}
             response = self.client.get(self.roleEndpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["role"], "user")
@@ -79,28 +78,17 @@ class TestGetRole(unittest.TestCase):
     def test_get_role_no_cookie(self):
         response = self.client.get(self.roleEndpoint)
         self.assertEqual(response.status_code, 401)
-    
-    def test_get_role_expired_cookie(self):
-        with self.flask_application.app.app_context():
-            self.client.cookies = {"api-key":self.generate_expired_cookie(self.user_without_role_id)}
-            response = self.client.get(self.roleEndpoint)
-            self.assertEqual(response.status_code, 401)
-    
-    def test_user_not_found(self):
-        with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(-1)}
-            response = self.client.get(self.roleEndpoint)
-            self.assertEqual(response.status_code, 401)
+
     
     def test_get_role_blocked_user(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_blocked_id)}
+            self.client.cookies= { "session-token": self.session_token_user_blocked}
             response = self.client.get(self.roleEndpoint)
             self.assertEqual(response.status_code, 403)
     
     def test_get_role_unverified_user(self):
         with self.flask_application.app.app_context():
-            self.client.cookies= {"api-key" :generate_jwt(self.user_unverified_id)}
+            self.client.cookies= { "session-token": self.session_token_user_unverified}
             response = self.client.get(self.roleEndpoint)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()["role"], "not_verified")

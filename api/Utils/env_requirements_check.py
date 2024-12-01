@@ -36,15 +36,15 @@ def test_conf(conf) -> bool:
             except Exception as e:
                 raise Exception(f"api.trusted_proxy contains an invalid ip address. {e}")
     
-    if conf.api.access_token_validity != None:
-        assert isinstance(conf.api.access_token_validity, int), "api.access_token_validity is not an integer"
-        assert conf.api.access_token_validity > 0, "api.access_token_validity must be greater than 0"
+    if conf.api.session_token_validity != None:
+        assert isinstance(conf.api.session_token_validity, int), "api.session_token_validity is not an integer"
+        assert conf.api.session_token_validity > 0, "api.session_token_validity must be greater than 0"
     if conf.api.refresh_token_validity != None:
         assert isinstance(conf.api.refresh_token_validity, int), "api.refresh_token_validity is not an integer"
         assert conf.api.refresh_token_validity > 0, "api.refresh_token_validity must be greater than 0"
 
-        if conf.api.access_token_validity != None:
-            assert conf.api.refresh_token_validity > conf.api.access_token_validity, "api.refresh_token_validity must be greater than api.access_token"
+        if conf.api.session_token_validity != None:
+            assert conf.api.refresh_token_validity > conf.api.session_token_validity, "api.refresh_token_validity must be greater than api.access_token"
 
         
     ## Environment
@@ -57,9 +57,6 @@ def test_conf(conf) -> bool:
     assert re.match(r"mysql:\/\/.*:.*@.*:[0-9]*\/.*", conf.database.database_uri) or conf.database.database_uri == "sqlite:///:memory:", "database.database_uri is not a valid uri. Was expecting something like 'mysql://user:password@hostname:port/dbname'"
 
     ## Features
-    ## Admins 
-    assert isinstance(conf.features.admins.admin_can_delete_users, bool), "features.admins.admin_can_delete_users is not a boolean"
-
     ## Emails
     assert isinstance(conf.features.emails.require_email_validation, bool), "features.emails.require_email_validation is not a boolean"
     if conf.features.emails.require_email_validation:

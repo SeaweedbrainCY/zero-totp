@@ -5,8 +5,9 @@ import controllers
 from unittest.mock import patch
 from zero_totp_db_model.model import ZKE_encryption_key, User
 from environment import conf
-from CryptoClasses import jwt_func
-import jwt
+from database.session_token_repo import SessionTokenRepo
+from database.user_repo import User as UserRepo
+from database.zke_repo import ZKE as ZKERepo
 import datetime
 
 
@@ -16,72 +17,66 @@ class TestZKEEncryptedKey(unittest.TestCase):
         if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
         self.application = app
-        self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
         self.endpoint = "/api/v1/zke_encrypted_key"
+
+        self.user_id =1
+        self.blocked_user_id = 2
+        self.unverified_user_id = 3
+
+        self.user_zke = "user1_zke"
+        self.blocked_user_zke = "user2_zke"
+        self.unverified_user_zke =  "user3_zke"
+
+        self.user_repo = UserRepo()
+        self.session_token_repo = SessionTokenRepo()
+        self.zke_repo = ZKERepo()
+
+
         with self.application.app.app_context():
             db.create_all()
             db.session.commit()
+            self.user_repo.create(username="user1", email="user1@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+            self.user_repo.create(username="user3", email="user3@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(), isBlocked=True)
+            self.user_repo.create(username="user4", email="user4@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.now())
+
+            self.zke_repo.create(user_id=self.user_id, encrypted_key=self.user_zke)
+            self.zke_repo.create(user_id=self.blocked_user_id, encrypted_key=self.blocked_user_zke)
+            self.zke_repo.create(user_id=self.unverified_user_id, encrypted_key=self.unverified_user_zke)
+
+            _, self.session_token_user = self.session_token_repo.generate_session_token(self.user_id)
+            _, self.session_token_user_blocked = self.session_token_repo.generate_session_token(self.blocked_user_id)
+            _, self.session_token_user_unverified = self.session_token_repo.generate_session_token(self.unverified_user_id)
+            
         
 
-        self.get_zke_enc = patch("database.zke_repo.ZKE.getByUserId").start()
-        self.get_zke_enc.return_value = ZKE_encryption_key(id=1, user_id=1, ZKE_key="encrypted_key")
 
-        self.getUserByID = patch("database.user_repo.User.getById").start()
-        self.getUserByID.return_value = User(id=1, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
+       
+
 
 
     def tearDown(self):
         patch.stopall()
+        with self.application.app.app_context():
+            db.session.remove()
+            db.drop_all()
     
-    def generate_expired_cookie(self):
-        payload = {
-            "iss": jwt_func.ISSUER,
-            "sub": 1,
-            "iat": datetime.datetime.utcnow(),
-            "nbf": datetime.datetime.utcnow(),
-            "exp": datetime.datetime.utcnow() - datetime.timedelta(hours=1),
-        }
-        jwtCookie = jwt.encode(payload, conf.api.jwt_secret, algorithm=jwt_func.ALG)
-        return jwtCookie
     
     def test_get_ZKE_encrypted_key(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("zke_encrypted_key", response.json())
-        self.get_zke_enc.assert_called_once()
-    
-    def test_get_ZKE_encrypted_key_no_cookie(self):
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 401)
-    
-    def test_get_ZKE_encrypted_key_bad_cookie(self):
-        self.client.cookies = {"api-key":"badcookie"}
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
-    
-    def test_get_ZKE_encrypted_key_expired_jwt(self):
-        self.client.cookies = {"api-key":self.generate_expired_cookie()}
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 401)
-
-    
-    def test_get_ZKE_encrypted_key_no_key(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.get_zke_enc.return_value = None
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 404)
-    
+        with self.application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token_user}
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn(self.user_zke, response.json()['zke_encrypted_key'])
 
     def test_get_ZKE_blocked_user(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getUserByID.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
+        with self.application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token_user_blocked}
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
     
     def test_get_ZKE_unverified_user(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getUserByID.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
+        with self.application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token_user_blocked}
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)

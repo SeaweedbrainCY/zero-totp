@@ -8,10 +8,10 @@ from database.zke_repo import ZKE as ZKE_DB
 from database.totp_secret_repo import TOTP_secret as TOTP_secretDB
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
 from database.preferences_repo import Preferences as PreferencesDB
-from database.admin_repo import Admin as Admin_db
 from database.notif_repo import Notifications as Notifications_db
 from database.refresh_token_repo import RefreshTokenRepo as RefreshToken_db
 from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
+from database.session_token_repo import SessionTokenRepo 
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging, conf
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
@@ -21,21 +21,21 @@ import random
 import string
 from Email import send as send_email
 from database.email_verification_repo import EmailVerificationToken as EmailVerificationToken_db
-import CryptoClasses.jwt_func as jwt_auth
 from CryptoClasses.sign_func import API_signature
-import CryptoClasses.jwt_func as jwt_auth
 from CryptoClasses import refresh_token as refresh_token_func
 import Oauth.oauth_flow as oauth_flow
 import Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import require_admin_token, require_admin_role, require_valid_user, require_passphrase_verification,require_valid_user, require_userid, ip_rate_limit
+from Utils.security_wrapper import  require_valid_user, require_passphrase_verification,require_valid_user, require_userid, ip_rate_limit
 import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
 from database.db import db
 import threading
+from uuid import uuid4
+
 
 
 
@@ -93,15 +93,14 @@ def signup():
         except Exception as e:
            zke_key = None
         if zke_key:
-            jwt_token = jwt_auth.generate_jwt(user.id)
+            _,session_token = SessionTokenRepo().generate_session_token(user.id)
             if conf.features.emails.require_email_validation:
                 try:
-
                     send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
                 except Exception as e:
                     logging.error("Unknown error while sending verification email" + str(e))
             response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created"}))
-            response.set_cookie("api-key", jwt_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
+            response.set_cookie("session-token", session_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
             return response
         else :
             userDB.delete(user.id)
@@ -142,9 +141,8 @@ def login(ip, body):
         return {"message": "blocked"}, 403
     
     rate_limiting_db.flush_login_limit(ip)
-    jwt_token = jwt_auth.generate_jwt(user.id)
-    jti = jwt_auth.verify_jwt(jwt_token)["jti"]
-    refresh_token = refresh_token_func.generate_refresh_token(user.id, jti)
+    session_id, session_token = SessionTokenRepo().generate_session_token(user.id)
+    refresh_token = refresh_token_func.generate_refresh_token(user.id, session_id)
     if not conf.features.emails.require_email_validation: # we fake the isVerified status if email validation is not required
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True}))
     elif user.isVerified:
@@ -152,20 +150,20 @@ def login(ip, body):
     else:
         response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
     userDB.update_last_login_date(user.id)
-    response.set_auth_cookies(jwt_token, refresh_token)
+    response.set_auth_cookies(session_token, refresh_token)
     return response
 
 #POST logout
 @require_valid_user
 def logout(_):
-    jwt = request.cookies.get("api-key")
-    jti = jwt_auth.verify_jwt(jwt)["jti"] # Frontend doesn't check error. If expired, we considered the user as logged out
-    refresh_tokens_db = RefreshToken_db()
-    refresh_token = refresh_tokens_db.get_refresh_token_by_jti(jti)
-    if refresh_token:
-        refresh_tokens_db.revoke(refresh_token.id)
+    session_token = request.cookies.get("session-token")
+    session_repo = SessionTokenRepo()
+    session = session_repo.get_session_token(session_token)
+    if not session:
+        return {"message": "Session not found"}, 404
+    utils.revoke_session(session_id=session.id)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"message": "Logged out"}))
-    response.delete_cookie("api-key")
+    response.delete_cookie("session-token")
     response.delete_cookie("refresh-token")
     return response
 
@@ -195,7 +193,7 @@ def get_login_specs(username):
 @require_valid_user
 def get_encrypted_secret(user_id, uuid):
     totp_secretDB =  TOTP_secretDB()
-    enc_secret = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
+    enc_secret = totp_secretDB.get_enc_secret_of_user_by_uuid(user_id, uuid)
     if not enc_secret:
         return {"message": "Forbidden"}, 403
     else:
@@ -205,21 +203,22 @@ def get_encrypted_secret(user_id, uuid):
             logging.warning("User " + str(user_id) + " tried to access secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
         
-#POST /encrypted_secret/{uuid}
+#POST /encrypted_secret
 @require_valid_user
-def add_encrypted_secret(user_id,uuid, body):
+def add_encrypted_secret(user_id, body):
     enc_secret = utils.sanitize_input(body["enc_secret"]).strip()
-    if(uuid == ""):
-        return {"message": "Invalid request"}, 400
+    secret_uuid = ""
     totp_secretDB =  TOTP_secretDB()
-    if totp_secretDB.get_enc_secret_by_uuid(user_id, uuid):
-        return {"message": "Forbidden"}, 403
-    else:
-        if totp_secretDB.add(user_id, enc_secret, uuid):
-            return {"message": "Encrypted secret added"}, 201
-        else :
-            logging.warning("Unknown error while adding encrypted secret for user " + str(user_id))
-            return {"message": "Unknown error while adding encrypted secret"}, 500
+    while secret_uuid == "":
+        tmp_uuid = str(uuid4())
+        if not totp_secretDB.get_enc_secret_by_uuid(tmp_uuid):
+            secret_uuid = tmp_uuid
+        
+    if totp_secretDB.add(user_id, enc_secret, secret_uuid):
+        return {"uuid": secret_uuid}, 201
+    else :
+        logging.warning("Unknown error while adding encrypted secret for user " + str(user_id))
+        return {"message": "Unknown error while adding encrypted secret"}, 500
 
 #PUT /encrypted_secret/{uuid}
 @require_valid_user
@@ -227,7 +226,7 @@ def update_encrypted_secret(user_id,uuid, body):
     enc_secret = body["enc_secret"]
     
     totp_secretDB =  TOTP_secretDB()
-    totp = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
+    totp = totp_secretDB.get_enc_secret_of_user_by_uuid(user_id, uuid)
     if not totp:
         logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " which does not exist")
         return {"message": "Forbidden"}, 403
@@ -248,7 +247,7 @@ def delete_encrypted_secret(user_id,uuid):
     if(uuid == ""):
         return {"message": "Invalid request"}, 400
     totp_secretDB =  TOTP_secretDB()
-    totp = totp_secretDB.get_enc_secret_by_uuid(user_id, uuid)
+    totp = totp_secretDB.get_enc_secret_of_user_by_uuid(user_id, uuid)
     if not totp:
         logging.debug("User " + str(user_id) + " tried to delete secret " + str(uuid) + " which does not exist")
         return {"message": "Forbidden"}, 403
@@ -300,8 +299,12 @@ def update_email(user_id,body):
         return {"message": "This email doesn't have the right format. Check it and try again"}, 400
          
     userDb = UserDB()
-    if userDb.getByEmail(email):
-        return {"message": "This email already exists"}, 403
+    already_existing_user = userDb.getByEmail(email)
+    if already_existing_user:
+        if already_existing_user.id == user_id:
+            return {"message":email},201
+        else:
+            return {"message": "This email already exists"}, 403
     old_mail = userDb.getById(user_id).mail
     user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
     if user:
@@ -333,8 +336,12 @@ def update_username(user_id,body):
     userDb = UserDB()
     if len(username) > 250:
         return {"message": "Username is too long"}, 400
-    if userDb.getByUsername(username):
-        return {"message": "generic_errors.username_exists"}, 409
+    already_existing_user = userDb.getByUsername(username)
+    if already_existing_user:
+        if already_existing_user.id == user_id:
+            return {"message":username},201
+        else:
+            return {"message": "generic_errors.username_exists"}, 409
     user = userDb.update_username(user_id=user_id, username=username)
     if user:
         return {"message":user.username},201
@@ -399,7 +406,7 @@ def update_vault(user_id, body):
     returnJson["hashing"]=1
     errors = 0
     for secret in enc_vault.keys():
-        totp = totp_secretDB.get_enc_secret_by_uuid(user_id, secret)
+        totp = totp_secretDB.get_enc_secret_of_user_by_uuid(user_id, secret)
         if not totp:
             totp = totp_secretDB.add(user_id=user_id, enc_secret=enc_vault[secret], uuid=secret)
             if not totp:
@@ -463,45 +470,6 @@ def get_role(user_id, *args, **kwargs):
     return {"role": user.role}, 200
 
 
-@require_admin_token
-def get_users_list(user_id, *args, **kwargs):
-    logging.info("Admin " + str(user_id) + " requested users list")
-    users = UserDB().get_all()
-    if not users:
-        return {"message" : "No user found"}, 404
-    users_list = []
-    for user in users:
-        isGoogleDriveSync = GoogleDriveIntegrationDB().is_google_drive_enabled(user.id) 
-        nb_codes = len(TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user.id))
-        users_list.append({"id": user.id,"username": user.username, "email": user.mail, "role": user.role, "createdAt": user.createdAt, "isBlocked": user.isBlocked, "isVerified": user.isVerified, "isGoogleDriveSync": isGoogleDriveSync, "nbCodesSaved": nb_codes })
-    return {"users": users_list}, 200
-
-
-@require_admin_role
-def admin_login(user_id, body):
-    token = body["token"].strip()
-    admin_user = Admin_db().get_by_user_id(user_id)
-    
-    bcrypt = Bcrypt(token)
-    if not admin_user:
-        logging.info("User " + str(user_id) + " tried to login as admin but is not an admin. A fake password is checked to avoid timing attacks. It has the admin role but no login token.")
-        fake_pass = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
-        bcrypt.checkpw(fake_pass)
-        return {"message": "Invalid credentials"}, 403
-    checked = bcrypt.checkpw(admin_user.token_hashed)
-    print("admin_user expiration", admin_user.token_expiration)
-    if not checked:
-        logging.info("User " + str(user_id) + " tried to login as admin but provided token is wrong. Connexion rejected.")
-        return {"message": "Invalid credentials"}, 403
-    if float(admin_user.token_expiration)  < datetime.datetime.utcnow().timestamp():
-        logging.info("User " + str(user_id) + " tried to login as admin but provided token is expired. Connexion rejected.")
-        return {"message": "Token expired"}, 403
-    admin_jwt = jwt_auth.generate_jwt(user_id, admin=True)
-    response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
-    response.set_cookie("admin-api-key", admin_jwt, httponly=True, secure=True, samesite="Lax", max_age=600)
-    logging.info("User " + str(user_id) + " logged in as admin")
-    return response
-    
     
 # GET /google-drive/oauth/authorization_flow
 def get_authorization_flow():
@@ -810,54 +778,6 @@ def delete_account(user_id):
     
     
 
-@require_admin_token
-def delete_account_admin(user_id, account_id_to_delete):
-    if not conf.features.admins.admin_can_delete_users:
-        logging.error("Admin " + str(user_id) + " tried to delete user " + str(account_id_to_delete) + " but admin cannot delete users. To enable this feature change the env variable and reload the API.")
-        return {"message": "Admin cannot delete users. To enable this feature change the env variable and reload the API."}, 403
-    logging.info("Deleting account for user " + str(account_id_to_delete) + " by admin " + str(user_id))
-    user_obj = UserDB().getById(account_id_to_delete)
-    if user_obj == None:
-        return {"message": "User not found"}, 404
-    if user_obj.role == "admin":
-        return {"message": "Admin cannot be deleted"}, 403
-    try: # we try to delete the user backups if possible. If not, this is not a blocking error.
-        context = {"user": account_id_to_delete}
-        delete_google_drive_backup(context, account_id_to_delete, context)
-        delete_google_drive_option(context, account_id_to_delete, context)
-    except Exception as e:
-        logging.warning("Error while deleting backups for user " + str(account_id_to_delete) + ". Exception : " + str(e))
-    try:
-        utils.delete_user_from_database(account_id_to_delete)
-        return {"message": "Account deleted"}, 200
-    except Exception as e:
-        logging.warning("Error while deleting user from database for user " + str(account_id_to_delete) + ". Exception : " + str(e))
-        return {"message": "Error while deleting account"}, 500
-
-@require_admin_token
-def update_blocked_status(user_id, account_id_to_update, action):
-    logging.info("Admin " + str(user_id) + " requested to " + action + " user " + str(account_id_to_update))
-    user_obj = UserDB().getById(account_id_to_update)
-    if user_obj == None:
-        return {"message": "User not found"}, 404
-    if user_obj.role == "admin":
-        return {"message": "Admin cannot be blocked"}, 403
-
-    if action == "block":
-        user = UserDB().update_block_status(account_id_to_update, True)
-        if user:
-            return {"message": "User blocked"}, 201
-        else: # pragma: no cover
-            return {"message": "Unknown error while blocking user"}, 500
-    elif action == "unblock":
-        user = UserDB().update_block_status(account_id_to_update, False)
-        if user:
-            return {"message": "User unblocked"}, 201
-        else:
-            return {"message": "Unknown error while unblocking user"}, 500
-    else:
-        return {"message": "Invalid request"}, 400
-
 
 @require_userid
 def send_verification_email(user_id):
@@ -932,8 +852,8 @@ def get_global_notification():
         }
     
     
-
-def get_internal_notification():
+@require_valid_user
+def get_internal_notification(user_id):
     notif = Notifications_db().get_last_active_notification()
     if notif is None : 
         return {"display_notification":False}
@@ -949,27 +869,25 @@ def get_internal_notification():
 # PUT /auth/refresh
 @ip_rate_limit
 def auth_refresh_token(ip, *args, **kwargs):
-    jwt = request.cookies.get("api-key")
-    token = request.cookies.get("refresh-token")
+    session_token = request.cookies.get("session-token")
+    refresh_token = request.cookies.get("refresh-token")
     rate_limiting = Rate_Limiting_DB()
-    if not jwt or not token:
+    if not session_token or not refresh_token:
         rate_limiting.add_failed_login(ip)
         return {"message": "Missing token"}, 401
-    try:
-        jwt_info = jwt_auth.verify_jwt(jwt, verify_exp=False, verify_revoked=False)
-    except Exception as e:
+    session = SessionTokenRepo().get_session_token(session_token)
+    if not session:
         rate_limiting.add_failed_login(ip)
-        raise e
-    jti =  jwt_info["jti"]
-    jwt_user_id = jwt_info["sub"]
-    if not jti:
         return {"message": "Invalid token"}, 401
-    refresh_token = RefreshToken_db().get_refresh_token_by_hash(sha256(token.encode("utf-8")).hexdigest())
-    if not refresh_token:
-        rate_limiting.add_failed_login(ip, user_id=jwt_user_id)
-        logging.warning(f"JWT of user {jwt_user_id} tried to be refreshed with an refresh token (not present in the db)")
+    if session.revoke_timestamp is not None:
+        rate_limiting.add_failed_login(ip)
+        return {"message": "Token revoked"}, 401
+    refresh = RefreshToken_db().get_refresh_token_by_hash(sha256(refresh_token.encode("utf-8")).hexdigest())
+    if not refresh:
+        rate_limiting.add_failed_login(ip, user_id=session.user_id)
+        logging.warning(f"Session of user {session.user_id} tried to be refreshed with an refresh token (not present in the db)")
         return {"message": "Access denied"}, 403
-    new_jwt, new_refresh_token = refresh_token_func.refresh_token_flow(jti=jti, rt=refresh_token, jwt_user_id=jwt_user_id, ip=ip)
+    new_session_token, new_refresh_token = refresh_token_func.refresh_token_flow(refresh=refresh, session=session, ip=ip)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
-    response.set_auth_cookies(new_jwt, new_refresh_token)
+    response.set_auth_cookies(new_session_token, new_refresh_token)
     return response

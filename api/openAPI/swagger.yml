@@ -6,7 +6,7 @@ info:
 servers:
   - url: /api/v1
 security:
-  - JWTAuth: []
+  - SessionToken: []
 paths:
   /signup:
     post:
@@ -72,7 +72,7 @@ paths:
                   type: string
       responses:
         "200": # status code
-          description: successful login. The JWT is returned in the response body
+          description: successful login. The session and refresh tokens is returned in the response body
           content:
             application/json:
               schema:
@@ -128,10 +128,10 @@ paths:
       security: []
       tags:
         - Auth
-      summary: Refresh the user's JWT
+      summary: Refresh the user's session
       responses:
         "200": # status code
-          description: Return the new JWT
+          description: Return the new session and refresh tokens
         "401":
           description: Unauthorized
   /zke_encrypted_key:
@@ -143,6 +143,41 @@ paths:
       responses:
         "200": # status code
           description: Return the user's ZKE key (encrypted)
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
+  /encrypted_secret:
+    post:
+      operationId: controllers.add_encrypted_secret
+      tags:
+        - Vault
+      summary: Add an encrypted secret to the user's vault
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - enc_secret
+              properties:
+                enc_secret:
+                  type: string
+      responses:
+        "201": # status code
+          description: Return uuid of the new secret
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uuid:
+                    type: string
+                    example: 5cb7f86f-afe9-4666-9728-47ea2f505957
+
+        "400":
+          description: Missing required parameters
         "401":
           description: Unauthorized
         "403":
@@ -163,38 +198,6 @@ paths:
       responses:
         "200": # status code
           description: Return the user's encrypted secret
-        "400":
-          description: Missing required parameters
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access denied
-    post:
-      operationId: controllers.add_encrypted_secret
-      tags:
-        - Vault
-      summary: Add an encrypted secret to the user's vault
-      parameters:
-        - in: path
-          name: uuid
-          schema:
-            type: string
-          required: true
-          description: The uuid of the secret to add
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - enc_secret
-              properties:
-                enc_secret:
-                  type: string
-      responses:
-        "201": # status code
-          description: Secret added
         "400":
           description: Missing required parameters
         "401":
@@ -435,52 +438,6 @@ paths:
           description: Unauthorized
         "403":
           description: Access disabled
-  /admin/users:
-    get:
-      operationId: controllers.get_users_list
-      tags:
-        - Admin
-      summary: Return all users
-      responses:
-        "200": # status code
-          description: Return all users
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  users:
-                    type: array
-                    example: [{"id":1,"username": "foo", "email":"bar", "role":"user", "createdAt":"01/01/2001", "isBlocked":false}]
-
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access denied
-  /admin/login:
-    post:
-      operationId: controllers.admin_login 
-      tags:
-        - Admin
-      summary: Admin login verification
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - token
-              properties:
-                token:
-                  type: string
-      responses:
-        "200": # status code
-          description:  Return 200 with an admin cookie if the challenge is solved. 403 otherwise
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access denied
   /google-drive/backup:
     put:
       operationId: controllers.backup_to_google_drive
@@ -677,28 +634,6 @@ paths:
           description: Access disabled
         "500":
           description: Internal server error
-  /admin/account/{account_id_to_delete}:
-    delete:
-      operationId: controllers.delete_account_admin
-      tags:
-        - Admin
-      parameters:
-        - in: path
-          name: account_id_to_delete
-          schema:
-            type: integer
-          required: true
-          description: The account id to delete 
-      summary: Delete the user's account
-      responses:
-        "200": 
-          description: Account deleted
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access disabled
-        "500":
-          description: Internal server error
   /email/verify:
     put:
       operationId: controllers.verify_email
@@ -734,34 +669,6 @@ paths:
       responses:
         "200": 
           description: Email sent
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access disabled
-        "500":
-          description: Internal server error
-  /admin/account/{account_id_to_update}/{action}:
-    put:
-      operationId: controllers.update_blocked_status
-      tags:
-        - Admin
-      parameters:
-        - in: path
-          name: account_id_to_update
-          schema:
-            type: integer
-          required: true
-          description: The user id to block
-        - in: path
-          name: action
-          schema:
-            type: string
-          required: true
-          description: The action to perform. Can be "block" or "unblock"
-      summary: Block or unblock a user
-      responses:
-        "201": 
-          description: User status updated
         "401":
           description: Unauthorized
         "403":
@@ -824,9 +731,9 @@ paths:
           description: Internal server error
 components:
   securitySchemes:
-    JWTAuth:
+    SessionToken:
       type: apiKey
       in: cookie
-      name: api-key
-      x-apikeyInfoFunc: CryptoClasses.jwt_func.verify_jwt
+      name: session-token
+      x-apikeyInfoFunc: CryptoClasses.session_verification.verify_session
       
