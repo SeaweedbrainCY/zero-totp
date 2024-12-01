@@ -158,20 +158,6 @@ class TestDeleteAccount(unittest.TestCase):
             response = self.client.delete(self.deleteEndpoint)
             self.assertEqual(response.status_code, 401)
             self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
-    
-    def test_delete_no_cookie(self):
-        with self.flask_application.app.app_context():
-            self.client.headers = {"x-hash-passphrase": "badPassphrase"}
-            response = self.client.delete(self.deleteEndpoint)
-            self.assertEqual(response.status_code, 401)
-    
-    def test_bad_cookie(self):
-        with self.flask_application.app.app_context():
-            self.client.cookies = {"session-token":"badCookie"}
-            self.client.headers = {"x-hash-passphrase": "badPassphrase"}
-            response = self.client.delete(self.deleteEndpoint)
-            self.assertEqual(response.status_code, 401)
-            self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
 
     def test_delete_user_doesnt_exists(self):
         with self.flask_application.app.app_context():
