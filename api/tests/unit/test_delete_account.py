@@ -164,7 +164,7 @@ class TestDeleteAccount(unittest.TestCase):
             self.client.cookies= {"session-token" :str(uuid4())}
             self.client.headers = {"x-hash-passphrase": "badPassphrase"}
             response = self.client.delete(self.deleteEndpoint)
-            self.assertEqual(response.status_code, 401)
+            self.assertEqual(response.status_code, 403)
             self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
     
     def test_delete_user_error_with_google_drive(self):
