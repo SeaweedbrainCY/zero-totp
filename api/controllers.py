@@ -171,6 +171,7 @@ def logout(_):
 #GET /login/specs
 def get_login_specs(username):
     rate_limiting_db = Rate_Limiting_DB()
+    logging.debug("User " + str(username) + " is trying to get login specs")
     ip = utils.get_ip(request)
     if ip:
         if rate_limiting_db.is_login_rate_limited(ip):
