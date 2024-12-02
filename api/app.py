@@ -99,7 +99,12 @@ def clean_expired_refresh_token():
 @flask.after_request
 def after_request(response):
     from Utils import utils
-    logging.info(f"Completed request ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url} method={request.method} status={response.status_code}")
+    if response.status_code >= 500:
+        logging.error(f"Completed request ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url} method={request.method} status={response.status_code}")
+    elif response.status_code >= 400:
+        logging.warning(f"Completed request ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url} method={request.method} status={response.status_code}")
+    else :
+        logging.info(f"Completed request ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url} method={request.method} status={response.status_code}")
     return response
     
 
