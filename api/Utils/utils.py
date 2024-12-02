@@ -1,3 +1,4 @@
+from app import app
 import re
 import html
 from environment import logging
@@ -127,8 +128,9 @@ def get_ip(request):
         except Exception as e:
             logging.error("Error while testing ip address : " + str(e))
             return False
-    try :
-        remote_ip = ipaddress.ip_address(request.remote_addr)
+    try:
+        with app.app.app_context():
+            remote_ip = ipaddress.ip_address(request.remote_addr)
     except Exception as e:
         logging.error("Error while getting remote ip address : " + str(e))
         return None
