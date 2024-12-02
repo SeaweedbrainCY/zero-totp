@@ -95,6 +95,15 @@ def clean_expired_refresh_token():
 #            logging.info(db.metadata.tables.keys())
 #            conf.database.are_all_tables_created = True
 
+
+@flask.after_request
+def after_request(response):
+    from Utils import utils
+    logging.info(f"Completed request ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url} method={request.method} status={response.status_code}")
+    return response
+    
+
+
 @flask.errorhandler(404)
 def not_found(error):
     from Utils import utils
