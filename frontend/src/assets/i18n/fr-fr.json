@@ -387,7 +387,6 @@
   "navbar": {
     "account": "Compte",
     "add": "Ajouter un code",
-    "admin": "Admin",
     "backup": "Plan de secours",
     "how": "Les TOTP ?",
     "lang": {

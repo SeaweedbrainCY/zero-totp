@@ -12,7 +12,6 @@ import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { DevComponent } from './dev/dev.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ChangelogComponent } from './changelog/changelog.component';
-import { AdminPageComponent } from './admin-page/admin-page.component';
 import { CallbackComponent } from './callback/callback.component';
 import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 import { PreferencesComponent } from './preferences/preferences.component';
@@ -33,7 +32,6 @@ export const routes: Routes = [
   {path:"account", component: AccountComponent},
   {path:"privacy", component: PrivacyPolicyComponent},
   {path:"changelog", component: ChangelogComponent},
-  {path:"admin", component: AdminPageComponent},
   {path:"oauth/callback", component: CallbackComponent},
   {path:"oauth/synchronize", component: OauthSyncComponent},
   {path: "preferences", component: PreferencesComponent},
