@@ -64,6 +64,7 @@ def require_passphrase_verification(func):
 
 def ip_rate_limit(func):
     def wrapper(*args, **kwargs):
+        logging.debug("Rate limiting check")
         ip = utils.get_ip(connexion.request)
         rate_limiting_db = Rate_Limiting_DB()
         if ip:
