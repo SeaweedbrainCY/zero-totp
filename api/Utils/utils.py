@@ -52,7 +52,7 @@ def extract_last_backup_from_list(files_list) -> (any, datetime):
     last_backup_file_date = None
     last_backup_file = None
     for file in files_list:
-        logging.info("name =" +file.get("name"))
+        logging.debug("name =" +file.get("name"))
         if "_backup" not in file.get("name") or file.get('explicitlyTrashed'):
             continue
         date_str = file.get("name").split("_")[0]
