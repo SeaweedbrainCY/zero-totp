@@ -28,7 +28,7 @@ class TestEndpointProtection(unittest.TestCase):
         self.user_id = 1 
         with self.flask_application.app.app_context():
             db.create_all()
-            user = UserRepo().create(username='user1', email='user1@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
+            user = UserRepo().create(username='username', email='username@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
             self.user_id = user.id
             self.session_id, self.session_token = SessionTokenRepo().generate_session_token(self.user_id)
             db.session.commit()

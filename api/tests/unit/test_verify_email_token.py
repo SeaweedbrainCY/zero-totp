@@ -23,12 +23,12 @@ class TestVerifyEmailToken(unittest.TestCase):
         self.user_wrong_token_id = 5
         self.blocked_user_id = 6
 
-        user = UserModel(id=self.user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
-        user_already_verified = UserModel(id=self.already_verified_user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001")
-        user_without_token = UserModel(id=self.user_without_token_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
-        user_expired_token = UserModel(id=self.user_expired_token_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
-        user_wrong_token = UserModel(id=self.user_wrong_token_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
-        blocked_user = UserModel(id=self.blocked_user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001", isBlocked=True)
+        user = UserModel(id=self.user_id,username="user1", mail="user1@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
+        user_already_verified = UserModel(id=self.already_verified_user_id,username="user2", mail="user2@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001")
+        user_without_token = UserModel(id=self.user_without_token_id,username="user3", mail="user3@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
+        user_expired_token = UserModel(id=self.user_expired_token_id,username="user4", mail="user4@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
+        user_wrong_token = UserModel(id=self.user_wrong_token_id,username="user5", mail="user5@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
+        blocked_user = UserModel(id=self.blocked_user_id,username="user6", mail="user6@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001", isBlocked=True)
         
 
 

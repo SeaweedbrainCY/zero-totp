@@ -25,10 +25,10 @@ class TestGetRole(unittest.TestCase):
         self.session_repo = SessionTokenRepo()
 
         admin_user = UserModel(id=self.admin_user_id,username="admin", mail="admin@admin.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="admin")
-        not_admin_user = UserModel(id=self.not_admin_user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="user")
-        user_without_role = UserModel(id=self.user_without_role_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None)
-        user_blocked = UserModel(id=self.user_blocked_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None, isBlocked=True)
-        user_unverified = UserModel(id=self.user_unverified_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None, isBlocked=False)
+        not_admin_user = UserModel(id=self.not_admin_user_id,username="user1", mail="user1@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="user")
+        user_without_role = UserModel(id=self.user_without_role_id,username="user2", mail="user2@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None)
+        user_blocked = UserModel(id=self.user_blocked_id,username="user3", mail="user3@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None, isBlocked=True)
+        user_unverified = UserModel(id=self.user_unverified_id,username="user4", mail="user4@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001", role=None, isBlocked=False)
 
         with self.flask_application.app.app_context():
             db.create_all()

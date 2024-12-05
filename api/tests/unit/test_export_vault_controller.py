@@ -37,7 +37,7 @@ class TestAllSecret(unittest.TestCase):
             user = self.user_repo.create(username='user1', email='user1@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
             self.zke_repo.create(user_id=user.id, encrypted_key="key")
             self.user_id = user.id
-            user2 = self.user_repo.create(username='user1', email='user1@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
+            user2 = self.user_repo.create(username='user2', email='user2@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
             self.user_id2 = user2.id
             _, self.session_token = self.session_repo.generate_session_token(self.user_id)
             for secret_id in self.secret_ids:
