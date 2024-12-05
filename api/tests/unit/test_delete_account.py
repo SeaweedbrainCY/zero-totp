@@ -58,7 +58,7 @@ class TestDeleteAccount(unittest.TestCase):
             self.user_repo.create("user1", "user1@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
             self.user_repo.create("user2", "user2@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
             self.user_repo.create("user3", "user3@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
-            self.user_repo.create("user4", "user3@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
+            self.user_repo.create("user4", "user4@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
             self.user_repo.create("user5", "user5@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=True)
             self.user_repo.create("user6", "user6@test.com", "password", "salt", "salt", "01/01/2001", isVerified=False, isBlocked=False)
             self.user_repo.create("user7", "user7@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False, role="admin")
