@@ -365,7 +365,7 @@
       "oauth": "Une dernière étape, confirme ta passphrase pour compléter la synchronisation",
       "rate_limited": "Tu es rate limité ! Ton adresse IP a généré trop de connexion échoué en peu de temps. Tu pourras essayer de te connecter à nouveau dans {{time}} min. Si tu utilises un VPN, essaye une autre localisation ou désactive le.",
       "server_error": "Erreur : Impossible de récupérer les informations depuis le serveur",
-      "session_end": "Pour ta sécurité, chaque session doit être renouvelée toutes les heures",
+      "session_end": "Pour ta sécurité, ta session doit être renouvelée.",
       "session_killed": "Pour ta sécurité tu as été déconnecté car tu as rafraichi ou fermé l'onglet ",
       "session_timeout": "Pour ta sécurité, tu as été déconnecté car tu étais inactif. Tu peux personnaliser la durée d'inactivité maximum dans tes préférences."
     },
