@@ -70,19 +70,36 @@ def clean_rate_limiting_from_db():
         logging.info(f"Rate limits cleaned at {dt.datetime.now(dt.UTC).isoformat()}")
 
 
-@scheduler.task('interval', id='clean_rate_limiting_from_db', hours=24, misfire_grace_time=900)
+@scheduler.task('interval', id='clean_expired_refresh_token', hours=12, misfire_grace_time=900)
 def clean_expired_refresh_token():
     with flask.app_context():
         logging.info("Cleaning expired refresh tokens from database ...")
         from zero_totp_db_model.model import RefreshToken
         tokens = db.session.query(RefreshToken).all()
         count=0
+        minimum_retention_time = 24*60*60 # 24 hours
         for token in tokens:
-            if float(token.expiration) < dt.datetime.now(dt.UTC).timestamp():
+            if float(token.expiration) + minimum_retention_time < dt.datetime.now(dt.UTC).timestamp():
                 db.session.delete(token)
                 db.session.commit()
                 count += 1
         logging.info(f"Deleted {count} expired refresh tokens at {dt.datetime.now(dt.UTC).isoformat()}")
+
+
+@scheduler.task('interval', id='clean_rate_limiting_from_db', hours=12, misfire_grace_time=900)
+def clean_rate_limiting_from_db():
+    with flask.app_context():
+        logging.info("Cleaning expired session tokens from database ...")
+        from zero_totp_db_model.model import SessionToken
+        tokens = db.session.query(SessionToken).all()
+        count=0
+        minimum_retention_time = 24*60*60 # 24 hours
+        for token in tokens:
+            if float(token.expiration) + minimum_retention_time < dt.datetime.now(dt.UTC).timestamp():
+                db.session.delete(token)
+                db.session.commit()
+                count += 1
+        logging.info(f"Deleted {count} expired session tokens at {dt.datetime.now(dt.UTC).isoformat()}")
 
 # DEPRECATED
 #@flask.before_request
@@ -94,6 +111,20 @@ def clean_expired_refresh_token():
 #            logging.info("✅  Tables created")
 #            logging.info(db.metadata.tables.keys())
 #            conf.database.are_all_tables_created = True
+
+
+@flask.after_request
+def after_request(response):
+    from Utils import utils
+    if response.status_code >= 500:
+        logging.error(f"Completed request ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url} method={request.method} status={response.status_code}")
+    elif response.status_code >= 400:
+        logging.warning(f"Completed request ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url} method={request.method} status={response.status_code}")
+    else :
+        logging.info(f"Completed request ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url} method={request.method} status={response.status_code}")
+    return response
+    
+
 
 @flask.errorhandler(404)
 def not_found(error):

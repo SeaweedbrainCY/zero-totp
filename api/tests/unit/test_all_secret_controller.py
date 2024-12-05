@@ -1,87 +1,78 @@
 import unittest
 from app import app
 from database.db import db
-import controllers
 from unittest.mock import patch
-from zero_totp_db_model.model import User, TOTP_secret
+from zero_totp_db_model.model import User, TOTP_secret, SessionToken, RefreshToken
 from environment import conf
-from CryptoClasses import jwt_func
-import jwt
 import datetime
+from uuid import uuid4
 
 class TestAllSecret(unittest.TestCase):
 
     def setUp(self):
         if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
-        self.application = app
-        self.jwtCookie = jwt_func.generate_jwt(1)
-        self.client = self.application.test_client()
+        self.flask_application = app
+        self.client = self.flask_application.test_client()
         self.endpoint = "/api/v1/all_secrets"
-        with self.application.app.app_context():
+        self.user_id = 1
+        self.session_token = str(uuid4())
+        self.secret1_id = str(uuid4())
+        self.secret2_id = str(uuid4())
+        with self.flask_application.app.app_context():
+            user = User(id=self.user_id, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001", derivedKeySalt="salt", passphraseSalt="salt")
+            totp_secret = TOTP_secret(uuid=self.secret1_id, user_id=1, secret_enc = "enc_secret")
+            totp_secret2 = TOTP_secret(uuid=self.secret2_id, user_id=1, secret_enc = "enc_secret2")
+            session = SessionToken(id=str(uuid4()), token=self.session_token, user_id=self.user_id, expiration=(datetime.datetime.now() + datetime.timedelta(hours=1)).timestamp())
             db.create_all()
+            db.session.add(user)
+            db.session.add(totp_secret)
+            db.session.add(totp_secret2)
+            db.session.add(session)
             db.session.commit()
-        
-
-        self.get_all_secret = patch("database.totp_secret_repo.TOTP_secret.get_all_enc_secret_by_user_id").start()
-        self.get_all_secret.return_value = [TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret"), TOTP_secret(uuid="uuid", user_id=1, secret_enc = "enc_secret2")]
-
-        self.getUserById = patch("database.user_repo.User.getById").start()
-        self.getUserById.return_value = User(id=1, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
 
 
     def tearDown(self):
-        patch.stopall()
-    
-    def generate_expired_cookie(self):
-        payload = {
-            "iss": jwt_func.ISSUER,
-            "sub": 1,
-            "iat": datetime.datetime.utcnow(),
-            "nbf": datetime.datetime.utcnow(),
-            "exp": datetime.datetime.utcnow() - datetime.timedelta(hours=1),
-        }
-        jwtCookie = jwt.encode(payload, conf.api.jwt_secret, algorithm=jwt_func.ALG)
-        return jwtCookie
-    
+        with self.flask_application.app.app_context():
+            db.session.remove()
+            db.drop_all()
+            patch.stopall()
+ 
 
     def test_get_all_secret(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 200)
-        self.get_all_secret.assert_called_once()
-    
-    def test_get_all_secret_no_cookie(self):
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 401)
-    
-    def test_get_all_secret_bad_cookie(self):
-        self.client.cookies = {"api-key": "badcookie"}
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
-    
-    def test_get_all_secret_expired_jwt(self):
-        self.client.cookies = {"api-key": self.generate_expired_cookie()}
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 401)
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            uuids = []
+            for secret in response.json()["enc_secrets"]:
+                uuids.append(secret["uuid"])
+            self.assertIn(self.secret1_id, uuids)
+            self.assertIn(self.secret2_id, uuids)
     
     def test_get_all_secret_no_secret(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.get_all_secret.return_value = []
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 404)
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            db.session.query(TOTP_secret).filter(TOTP_secret.user_id == self.user_id).delete()
+            db.session.commit()
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 404)
 
     
     def test_get_all_secret_blocked_user(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getUserById.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password", role="user", username="username", createdAt="01/01/2001")
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], "User is blocked")
+         with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            db.session.query(User).filter(User.id == self.user_id).update({"isBlocked": True})
+            db.session.commit()
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], "User is blocked")
     
     def test_get_all_secret_unverified_user(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getUserById.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.get(self.endpoint)
-        self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.json()["error"], "Not verified")
+        with self.flask_application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token}
+            db.session.query(User).filter(User.id == self.user_id).update({"isVerified": False})
+            db.session.commit()
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.json()["error"], "Not verified")

@@ -42,9 +42,6 @@
         <a class="navbar-item" (click)="navigateToRoute('account')" [ngClass]="{'has-text-weight-bold':currentUrl == '/account'}">
           {{ 'navbar.account' | translate }}
         </a>
-        <a class="navbar-item" (click)="navigateToRoute('admin')" [ngClass]="{'has-text-weight-bold':currentUrl == '/admin'}" *ngIf="userService.getIsAdmin()! == true">
-          {{ 'navbar.admin' | translate }}
-        </a>
       </div>
       <div class="navbar-start"  *ngIf="userService.getId()==null && !this.userService.getIsVaultLocal()">
         <a class="navbar-item" (click)="changeLocation('#totp')" >

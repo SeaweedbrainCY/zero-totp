@@ -1,3 +1,4 @@
+from app import app
 import re
 import html
 from environment import logging
@@ -11,6 +12,7 @@ from database.preferences_repo import Preferences as Preferences_repo
 from database.email_verification_repo import EmailVerificationToken
 from database.rate_limiting_repo import RateLimitingRepo 
 from database.refresh_token_repo import RefreshTokenRepo
+from database.session_token_repo import SessionTokenRepo
 import os
 from hashlib import sha256
 from base64 import b64encode
@@ -50,7 +52,7 @@ def extract_last_backup_from_list(files_list) -> (any, datetime):
     last_backup_file_date = None
     last_backup_file = None
     for file in files_list:
-        logging.info("name =" +file.get("name"))
+        logging.debug("name =" +file.get("name"))
         if "_backup" not in file.get("name") or file.get('explicitlyTrashed'):
             continue
         date_str = file.get("name").split("_")[0]
@@ -126,8 +128,9 @@ def get_ip(request):
         except Exception as e:
             logging.error("Error while testing ip address : " + str(e))
             return False
-    try :
-        remote_ip = ipaddress.ip_address(request.remote_addr)
+    try:
+        with app.app.app_context():
+            remote_ip = ipaddress.ip_address(request.remote_addr)
     except Exception as e:
         logging.error("Error while getting remote ip address : " + str(e))
         return None
@@ -186,3 +189,26 @@ def unsafe_json_vault_validation(json:str) -> (bool, str):
         logging.error("Error while validating vault json : " + str(e))
         print(e)
         return False, "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support."
+
+
+def revoke_session(session_id=None, refresh_id=None):
+    print("revoking session")
+    session_repo = SessionTokenRepo()
+    refresh_repo = RefreshTokenRepo()
+    session = session_repo.get_session_token_by_id(session_id)
+    refresh = refresh_repo.get_refresh_token_by_id(refresh_id)
+    if session != None:
+        session_repo.revoke(session.id)
+        logging.info(f"Revoked session {session.id}")
+        if not refresh or refresh.session_token_id != session.id:
+            associated_refresh = refresh_repo.get_refresh_token_by_session_id(session.id)
+            logging.info(f"Revoked refresh {session.id} because the associated session {session.id} was revoked")
+            refresh_repo.revoke(associated_refresh.id) if associated_refresh != None else None
+    if refresh != None:
+        refresh_repo.revoke(refresh.id)
+        logging.info(f"Revoked refresh {refresh.id}")
+        if not session or session.id != refresh.session_token_id:
+            associated_session = session_repo.get_session_token_by_id(refresh.session_token_id)
+            session_repo.revoke(associated_session.id) if  associated_session != None else None
+            logging.info(f"Revoked session {associated_session.id} because the associated refresh {refresh.id} was revoked")
+    return True

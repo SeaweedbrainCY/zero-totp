@@ -15,6 +15,19 @@ export class ChangelogComponent {
   changelogs = [
     {
       date: "08/11/2024",
+      version: "b5.0.0",
+      added: [
+        "The global attack surface of Zero-TOTP has been widely reduced by removing the admin capabilities from the main application and by improving substantially the session management.",
+        "The whole session management has been reviewed and rewritten to offer more control on the session, reduce unnecessary attack surface and enabling a very strict session management.",
+      ],
+      fixed:[
+       "We fixed a CVE in the API dependencies.", 
+       "We fixed an issue on API side causing inconsistency in the remote IP computation, causing rate limiting to be less effective.",
+       "We fixed 2 low security design that might cause some security issues in the future."
+      ]
+    },
+    {
+      date: "08/11/2024",
       version: "b4.1.0",
       added: [
         "You can now extend the maximum inactivity time before your vault autolocks to 24h. You can customize this time in your preferences page. This enables you to keep your vault open for a longer period of time, especially when you are using installed Zero-TOTP as a PWA.",

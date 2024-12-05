@@ -15,7 +15,6 @@ export class UserService {
   private passphraseSalt: string| null =null;;
   private isVaultLocal:boolean = false;
   private local_vault_service:LocalVaultV1Service | null = null;
-  private isAdmin: boolean = false;
   private googleDriveSync:boolean | null = null;
   private vault_tags:string[] = [];
 
@@ -86,14 +85,6 @@ export class UserService {
       this.local_vault_service = service;
     }
 
-    getIsAdmin(): boolean {
-      return this.isAdmin;
-    }
-
-    setIsAdmin(isAdmin:boolean){
-      this.isAdmin = isAdmin;
-    }
-
 
 
     getGoogleDriveSync(): boolean | null {
@@ -122,7 +113,6 @@ export class UserService {
     this.passphraseSalt = null;
     this.isVaultLocal = false;
     this.local_vault_service = null;
-    this.isAdmin = false;
     this.googleDriveSync = null;
     this.vault_tags = [];
     localStorage.removeItem("email");

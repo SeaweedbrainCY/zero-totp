@@ -95,7 +95,7 @@ def get_last_backup_file(drive)-> (any, datetime):
         raise utils.FileNotFound("No backup file found")
     result = get_files_from_folder(folder.get('id'), drive)
     if len(result) == 0:
-        logging.info("No backup file found in the drive")
+        logging.debug("No backup file found in the drive")
         raise utils.FileNotFound("No backup file found")
     else : 
           return utils.extract_last_backup_from_list(result)
@@ -134,7 +134,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
         google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.utcnow().strftime('%Y-%m-%d'))
         return True
     result = get_files_from_folder(folder.get('id'), drive)
-    logging.info("Found " + str(len(result)) + " backups")
+    logging.debug("Found " + str(len(result)) + " backups")
     if len(result) <= MINIMUM_NB_BACKUP or len(result) == 0:
         logging.info("No backup to clean (too few backups)")
         google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.utcnow().strftime('%Y-%m-%d'))
@@ -151,7 +151,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
         for file in sorted_files[:-MINIMUM_NB_BACKUP]:
             date_str = file.get("name").split("_")[0]
             date = datetime.strptime(date_str, '%d-%m-%Y-%H-%M-%S')
-            logging.info('Inspecting backup file ' + file.get("name") + " created on " + date_str + ". Age : " + str((datetime.utcnow() - date).days) + " days")
+            logging.debug('Inspecting backup file ' + file.get("name") + " created on " + date_str + ". Age : " + str((datetime.utcnow() - date).days) + " days")
 
             if (datetime.utcnow() - date).days > MAXIMUM_BACKUP_AGE:
                 logging.info("Deleting backup file " + file.get("name"))

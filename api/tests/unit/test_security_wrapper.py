@@ -3,7 +3,7 @@ from app import app
 from Utils import security_wrapper
 import unittest
 from unittest.mock import patch
-from zero_totp_db_model.model import User as UserModel, Admin as AdminModel
+from zero_totp_db_model.model import User as UserModel
 from database.db import db
 
 
@@ -16,9 +16,9 @@ class TestSecurityWrapper(unittest.TestCase):
             self.blocked_user_id = 3
             self.flask_application = app
     
-            not_verified_user = UserModel(id=self.not_verified_user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
-            verified_user_id = UserModel(id=self.verified_user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001")
-            blocked_user_id = UserModel(id=self.blocked_user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", isBlocked = True)
+            not_verified_user = UserModel(id=self.not_verified_user_id,username="user1", mail="user1@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
+            verified_user_id = UserModel(id=self.verified_user_id,username="user2", mail="user2@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001")
+            blocked_user_id = UserModel(id=self.blocked_user_id,username="user3", mail="user3@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", isBlocked = True)
             with self.flask_application.app.app_context():
                 db.create_all()
                 db.session.add(not_verified_user)

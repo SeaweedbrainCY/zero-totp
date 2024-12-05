@@ -28,7 +28,6 @@ import { AccountComponent } from './account/account.component';
 import { LocalVaultV1Service } from './common/upload-vault/LocalVaultv1Service.service';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ChangelogComponent } from './changelog/changelog.component';
-import { AdminPageComponent } from './admin-page/admin-page.component';
 import { CallbackComponent } from './callback/callback.component';
 import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 import { PreferencesComponent } from './preferences/preferences.component';
@@ -75,7 +74,6 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
         AccountComponent,
         PrivacyPolicyComponent,
         ChangelogComponent,
-        AdminPageComponent,
         CallbackComponent,
         OauthSyncComponent,
         PreferencesComponent,

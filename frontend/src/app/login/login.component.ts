@@ -335,10 +335,6 @@ this.utils.toastError(this.toastr,translation,"")
           this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
         } else {
 
-        
-        if(data.role == "admin"){
-          this.userService.setIsAdmin(true);
-        }
         this.userService.setGoogleDriveSync(data.isGoogleDriveSync);
         this.final_zke_flow();
         }

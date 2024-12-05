@@ -246,10 +246,8 @@ export class PreferencesComponent implements OnInit{
   change_duration_unit(value:string){
     if(value == "minute"){
       this.duration_unit = "minute";
-      this.autolock_delay *= 60;
     } else  if(value == "hour"){
       this.duration_unit = "hour";
-      this.autolock_delay /= 60;
     } 
   }
 

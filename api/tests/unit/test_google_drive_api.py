@@ -8,9 +8,9 @@ from database.user_repo import User as UserRepo
 from database.zke_repo import ZKE as ZKE_encryption_key_repo
 from database.totp_secret_repo import TOTP_secret as TOTP_secret_repo
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
+from database.session_token_repo import SessionTokenRepo
 from database.db import db
 from uuid import uuid4
-from CryptoClasses import jwt_func
 from app import app
 import json
 from base64 import b64decode, b64encode
@@ -44,7 +44,6 @@ class TestGoogleDriveAPI(unittest.TestCase):
             if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
             self.application = app
-            self.jwtCookie = jwt_func.generate_jwt(1)
             self.client = self.application.test_client()
             self.endpoint = "/api/v1/vault/export"
             self.from_authorized_user_info = patch("google.oauth2.credentials.Credentials.from_authorized_user_info").start()
@@ -58,6 +57,9 @@ class TestGoogleDriveAPI(unittest.TestCase):
             zke_repo = ZKE_encryption_key_repo()
             totp_repo = TOTP_secret_repo()
             self.google_integration_db = GoogleDriveIntegration_repo()
+            self.session_token_repo = SessionTokenRepo()
+
+
             with self.application.app.app_context():
                     db.create_all()
                     user_repo.create(username="user", email="user@test.test", password="password", 
@@ -66,7 +68,10 @@ class TestGoogleDriveAPI(unittest.TestCase):
                     for i in range(10):
                         totp_repo.add(user_id=1, enc_secret="secret" + str(i), uuid=str(uuid4()))
                     self.google_integration_db.create(1, True)
+                    _, self.session_token = self.session_token_repo.generate_session_token(1)
                     db.session.commit()
+
+
         def tearDown(self):
           patch.stopall()
           with self.application.app.app_context():
@@ -410,7 +415,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
             get_last_backup_file = patch("Oauth.google_drive_api.get_last_backup_file").start()
             get_last_backup_file.return_value = {"name" : LAST_BACKUP_FILENAME, "explicitlyTrashed": False, "id":1}, datetime.datetime(year=2023, month=1, day=2, hour=0, minute=0, second=0 )
             with self.application.app.app_context():
-                self.client.cookies = {"api-key":self.jwtCookie}
+                self.client.cookies = {"session-token": self.session_token}
                 response = self.client.get(self.endpoint)
                 print("json=" , response.json())
                 execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()

@@ -115,12 +115,12 @@ class APIConfig:
                 except Exception as e:
                     logging.error(f"[FATAL] Load config fail. api.trusted_proxy contains an invalid ip address. {e}")
                     exit(1)
-        self.access_token_validity = 600
-        if "access_token_validity" in data:
+        self.session_token_validity = 600
+        if "session_token_validity" in data:
             try:
-                self.access_token_validity = int(data["access_token_validity"])
+                self.session_token_validity = int(data["session_token_validity"])
             except Exception as e:
-                logging.error(f"[FATAL] Load config fail. api.access_token_validity is not valid. {e}")
+                logging.error(f"[FATAL] Load config fail. api.session_token_validity is not valid. {e}")
                 exit(1)
         
         self.refresh_token_validity = 86400
@@ -142,20 +142,6 @@ class DatabaseConfig:
         self.database_uri = data["database_uri"]
         self.are_all_tables_created = False
 
-class AdminsConfig:
-    def __init__(self, data):
-        if "admin_can_delete_users" not in data:
-            logging.info("ADMIN_CAN_DELETE_USERS environment variable not set. Using default value: false")
-            self.admin_can_delete_users = False
-        else:
-            
-            try: 
-                self.admin_can_delete_users = bool(data["admin_can_delete_users"])
-            except Exception as e:
-                logging.error(f"[FATAL] Load config fail. {e}")
-                exit(1)
-            if self.admin_can_delete_users:
-                logging.warning("ADMIN_CAN_DELETE_USERS environment variable set to true. This should be a TEMPORARY option ONLY.  Please set it to false if you are not sure what you are doing. DISABLE THIS OPTION AS SOON AS NOT NEEDED ANYMORE.")
 
 
 class EmailsConfig:
@@ -203,7 +189,6 @@ class SentryConfig:
 class FeaturesConfig:
     def __init__(self, data):
                 
-        self.admins = AdminsConfig(data["admins"] if "admins" in data else [])
         self.emails = EmailsConfig(data["emails"]) if "emails" in data else None
         self.rate_limiting = RateLimitingConfig(data["rate_limiting"] if "rate_limiting" in data else [])
         self.sentry = SentryConfig(data["sentry"]) if "sentry" in data else None

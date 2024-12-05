@@ -394,8 +394,9 @@ export class EditTOTPComponent implements OnInit{
   }
 
   addNewSecret(enc_property:string, property: Map<string,string>){
-    this.uuid = window.crypto.randomUUID();
-    this.http.post("/api/v1/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
+    this.http.post("/api/v1/encrypted_secret", {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
+      const data = JSON.parse(JSON.stringify(response.body))
+      this.uuid = data.uuid;
       this.utils.toastSuccess(this.toastr,  this.translate.instant("totp.secret.add.added"),"");
       this.QRCodeService.setLabel('')
       this.QRCodeService.setSecret('')

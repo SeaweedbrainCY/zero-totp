@@ -387,7 +387,6 @@
   "navbar": {
     "account": "Account",
     "add": "Add a new code",
-    "admin": "Admin",
     "backup": "Backup plan",
     "how": " How TOTP works",
     "lang": {

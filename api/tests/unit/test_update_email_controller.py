@@ -5,9 +5,10 @@ import controllers
 from unittest.mock import patch
 from zero_totp_db_model.model import User, TOTP_secret
 from environment import conf
-from CryptoClasses import jwt_func
-import jwt
 import datetime
+from database.user_repo import User as UserRepo
+from database.preferences_repo import Preferences as PreferencesRepo
+from database.session_token_repo import SessionTokenRepo
 
 class TestUpdateEmail(unittest.TestCase):
 
@@ -15,22 +16,34 @@ class TestUpdateEmail(unittest.TestCase):
         if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
         self.application = app
-        self.jwtCookie = jwt_func.generate_jwt(1)
         self.client = self.application.test_client()
         self.endpoint = "/api/v1/update/email"
+        
+        self.user_id =1
+        self.user2_id = 2
+        self.blocked_user_id = 3
+        self.unverified_user_id = 4
+
+        self.user_email = "user1@test.test"
+        self.user2_email = "user2@test.test"
+
+
+        self.user_repo = UserRepo()
+        self.preferences_repo = PreferencesRepo()
+        self.session_token_repo = SessionTokenRepo()
         with self.application.app.app_context():
             db.create_all()
-            db.session.commit()
+            self.user_repo.create(username="user1", email=self.user_email, password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+            self.user_repo.create(username="user2", email=self.user2_email, password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+            self.user_repo.create(username="user3", email="user3@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(), isBlocked=True)
+            self.user_repo.create(username="user4", email="user4@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.now())
+            
+            self.preferences_repo.create_default_preferences(user_id=1)
+
+            _, self.session_token_user = self.session_token_repo.generate_session_token(self.user_id)
+            _, self.session_token_user_blocked = self.session_token_repo.generate_session_token(self.blocked_user_id)
+            _, self.session_token_user_unverified = self.session_token_repo.generate_session_token(self.unverified_user_id)
         
-
-        self.update_email = patch("database.user_repo.User.update_email").start()
-        self.update_email.return_value = User(id=1)
-
-        self.getUserByEmail = patch("database.user_repo.User.getByEmail").start()
-        self.getUserByEmail.return_value = None 
-
-        self.getUserByID = patch("database.user_repo.User.getById").start()
-        self.getUserByID.return_value = User(id=1, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
 
         self.send_verification_email = patch("controllers.send_verification_email").start()
         self.send_verification_email.return_value = True
@@ -47,77 +60,66 @@ class TestUpdateEmail(unittest.TestCase):
 
     def tearDown(self):
         patch.stopall()
+        with self.application.app.app_context():
+            db.session.remove()
+            db.drop_all()
     
-    def generate_expired_cookie(self):
-        payload = {
-            "iss": jwt_func.ISSUER,
-            "sub": 1,
-            "iat": datetime.datetime.utcnow(),
-            "nbf": datetime.datetime.utcnow(),
-            "exp": datetime.datetime.utcnow() - datetime.timedelta(hours=1),
-        }
-        jwtCookie = jwt.encode(payload, conf.api.jwt_secret, algorithm=jwt_func.ALG)
-        return jwtCookie
     
     def test_update_email(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 201)
-        self.update_email.assert_called_with(user_id=1, email='test@test.com', isVerified=0)
-        self.send_verification_email.assert_called_once()
-        self.send_information_email.assert_called_once()
+        with self.application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token_user}
+            response = self.client.put(self.endpoint, json=self.payload)
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(db.session.query(User).filter(User.id == self.user_id).first().mail , self.payload["email"])
+            self.assertEqual(response.json()["message"], self.payload["email"])
 
-    def test_update_email_no_cookie(self):
-        response = self.client.put(self.endpoint)
-        self.assertEqual(response.status_code, 401)
-    
-    def test_update_email_bad_cookie(self):
-        self.client.cookies = {"api-key": "badcookie"}
-        response = self.client.put(self.endpoint)
-        self.assertEqual(response.status_code, 403)
-    
-    def test_update_email_expired_jwt(self):
-        self.client.cookies = {"api-key": self.generate_expired_cookie()}
-        response = self.client.put(self.endpoint)
-        self.assertEqual(response.status_code, 401)
+
+
     
     def test_update_email_bad_format(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.check_email.return_value = False
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 400)
+        with self.application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token_user}
+            self.check_email.return_value = False
+            response = self.client.put(self.endpoint, json=self.payload)
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(db.session.query(User).filter(User.id == self.user_id).first().mail , self.user_email)
     
     def test_update_email_already_used(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getUserByEmail.return_value = True
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 403)
+        with self.application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token_user}
+            response = self.client.put(self.endpoint, json={"email": self.user2_email})
+            self.assertEqual(response.status_code, 403)
     
-    def test_update_email_error_db(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.update_email.return_value = False
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 500)
+    def test_update_email_with_own_email(self):
+            with self.application.app.app_context():
+                self.client.cookies = {"session-token": self.session_token_user}
+                response = self.client.put(self.endpoint, json={"email": self.user_email})
+                self.assertEqual(response.status_code, 201)
+                self.assertEqual(response.json()["message"], self.user_email)
+    
+
     
     def test_update_email_unverified(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getUserByID.return_value = User(id=1, isBlocked=False, isVerified=False, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 201)
-        self.update_email.assert_called_once()
+        with self.application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token_user_unverified}
+            response = self.client.put(self.endpoint, json=self.payload)
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(response.json()["message"], self.payload["email"])
+            self.assertEqual(db.session.query(User).filter(User.id == self.unverified_user_id).first().mail , self.payload["email"])
     
     def test_update_email_blocked(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.getUserByID.return_value = User(id=1, isBlocked=True, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001")
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 403)
-        self.update_email.assert_not_called()
+        with self.application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token_user_blocked}
+            response = self.client.put(self.endpoint, json=self.payload)
+            self.assertEqual(response.status_code, 403)
+            self.assertNotEqual(db.session.query(User).filter(User.id == self.blocked_user_id).first().mail , self.payload["email"])
     
     def test_update_email_error_send_email(self):
-        self.client.cookies = {"api-key": self.jwtCookie}
-        self.send_verification_email.side_effect = Exception()
-        response = self.client.put(self.endpoint, json=self.payload)
-        self.assertEqual(response.status_code, 201)
+        with self.application.app.app_context():
+            self.client.cookies = {"session-token": self.session_token_user}
+            self.send_verification_email.side_effect = Exception()
+            response = self.client.put(self.endpoint, json=self.payload)
+            self.assertEqual(response.status_code, 201)
 
 
     
