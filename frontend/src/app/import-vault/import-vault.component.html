@@ -2,19 +2,40 @@
     <div class="container is-fluid ">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-dark pt-6"
-                style="line-height: normal;"> <fa-icon [icon]="faFileArrowDown" class="mr-2"></fa-icon> {{ 'import_vault.title' | translate }}
+                style="line-height: normal;"> <fa-icon [icon]="faFileArrowDown" class="mr-2"></fa-icon> {{
+                'import_vault.title' | translate }}
             </h1>
         </div>
     </div>
-    <div class="container is-fluid ">
-        <div class="is-flex is-flex-direction-column">
-            <div class="is-flex is-justify-content-center">
-                <div class="button is-link is-light is-large">
-                    <div class="is-flex is-justify-content-left image  is-square">
-                   <img src="assets/totp_square_dark.png" alt="Zero-TOTP logo" class="mt-2 mb-2">
-                  </div>
-                  </div>
-            </div>
+    <div class="container is-fluid is-flex is-justify-content-center">
+        <div class="is-flex is-flex-direction-column is-align-items-stretch 	" >
+                <button class="button is-link is-light is-large mt-4" [routerLink]="['./zero-totp/import']">
+                    <div style="height: 100%; ">
+                        <img src="assets/totp_square_dark.png" alt="Zero-TOTP logo" style="max-width: 100%; max-height: 100%; object-fit: contain">
+                    </div>
+                    <div>
+                        <p class="ml-4 has-text-weight-bold has-text-dark">{{ 'import_from' | translate}} Zero-TOTP <span
+                                class="has-text-dark"><fa-icon [icon]="faArrowRight" class="ml-2"></fa-icon></span> </p>
+                    </div>
+                </button>
+                <button class="button is-grey is-light is-large mt-6" style="cursor:not-allowed">
+                    <div  style="height: 100%; ">
+                        <img src="assets/bitwarden_logo.png" alt="Bitwarden logo" style="max-width: 100%; max-height: 100%; object-fit: contain">
+                    </div>
+                    <div>
+                        <p class="ml-4 has-text-weight-bold has-text-dark">{{ 'import_from' | translate}} Bitwarden <span class="tag is-warning">{{'available_soon' | translate}}</span>
+                        </p>
+                    </div>
+                </button>
+
+                <button class="button is-grey is-light is-large mt-6"  style="cursor:not-allowed">
+                    <div style="height: 100%; " >
+                        <img src="assets/authy_logo.png" alt="Bitwarden logo"  style="max-width: 100%; max-height: 100%; object-fit: contain">
+                    </div>
+                    <div>
+                        <p class="ml-4 has-text-weight-bold has-text-dark">{{ 'import_from' | translate}} from Authy <span class="tag is-warning">{{'available_soon' | translate}}</span> </p>
+                    </div>
+                </button>
         </div>
     </div>
 </section>

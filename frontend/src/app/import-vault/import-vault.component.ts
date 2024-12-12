@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { faFileArrowDown } from '@fortawesome/free-solid-svg-icons'; 
+import { faFileArrowDown, faArrowRight } from '@fortawesome/free-solid-svg-icons'; 
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -9,6 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class ImportVaultComponent {
   faFileArrowDown = faFileArrowDown;
+  faArrowRight = faArrowRight;
   constructor(
     private translate: TranslateService,
   ) { 
