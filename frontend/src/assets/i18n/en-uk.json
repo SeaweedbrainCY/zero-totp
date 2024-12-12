@@ -1,851 +1,854 @@
 {
-  "404": {
-    "desc": "The page you’re looking for doesn’t exist.",
-    "go_home": "Go Home",
-    "not_found": "Page not found.",
-    "oops": "Oops!"
-  },
-  "abort": "Abort",
-  "about": "About",
-  "account": {
-    "delete": {
-      "button": "Delete\n                                your account",
-      "error": {
-        "aborted": "Operation aborted.",
-        "wrong_passphrase": "Wrong passphrase. Operation aborted."
-      },
-      "popup": {
-        "button": {
-          "destroy": "Destroy my account definitely ",
-          "return": "Return to safety"
-        },
-        "confirm": "To delete your account, confirm your passphrase : ",
-        "title": "Are you sure ?",
-        "warn1": "You won't be able to undo this action. You will no longer access to your TOTP vault",
-        "warn2": "You will lose ALL your secrets",
-        "warn3": "ALL your backups on google drive will be DESTROYED"
-      },
-      "success": "Thanks for having used Zero-TOTP. Your account has been deleted. Good bye. 👋",
-      "title": " Delete account",
-      "warning": "Once you delete your account, there is no going\n                            back. Please be certain."
+    "404": {
+        "desc": "The page you’re looking for doesn’t exist.",
+        "go_home": "Go Home",
+        "not_found": "Page not found.",
+        "oops": "Oops!"
     },
-    "email": {
-      "current": "Your current email is",
-      "error": "Something went wrong. Please try again later",
-      "errors": {
-        "char": "&, <, >, \" and ' are forbidden",
-        "invalid": "Are your sure about your email ?",
-        "match": "Your emails do not match !"
-      },
-      "success": "Email updated with success",
-      "title": "Update email",
-      "update": {
-        "confirm": "Confirm email",
-        "label": "New email"
-      }
-    },
-    "errors": {
-      "network": "Impossible to chat with the server. Please check your internet connection and status.zero-totp.com",
-      "unknown": "Oups, an error occured. Answer from the server : "
-    },
-    "loading": "Retrieving your favorite ice-cream flavor ... ",
-    "passphrase": {
-      "confirm": "Confirm Passphrase",
-      "current": "Your current passphrase",
-      "error": {
-        "char": "' \" < > characters are forbidden in passphrase",
-        "decrypt": "Error : Impossible to encrypt your vault",
-        "decrypt_one_secret": "Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.",
-        "derive": "Error : Impossible to derive your new passphrase",
-        "expired": "Impossible to decrypt your vault, you're decryption key has expired. Please log out and log in again.",
-        "fatal": "An error occured while updating your vault. Some information may not be updated\n ",
-        "fatal_light": "Operation aborted. Nothing have been updated. ",
-        "fetch_vault": "Error : Impossible to retrieve your vault from the server",
-        "full_abort": "An error occured. No update has been made. Update aborted. Report the error code ",
-        "hash_new": "An error occured while hashing your new passphrase. The vault and your passphrase have not been updated. Please, try again.",
-        "hashing": "An error occured while hashing your password. Please, try again",
-        "incorrect": "Your passphrase is incorrect",
-        "length": "Your passphrase must be at least 12 characters long",
-        "light_abort": "Your passphrase and vault are updated with success. But an error occured while finishing the process. The following step failed : ",
-        "match": "Your passphrases do not match",
-        "network": "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session.",
-        "number": "Your passphrase must contain at least one number",
-        "special": "Your passphrase must contain at least one special character",
-        "upper": "Your passphrase must contain at least one uppercase character",
-        "wrong_key": "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
-        "wrong_key_vault": "Wrong key. You cannot decrypt this vault."
-      },
-      "new": "New passphrase",
-      "no_former_passphrase": "We need your former passphrase to update your passphrase",
-      "popup": {
-        "google": {
-          "backup_error": "Error : Impossible to backup your vault to google drive. ",
-          "delete_error": "Error : Impossible to delete your google drive backup. ",
-          "fetch_error": "Error : Impossible to check your google drive option. ",
-          "option": {
-            "delete": {
-              "info": "(Recommended if your passphrase is not safe anymore)",
-              "strong": "Delete my old backup and make a new one now"
-            },
-            "keep": {
-              "strong": "Keep my old backup with my old password and make a new one now"
-            }
-          },
-          "title": "Oh ! You have backups in your google drive"
-        },
-        "updating": {
-          "derivation": "Derivation of your new passphrase",
-          "descryption": "Decryption of your vault",
-          "destroy": "Destroying your google drive backup  ",
-          "download": "Download of your encrypted vault",
-          "encryption": "Encryption of your vault with your new key",
-          "subititle": "We are re encrypting all your data. Closing this tab might definitively corrupt them",
-          "success": "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
-          "title": "Do not close this page",
-          "upload": "Upload of your encrypted vault",
-          "upload_google": "Upload a new encrypted backup on your google drive   ",
-          "verif": "Verification of your former passphrase",
-          "verif_new": "Verification of your new encrypted vault"
-        },
-        "warning": {
-          "continue": "I'm sure",
-          "subtitle": "Changing your passphrase will :",
-          "title": "Be careful",
-          "warn1": "Re-encrypt your current vault",
-          "warn2": "Your old backup will still be encrypted with your former passphrase",
-          "warn3": "Your Google Drive backup will be updated. If you have old backup, they will still be encrypted with your former passphrase. If your passphrase is not safe anymore you should delete them without delay",
-          "warn4": "If you lose this new passphrase, it is impossible to recover it",
-          "warn5": "If you change your passphrase for security reasons, securely delete your backup as soon as possible"
-        }
-      },
-      "title": "Update passphrase"
-    },
-    "title": "Edit your account ⚙️",
-    "username": {
-      "current": "Your current username is:",
-      "error": {
-        "char": "&, <, >, \" and ' are forbidden",
-        "missing": "Oups, cannot be empty !",
-        "unknown": "An error occured while updating your username. Please, try again later"
-      },
-      "new": {
-        "label": "New username"
-      },
-      "success": "Username updated 🎉",
-      "title": "Update username"
-    }
-  },
-  "add": "Add",
-  "always": "Always",
-  "available_soon": "Available soon !",
-  "blue": "Blue",
-  "cancel": "Cancel",
-  "changelog": "Changelog",
-  "close": "Close",
-  "continue": "Continue",
-  "copied": "Copied !",
-  "delete": "Delete",
-  "email": "Email",
-  "email_verif": {
-    "code": {
-      "placeholder": "Enter the code here"
-    },
-    "desc1": {
-      "link": "ask for a new code",
-      "text": "The code is valid for 10 minutes. If you don't receive the email, check your spam folder or"
-    },
-    "desc2": {
-      "link": "change it here",
-      "part2": "If you want to change your email address, you can",
-      "text": {
-        "part1": "The email has been sent to"
-      }
-    },
-    "error": {
-      "already_verified": "Email already verified",
-      "expired": "Your verification code is expired. Please ask for a new one.",
-      "failed": "Wrong verification code. You have {{ left_attempts }} attempt(s) left before invaliding your verification code.",
-      "generic": "Invalid or expired code",
-      "no_active_code": "You don't have active verification code. To verify you email address, ask for a new one.",
-      "no_email": "Please, login first",
-      "rate_limited": "You are rate limited ! Your asked too much verification code in a short period of time. You will be able to ask for a new code in {{time}} min.",
-      "too_many_failed": "Too many failed attempts. Please ask for a new verification code.",
-      "unknown": "An error occured ! Please logout and login again ❌"
-    },
-    "popup": {
-      "button": {
-        "update": "Update your email address"
-      },
-      "error": "Something went wrong. Please try again later",
-      "success": "Email updated with success. You should receive a verification email soon ! ✅"
-    },
-    "resend": {
-      "error": "An error occured ! ❌",
-      "success": "Email sent ! ✅"
-    },
-    "subtitle": {
-      "part1": "We have sent you an email with a ",
-      "part2": "to verify your email address."
-    },
-    "title": "Verify your email address ",
-    "verify": {
-      "already_verified": "Email already verified",
-      "success": "Your email is verified ! ✅"
-    }
-  },
-  "footer": {
-    "bug": "Report a bug",
-    "opensource": "Open-Source Component"
-  },
-  "generic_errors": {
-    "bad_email": "Invalid email",
-    "email_exists": "Email already exists",
-    "error": "Error",
-    "invalid_creds": "Invalid credentials",
-    "invalid_request": "Invalid request",
-    "missing_params": "Missing parameters",
-    "user_not_found": "User not found",
-    "username_exists": "Username already exists"
-  },
-  "green": "Green",
-  "home": {
-    "about": {
-      "title": "About Zero-Knowledge Encryption",
-      "zke_def": "Zero Knowledge Encryption (ZKE) refers to a robust security measure that ensures the utmost protection of your data. With ZKE, your information is encrypted locally on your device before being uploaded to the cloud, and only you hold the encryption keys, guaranteeing that no one, including the service provider, can access your data without your explicit permission. This empowers you with complete control over your sensitive information while enjoying the convenience and flexibility of cloud storage."
-    },
-    "backup": {
-      "desc": "You should always be able to access your TOTP code. That's why ",
-      "desc_strong": "Zero-TOTP has 4 independant platform where you can decrypt your vault.",
-      "option": {
-        "available": "Available now",
-        "beta": "Available in beta",
-        "cli": "To retrieve all your codes form your terminal (CLI unix only).",
-        "mobile": "To retrieve all your codes directly in your pocket.",
-        "rescue": "A very simple, minimal and ULTRA stable frontend, hosted on github pages where you can upload a backup your vault and decrypt it. In case of zero-totp's servers failure, your backup vaults can still be opened",
-        "soon": "Coming soon",
-        "zero_totp": "The complete version of Zero-TOTP, up to date with all its features."
-      },
-      "title": "And always have a",
-      "title_strong": "backup plan"
-    },
-    "button": {
-      "buy_me_a_coffee": "buying me a coffee",
-      "github_project": "Follow the project on github",
-      "learnMore": "Learn more",
-      "openVault": "Open my vault"
-    },
-    "buyMeCoffee": {
-      "desc": "Open source & self hosted applications are possible thanks to your support. If you like this project, please consider"
-    },
-    "data": {
-      "google": {
-        "desc": "You can synchronize your encrypted vault with your google drive. This option is not mandatory, but it is highly recommended. In case of a server crash, you will be able to recover your encrypted vault from your google drive.<br>Your vault is still encrypted and only your passphrase can decrypt it. This passphrase is never stored anywhere.",
-        "title": "Back up your encrypted vault in your google drive"
-      },
-      "local": {
-        "desc": "You can download your encrypted vault and store it in your computer (or anywhere else). This option is not mandatory, but it is highly recommended. In case of a server crash, you will be able to recover your encrypted vault from your computer.<br>As always, your vault is still encrypted and only your passphrase can decrypt it. This passphrase is never stored anywhere.",
-        "title": "Back up your encrypted vault in your computer"
-      },
-      "subtitle": "You choose where to store your encrypted vault",
-      "title": "Never lose your data",
-      "zero_totp": {
-        "desc": "This is the default and mandatory option. Your encrypted vault is stored on our servers, hosted in Canada 🇨🇦, Switzerland 🇨🇭 and Germany 🇩🇪. Nobody has access to your data, except you. This option is the one used when your log in to your account on <a href=\"https://zero-totp.com\">zero-totp.com</a>. You cannot disable this option, but you can backup your vault on your computer or on your google drive.",
-        "title": "Store your encrypted vault on Zero-TOTP's servers"
-      }
-    },
-    "project": {
-      "desc": {
-        "contributions": "All contribution is welcome !",
-        "part1": "Zero-TOTP was first launched in 2023 by",
-        "part2": "with the aim to provide a 100% open-source, safe and reliable alternative to proprietary totp clients. The project is still in development and is currently in beta."
-      },
-      "title": "The project"
-    },
-    "subtitle": "Zero-TOTP is a",
-    "subtitle.and": "and a",
-    "subtitle.opensource": "100% open-source",
-    "subtitle.platform": "platform",
-    "subtitle.zke": "Zero-Knowledge Infrastructure",
-    "title": "Store your TOTP codes in a",
-    "title.strong": "safe place",
-    "trust.no.one": "Trust no one, except YOU",
-    "tuto": {
-      "2FA": "second factor of authentication",
-      "accounts": "to secure your accounts (gmail, facebook, twitter, github, etc ...). It's like a SMS code, but it's more secure and more convenient !",
-      "title": "Add an extra layer of security to your accounts",
-      "tmp_codes": "temporary codes",
-      "totp_are": "TOTP are ",
-      "totp_client": {
-        "desc": "Each time you log in to an account, you will have to enter a new code. This code is generated by an application on your phone or computer. This application is called a",
-        "name": "TOTP client"
-      },
-      "totp_time": "A TOTP code is only valid for",
-      "use_as": "that you can use as a"
-    },
-    "why": {
-      "key": {
-        "desc1": "Only your passphrase can decrypt your vault.",
-        "desc2": "All the encryption is performed in your             browser, and your data is safe before it has even left your device !",
-        "title": "Your are the key holder"
-      },
-      "opensource": {
-        "desc1": "Zero-TOTP is 100% open source and 100% free. Never trust anyone but you. ",
-        "desc2": "We are 100% transparent and anyone can access to the source code",
-        "title": "100% open-source"
-      },
-      "strong_enc": {
-        "l1": "with AES256, a very strong encryption standard.",
-        "l2": "Only you can decrypt your data with your password.",
-        "strong": "All your data is encrypted",
-        "title": "Strong encryption"
-      },
-      "title": "Why Zero-TOTP ?",
-      "zke": {
-        "desc": {
-          "1": "Zero-TOTP use zero-knowledge encryption with means than",
-          "2": "except you. Even the server administrator can't access your data. You and only you are able to decrypt your vault.",
-          "strong": "no one can access your data"
-        },
-        "title": "Zero-Knowledge Encryption"
-      }
-    }
-  },
-  "hour": "hour",
-  "less": "Less",
-  "loading": "Loading ...",
-  "log_in": "Log in",
-  "logging-out": {
-    "loading": "Logging you out ..."
-  },
-  "login": {
-    "authorize": "Authorize",
-    "backup": {
-      "open": {
-        "popup": {
-          "title": "Unlock your vault"
-        }
-      },
-      "open_button": "Open a backup",
-      "subtitle": "You can open a Zero-TOTP vault saved on your laptop 💻",
-      "unsecure": {
-        "popup": {
-          "button": {
-            "cancel": "Return to safety"
-          },
-          "continue": "I trust this backup",
-          "desc": "Your vault may have been modified by someone else or it does not come from Zero-TOTP.",
-          "strong": "The verification of the authenticity of your vault failed",
-          "strong2": "Importing an unsecure backup may lead to security issues and should not be trusted",
-          "title": "You backup may be not secure"
-        }
-      },
-      "vault_backup": " Vault backup"
-    },
-    "errors": {
-      "account_blocked": "Your account has been blocked for security reasons. Please contact the administrator at developer[at]zero-totp.com to unlock it",
-      "confirm_passphrase": "To continue, please confirm your passphrase",
-      "email": "Are your sure about your email ?",
-      "empty": "Did you forget to fill something ?",
-      "general_error": "An error occured. Please, try again.",
-      "hashing": "An error occured while hashing your password. Please, try again",
-      "import_vault": {
-        "error_unknown": "Error : Impossible to import your vault. Unknown error",
-        "invalid_arg": "Error : Impossible to import your vault. It seems to be    corrupted",
-        "invalid_file": "Error : Impossible to import your vault. Impossible to read it",
-        "invalid_type": "Error : Invalid file type",
-        "invalid_version": "Error : Impossible to import your vault. Unsupported version",
-        "key_dec": "Impossible to decrypt your key.",
-        "missing_arg": "Error : Impossible to import your vault. It seems to not be    complete",
-        "no_signature": "Error : Impossible to import your vault. No signature found",
-        "parse_fail": "Error : Impossible to parse your file",
-        "wrong_passphrase": "Wrong passphrase"
-      },
-      "no_connection": "Impossible to chat with the server ! \nCheck your internet connection or status.zero-totp.com",
-      "no_session": "Your session expired. Please log in again to complete the sync flow",
-      "oauth": "One last step, please confirm your password to complete the synchronization",
-      "rate_limited": "You are rate limited ! Your IP as generated too much failed login attempts in a short period of time. You will be able to try to login again in {{time}} min. If you are using a VPN, try another location or disable it.",
-      "server_error": "Error : Impossible ro retrieve information from the server",
-      "session_end": "For your safety, your session must be renewed every hour.",
-      "session_killed": "For your safety, you have been disconnected because you have reloaded or closed the tab",
-      "session_timeout": "For your safety, you have been disconnected after due to inactivity. You can customize this delay in your preferences"
-    },
-    "open_button": "Open my vault",
-    "remember": "Remember my email address",
-    "rescue": {
-      "part1": "🛟 Troubles logging to your account ? Open a backup on our ",
-      "part2": "Rescue Zero-TOTP",
-      "strong": "ultra stable plateform"
-    },
-    "subtitle": "This time, you do the magic 🪄",
-    "success": "Vault decrypted ✅",
-    "title": "It's time to open your vault !"
-  },
-  "logout": "Logout",
-  "more": "More",
-  "my_vault": "My vault",
-  "name": "Name",
-  "navbar": {
-    "account": "Account",
-    "add": "Add a new code",
-    "backup": "Backup plan",
-    "how": " How TOTP works",
-    "lang": {
-      "suggest": "Suggest Others"
-    },
-    "lose": "Never lose your data",
-    "preferences": "Preferences",
-    "vault_backup": "Vault backup",
-    "why": "Why Zero-TOTP"
-  },
-  "never": "Never",
-  "oauth": {
-    "error": {
-      "impossible": "Error : Impossible to backup your vault. Please, try to re-sync your Google Drive account."
-    },
-    "sync": {
-      "loading": "Synchronizing, do not close your browser..."
-    }
-  },
-  "orange": "Orange",
-  "passphrase": "Passphrase",
-  "preference": {
+    "abort": "Abort",
+    "about": "About",
     "account": {
-      "security": {
-        "autolock": {
-          "error": "{{min}}min minimum, {{max}}h maximum",
-          "label": "Maximum time of inactivity before your vault autolocks",
-          "success": "Success ! This new value will be applied at your next login",
-          "title": "Autolock your vault after inactivity"
+        "delete": {
+            "button": "Delete\n                                your account",
+            "error": {
+                "aborted": "Operation aborted.",
+                "wrong_passphrase": "Wrong passphrase. Operation aborted."
+            },
+            "popup": {
+                "button": {
+                    "destroy": "Destroy my account definitely ",
+                    "return": "Return to safety"
+                },
+                "confirm": "To delete your account, confirm your passphrase : ",
+                "title": "Are you sure ?",
+                "warn1": "You won't be able to undo this action. You will no longer access to your TOTP vault",
+                "warn2": "You will lose ALL your secrets",
+                "warn3": "ALL your backups on google drive will be DESTROYED"
+            },
+            "success": "Thanks for having used Zero-TOTP. Your account has been deleted. Good bye. 👋",
+            "title": " Delete account",
+            "warning": "Once you delete your account, there is no going\n                            back. Please be certain."
         },
-        "subtitle": "Settings related to your account security",
-        "title": "Account security settings"
-      }
-    },
-    "advanced": {
-      "button": "Display advanced settings",
-      "subtitle": "Settings to manage more precisely your Zero-TOTP account.",
-      "title": "Advanced settings"
-    },
-    "backup": {
-      "eol": {
-        "desc1": "This is the number of days after which a backup will be deleted (only if your minimum backup setting is reached). This parameter is overridden by your minimum backup setting.",
-        "title": "Backups end of life (in days)"
-      },
-      "minimum": {
-        "desc1": " This is the minimum number of backup that Zero-TOTP will keep above all in your Google Drive.",
-        "desc2": " This paramater overrides any other parameter.",
-        "title": "Minimum of backup kept in Google Drive"
-      }
-    },
-    "error": {
-      "fetch": "An error occured while retrieving your preferences",
-      "update": "Error : Impossible to update your preferences. "
-    },
-    "iteration": {
-      "title": "Number of iterations used in the PBKDF2 derivation function"
-    },
-    "loading": "Retrieving your favorite ice-cream flavor ...",
-    "more_info": "More info",
-    "tag": {
-      "global": "Global setting",
-      "sync_only": "Synched account only"
-    },
-    "title": "Your preferences 🔧",
-    "vault": {
-      "display": {
-        "favicon": {
-          "info1": "When enabled, your browser will try to fetch the favicon of the website you are adding to your vault when displaying it. If it fails, it will display a default icon.",
-          "info2": " The favicon is fetched by your browser using DuckDuckGo API (a privacy friendly search engine). Zero-TOTP does not transmit any information to DuckDuckGo or the target website. The URI or domain name is never transmitted to zero-totp servers. ",
-          "info3": " You can disable this feature globally, enable it globally, or use each secrets' setting.",
-          "option": {
-            "enabled": "If enabled only"
-          },
-          "title": "Display website's favicon beside its name"
+        "email": {
+            "current": "Your current email is",
+            "error": "Something went wrong. Please try again later",
+            "errors": {
+                "char": "&, <, >, \" and ' are forbidden",
+                "invalid": "Are your sure about your email ?",
+                "match": "Your emails do not match !"
+            },
+            "success": "Email updated with success",
+            "title": "Update email",
+            "update": {
+                "confirm": "Confirm email",
+                "label": "New email"
+            }
         },
-        "subtitle": "Global settings on how your vault is displayed.",
-        "title": " Vault display settings"
-      }
-    },
-    "warning": {
-      "beta": " Zero-TOTP is still in beta. This value will be customizable in the future."
-    }
-  },
-  "privacy": {
-    "changes": {
-      "desc": "We may update this Privacy Policy to reflect changes in our practices or legal requirements. We will notify you of any significant changes via email or through our website.",
-      "title": "Changes to this Privacy Policy"
-    },
-    "collect": {
-      "li1": {
-        "long": "We collect your email address, username, and account creation date for the purpose of creating and managing your Zero-TOTP account.",
-        "short": "User Account Information:"
-      },
-      "li2": {
-        "long": " We use Zero-Knowledge Encryption to store your TOTP codes securely. We have no knowledge of your TOTP codes, secrets, or application URLs.",
-        "short": "Encrypted TOTP Codes:"
-      },
-      "li3": {
-        "long": "If you choose to enable the backup of your vault to Google Drive, we store identifiers (protected by encryption) for Google Drive integration. You can revoke at any moment your google drive integration. This will lead to the deletion of your identifiers.",
-        "short": "Google Drive Integration: "
-      },
-      "li4": {
-        "long": "We use authentication cookies to securely manage your sessions. No tracking cookies are used.",
-        "short": "Authentication Cookies: "
-      },
-      "li5": {
-        "long": "We retain the datetime of your last login on Zero-TOTP. Once you log in again, the previous date in erased by the new one. This information is used for implementing the data retention policy (see 4. Data Retention and User Control).",
-        "short": "Last login date:"
-      },
-      "part1": "We collect the following information:",
-      "title": " Information We Collect"
-    },
-    "contact": {
-      "desc1": "If you have any questions or concerns about this Privacy Policy or your data, please contact us at",
-      "title": "Contact Us"
-    },
-    "cookies": {
-      "desc": "We only use authentication cookies for session management. No tracking cookies are used.",
-      "title": "Cookies"
-    },
-    "intro": {
-      "part1": "Welcome to Zero-TOTP, a web application where users can securely store their TOTP codes for 2FA authentication with third-party services. At Zero-TOTP, we prioritize the privacy and security of your data. This Privacy Policy outlines how we collect, use, and protect your information. By using our services, you agree to the terms of this Privacy Policy.",
-      "part2": "This Privacy Policy aims to define the principles and guidelines implemented by the Zero-TOTP regarding the processing of personal data of users of the website zero-totp.com and rescue.zero-totp.com. The concept of \"personal data\" corresponds to the definition provided by Article 4 of the General Data Protection Regulation of the European Union (GDPR 2016/679). It refers to any information capable of directly or indirectly identifying a natural person, such as a username, email address, etc. Zero-TOTP affirms its commitment to complying with the applicable laws and regulations concerning data protection and undertakes to preserve their security, confidentiality, and integrity. Zero-TOTP formally commits not to sell, rent, exchange, or give away any personal information."
-    },
-    "liability": {
-      "desc1": "While we take every reasonable measure to ensure the security and confidentiality of your data, we cannot guarantee absolute protection against all potential risks. We disclaim any responsibility for the loss, breach, or unauthorized access to your information. By using Zero-TOTP, you acknowledge and accept that the security of your data is dependent on factors beyond our control.",
-      "desc2": "We only provide assurance regarding the robust encryption algorithms and security measures we employ to safeguard your data during storage and transmission.",
-      "title": "Disclaimer of Liability"
-    },
-    "licence": {
-      "desc1": "Zero-TOTP is an open-source application distributed under the GNU General Public License version 3 (GPL 3). This means that our source code is publicly available, and you have the freedom to view, modify, and distribute the software in compliance with the terms of the GPL 3 license.",
-      "desc2": "By choosing to use Zero-TOTP, you acknowledge and agree to comply with the provisions of the GPL 3 license. You can access the complete source code of our application on",
-      "desc3": "Please note that while the source code is open and freely available, the use of Zero-TOTP as a service provided by us is subject to the terms outlined in this Privacy Policy.",
-      "title": "Open Source and GPL 3 License"
-    },
-    "location": {
-      "long1": "To maximize redundancy, replication, and availability, we store data in three countries: Canada, Germany, and Switzerland. This practice is compliant with the GDPR, as all these countries are recognized by the EU as acceptable for data transfer. Additionally, we adhere to Swiss privacy laws and Quebec's Law 25 on data protection.",
-      "long2": "Please note that the list of countries where data is stored may change in the future. If we add a new country that is not an EU member, Canada, the USA, or Switzerland, we will notify users accordingly.",
-      "title": "Data storage location"
-    },
-    "portability": {
-      "long": " To receive your data in a structured, machine-readable format.",
-      "short": "Data Portability:"
-    },
-    "retention": {
-      "correction": {
-        "long": "You can update your username, email, passphrase, and codes (along with their associated data) in your account. For any other corrections, you can contact developer[at]zero-totp.com.",
-        "short": "Data Correction:"
-      },
-      "long1": "We retain all data, including vault information, for a maximum of five years after your last login to comply with GDPR's data storage limitations. You can request the deletion of your account and all associated data through the account settings at any time. You are responsible of the deletion of all the encrypted backups of your vault that you downloaded and that have been stored on Google Drive.",
-      "long2": "Disaster recovery and data availability requirements mean that we have a legitimate interest in maintaining secure and immutable backups. Backups are kept for maxmimum 60 days. Erasure requests will leave those backups untouched, and we will only remove data from backups if legally compelled to.",
-      "short": "Data Retention:",
-      "title": "Data Retention and User Control"
-    },
-    "rights": {
-      "access": {
-        "short": "Access:"
-      },
-      "desc": "You have the following rights:",
-      "desc2": "Please contact us at developer[at]zero-totp.com to exercise these rights.",
-      "erasure": {
-        "long": " To request the deletion of your account and data.",
-        "short": "Erasure:"
-      },
-      "long": " To request access to your personal information.",
-      "objection": {
-        "long": "To object to the processing of your data for specific purposes.",
-        "short": "Objection:"
-      },
-      "rectification": {
-        "long": "To request the correction of inaccurate or incomplete data.",
-        "short": "Rectification:"
-      },
-      "title": "Your Rights"
-    },
-    "security": {
-      "desc": "We employ industry-standard security measures to protect your data. Passwords are hashed using BCRYPT, and key derivation uses PBKDF2 with 700,000 iterations. Data is encrypted using AES 256-bit encryption.",
-      "title": "Security"
-    },
-    "subtitle": {
-      "intro": "Introduction"
-    },
-    "thirdpart": {
-      "part2": " If the user enables the favicon preview, your browser will use the DuckDuckGo API to retrieve the favicon of the website. Please review the privacy policies of DuckDuckGo, as we have no control over their data handling practices. Zero-TOTP does not store any data related to the favicon preview, and the DuckDuckGo API is only used to retrieve the favicon of the website. The only data sent to DuckDuckGo is the URL of the website by your browser. Zero-TOTP does not access or store without encryption this data."
-    },
-    "thirdparty": {
-      "part1": "If the user enables the Google Drive integration, we may integrate with third-party services for user convenience, such as Google Drive. Please review the privacy policies of these services, as we have no control over their data handling practices.",
-      "titles": "Third-Party Services"
-    },
-    "title": "Zero-TOTP Privacy Policy",
-    "update": "Last Updated",
-    "usage": {
-      "auth": {
-        "long": "To verify your identity and secure your account.",
-        "short": "User Authentication:"
-      },
-      "enc": {
-        "long": "To securely store your TOTP codes without knowledge of the actual codes, secrets, or application URLs.",
-        "short": "Encrypted Storage:"
-      },
-      "google": {
-        "short": "Google Drive Backup:"
-      },
-      "hoohle": {
-        "long": " If enabled, to facilitate the backup of encrypted data to your Google Drive."
-      },
-      "part1": "We use your information for the following purposes:",
-      "support": {
-        "long": "To respond to your inquiries and requests sent to",
-        "short": "Customer Support:"
-      },
-      "title": "Use of Information"
-    }
-  },
-  "privacy_policy": "Privacy Policy",
-  "qrcode": {
-    "add": {
-      "manually": "Add the TOTP code manually"
-    },
-    "back": "Go back",
-    "configure": {
-      "manually": "Configure manually"
-    },
-    "device": {
-      "no_selected": "No Device Selected"
-    },
-    "error": {
-      "pattern_invalid": "This is not a TOTP QR code or it contains error.",
-      "read_error": "An error occured while reading the QR code information"
-    },
-    "permission": {
-      "bigdeal": "It's not a big deal ! Just copy the secret from the website and enter it manually ",
-      "no_camera": "We can't detect any camera",
-      "not_possible": "Not possible ?",
-      "part1": "Make sure you have given the browser permission to use your camera",
-      "part2": "Give the permission to use the camera to be able to scan the QR code",
-      "part3": "A camera is required to scan a QR code",
-      "refused": "You refused Zero-TOTP to access to your camera",
-      "strong": "Any trouble ?"
-    },
-    "starting": "The QR scanner is starting ....",
-    "title": "Scan the QR code from the website your are activating TOTP 2FA on"
-  },
-  "red": "Red",
-  "save": "Save",
-  "seconds": "seconds",
-  "session_expired": "Oups, you session is expired !",
-  "sign_up": "Sign up",
-  "signup": {
-    "beta": {
-      "warning": {
-        "desc": "Thanks for joining us ! We are a small team and we are working hard to make Zero-TOTP the best TOTP client. We are still in beta, so some features are not implemented yet, bugs may occur and we need your help to make Zero-TOTP better. Please, report any issue you find. Thank you for your understanding and your help !",
-        "title": "Welcome to the beta version of Zero-TOTP 👋"
-      }
-    },
-    "button": {
-      "create": "Create my vault",
-      "start": "Start my zero-trip "
-    },
-    "checkbox": {
-      "beta": "I understand this is a beta version and I accept the risks. I understand that all features are not implemented yet, bugs may occur and I agree to report any issue I find.",
-      "privacy_policy": "I agree to the"
-    },
-    "email": {
-      "error": {
-        "forbidden": "' \" < > characters are forbidden in emails",
-        "invalid": "Your email is not valid"
-      }
-    },
-    "errors": {
-      "beta": "Dont forget to accept the beta conditions !",
-      "hashing": "An error occured while hashing your password. Please, try again",
-      "missing_fields": "Did you forget to fill something ?",
-      "terms": "Dont forget to accept terms & conditions !",
-      "unknown": "Something went wrong. Please try again later"
-    },
-    "passphrase": {
-      "confirmation": "Confirm passphrase",
-      "error": {
-        "char": "Your password must be at least 12 characters long",
-        "match": "Your passwords do not match",
-        "number": "Your password must contain at least one number",
-        "special_char": "Your password must contain at least one special character",
-        "upper": "Your password must contain at least one uppercase character"
-      }
-    },
-    "popup": {
-      "instruction": "To create your vault type the following sentence :",
-      "phrase": "My passphrase is strong and I won't forget it",
-      "subititle": {
-        "part2": "You and only you can open your vault."
-      },
-      "subtitle": {
-        "part1": "Zero-TOTP uses Zero Knowledge Encryption, which means that ",
-        "strong": "you won't be able to recover your password if you lose it !"
-      },
-      "title": "Are you sure ?"
-    },
-    "subtitle": "Have a safe and pleasant zero-trip",
-    "success": "Account created successfully 🎉🎉",
-    "username": {
-      "error": {
-        "forbidden": "' \" < > characters are forbidden in usernames"
-      }
-    },
-    "welcome": "Welcome aboard of Zero-TOTP beta"
-  },
-  "start": "Start",
-  "stop": "Stop",
-  "totp": {
-    "delete": {
-      "popup": {
-        "corps": "You won't be able to undo this action",
-        "destroy": "Destroy this secret",
-        "title": "Are you sure ?"
-      }
-    },
-    "error": {
-      "char": "<, >, \" and ' are forbidden",
-      "code": "Invalid secret. ",
-      "decryption": "An error occured while decrypting your secret",
-      "deleting": "An error occured while deleting your secret.",
-      "encryption": "An error happened while encrypting your secret",
-      "fav_empty": "URI cannot be empty",
-      "fetch_secret": "An error occured while getting your secret",
-      "fetch_secret_server": "An error occured while getting your secret from the server",
-      "invalid_domain": "Invalid domain name",
-      "invalid_uri": "Invalid URI",
-      "missing_https": "Missing http(s)://",
-      "name_empty": "Name cannot be empty",
-      "no_fav": "No favicon found for this domain",
-      "preferences": "An error occured while retrieving your preferences",
-      "ro": "Your are in read-only mode. You can't modify anything in a local vault.",
-      "secret_empty": "Secret cannot be empty",
-      "tag_empty": "Your tag cannot be empty",
-      "tag_exists": "Tag already associated",
-      "tag_length": "Too long tag name",
-      "update": "An error occured while updating your vault with a new code. ",
-      "update_pref": "Error : Impossible to update your preferences. "
-    },
-    "favicon": {
-      "add": {
-        "desc": {
-          "part2": "You can configure a global policy in your settings. The global policy overrides this setting.",
-          "strong": "The URI or domain name is never transmitted to zero-totp servers. Your browser uses DuckDuckGo API to fetch the favicon. No other information than the URI is transmitted by Zero-TOTP to DuckDuckGo or the target website."
+        "errors": {
+            "network": "Impossible to chat with the server. Please check your internet connection and status.zero-totp.com",
+            "unknown": "Oups, an error occured. Answer from the server : "
         },
-        "label": "Add the favicon logo of the related website."
-      },
-      "label": "Display favicon",
-      "policy": {
-        "always": "Global policy: Always",
-        "never": "Global policy: Never"
-      }
+        "loading": "Retrieving your favorite ice-cream flavor ... ",
+        "passphrase": {
+            "confirm": "Confirm Passphrase",
+            "current": "Your current passphrase",
+            "error": {
+                "char": "' \" < > characters are forbidden in passphrase",
+                "decrypt": "Error : Impossible to encrypt your vault",
+                "decrypt_one_secret": "Wrong key. You cannot decrypt one secret. This secret will be ignored. Please log   out and log in again.",
+                "derive": "Error : Impossible to derive your new passphrase",
+                "expired": "Impossible to decrypt your vault, you're decryption key has expired. Please log out and log in again.",
+                "fatal": "An error occured while updating your vault. Some information may not be updated\n ",
+                "fatal_light": "Operation aborted. Nothing have been updated. ",
+                "fetch_vault": "Error : Impossible to retrieve your vault from the server",
+                "full_abort": "An error occured. No update has been made. Update aborted. Report the error code ",
+                "hash_new": "An error occured while hashing your new passphrase. The vault and your passphrase have not been updated. Please, try again.",
+                "hashing": "An error occured while hashing your password. Please, try again",
+                "incorrect": "Your passphrase is incorrect",
+                "length": "Your passphrase must be at least 12 characters long",
+                "light_abort": "Your passphrase and vault are updated with success. But an error occured while finishing the process. The following step failed : ",
+                "match": "Your passphrases do not match",
+                "network": "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session.",
+                "number": "Your passphrase must contain at least one number",
+                "special": "Your passphrase must contain at least one special character",
+                "upper": "Your passphrase must contain at least one uppercase character",
+                "wrong_key": "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
+                "wrong_key_vault": "Wrong key. You cannot decrypt this vault."
+            },
+            "new": "New passphrase",
+            "no_former_passphrase": "We need your former passphrase to update your passphrase",
+            "popup": {
+                "google": {
+                    "backup_error": "Error : Impossible to backup your vault to google drive. ",
+                    "delete_error": "Error : Impossible to delete your google drive backup. ",
+                    "fetch_error": "Error : Impossible to check your google drive option. ",
+                    "option": {
+                        "delete": {
+                            "info": "(Recommended if your passphrase is not safe anymore)",
+                            "strong": "Delete my old backup and make a new one now"
+                        },
+                        "keep": {
+                            "strong": "Keep my old backup with my old password and make a new one now"
+                        }
+                    },
+                    "title": "Oh ! You have backups in your google drive"
+                },
+                "updating": {
+                    "derivation": "Derivation of your new passphrase",
+                    "descryption": "Decryption of your vault",
+                    "destroy": "Destroying your google drive backup  ",
+                    "download": "Download of your encrypted vault",
+                    "encryption": "Encryption of your vault with your new key",
+                    "subititle": "We are re encrypting all your data. Closing this tab might definitively corrupt them",
+                    "success": "Your passphrase is updated ! You can now log in with your new passphrase 🎉",
+                    "title": "Do not close this page",
+                    "upload": "Upload of your encrypted vault",
+                    "upload_google": "Upload a new encrypted backup on your google drive   ",
+                    "verif": "Verification of your former passphrase",
+                    "verif_new": "Verification of your new encrypted vault"
+                },
+                "warning": {
+                    "continue": "I'm sure",
+                    "subtitle": "Changing your passphrase will :",
+                    "title": "Be careful",
+                    "warn1": "Re-encrypt your current vault",
+                    "warn2": "Your old backup will still be encrypted with your former passphrase",
+                    "warn3": "Your Google Drive backup will be updated. If you have old backup, they will still be encrypted with your former passphrase. If your passphrase is not safe anymore you should delete them without delay",
+                    "warn4": "If you lose this new passphrase, it is impossible to recover it",
+                    "warn5": "If you change your passphrase for security reasons, securely delete your backup as soon as possible"
+                }
+            },
+            "title": "Update passphrase"
+        },
+        "title": "Edit your account ⚙️",
+        "username": {
+            "current": "Your current username is:",
+            "error": {
+                "char": "&, <, >, \" and ' are forbidden",
+                "missing": "Oups, cannot be empty !",
+                "unknown": "An error occured while updating your username. Please, try again later"
+            },
+            "new": {
+                "label": "New username"
+            },
+            "success": "Username updated 🎉",
+            "title": "Update username"
+        }
     },
-    "secret": {
-      "add": {
-        "added": "New TOTP code added ! ",
-        "label": "TOTP secret",
-        "success": "TOTP code updated !"
-      },
-      "delete": {
-        "success": "TOTP code deleted !"
-      }
-    },
-    "tag": {
-      "popup": {
-        "placeholder": "Tag's name",
-        "title": "Add a tag"
-      }
-    }
-  },
-  "unlock": "Unlock",
-  "update": "Update",
-  "username": "Username",
-  "vault": {
-    "add": {
-      "manual": "Enter it manually",
-      "scan": "Scan a QRCode",
-      "title": "Choose a method to add a new TOTP code "
-    },
-    "button": {
-      "add": "Add a new TOTP code",
-      "reload": "Reload my vault"
-    },
-    "downloaded": "Encrypted vault downloaded ! 🧳\nKeep it in a safe place 🔒",
-    "error": {
-      "backup": {
-        "part1": "Error : Impossible to backup your vault.",
-        "part2": "Please, try to re-sync your Google Drive account."
-      },
-      "decryption": "An error occurred while decrypting your secrets.",
-      "decryption_vault": "Impossible to decrypt your vault. Please log out and log in again.",
-      "google": {
-        "disable": "Error : Impossible to disable Google Drive. ",
-        "unreadable": "Error : Your vault backup is unreadable. Please, try to re-backup your Google Drive account.",
-        "verify": "Error : Impossible to verify your vault backups."
-      },
-      "preferences": "An error occured while retrieving your preferences",
-      "retrieve_vault": "Error : Impossible to retrieve your vault from the server",
-      "server": "Error : Impossible to retrieve your vault from the server.",
-      "server_unreachable": "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session.",
-      "wrong_key": "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
-      "wrong_key_vault": "Wrong key. You cannot decrypt this vault."
-    },
-    "filter": {
-      "tag": {
-        "title": "Filter by tag"
-      }
-    },
-    "google": {
-      "disabled": "Google Drive disabled ! ✅"
-    },
-    "local": {
-      "desc": {
-        "code": "restore a backup",
-        "part1": "This is a vault stored locally on your computer. You can't sync it with other devices, nor with\n                    zero-totp servers. You don't need internet to open it.",
-        "part2": "To restore this backup and sync it on all your devices, log in and then choose",
-        "part3": " in the storage options"
-      }
-    },
-    "oauth": {
-      "error": {
-        "server": "Impossible to start the Oauth flow"
-      }
-    },
-    "storage": {
-      "google": {
-        "about": {
-          "desc1": "A backup is made every time a modification is made to your vault.",
-          "desc2": "You can change you backup policy in your settings."
+    "add": "Add",
+    "always": "Always",
+    "available_soon": "Available soon !",
+    "blue": "Blue",
+    "cancel": "Cancel",
+    "changelog": "Changelog",
+    "close": "Close",
+    "continue": "Continue",
+    "copied": "Copied !",
+    "delete": "Delete",
+    "email": "Email",
+    "email_verif": {
+        "code": {
+            "placeholder": "Enter the code here"
+        },
+        "desc1": {
+            "link": "ask for a new code",
+            "text": "The code is valid for 10 minutes. If you don't receive the email, check your spam folder or"
+        },
+        "desc2": {
+            "link": "change it here",
+            "part2": "If you want to change your email address, you can",
+            "text": {
+                "part1": "The email has been sent to"
+            }
         },
         "error": {
-          "check": "An error occured while checking your\n                                                backup"
+            "already_verified": "Email already verified",
+            "expired": "Your verification code is expired. Please ask for a new one.",
+            "failed": "Wrong verification code. You have {{ left_attempts }} attempt(s) left before invaliding your verification code.",
+            "generic": "Invalid or expired code",
+            "no_active_code": "You don't have active verification code. To verify you email address, ask for a new one.",
+            "no_email": "Please, login first",
+            "rate_limited": "You are rate limited ! Your asked too much verification code in a short period of time. You will be able to ask for a new code in {{time}} min.",
+            "too_many_failed": "Too many failed attempts. Please ask for a new verification code.",
+            "unknown": "An error occured ! Please logout and login again ❌"
         },
-        "info": "More info",
-        "last_backup": "Last backed-up modification :",
-        "resync": "Try to re-sync",
-        "stop_sync": "Stop sync",
-        "sync": "Sync now"
-      },
-      "local": {
-        "open": " Open a local\n                                                    Vault",
-        "open_ro": "Open a backup locally (read-only)",
-        "restore": "Restore a backup",
-        "save": " Save a backup",
-        "title": "Backup locally"
-      },
-      "title": "Your storage options",
-      "zero_totp": {
-        "location": "Zero-TOTP servers in Canada 🇨🇦, Switzerland 🇨🇭 and Europe 🇪🇺",
-        "reload": "Reload the vault ",
-        "title": "Zero-TOTP servers"
-      }
+        "popup": {
+            "button": {
+                "update": "Update your email address"
+            },
+            "error": "Something went wrong. Please try again later",
+            "success": "Email updated with success. You should receive a verification email soon ! ✅"
+        },
+        "resend": {
+            "error": "An error occured ! ❌",
+            "success": "Email sent ! ✅"
+        },
+        "subtitle": {
+            "part1": "We have sent you an email with a ",
+            "part2": "to verify your email address."
+        },
+        "title": "Verify your email address ",
+        "verify": {
+            "already_verified": "Email already verified",
+            "success": "Your email is verified ! ✅"
+        }
     },
-    "subtitle": "You and only you can access to this data. All the magic is done on your computer.",
-    "title": {
-      "backup": "Backup from",
-      "main": "Here is your TOTP vault"
-    }
-  },
-  "verify": "Verify"
+    "footer": {
+        "bug": "Report a bug",
+        "opensource": "Open-Source Component"
+    },
+    "generic_errors": {
+        "bad_email": "Invalid email",
+        "email_exists": "Email already exists",
+        "error": "Error",
+        "invalid_creds": "Invalid credentials",
+        "invalid_request": "Invalid request",
+        "missing_params": "Missing parameters",
+        "user_not_found": "User not found",
+        "username_exists": "Username already exists"
+    },
+    "green": "Green",
+    "home": {
+        "about": {
+            "title": "About Zero-Knowledge Encryption",
+            "zke_def": "Zero Knowledge Encryption (ZKE) refers to a robust security measure that ensures the utmost protection of your data. With ZKE, your information is encrypted locally on your device before being uploaded to the cloud, and only you hold the encryption keys, guaranteeing that no one, including the service provider, can access your data without your explicit permission. This empowers you with complete control over your sensitive information while enjoying the convenience and flexibility of cloud storage."
+        },
+        "backup": {
+            "desc": "You should always be able to access your TOTP code. That's why ",
+            "desc_strong": "Zero-TOTP has 4 independant platform where you can decrypt your vault.",
+            "option": {
+                "available": "Available now",
+                "beta": "Available in beta",
+                "cli": "To retrieve all your codes form your terminal (CLI unix only).",
+                "mobile": "To retrieve all your codes directly in your pocket.",
+                "rescue": "A very simple, minimal and ULTRA stable frontend, hosted on github pages where you can upload a backup your vault and decrypt it. In case of zero-totp's servers failure, your backup vaults can still be opened",
+                "soon": "Coming soon",
+                "zero_totp": "The complete version of Zero-TOTP, up to date with all its features."
+            },
+            "title": "And always have a",
+            "title_strong": "backup plan"
+        },
+        "button": {
+            "buy_me_a_coffee": "buying me a coffee",
+            "github_project": "Follow the project on github",
+            "learnMore": "Learn more",
+            "openVault": "Open my vault"
+        },
+        "buyMeCoffee": {
+            "desc": "Open source & self hosted applications are possible thanks to your support. If you like this project, please consider"
+        },
+        "data": {
+            "google": {
+                "desc": "You can synchronize your encrypted vault with your google drive. This option is not mandatory, but it is highly recommended. In case of a server crash, you will be able to recover your encrypted vault from your google drive.<br>Your vault is still encrypted and only your passphrase can decrypt it. This passphrase is never stored anywhere.",
+                "title": "Back up your encrypted vault in your google drive"
+            },
+            "local": {
+                "desc": "You can download your encrypted vault and store it in your computer (or anywhere else). This option is not mandatory, but it is highly recommended. In case of a server crash, you will be able to recover your encrypted vault from your computer.<br>As always, your vault is still encrypted and only your passphrase can decrypt it. This passphrase is never stored anywhere.",
+                "title": "Back up your encrypted vault in your computer"
+            },
+            "subtitle": "You choose where to store your encrypted vault",
+            "title": "Never lose your data",
+            "zero_totp": {
+                "desc": "This is the default and mandatory option. Your encrypted vault is stored on our servers, hosted in Canada 🇨🇦, Switzerland 🇨🇭 and Germany 🇩🇪. Nobody has access to your data, except you. This option is the one used when your log in to your account on <a href=\"https://zero-totp.com\">zero-totp.com</a>. You cannot disable this option, but you can backup your vault on your computer or on your google drive.",
+                "title": "Store your encrypted vault on Zero-TOTP's servers"
+            }
+        },
+        "project": {
+            "desc": {
+                "contributions": "All contribution is welcome !",
+                "part1": "Zero-TOTP was first launched in 2023 by",
+                "part2": "with the aim to provide a 100% open-source, safe and reliable alternative to proprietary totp clients. The project is still in development and is currently in beta."
+            },
+            "title": "The project"
+        },
+        "subtitle": "Zero-TOTP is a",
+        "subtitle.and": "and a",
+        "subtitle.opensource": "100% open-source",
+        "subtitle.platform": "platform",
+        "subtitle.zke": "Zero-Knowledge Infrastructure",
+        "title": "Store your TOTP codes in a",
+        "title.strong": "safe place",
+        "trust.no.one": "Trust no one, except YOU",
+        "tuto": {
+            "2FA": "second factor of authentication",
+            "accounts": "to secure your accounts (gmail, facebook, twitter, github, etc ...). It's like a SMS code, but it's more secure and more convenient !",
+            "title": "Add an extra layer of security to your accounts",
+            "tmp_codes": "temporary codes",
+            "totp_are": "TOTP are ",
+            "totp_client": {
+                "desc": "Each time you log in to an account, you will have to enter a new code. This code is generated by an application on your phone or computer. This application is called a",
+                "name": "TOTP client"
+            },
+            "totp_time": "A TOTP code is only valid for",
+            "use_as": "that you can use as a"
+        },
+        "why": {
+            "key": {
+                "desc1": "Only your passphrase can decrypt your vault.",
+                "desc2": "All the encryption is performed in your             browser, and your data is safe before it has even left your device !",
+                "title": "Your are the key holder"
+            },
+            "opensource": {
+                "desc1": "Zero-TOTP is 100% open source and 100% free. Never trust anyone but you. ",
+                "desc2": "We are 100% transparent and anyone can access to the source code",
+                "title": "100% open-source"
+            },
+            "strong_enc": {
+                "l1": "with AES256, a very strong encryption standard.",
+                "l2": "Only you can decrypt your data with your password.",
+                "strong": "All your data is encrypted",
+                "title": "Strong encryption"
+            },
+            "title": "Why Zero-TOTP ?",
+            "zke": {
+                "desc": {
+                    "1": "Zero-TOTP use zero-knowledge encryption with means than",
+                    "2": "except you. Even the server administrator can't access your data. You and only you are able to decrypt your vault.",
+                    "strong": "no one can access your data"
+                },
+                "title": "Zero-Knowledge Encryption"
+            }
+        }
+    },
+    "hour": "hour",
+    "import_vault": {
+        "title": "Import a vault"
+    },
+    "less": "Less",
+    "loading": "Loading ...",
+    "log_in": "Log in",
+    "logging-out": {
+        "loading": "Logging you out ..."
+    },
+    "login": {
+        "authorize": "Authorize",
+        "backup": {
+            "open": {
+                "popup": {
+                    "title": "Unlock your vault"
+                }
+            },
+            "open_button": "Open a backup",
+            "subtitle": "You can open a Zero-TOTP vault saved on your laptop 💻",
+            "unsecure": {
+                "popup": {
+                    "button": {
+                        "cancel": "Return to safety"
+                    },
+                    "continue": "I trust this backup",
+                    "desc": "Your vault may have been modified by someone else or it does not come from Zero-TOTP.",
+                    "strong": "The verification of the authenticity of your vault failed",
+                    "strong2": "Importing an unsecure backup may lead to security issues and should not be trusted",
+                    "title": "You backup may be not secure"
+                }
+            },
+            "vault_backup": " Vault backup"
+        },
+        "errors": {
+            "account_blocked": "Your account has been blocked for security reasons. Please contact the administrator at developer[at]zero-totp.com to unlock it",
+            "confirm_passphrase": "To continue, please confirm your passphrase",
+            "email": "Are your sure about your email ?",
+            "empty": "Did you forget to fill something ?",
+            "general_error": "An error occured. Please, try again.",
+            "hashing": "An error occured while hashing your password. Please, try again",
+            "import_vault": {
+                "error_unknown": "Error : Impossible to import your vault. Unknown error",
+                "invalid_arg": "Error : Impossible to import your vault. It seems to be    corrupted",
+                "invalid_file": "Error : Impossible to import your vault. Impossible to read it",
+                "invalid_type": "Error : Invalid file type",
+                "invalid_version": "Error : Impossible to import your vault. Unsupported version",
+                "key_dec": "Impossible to decrypt your key.",
+                "missing_arg": "Error : Impossible to import your vault. It seems to not be    complete",
+                "no_signature": "Error : Impossible to import your vault. No signature found",
+                "parse_fail": "Error : Impossible to parse your file",
+                "wrong_passphrase": "Wrong passphrase"
+            },
+            "no_connection": "Impossible to chat with the server ! \nCheck your internet connection or status.zero-totp.com",
+            "no_session": "Your session expired. Please log in again to complete the sync flow",
+            "oauth": "One last step, please confirm your password to complete the synchronization",
+            "rate_limited": "You are rate limited ! Your IP as generated too much failed login attempts in a short period of time. You will be able to try to login again in {{time}} min. If you are using a VPN, try another location or disable it.",
+            "server_error": "Error : Impossible ro retrieve information from the server",
+            "session_end": "For your safety, your session must be renewed every hour.",
+            "session_killed": "For your safety, you have been disconnected because you have reloaded or closed the tab",
+            "session_timeout": "For your safety, you have been disconnected after due to inactivity. You can customize this delay in your preferences"
+        },
+        "open_button": "Open my vault",
+        "remember": "Remember my email address",
+        "rescue": {
+            "part1": "🛟 Troubles logging to your account ? Open a backup on our ",
+            "part2": "Rescue Zero-TOTP",
+            "strong": "ultra stable plateform"
+        },
+        "subtitle": "This time, you do the magic 🪄",
+        "success": "Vault decrypted ✅",
+        "title": "It's time to open your vault !"
+    },
+    "logout": "Logout",
+    "more": "More",
+    "my_vault": "My vault",
+    "name": "Name",
+    "navbar": {
+        "account": "Account",
+        "add": "Add a new code",
+        "backup": "Backup plan",
+        "how": " How TOTP works",
+        "lang": {
+            "suggest": "Suggest Others"
+        },
+        "lose": "Never lose your data",
+        "preferences": "Preferences",
+        "vault_backup": "Vault backup",
+        "why": "Why Zero-TOTP"
+    },
+    "never": "Never",
+    "oauth": {
+        "error": {
+            "impossible": "Error : Impossible to backup your vault. Please, try to re-sync your Google Drive account."
+        },
+        "sync": {
+            "loading": "Synchronizing, do not close your browser..."
+        }
+    },
+    "orange": "Orange",
+    "passphrase": "Passphrase",
+    "preference": {
+        "account": {
+            "security": {
+                "autolock": {
+                    "error": "{{min}}min minimum, {{max}}h maximum",
+                    "label": "Maximum time of inactivity before your vault autolocks",
+                    "success": "Success ! This new value will be applied at your next login",
+                    "title": "Autolock your vault after inactivity"
+                },
+                "subtitle": "Settings related to your account security",
+                "title": "Account security settings"
+            }
+        },
+        "advanced": {
+            "button": "Display advanced settings",
+            "subtitle": "Settings to manage more precisely your Zero-TOTP account.",
+            "title": "Advanced settings"
+        },
+        "backup": {
+            "eol": {
+                "desc1": "This is the number of days after which a backup will be deleted (only if your minimum backup setting is reached). This parameter is overridden by your minimum backup setting.",
+                "title": "Backups end of life (in days)"
+            },
+            "minimum": {
+                "desc1": " This is the minimum number of backup that Zero-TOTP will keep above all in your Google Drive.",
+                "desc2": " This paramater overrides any other parameter.",
+                "title": "Minimum of backup kept in Google Drive"
+            }
+        },
+        "error": {
+            "fetch": "An error occured while retrieving your preferences",
+            "update": "Error : Impossible to update your preferences. "
+        },
+        "iteration": {
+            "title": "Number of iterations used in the PBKDF2 derivation function"
+        },
+        "loading": "Retrieving your favorite ice-cream flavor ...",
+        "more_info": "More info",
+        "tag": {
+            "global": "Global setting",
+            "sync_only": "Synched account only"
+        },
+        "title": "Your preferences 🔧",
+        "vault": {
+            "display": {
+                "favicon": {
+                    "info1": "When enabled, your browser will try to fetch the favicon of the website you are adding to your vault when displaying it. If it fails, it will display a default icon.",
+                    "info2": " The favicon is fetched by your browser using DuckDuckGo API (a privacy friendly search engine). Zero-TOTP does not transmit any information to DuckDuckGo or the target website. The URI or domain name is never transmitted to zero-totp servers. ",
+                    "info3": " You can disable this feature globally, enable it globally, or use each secrets' setting.",
+                    "option": {
+                        "enabled": "If enabled only"
+                    },
+                    "title": "Display website's favicon beside its name"
+                },
+                "subtitle": "Global settings on how your vault is displayed.",
+                "title": " Vault display settings"
+            }
+        },
+        "warning": {
+            "beta": " Zero-TOTP is still in beta. This value will be customizable in the future."
+        }
+    },
+    "privacy": {
+        "changes": {
+            "desc": "We may update this Privacy Policy to reflect changes in our practices or legal requirements. We will notify you of any significant changes via email or through our website.",
+            "title": "Changes to this Privacy Policy"
+        },
+        "collect": {
+            "li1": {
+                "long": "We collect your email address, username, and account creation date for the purpose of creating and managing your Zero-TOTP account.",
+                "short": "User Account Information:"
+            },
+            "li2": {
+                "long": " We use Zero-Knowledge Encryption to store your TOTP codes securely. We have no knowledge of your TOTP codes, secrets, or application URLs.",
+                "short": "Encrypted TOTP Codes:"
+            },
+            "li3": {
+                "long": "If you choose to enable the backup of your vault to Google Drive, we store identifiers (protected by encryption) for Google Drive integration. You can revoke at any moment your google drive integration. This will lead to the deletion of your identifiers.",
+                "short": "Google Drive Integration: "
+            },
+            "li4": {
+                "long": "We use authentication cookies to securely manage your sessions. No tracking cookies are used.",
+                "short": "Authentication Cookies: "
+            },
+            "li5": {
+                "long": "We retain the datetime of your last login on Zero-TOTP. Once you log in again, the previous date in erased by the new one. This information is used for implementing the data retention policy (see 4. Data Retention and User Control).",
+                "short": "Last login date:"
+            },
+            "part1": "We collect the following information:",
+            "title": " Information We Collect"
+        },
+        "contact": {
+            "desc1": "If you have any questions or concerns about this Privacy Policy or your data, please contact us at",
+            "title": "Contact Us"
+        },
+        "cookies": {
+            "desc": "We only use authentication cookies for session management. No tracking cookies are used.",
+            "title": "Cookies"
+        },
+        "intro": {
+            "part1": "Welcome to Zero-TOTP, a web application where users can securely store their TOTP codes for 2FA authentication with third-party services. At Zero-TOTP, we prioritize the privacy and security of your data. This Privacy Policy outlines how we collect, use, and protect your information. By using our services, you agree to the terms of this Privacy Policy.",
+            "part2": "This Privacy Policy aims to define the principles and guidelines implemented by the Zero-TOTP regarding the processing of personal data of users of the website zero-totp.com and rescue.zero-totp.com. The concept of \"personal data\" corresponds to the definition provided by Article 4 of the General Data Protection Regulation of the European Union (GDPR 2016/679). It refers to any information capable of directly or indirectly identifying a natural person, such as a username, email address, etc. Zero-TOTP affirms its commitment to complying with the applicable laws and regulations concerning data protection and undertakes to preserve their security, confidentiality, and integrity. Zero-TOTP formally commits not to sell, rent, exchange, or give away any personal information."
+        },
+        "liability": {
+            "desc1": "While we take every reasonable measure to ensure the security and confidentiality of your data, we cannot guarantee absolute protection against all potential risks. We disclaim any responsibility for the loss, breach, or unauthorized access to your information. By using Zero-TOTP, you acknowledge and accept that the security of your data is dependent on factors beyond our control.",
+            "desc2": "We only provide assurance regarding the robust encryption algorithms and security measures we employ to safeguard your data during storage and transmission.",
+            "title": "Disclaimer of Liability"
+        },
+        "licence": {
+            "desc1": "Zero-TOTP is an open-source application distributed under the GNU General Public License version 3 (GPL 3). This means that our source code is publicly available, and you have the freedom to view, modify, and distribute the software in compliance with the terms of the GPL 3 license.",
+            "desc2": "By choosing to use Zero-TOTP, you acknowledge and agree to comply with the provisions of the GPL 3 license. You can access the complete source code of our application on",
+            "desc3": "Please note that while the source code is open and freely available, the use of Zero-TOTP as a service provided by us is subject to the terms outlined in this Privacy Policy.",
+            "title": "Open Source and GPL 3 License"
+        },
+        "location": {
+            "long1": "To maximize redundancy, replication, and availability, we store data in three countries: Canada, Germany, and Switzerland. This practice is compliant with the GDPR, as all these countries are recognized by the EU as acceptable for data transfer. Additionally, we adhere to Swiss privacy laws and Quebec's Law 25 on data protection.",
+            "long2": "Please note that the list of countries where data is stored may change in the future. If we add a new country that is not an EU member, Canada, the USA, or Switzerland, we will notify users accordingly.",
+            "title": "Data storage location"
+        },
+        "portability": {
+            "long": " To receive your data in a structured, machine-readable format.",
+            "short": "Data Portability:"
+        },
+        "retention": {
+            "correction": {
+                "long": "You can update your username, email, passphrase, and codes (along with their associated data) in your account. For any other corrections, you can contact developer[at]zero-totp.com.",
+                "short": "Data Correction:"
+            },
+            "long1": "We retain all data, including vault information, for a maximum of five years after your last login to comply with GDPR's data storage limitations. You can request the deletion of your account and all associated data through the account settings at any time. You are responsible of the deletion of all the encrypted backups of your vault that you downloaded and that have been stored on Google Drive.",
+            "long2": "Disaster recovery and data availability requirements mean that we have a legitimate interest in maintaining secure and immutable backups. Backups are kept for maxmimum 60 days. Erasure requests will leave those backups untouched, and we will only remove data from backups if legally compelled to.",
+            "short": "Data Retention:",
+            "title": "Data Retention and User Control"
+        },
+        "rights": {
+            "access": {
+                "short": "Access:"
+            },
+            "desc": "You have the following rights:",
+            "desc2": "Please contact us at developer[at]zero-totp.com to exercise these rights.",
+            "erasure": {
+                "long": " To request the deletion of your account and data.",
+                "short": "Erasure:"
+            },
+            "long": " To request access to your personal information.",
+            "objection": {
+                "long": "To object to the processing of your data for specific purposes.",
+                "short": "Objection:"
+            },
+            "rectification": {
+                "long": "To request the correction of inaccurate or incomplete data.",
+                "short": "Rectification:"
+            },
+            "title": "Your Rights"
+        },
+        "security": {
+            "desc": "We employ industry-standard security measures to protect your data. Passwords are hashed using BCRYPT, and key derivation uses PBKDF2 with 700,000 iterations. Data is encrypted using AES 256-bit encryption.",
+            "title": "Security"
+        },
+        "subtitle": {
+            "intro": "Introduction"
+        },
+        "thirdpart": {
+            "part2": " If the user enables the favicon preview, your browser will use the DuckDuckGo API to retrieve the favicon of the website. Please review the privacy policies of DuckDuckGo, as we have no control over their data handling practices. Zero-TOTP does not store any data related to the favicon preview, and the DuckDuckGo API is only used to retrieve the favicon of the website. The only data sent to DuckDuckGo is the URL of the website by your browser. Zero-TOTP does not access or store without encryption this data."
+        },
+        "thirdparty": {
+            "part1": "If the user enables the Google Drive integration, we may integrate with third-party services for user convenience, such as Google Drive. Please review the privacy policies of these services, as we have no control over their data handling practices.",
+            "titles": "Third-Party Services"
+        },
+        "title": "Zero-TOTP Privacy Policy",
+        "update": "Last Updated",
+        "usage": {
+            "auth": {
+                "long": "To verify your identity and secure your account.",
+                "short": "User Authentication:"
+            },
+            "enc": {
+                "long": "To securely store your TOTP codes without knowledge of the actual codes, secrets, or application URLs.",
+                "short": "Encrypted Storage:"
+            },
+            "google": {
+                "short": "Google Drive Backup:"
+            },
+            "hoohle": {
+                "long": " If enabled, to facilitate the backup of encrypted data to your Google Drive."
+            },
+            "part1": "We use your information for the following purposes:",
+            "support": {
+                "long": "To respond to your inquiries and requests sent to",
+                "short": "Customer Support:"
+            },
+            "title": "Use of Information"
+        }
+    },
+    "privacy_policy": "Privacy Policy",
+    "qrcode": {
+        "add": {
+            "manually": "Add the TOTP code manually"
+        },
+        "back": "Go back",
+        "configure": {
+            "manually": "Configure manually"
+        },
+        "device": {
+            "no_selected": "No Device Selected"
+        },
+        "error": {
+            "pattern_invalid": "This is not a TOTP QR code or it contains error.",
+            "read_error": "An error occured while reading the QR code information"
+        },
+        "permission": {
+            "bigdeal": "It's not a big deal ! Just copy the secret from the website and enter it manually ",
+            "no_camera": "We can't detect any camera",
+            "not_possible": "Not possible ?",
+            "part1": "Make sure you have given the browser permission to use your camera",
+            "part2": "Give the permission to use the camera to be able to scan the QR code",
+            "part3": "A camera is required to scan a QR code",
+            "refused": "You refused Zero-TOTP to access to your camera",
+            "strong": "Any trouble ?"
+        },
+        "starting": "The QR scanner is starting ....",
+        "title": "Scan the QR code from the website your are activating TOTP 2FA on"
+    },
+    "red": "Red",
+    "save": "Save",
+    "seconds": "seconds",
+    "session_expired": "Oups, you session is expired !",
+    "sign_up": "Sign up",
+    "signup": {
+        "beta": {
+            "warning": {
+                "desc": "Thanks for joining us ! We are a small team and we are working hard to make Zero-TOTP the best TOTP client. We are still in beta, so some features are not implemented yet, bugs may occur and we need your help to make Zero-TOTP better. Please, report any issue you find. Thank you for your understanding and your help !",
+                "title": "Welcome to the beta version of Zero-TOTP 👋"
+            }
+        },
+        "button": {
+            "create": "Create my vault",
+            "start": "Start my zero-trip "
+        },
+        "checkbox": {
+            "beta": "I understand this is a beta version and I accept the risks. I understand that all features are not implemented yet, bugs may occur and I agree to report any issue I find.",
+            "privacy_policy": "I agree to the"
+        },
+        "email": {
+            "error": {
+                "forbidden": "' \" < > characters are forbidden in emails",
+                "invalid": "Your email is not valid"
+            }
+        },
+        "errors": {
+            "beta": "Dont forget to accept the beta conditions !",
+            "hashing": "An error occured while hashing your password. Please, try again",
+            "missing_fields": "Did you forget to fill something ?",
+            "terms": "Dont forget to accept terms & conditions !",
+            "unknown": "Something went wrong. Please try again later"
+        },
+        "passphrase": {
+            "confirmation": "Confirm passphrase",
+            "error": {
+                "char": "Your password must be at least 12 characters long",
+                "match": "Your passwords do not match",
+                "number": "Your password must contain at least one number",
+                "special_char": "Your password must contain at least one special character",
+                "upper": "Your password must contain at least one uppercase character"
+            }
+        },
+        "popup": {
+            "instruction": "To create your vault type the following sentence :",
+            "phrase": "My passphrase is strong and I won't forget it",
+            "subititle": {
+                "part2": "You and only you can open your vault."
+            },
+            "subtitle": {
+                "part1": "Zero-TOTP uses Zero Knowledge Encryption, which means that ",
+                "strong": "you won't be able to recover your password if you lose it !"
+            },
+            "title": "Are you sure ?"
+        },
+        "subtitle": "Have a safe and pleasant zero-trip",
+        "success": "Account created successfully 🎉🎉",
+        "username": {
+            "error": {
+                "forbidden": "' \" < > characters are forbidden in usernames"
+            }
+        },
+        "welcome": "Welcome aboard of Zero-TOTP beta"
+    },
+    "start": "Start",
+    "stop": "Stop",
+    "totp": {
+        "delete": {
+            "popup": {
+                "corps": "You won't be able to undo this action",
+                "destroy": "Destroy this secret",
+                "title": "Are you sure ?"
+            }
+        },
+        "error": {
+            "char": "<, >, \" and ' are forbidden",
+            "code": "Invalid secret. ",
+            "decryption": "An error occured while decrypting your secret",
+            "deleting": "An error occured while deleting your secret.",
+            "encryption": "An error happened while encrypting your secret",
+            "fav_empty": "URI cannot be empty",
+            "fetch_secret": "An error occured while getting your secret",
+            "fetch_secret_server": "An error occured while getting your secret from the server",
+            "invalid_domain": "Invalid domain name",
+            "invalid_uri": "Invalid URI",
+            "missing_https": "Missing http(s)://",
+            "name_empty": "Name cannot be empty",
+            "no_fav": "No favicon found for this domain",
+            "preferences": "An error occured while retrieving your preferences",
+            "ro": "Your are in read-only mode. You can't modify anything in a local vault.",
+            "secret_empty": "Secret cannot be empty",
+            "tag_empty": "Your tag cannot be empty",
+            "tag_exists": "Tag already associated",
+            "tag_length": "Too long tag name",
+            "update": "An error occured while updating your vault with a new code. ",
+            "update_pref": "Error : Impossible to update your preferences. "
+        },
+        "favicon": {
+            "add": {
+                "desc": {
+                    "part2": "You can configure a global policy in your settings. The global policy overrides this setting.",
+                    "strong": "The URI or domain name is never transmitted to zero-totp servers. Your browser uses DuckDuckGo API to fetch the favicon. No other information than the URI is transmitted by Zero-TOTP to DuckDuckGo or the target website."
+                },
+                "label": "Add the favicon logo of the related website."
+            },
+            "label": "Display favicon",
+            "policy": {
+                "always": "Global policy: Always",
+                "never": "Global policy: Never"
+            }
+        },
+        "secret": {
+            "add": {
+                "added": "New TOTP code added ! ",
+                "label": "TOTP secret",
+                "success": "TOTP code updated !"
+            },
+            "delete": {
+                "success": "TOTP code deleted !"
+            }
+        },
+        "tag": {
+            "popup": {
+                "placeholder": "Tag's name",
+                "title": "Add a tag"
+            }
+        }
+    },
+    "unlock": "Unlock",
+    "update": "Update",
+    "username": "Username",
+    "vault": {
+        "add": {
+            "manual": "Enter it manually",
+            "scan": "Scan a QRCode",
+            "title": "Choose a method to add a new TOTP code "
+        },
+        "button": {
+            "add": "Add a new TOTP code",
+            "reload": "Reload my vault"
+        },
+        "downloaded": "Encrypted vault downloaded ! 🧳\nKeep it in a safe place 🔒",
+        "error": {
+            "backup": {
+                "part1": "Error : Impossible to backup your vault.",
+                "part2": "Please, try to re-sync your Google Drive account."
+            },
+            "decryption": "An error occurred while decrypting your secrets.",
+            "decryption_vault": "Impossible to decrypt your vault. Please log out and log in again.",
+            "google": {
+                "disable": "Error : Impossible to disable Google Drive. ",
+                "unreadable": "Error : Your vault backup is unreadable. Please, try to re-backup your Google Drive account.",
+                "verify": "Error : Impossible to verify your vault backups."
+            },
+            "preferences": "An error occured while retrieving your preferences",
+            "retrieve_vault": "Error : Impossible to retrieve your vault from the server",
+            "server": "Error : Impossible to retrieve your vault from the server.",
+            "server_unreachable": "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session.",
+            "wrong_key": "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
+            "wrong_key_vault": "Wrong key. You cannot decrypt this vault."
+        },
+        "filter": {
+            "tag": {
+                "title": "Filter by tag"
+            }
+        },
+        "google": {
+            "disabled": "Google Drive disabled ! ✅"
+        },
+        "local": {
+            "desc": {
+                "code": "restore a backup",
+                "part1": "This is a vault stored locally on your computer. You can't sync it with other devices, nor with\n                    zero-totp servers. You don't need internet to open it.",
+                "part2": "To restore this backup and sync it on all your devices, log in and then choose",
+                "part3": " in the storage options"
+            }
+        },
+        "oauth": {
+            "error": {
+                "server": "Impossible to start the Oauth flow"
+            }
+        },
+        "storage": {
+            "google": {
+                "about": {
+                    "desc1": "A backup is made every time a modification is made to your vault.",
+                    "desc2": "You can change you backup policy in your settings."
+                },
+                "error": {
+                    "check": "An error occured while checking your\n                                                backup"
+                },
+                "info": "More info",
+                "last_backup": "Last backed-up modification :",
+                "resync": "Try to re-sync",
+                "stop_sync": "Stop sync",
+                "sync": "Sync now"
+            },
+            "local": {
+                "open": " Open a local\n                                                    Vault",
+                "open_ro": "Open a backup locally (read-only)",
+                "restore": "Restore a backup",
+                "save": " Save a backup",
+                "title": "Backup locally"
+            },
+            "title": "Your storage options",
+            "zero_totp": {
+                "location": "Zero-TOTP servers in Canada 🇨🇦, Switzerland 🇨🇭 and Europe 🇪🇺",
+                "reload": "Reload the vault ",
+                "title": "Zero-TOTP servers"
+            }
+        },
+        "subtitle": "You and only you can access to this data. All the magic is done on your computer.",
+        "title": {
+            "backup": "Backup from",
+            "main": "Here is your TOTP vault"
+        }
+    },
+    "verify": "Verify"
 }
