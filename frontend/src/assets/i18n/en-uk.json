@@ -144,6 +144,7 @@
   "close": "Close",
   "continue": "Continue",
   "copied": "Copied !",
+  "decrypt": "Decrypt",
   "delete": "Delete",
   "email": "Email",
   "email_verif": {
@@ -207,6 +208,7 @@
     "user_not_found": "User not found",
     "username_exists": "Username already exists"
   },
+  "give_up": "Quit",
   "green": "Green",
   "home": {
     "about": {
@@ -313,7 +315,16 @@
   "hour": "hour",
   "import_from": "Import from",
   "import_vault": {
-    "title": "Import a vault"
+    "steps": {
+      "decrypt": "Decrypt your vault",
+      "import_vault": "Import your vault",
+      "select": "Select the merging method"
+    },
+    "title": "Import a vault",
+    "zero_totp": {
+      "decrypt": "Decrypt your vault",
+      "import": "Import a backup of your Zero-TOTP vault"
+    }
   },
   "less": "Less",
   "loading": "Loading ...",

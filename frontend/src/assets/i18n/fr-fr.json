@@ -144,6 +144,7 @@
   "close": "Fermer",
   "continue": "Continuer",
   "copied": "Copié !",
+  "decrypt": "Déchiffrer",
   "delete": "Supprimer",
   "email": "Email",
   "email_verif": {
@@ -207,6 +208,7 @@
     "user_not_found": "Utilisateur non trouvé",
     "username_exists": "Nom d'utilisateur déjà existant"
   },
+  "give_up": "Abandonner",
   "green": "Vert",
   "home": {
     "about": {
@@ -313,7 +315,16 @@
   "hour": "heure",
   "import_from": "Importer depuis",
   "import_vault": {
-    "title": "Importer un coffre"
+    "steps": {
+      "decrypt": "Déchiffre ton coffre",
+      "import_vault": "Importe ton coffre",
+      "select": "Sélectionner la méthode de fusion"
+    },
+    "title": "Importer un coffre",
+    "zero_totp": {
+      "decrypt": "Déchiffre ton coffre",
+      "import": "Importe une backup de ton coffre Zero-TOTP"
+    }
   },
   "less": "Moins",
   "loading": "Chargement ...",
