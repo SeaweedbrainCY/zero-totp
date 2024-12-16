@@ -145,6 +145,7 @@
   "continue": "Continuer",
   "copied": "Copié !",
   "decrypt": "Déchiffrer",
+  "decrypted": "déchiffré",
   "delete": "Supprimer",
   "email": "Email",
   "email_verif": {
@@ -194,6 +195,7 @@
       "success": "Email vérifié ! ✅"
     }
   },
+  "encrypted": "chiffré",
   "footer": {
     "bug": "Signaler un bug",
     "opensource": "Composants open-source"
@@ -315,15 +317,30 @@
   "hour": "heure",
   "import_from": "Importer depuis",
   "import_vault": {
+    "merging_method": {
+      "merge": {
+        "paragraph": "Fusionner le coffre importer avec le coffre actuel. Aucuns codes TOTP ne sera supprimé, le coffre importé sera ajouté à l'actuel.",
+        "title": "Fusionner"
+      },
+      "replace": {
+        "paragraph": "Remplacer tous les codes TOTP actuels avec le coffre importé. Tous les codes TOTP actuels seront supprimés et les nouveaux, ajoutés.",
+        "title": "Remplacer"
+      }
+    },
     "steps": {
       "decrypt": "Déchiffre ton coffre",
+      "encrypt": "Chiffrer et uploader",
       "import_vault": "Importe ton coffre",
       "select": "Sélectionner la méthode de fusion"
     },
     "title": "Importer un coffre",
     "zero_totp": {
       "decrypt": "Déchiffre ton coffre",
-      "import": "Importe une backup de ton coffre Zero-TOTP"
+      "encrypt": "Chiffrer le nouveau coffre et l'uploader",
+      "import": "Importe une backup de ton coffre Zero-TOTP",
+      "select": "Méthode de fusion",
+      "will_be_deleted": "Sera supprimé",
+      "will_be_kept": "Ajouté"
     }
   },
   "less": "Moins",
@@ -413,6 +430,7 @@
     "why": "Pourquoi Zero-TOTP"
   },
   "never": "Jamais",
+  "none": "Aucun",
   "oauth": {
     "error": {
       "impossible": "Erreur : Impossible de backup ton coffre. Réessaye de synchroniser ton compte Google Drive."

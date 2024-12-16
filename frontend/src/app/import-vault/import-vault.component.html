@@ -1,157 +1,253 @@
 <section class=" mt-6 " style="min-height: 70vh;">
-    <div class="">
+  <div class="">
+    <div>
+      <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-dark pt-6" style="line-height: normal;">
+        <fa-icon [icon]="faFileArrowDown" class="mr-2"></fa-icon> {{
+        'import_vault.title' | translate }}
+      </h1>
+    </div>
+  </div>
+
+  <div class=" is-flex is-justify-content-center mt-6 pt-6" *ngIf="vault_type == null">
+    <div class="is-flex is-flex-direction-column is-align-items-stretch" style="max-width: 90vw;">
+      <button class="button is-link is-light is-large is-responsive mt-4" [routerLink]="['./zero-totp/import']"
+        style=" white-space: normal;  height: max-content;">
+        <div style="height: 100%; " class="icon">
+          <img src="assets/totp_square_dark.png" alt="Zero-TOTP logo"
+            style="max-width: 100%; max-height: 100%; object-fit: contain">
+        </div>
         <div>
-            <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-dark pt-6"
-                style="line-height: normal;"> <fa-icon [icon]="faFileArrowDown" class="mr-2"></fa-icon> {{
-                'import_vault.title' | translate }}
-            </h1>
+          <p class="ml-4 has-text-weight-bold has-text-dark">{{ 'import_from' | translate}} Zero-TOTP <span
+              class="has-text-dark"><fa-icon [icon]="faArrowRight" class="ml-2"></fa-icon></span> </p>
         </div>
-    </div>
-
-    <div class=" is-flex is-justify-content-center mt-6 pt-6" *ngIf="vault_type == null">
-        <div class="is-flex is-flex-direction-column is-align-items-stretch" style="max-width: 90vw;" >
-                <button class="button is-link is-light is-large is-responsive mt-4" [routerLink]="['./zero-totp/import']" style=" white-space: normal;  height: max-content;">
-                    <div style="height: 100%; " class="icon">
-                        <img src="assets/totp_square_dark.png" alt="Zero-TOTP logo" style="max-width: 100%; max-height: 100%; object-fit: contain">
-                    </div>
-                    <div>
-                        <p class="ml-4 has-text-weight-bold has-text-dark">{{ 'import_from' | translate}} Zero-TOTP <span
-                                class="has-text-dark"><fa-icon [icon]="faArrowRight" class="ml-2"></fa-icon></span> </p>
-                    </div>
-                </button>
-                <button class="button is-grey is-light is-large is-responsive mt-6" style="cursor:not-allowed; white-space: normal;  height: max-content;">
-                    <div  style="height: 100%; " class="icon">
-                        <img src="assets/bitwarden_logo.png" alt="Bitwarden logo" style="max-width: 100%; max-height: 100%; object-fit: contain">
-                    </div>
-                    <div>
-                        <p class="ml-4 has-text-weight-bold has-text-dark" >{{ 'import_from' | translate}} Bitwarden <span class="tag is-warning">{{'available_soon' | translate}}</span>
-                        </p>
-                    </div>
-                </button>
-
-                <button class="button is-grey is-light is-large is-responsive mt-6"  style="cursor:not-allowed;  white-space: normal;  height: max-content;">
-                    <div style="height: 100%; " class="icon">
-                        <img src="assets/authy_logo.png" alt="Bitwarden logo"  style="max-width: 100%; max-height: 100%; object-fit: contain">
-                    </div>
-                    <div>
-                        <p class="ml-4 has-text-weight-bold has-text-dark">{{ 'import_from' | translate}} from Authy <span class="tag is-warning">{{'available_soon' | translate}}</span> </p>
-                    </div>
-                </button>
+      </button>
+      <button class="button is-grey is-light is-large is-responsive mt-6"
+        style="cursor:not-allowed; white-space: normal;  height: max-content;">
+        <div style="height: 100%; " class="icon">
+          <img src="assets/bitwarden_logo.png" alt="Bitwarden logo"
+            style="max-width: 100%; max-height: 100%; object-fit: contain">
         </div>
-    </div>
-    <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center mt-6 pt-6" *ngIf="vault_type != null && vault_type == 'zero-totp'">
-        <ul class="steps " style="width: 90vw;">
+        <div>
+          <p class="ml-4 has-text-weight-bold has-text-dark">{{ 'import_from' | translate}} Bitwarden <span
+              class="tag is-warning">{{'available_soon' | translate}}</span>
+          </p>
+        </div>
+      </button>
 
-            <li class="step-item" [ngClass]="{
+      <button class="button is-grey is-light is-large is-responsive mt-6"
+        style="cursor:not-allowed;  white-space: normal;  height: max-content;">
+        <div style="height: 100%; " class="icon">
+          <img src="assets/authy_logo.png" alt="Bitwarden logo"
+            style="max-width: 100%; max-height: 100%; object-fit: contain">
+        </div>
+        <div>
+          <p class="ml-4 has-text-weight-bold has-text-dark">{{ 'import_from' | translate}} from Authy <span
+              class="tag is-warning">{{'available_soon' | translate}}</span> </p>
+        </div>
+      </button>
+    </div>
+  </div>
+  <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center mt-6 pt-6"
+    *ngIf="vault_type != null && vault_type == 'zero-totp'">
+    <ul class="steps " style="width: 90vw;">
+
+      <li class="step-item" [ngClass]="{
                             'is-completed':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) > 0, 
                             'is-active':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) == 0
-                            }" >
-              <div class="step-marker">
-                <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=0">1</span>
-                <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >0">
-                    <fa-icon [icon]="faCheck"></fa-icon>
-                </span>
-              </div>
-              <div class="step-details">
-                <p class="step-title"> {{
-                    'import_vault.steps.import_vault' | translate }}</p>
-                <p></p>
-              </div>
-            </li>
+                            }">
+        <div class="step-marker">
+          <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=0">1</span>
+          <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >0">
+            <fa-icon [icon]="faCheck"></fa-icon>
+          </span>
+        </div>
+        <div class="step-details">
+          <p class="step-title"> {{
+            'import_vault.steps.import_vault' | translate }}</p>
+          <p></p>
+        </div>
+      </li>
 
-            <li class="step-item " [ngClass]="{
+      <li class="step-item " [ngClass]="{
                 'is-completed':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) > 1, 
                 'is-active':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) == 1
-                }" >
-                <div class="step-marker">
-                    <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=1">2</span>
-                <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >1">
-                    <fa-icon [icon]="faCheck"></fa-icon>
-                </span>
-                </div>
-                <div class="step-details">
-                  <p class="step-title">{{
-                    'import_vault.steps.decrypt' | translate }}</p>
-                  <p></p>
-                </div>
-              </li>
-            
-            <li class="step-item " [ngClass]="{
+                }">
+        <div class="step-marker">
+          <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=1">2</span>
+          <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >1">
+            <fa-icon [icon]="faCheck"></fa-icon>
+          </span>
+        </div>
+        <div class="step-details">
+          <p class="step-title">{{
+            'import_vault.steps.decrypt' | translate }}</p>
+          <p></p>
+        </div>
+      </li>
+
+      <li class="step-item " [ngClass]="{
                 'is-completed':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) > 2, 
                 'is-active':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) == 2
-                }" >
-                <div class="step-marker">
-                    <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=2">3</span>
-                <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >2">
-                    <fa-icon [icon]="faCheck"></fa-icon>
-                </span>
-                </div>
-                <div class="step-details">
-                  <p class="step-title">{{
-                    'import_vault.steps.select' | translate }}</p>
-                  <p></p>
-                </div>
-              </li>
-            
-          </ul>
-          <div style="border-top:1px lightgray solid; width: 30vw; height: 1px;" class="mt-4 mb-4"></div>
+                }">
+        <div class="step-marker">
+          <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=2">3</span>
+          <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >2">
+            <fa-icon [icon]="faCheck"></fa-icon>
+          </span>
+        </div>
+        <div class="step-details">
+          <p class="step-title">{{
+            'import_vault.steps.select' | translate }}</p>
+          <p></p>
+        </div>
+      </li>
 
-          <div *ngIf="step == 'import'">
-            <h3 class="is-size-3 has-text-centered has-text-weight-bold has-text-dark has-text-dark"
-                style="line-height: normal;">  {{
-                'import_vault.zero_totp.import' | translate }}
-            </h3>
-            <div class="is-flex is-justify-content-center mt-6 mb-6">
+      <li class="step-item " [ngClass]="{
+        'is-completed':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) > 3, 
+        'is-active':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) == 3
+        }">
+        <div class="step-marker">
+          <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=3">4</span>
+          <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >3">
+            <fa-icon [icon]="faCheck"></fa-icon>
+          </span>
+        </div>
+        <div class="step-details">
+          <p class="step-title">{{
+            'import_vault.steps.encrypt' | translate }}</p>
+          <p></p>
+        </div>
+      </li>
 
-            <div class="file is-boxed">
-                <label class="file-label">
-                  <input class="file-input" type="file" name="resume" accept=".zero-totp,.txt" (change)="openFile($event)">
-                  <span class="file-cta">
-                    <span class="file-icon">
-                      <fa-icon [icon]="faCloudArrowUp"></fa-icon>
-                    </span>
-                    <span class="file-label">
-                     {{ 'login.backup.vault_backup' | translate }}
-                    </span>
-                  </span>
-                </label>
-              </div>
-              </div>    
-          </div>
+    </ul>
+    <div style="border-top:1px lightgray solid; width: 30vw; height: 1px;" class="mt-4 mb-4"></div>
 
-          <div *ngIf="step == 'decrypt'">
-            <h3 class="is-size-3 has-text-centered has-text-weight-bold has-text-dark has-text-dark"
-                style="line-height: normal;">  {{
-                'import_vault.zero_totp.decrypt' | translate }}
-            </h3>
-            <div class="is-flex is-justify-content-center mt-6 mb-6 ">
+    <div *ngIf="step == 'import'">
+      <h3 class="is-size-3 has-text-centered has-text-weight-bold has-text-dark has-text-dark"
+        style="line-height: normal;"> {{
+        'import_vault.zero_totp.import' | translate }}
+      </h3>
+      <div class="is-flex is-justify-content-center mt-6 mb-6">
 
-                <div class="field has-addons"  style="width: 70vw;">
-                    <div class="control is-expanded">
-                      <input class="input" type="password" placeholder="{{'passphrase'| translate}}" name="vault_password" [(ngModel)]="vault_password">
-                    </div>
-                    <div class="control">
-                      <button class="button is-success">
-                        <fa-icon [icon]="faUnlockKeyhole" class="mr-2"></fa-icon> {{'decrypt'| translate}}
-                      </button>
-                    </div>
-                  </div>   
-          </div>
-          </div>
-
-          <div class="is-flex is-justify-content-center mt-6">
-            <div class="field is-grouped">
-                <p class="control">
-                    <button class="button" (click)="cancel()">{{'cancel'| translate}}</button>
-                  </p>
-                <p class="control">
-                  <button class="button is-danger" (click)="giveUp()">{{'give_up'| translate}}</button>
-                </p>
-                <p class="control">
-                  <button class="button is-success" (click)="continue()">{{'continue'| translate}}</button>
-                </p>
-              </div>
-
-          </div>
+        <div class="file is-boxed">
+          <label class="file-label">
+            <input class="file-input" type="file" name="resume" accept=".zero-totp,.txt" (change)="openFile($event)">
+            <span class="file-cta">
+              <span class="file-icon">
+                <fa-icon [icon]="faCloudArrowUp"></fa-icon>
+              </span>
+              <span class="file-label">
+                {{ 'login.backup.vault_backup' | translate }}
+              </span>
+            </span>
+          </label>
+        </div>
+      </div>
     </div>
+
+    <div *ngIf="step == 'decrypt'">
+      <h3 class="is-size-3 has-text-centered has-text-weight-bold has-text-dark has-text-dark"
+        style="line-height: normal;"> {{
+        'import_vault.zero_totp.decrypt' | translate }}
+      </h3>
+      <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center mt-6 mb-6 ">
+        <p class=" has-text-centered">zero_totp_backup.txt <span class="has-text-weight-bold has-text-danger">{{
+            'encrypted' | translate}} <fa-icon [icon]="faLock" class="mr-2"></fa-icon> </span> <span
+            class="has-text-weight-bold has-text-success">{{ 'decrypted' | translate}} <fa-icon [icon]="faUnlock"
+              class="mr-2"></fa-icon> </span></p><br>
+
+        <div class="field has-addons" style="width: 70vw;">
+          <div class="control is-expanded">
+            <input class="input" type="password" placeholder="{{'passphrase'| translate}}" name="vault_password"
+              [(ngModel)]="vault_password">
+          </div>
+          <div class="control">
+            <button class="button is-success">
+              <fa-icon [icon]="faUnlockKeyhole" class="mr-2"></fa-icon> {{'decrypt'| translate}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="step == 'select'">
+      <h3 class="is-size-3 has-text-centered has-text-weight-bold has-text-dark has-text-dark"
+        style="line-height: normal;"> {{
+        'import_vault.zero_totp.select' | translate }}
+      </h3>
+      <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center mt-6 mb-6 ">
+        <div class="notification is-success  is-flex is-justify-content-center is-align-items-center"
+          style="width: 50vw; cursor: pointer;" (click)="selectMergingOption('merge')"
+          [ngClass]="{'is-light': selected_merging_option != 'merge'}">
+          <div class="mr-5">
+            <fa-icon [icon]="faCircleEmpty" *ngIf="selected_merging_option != 'merge'"></fa-icon>
+            <fa-icon [icon]="faCircleCheck" *ngIf="selected_merging_option == 'merge'"></fa-icon>
+          </div>
+          <div>
+            <p class="has-text-weight-bold">{{
+              'import_vault.merging_method.merge.title' | translate }}</p>
+            <p>{{
+              'import_vault.merging_method.merge.paragraph' | translate }}</p>
+          </div>
+        </div>
+
+
+        <div class="notification is-warning is-flex is-justify-content-center is-align-items-center"
+          style="width: 50vw; cursor: pointer;" (click)="selectMergingOption('replace')"
+          [ngClass]="{'is-light': selected_merging_option != 'replace'}">
+          <div class="mr-5">
+            <fa-icon [icon]="faCircleEmpty" *ngIf="selected_merging_option != 'replace'"></fa-icon>
+            <fa-icon [icon]="faCircleCheck" *ngIf="selected_merging_option == 'replace'"></fa-icon>
+          </div>
+          <div>
+            <p class="has-text-weight-bold">{{
+              'import_vault.merging_method.replace.title' | translate }}</p>
+            <p>{{
+              'import_vault.merging_method.replace.paragraph' | translate }}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div *ngIf="step == 'encrypt'">
+      <h3 class="is-size-3 has-text-centered has-text-weight-bold has-text-dark has-text-dark"
+        style="line-height: normal;"> {{
+        'import_vault.zero_totp.encrypt' | translate }}
+      </h3>
+      <div class="is-flex is-justify-content-space-around is-align-items-stretch	 mt-6 mb-6">
+        <div class="box mr-2" style="width: 30vw; margin: 0;">
+          <p class="has-text-weight-bold">{{'import_vault.zero_totp.will_be_deleted' | translate }}</p>
+          <p class="has-text-centered mt-4 has-text-weight-light	">{{'none' | translate }}</p>
+        </div>
+        <div class="box ml-2" style="width: 30vw;  margin: 0;">
+          <p class="has-text-weight-bold mb-4">{{'import_vault.zero_totp.will_be_kept' | translate }}</p>
+          <div class="is-flex is-justify-content-center is-align-items-center is-flex-direction-column">
+            <div class="notification is-success is-light" style="width: 100%; margin-bottom: 5px;">
+              <p>TOTP code</p>
+            </div>
+            <div class="notification is-success is-light" style="width: 100%;">
+              <p>TOTP code</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="is-flex is-justify-content-center mt-6">
+      <div class="field is-grouped">
+        <p class="control">
+          <button class="button" (click)="cancel()">{{'cancel'| translate}}</button>
+        </p>
+        <p class="control">
+          <button class="button is-danger" (click)="giveUp()">{{'give_up'| translate}}</button>
+        </p>
+        <p class="control">
+          <button class="button is-success" (click)="continue()" [disabled]="is_continue_disabled">{{'continue'|
+            translate}}</button>
+        </p>
+      </div>
+
+    </div>
+  </div>
 </section>

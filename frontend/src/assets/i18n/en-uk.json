@@ -145,6 +145,7 @@
   "continue": "Continue",
   "copied": "Copied !",
   "decrypt": "Decrypt",
+  "decrypted": "decrypted",
   "delete": "Delete",
   "email": "Email",
   "email_verif": {
@@ -194,6 +195,7 @@
       "success": "Your email is verified ! ✅"
     }
   },
+  "encrypted": "encrypted",
   "footer": {
     "bug": "Report a bug",
     "opensource": "Open-Source Component"
@@ -315,15 +317,30 @@
   "hour": "hour",
   "import_from": "Import from",
   "import_vault": {
+    "merging_method": {
+      "merge": {
+        "paragraph": "Merge the imported vault with the current one. No TOTP codes will be deleted, the imported vault will be added to the current one.",
+        "title": "Merge"
+      },
+      "replace": {
+        "paragraph": "Replace all current TOTP codes with the imported one. All TOTP codes from the current vault will be deleted and the new one, added.",
+        "title": "Replace"
+      }
+    },
     "steps": {
       "decrypt": "Decrypt your vault",
+      "encrypt": "Encrypt and upload",
       "import_vault": "Import your vault",
       "select": "Select the merging method"
     },
     "title": "Import a vault",
     "zero_totp": {
       "decrypt": "Decrypt your vault",
-      "import": "Import a backup of your Zero-TOTP vault"
+      "encrypt": "Encrypt and upload the new vault",
+      "import": "Import a backup of your Zero-TOTP vault",
+      "select": "Merging method",
+      "will_be_deleted": "To delete",
+      "will_be_kept": "Will be added"
     }
   },
   "less": "Less",
@@ -413,6 +430,7 @@
     "why": "Why Zero-TOTP"
   },
   "never": "Never",
+  "none": "None",
   "oauth": {
     "error": {
       "impossible": "Error : Impossible to backup your vault. Please, try to re-sync your Google Drive account."

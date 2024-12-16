@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { faFileArrowDown, faArrowRight, faCloudArrowUp, faCheck, faUnlockKeyhole } from '@fortawesome/free-solid-svg-icons'; 
+import { faFileArrowDown, faArrowRight, faCloudArrowUp, faCheck, faUnlockKeyhole, faLock, faUnlock, faCircleCheck } from '@fortawesome/free-solid-svg-icons'; 
+import { faCircle } from '@fortawesome/free-regular-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -19,7 +20,15 @@ export class ImportVaultComponent implements OnInit {
   vault_type: string | null = null
   faCheck=faCheck;
   faUnlockKeyhole=faUnlockKeyhole;
+  faLock=faLock;
+  faUnlock=faUnlock;
+  faCircleEmpty=faCircle;
+  faCircleCheck=faCircleCheck;
   vault_password="";
+
+  selected_merging_option = "";
+  is_continue_disabled = false;
+
   
   constructor(
     private translate: TranslateService,
@@ -57,9 +66,14 @@ export class ImportVaultComponent implements OnInit {
         if(this.step == null){
           this.redirectToFirstStep()
         } else {
-          console.log(this.vault_steps.get(this.vault_type)!.indexOf(this.step!))
           if(!(this.vault_steps.get(this.vault_type)!.includes(this.step))){
             this.redirectToFirstStep()
+          } else {
+            if(this.step == "decrypt"){
+              this.is_continue_disabled = true;
+            } else if(this.step == "select"){
+              this.is_continue_disabled = true;
+            }
           }
         }
       }
@@ -107,4 +121,10 @@ export class ImportVaultComponent implements OnInit {
   giveUp(){
     this.router.navigate(['/import/vault'])
   }
+
+  selectMergingOption(option: string){
+    this.selected_merging_option = option
+    this.is_continue_disabled = false
+  }
+
 }
