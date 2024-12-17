@@ -61,7 +61,7 @@
             <fa-icon [icon]="faCheck"></fa-icon>
           </span>
         </div>
-        <div class="step-details">
+        <div class="step-details" *ngIf="!isMobileDevice">
           <p class="step-title"> {{
             'import_vault.steps.import_vault' | translate }}</p>
           <p></p>
@@ -78,7 +78,7 @@
             <fa-icon [icon]="faCheck"></fa-icon>
           </span>
         </div>
-        <div class="step-details">
+        <div class="step-details" *ngIf="!isMobileDevice">
           <p class="step-title">{{
             'import_vault.steps.decrypt' | translate }}</p>
           <p></p>
@@ -95,7 +95,7 @@
             <fa-icon [icon]="faCheck"></fa-icon>
           </span>
         </div>
-        <div class="step-details">
+        <div class="step-details" *ngIf="!isMobileDevice">
           <p class="step-title">{{
             'import_vault.steps.select' | translate }}</p>
           <p></p>
@@ -112,7 +112,7 @@
             <fa-icon [icon]="faCheck"></fa-icon>
           </span>
         </div>
-        <div class="step-details">
+        <div class="step-details" *ngIf="!isMobileDevice">
           <p class="step-title">{{
             'import_vault.steps.encrypt' | translate }}</p>
           <p></p>
@@ -215,12 +215,15 @@
         style="line-height: normal;"> {{
         'import_vault.zero_totp.encrypt' | translate }}
       </h3>
-      <div class="is-flex is-justify-content-space-around is-align-items-stretch	 mt-6 mb-6">
-        <div class="box mr-2" style="width: 30vw; margin: 0;">
+      <div class="is-flex is-justify-content-space-around is-align-items-stretch is-flex-wrap-wrap	 mt-6 mb-6">
+        
+        <div class="box" style="margin: 0;" [style]="isMobileDevice ? 'width: 80vw;' : 'width: 40vw;'" [ngClass]="isMobileDevice ? 'mt-2' : 'mr-2'">
           <p class="has-text-weight-bold">{{'import_vault.zero_totp.will_be_deleted' | translate }}</p>
           <p class="has-text-centered mt-4 has-text-weight-light	">{{'none' | translate }}</p>
         </div>
-        <div class="box ml-2" style="width: 30vw;  margin: 0;">
+        
+        
+        <div class="box " style="width: 30vw;  margin: 0; " [style]="isMobileDevice ? 'width: 80vw;' : 'width: 40vw;'" [ngClass]="isMobileDevice ? 'mt-4' : 'mr-2'">
           <p class="has-text-weight-bold mb-4">{{'import_vault.zero_totp.will_be_kept' | translate }}</p>
           <div class="is-flex is-justify-content-center is-align-items-center is-flex-direction-column">
             <div class="notification is-success is-light" style="width: 100%; margin-bottom: 5px;">
@@ -243,7 +246,8 @@
           <button class="button is-danger" (click)="giveUp()">{{'give_up'| translate}}</button>
         </p>
         <p class="control">
-          <button class="button is-success" (click)="continue()" [disabled]="is_continue_disabled">{{'continue'|
+          <button class="button is-success" (click)="continue()"
+            [disabled]="is_continue_disabled">{{continue_button_text |
             translate}}</button>
         </p>
       </div>

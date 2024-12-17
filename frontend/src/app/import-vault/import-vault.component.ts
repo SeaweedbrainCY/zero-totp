@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { faFileArrowDown, faArrowRight, faCloudArrowUp, faCheck, faUnlockKeyhole, faLock, faUnlock, faCircleCheck } from '@fortawesome/free-solid-svg-icons'; 
 import { faCircle } from '@fortawesome/free-regular-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { ViewportRuler } from '@angular/cdk/scrolling';
+import { NgZone } from '@angular/core';
+
 
 
 
@@ -11,7 +14,7 @@ import { Router, ActivatedRoute } from '@angular/router';
   templateUrl: './import-vault.component.html',
   styleUrl: './import-vault.component.css'
 })
-export class ImportVaultComponent implements OnInit {
+export class ImportVaultComponent implements OnInit, OnDestroy {
   faFileArrowDown = faFileArrowDown;
   faArrowRight = faArrowRight;
   faCloudArrowUp=faCloudArrowUp
@@ -25,18 +28,33 @@ export class ImportVaultComponent implements OnInit {
   faCircleEmpty=faCircle;
   faCircleCheck=faCircleCheck;
   vault_password="";
+  continue_button_text = "continue";
+
+  isMobileDevice = false;
 
   selected_merging_option = "";
   is_continue_disabled = false;
+
+  width: number = 0;
+  height: number = 0;
+
+  private readonly viewportChange = this.viewportRuler
+    .change(200)
+    .subscribe(() => this.ngZone.run(() => this.setSize()));
+ 
+   
+
 
   
   constructor(
     private translate: TranslateService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private readonly viewportRuler: ViewportRuler,
+    private readonly ngZone: NgZone
   ) { 
     this.vault_steps.set("zero-totp", ["import", "decrypt", "select", "encrypt"])
-
+    this.setSize();
     
   }
 
@@ -48,10 +66,15 @@ export class ImportVaultComponent implements OnInit {
       this.init_component()
     });
 
+   
     
     
    
   }
+
+  ngOnDestroy() {
+    this.viewportChange.unsubscribe();
+}
 
   init_component(){
     this.vault_type = this.route.snapshot.paramMap.get('type')
@@ -73,12 +96,25 @@ export class ImportVaultComponent implements OnInit {
               this.is_continue_disabled = true;
             } else if(this.step == "select"){
               this.is_continue_disabled = true;
+            } else if(this.step == "encrypt"){
+              this.continue_button_text = "confirm"
             }
           }
         }
       }
     }
     
+  }
+
+  private setSize() {
+    const { width, height } = this.viewportRuler.getViewportSize();
+    this.width = width;
+    this.height = height;
+    if(width < 768){
+      this.isMobileDevice = true;
+    } else {
+      this.isMobileDevice = false;
+    }
   }
 
   redirectToFirstStep(){
