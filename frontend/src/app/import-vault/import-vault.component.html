@@ -129,14 +129,15 @@
       </h3>
       <div class="is-flex is-justify-content-center mt-6 mb-6">
 
-        <div class="file is-boxed">
+        <div class="file is-boxed" *ngIf="local_vault_service != null ">
           <label class="file-label">
-            <input class="file-input" type="file" name="resume" accept=".zero-totp,.txt" (change)="openFile($event)">
+            <input class="file-input" type="file" name="resume" accept=".zero-totp,.txt" (change)="openFile($event)" [disabled]="is_importing">
             <span class="file-cta">
               <span class="file-icon">
-                <fa-icon [icon]="faCloudArrowUp"></fa-icon>
+                <fa-icon [icon]="faCloudArrowUp" *ngIf="!is_importing" size="2xl" class="mb-2"></fa-icon>
+                <fa-icon [icon]="faCircleNotch" *ngIf="is_importing" [animation]="true ? 'spin' : undefined"></fa-icon>
               </span>
-              <span class="file-label">
+              <span class="file-label" *ngIf="!is_importing">
                 {{ 'login.backup.vault_backup' | translate }}
               </span>
             </span>
@@ -255,3 +256,20 @@
     </div>
   </div>
 </section>
+
+<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isUnsecureVaultModaleActive}">
+  <div class="modal-bakcground" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive"></div>
+  <div class="modal-content">
+      <section class="modal-card-body">
+          <h1 class="is-size-2 has-text-danger">{{ 'login.backup.unsecure.popup.title' | translate }}</h1>
+          <strong>{{ 'login.backup.unsecure.popup.strong' | translate }}</strong>. {{ 'login.backup.unsecure.popup.desc' | translate }}<br>
+          <strong>{{ 'login.backup.unsecure.popup.strong2' | translate }}</strong>
+          <br><br>
+      </section>
+      <footer class="modal-card-foot is-flex is-justify-content-right">
+          <button class="button is-success" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive">{{ 'login.backup.unsecure.popup.button.cancel' | translate }}</button>
+          <button class="button is-danger" (click)="acceptUnsecureVault()" >{{ 'login.backup.unsecure.popup.continue' | translate }}</button>
+      </footer>
+  </div>
+  <button class="modal-close is-large" aria-label="close" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive" ></button>
+</div>
