@@ -75,14 +75,16 @@ export class VaultService {
 
   decryptVault(encrypted_vault:Array<Map<string, string>>, zke_key: CryptoKey): Promise<Map<string, Map<string, string>>> {
     return new Promise((resolve, reject) => {
-      
       let decrypted_vault = new Map<string, Map<string, string>>();
+      const promises: Promise<void>[] = [];
+
+
       for (let secret of encrypted_vault){
         const uuid = secret.get("uuid");
         const enc_secret = secret.get("enc_secret");
         if(uuid != null){
           if (enc_secret != null){
-            this.crypto.decrypt(enc_secret, zke_key).then((dec_secret)=>{
+            const promise = this.crypto.decrypt(enc_secret, zke_key).then((dec_secret)=>{
               if(dec_secret != null){
                 decrypted_vault.set(uuid, this.utils.mapFromJson(dec_secret));
               } else {
@@ -100,6 +102,7 @@ export class VaultService {
               fakeProperty.set("secret", "");
               decrypted_vault.set(uuid, fakeProperty);
             });
+            promises.push(promise);
           } else {
             let fakeProperty = new Map<string, string>();
               fakeProperty.set("color","info");
@@ -109,7 +112,9 @@ export class VaultService {
           }
         }
       }
-      resolve(decrypted_vault);
+      Promise.all(promises)
+      .then(() => resolve(decrypted_vault))
+      .catch((error) => reject(error)); 
     });
   }
 
