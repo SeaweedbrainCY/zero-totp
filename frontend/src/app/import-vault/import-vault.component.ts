@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { faFileArrowDown, faArrowRight, faCloudArrowUp, faCheck, faUnlockKeyhole, faLock, faUnlock, faCircleCheck, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faFileArrowDown, faArrowRight, faCloudArrowUp, faCheck, faUnlockKeyhole, faLock, faUnlock, faCircleCheck, faCircleNotch, faCircleExclamation, faFileCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { faCircle } from '@fortawesome/free-regular-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, RouterStateSnapshot, NavigationEnd } from '@angular/router';
@@ -10,6 +10,9 @@ import { LocalVaultV1Service, UploadVaultStatus } from '../common/upload-vault/L
 import { Utils } from '../common/Utils/utils';
 import { VaultService } from '../common/VaultService/vault.service';
 import { of } from 'rxjs';
+import { formatDate } from '@angular/common';
+import { UserService } from '../common/User/user.service';
+
 
 
 
@@ -22,6 +25,8 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   faFileArrowDown = faFileArrowDown;
   faArrowRight = faArrowRight;
   faCloudArrowUp = faCloudArrowUp
+  faCircleExclamation = faCircleExclamation;
+  faFileCircleCheck=faFileCircleCheck;
   vault_steps: Map<string, String[]> = new Map<string, String[]>();
   step: string | null = null
   vault_type: string | null = null
@@ -36,6 +41,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   local_vault_service: LocalVaultV1Service | null = null;
   isUnsecureVaultModaleActive = false;
   imported_vault_passphrase = "";
+  vault_date = "";
 
   isMobileDevice = false;
 
@@ -51,6 +57,11 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   decrypted_vault: Map<string, Map<string, string>> | undefined;
   decryption_error: string = "";
   decrypt_input_visible = true;
+
+  uploading = false;
+  upload_state = "";
+  uploaded_uuid :string[]= [];
+  importSuccess = false;
 
 
   private readonly viewportChange = this.viewportRuler
@@ -70,7 +81,8 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private localVaultv1: LocalVaultV1Service,
     private utils: Utils,
-    private vaultService: VaultService
+    private vaultService: VaultService,
+    private userService: UserService
   ) {
     this.vault_steps.set("zero-totp", ["import", "decrypt", "encrypt"])
     this.setSize();
@@ -78,6 +90,9 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if(this.userService.getId() == null){
+      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+    }
 
     this.init_component()
 
@@ -124,13 +139,21 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
                 } else {
                   this.is_continue_disabled = false;
                 }
-              
+              }
+            } else if (this.step == "encrypt") {
+              if(this.decrypted_vault == undefined){
+                this.router.navigate(['/import/vault/zero-totp/import'])
+              } else {
+                this.continue_button_text = "confirm"
+              try{
+                      const vaultDateStr = this.local_vault_service!.get_date()!.split(".")[0];
+                      this.vault_date = String(formatDate(new Date(vaultDateStr), 'dd/MM/yyyy HH:mm:ss O', 'en'));
+                    }catch{
+                      this.vault_date = this.local_vault_service!.get_date()!;
+                    }
+
               }
               
-            } else if (this.step == "select") {
-              this.is_continue_disabled = true;
-            } else if (this.step == "encrypt") {
-              this.continue_button_text = "confirm"
             }
           }
         }
@@ -303,17 +326,11 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
       if (this.vault_type == "zero-totp") {
         const current_step_index = this.vault_steps.get(this.vault_type)!.indexOf(this.step!)
         if (this.step == "import") {
-          //TODO 
           this.router.navigate(['/import/vault/' + this.vault_type + '/' + this.vault_steps.get(this.vault_type)![current_step_index + 1]])
         } else if (this.step == "decrypt") {
-          //TODO 
-          this.router.navigate(['/import/vault/' + this.vault_type + '/' + this.vault_steps.get(this.vault_type)![current_step_index + 1]])
-        } else if (this.step == "select") {
-          //TODO 
           this.router.navigate(['/import/vault/' + this.vault_type + '/' + this.vault_steps.get(this.vault_type)![current_step_index + 1]])
         } else if (this.step == "encrypt") {
-          //TODO 
-          console.log("done")
+          this.upload()
         }
       }
     }
@@ -390,6 +407,29 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
         this.router.navigate(['/import/vault/' + this.vault_type + '/' + this.vault_steps.get(this.vault_type!)![current_step_index - 1]])
       }
     }
+
+
+    upload(){
+      this.uploading = true;
+      this.translate.get("import_vault.uploading.steps.preparation").subscribe((translation)=>{
+        this.upload_state = translation;
+      });
+
+      let i=1;
+
+      for(let uuid of this.decrypted_vault!.keys()){
+        i += 1;
+        setTimeout(()=>{
+          console.log("Uploading " + uuid)
+          this.uploaded_uuid.push(uuid);
+          this.translate.get("import_vault.uploading.steps.uploading").subscribe((translation)=>{
+            this.upload_state = translation + " " + this.decrypted_vault!.get(uuid)!.get("name");
+          });
+          
+      }, 3000*i);
+    }
+  }
+
 
 
   }

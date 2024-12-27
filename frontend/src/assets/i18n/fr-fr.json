@@ -341,14 +341,29 @@
       "import_vault": "Importe ton coffre",
       "select": "Sélectionner la méthode de fusion"
     },
+    "success_modal": {
+      "button": "Ouvrir mon coffre",
+      "message": "Ton coffre a été importé et ajouté avec succès à ton coffre Zero-TOTP. Tu peux maintenant l'ouvrir pour voir tous tes codes TOTP.",
+      "title": "Import réussi 🎉"
+    },
     "title": "Importer un coffre",
+    "uploading": {
+      "steps": {
+        "preparation": "Préparation du chiffrement et de l'envoi",
+        "uploading": "Envoie de "
+      }
+    },
     "zero_totp": {
       "decrypt": "Déchiffre ton coffre",
       "encrypt": "Chiffrer le nouveau coffre et l'uploader",
+      "encrypt_titles": {
+        "subtitle": "Importer la backup datant du ",
+        "warning": "Chiffrement et envoi en cours. Ne ferme pas cette page"
+      },
       "import": "Importe une backup de ton coffre Zero-TOTP",
       "select": "Méthode de fusion",
       "will_be_deleted": "Sera supprimé",
-      "will_be_kept": "Ajouté"
+      "will_be_kept": "Sera ajouté"
     }
   },
   "less": "Moins",

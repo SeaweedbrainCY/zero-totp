@@ -341,10 +341,25 @@
       "import_vault": "Import your vault",
       "select": "Select the merging method"
     },
+    "success_modal": {
+      "button": "Open my vault",
+      "message": "Your vault has been successfully imported and added to your Zero-TOTP vault. You can now open it to see all your totp codes",
+      "title": "Import successful 🎉"
+    },
     "title": "Import a vault",
+    "uploading": {
+      "steps": {
+        "preparation": "Preparing the encrypting and upload ...",
+        "uploading": "Uploading"
+      }
+    },
     "zero_totp": {
       "decrypt": "Decrypt your vault",
       "encrypt": "Encrypt and upload the new vault",
+      "encrypt_titles": {
+        "subtitle": "Import the backup of ",
+        "warning": "Encryption and upload in progress. Do not close your browser"
+      },
       "import": "Import a backup of your Zero-TOTP vault",
       "select": "Merging method",
       "will_be_deleted": "To delete",
