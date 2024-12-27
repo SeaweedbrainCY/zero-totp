@@ -346,10 +346,18 @@
       "message": "Ton coffre a été importé et ajouté avec succès à ton coffre Zero-TOTP. Tu peux maintenant l'ouvrir pour voir tous tes codes TOTP.",
       "title": "Import réussi 🎉"
     },
+    "success_with_error_modal": {
+      "back_return": "Retour à l'import",
+      "title": "Import fini"
+    },
     "title": "Importer un coffre",
     "uploading": {
+      "errors": {
+        "encrypt": "Une erreur est survenue en chiffrant le secret suivant. Il ne sera pas ajouté à ton coffre.",
+        "upload": "Une erreur est survenue en envoyant le secret suivant. Le secret ne sera pas ajouté au coffre."
+      },
       "steps": {
-        "preparation": "Préparation du chiffrement et de l'envoi",
+        "encryption": "Chiffrement et envoie ...",
         "uploading": "Envoie de "
       }
     },

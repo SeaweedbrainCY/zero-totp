@@ -9,9 +9,11 @@ import { ToastrService } from 'ngx-toastr';
 import { LocalVaultV1Service, UploadVaultStatus } from '../common/upload-vault/LocalVaultv1Service.service';
 import { Utils } from '../common/Utils/utils';
 import { VaultService } from '../common/VaultService/vault.service';
-import { of } from 'rxjs';
+import { forkJoin, of, Subscription } from 'rxjs';
 import { formatDate } from '@angular/common';
 import { UserService } from '../common/User/user.service';
+import { Crypto } from '../common/Crypto/crypto';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 
 
 
@@ -61,7 +63,9 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   uploading = false;
   upload_state = "";
   uploaded_uuid :string[]= [];
+  upload_error_uuid: string[] = [];
   importSuccess = false;
+  import_had_error = false;
 
 
   private readonly viewportChange = this.viewportRuler
@@ -82,7 +86,9 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     private localVaultv1: LocalVaultV1Service,
     private utils: Utils,
     private vaultService: VaultService,
-    private userService: UserService
+    private userService: UserService,
+    private crypto: Crypto,
+    private http: HttpClient
   ) {
     this.vault_steps.set("zero-totp", ["import", "decrypt", "encrypt"])
     this.setSize();
@@ -411,25 +417,72 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
     upload(){
       this.uploading = true;
-      this.translate.get("import_vault.uploading.steps.preparation").subscribe((translation)=>{
+      this.upload_error_uuid = [];
+      this.uploaded_uuid = [];
+      this.import_had_error = false;
+      this.translate.get("import_vault.uploading.steps.encryption").subscribe((translation)=>{
         this.upload_state = translation;
       });
 
-      let i=1;
+      const uploadPromises: Promise<void>[] = [];
+
 
       for(let uuid of this.decrypted_vault!.keys()){
-        i += 1;
-        setTimeout(()=>{
-          console.log("Uploading " + uuid)
-          this.uploaded_uuid.push(uuid);
-          this.translate.get("import_vault.uploading.steps.uploading").subscribe((translation)=>{
-            this.upload_state = translation + " " + this.decrypted_vault!.get(uuid)!.get("name");
+        this.encryptSecret(this.decrypted_vault!.get(uuid)!).then((enc_jsonProperty)=>{
+          const upload_promise = this.uploadSecret(uuid, enc_jsonProperty).then((response)=>{
+              this.uploaded_uuid.push(uuid);
+              console.log(response)
+          }, (error)=>{
+            console.log(error)
+            this.upload_error_uuid.push(uuid);
+            this.import_had_error = true;
+            this.translate.get("import_vault.uploading.errors.upload").subscribe((translation)=>{
+              this.utils.toastError(this.toastr, translation, "Secret name : " + this.decrypted_vault!.get(uuid)!.get("name") + ". Error: " + error);
+            });
           });
-          
-      }, 3000*i);
+          uploadPromises.push(upload_promise);
+        }, (error)=>{
+          this.upload_error_uuid.push(uuid);
+          this.import_had_error = true
+            this.translate.get("import_vault.uploading.errors.encrypt").subscribe((translation)=>{
+              this.utils.toastError(this.toastr, translation, "Secret name : " + this.decrypted_vault!.get(uuid)!.get("name") + ". Error: " + error);
+            });
+        });
+
+       Promise.all(uploadPromises).then(()=>{
+          this.uploading = false;
+          this.importSuccess = true;
+       });
     }
   }
 
+
+  encryptSecret(secret_properties: Map<string, string>): Promise<string>{
+    return new Promise((resolve, reject)=>{
+      const jsonProperty = this.utils.mapToJson(secret_properties);
+      try{
+        this.crypto.encrypt(jsonProperty, this.userService.get_zke_key()!).then  ((enc_jsonProperty)=>{
+          resolve(enc_jsonProperty);
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
+
+  }
+
+  uploadSecret(uuid: string, enc_jsonProperty: string): Promise<HttpResponse<Object>> {
+    return new Promise((resolve, reject)=>{
+      this.http.post("/api/v1/encrypted_secret", {enc_secret:enc_jsonProperty},{withCredentials:true, observe: 'response'}).subscribe({
+        next:(response) => {
+          resolve(response);
+        },
+        error: (error)=>{
+          reject(error);
+        }
+      });
+    });
+  }
 
 
   }

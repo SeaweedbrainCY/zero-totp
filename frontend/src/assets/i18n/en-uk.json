@@ -346,10 +346,19 @@
       "message": "Your vault has been successfully imported and added to your Zero-TOTP vault. You can now open it to see all your totp codes",
       "title": "Import successful 🎉"
     },
+    "success_with_error_modal": {
+      "back_return": "Go back to import",
+      "message": "The import is done, but some secrets failed to be added. The non-added secrets are the following ones : ",
+      "title": "Import done"
+    },
     "title": "Import a vault",
     "uploading": {
+      "errors": {
+        "encrypt": "An error occured while encrypted the following secret. It will not be added to your vault.",
+        "upload": "An error occured while uploading the following secret. It will not be added to your vault."
+      },
       "steps": {
-        "preparation": "Preparing the encrypting and upload ...",
+        "encryption": "Encrypting and uploading ...",
         "uploading": "Uploading"
       }
     },
