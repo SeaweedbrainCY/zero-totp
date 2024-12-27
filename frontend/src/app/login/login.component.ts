@@ -8,6 +8,7 @@ import {Crypto} from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
 import { LocalVaultV1Service, UploadVaultStatus } from '../common/upload-vault/LocalVaultv1Service.service';
 import { Utils } from '../common/Utils/utils';
+import { VaultService } from '../common/VaultService/vault.service';
 
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
@@ -53,6 +54,7 @@ export class LoginComponent implements OnInit {
     private translate: TranslateService,
     private toastr: ToastrService,
     private utils: Utils,
+    private vaultService: VaultService
     ) {
     }
 
@@ -266,8 +268,8 @@ this.utils.toastError(this.toastr,translation,"")
       this.userService.setVaultLocal(true);
       this.userService.setLocalVaultService(this.local_vault_service!);
       this.userService.setDerivedKeySalt(this.local_vault_service!.get_derived_key_salt()!);
-        this.deriveKey().then((derivedKey)=>{
-            this.decryptZKEKey(this.local_vault_service!.get_zke_key_enc()!, derivedKey).then((zke_key)=>{
+        this.vaultService.derivePassphrase(this.userService.getDerivedKeySalt()!, this.password).then((derivedKey)=>{
+            this.vaultService.decryptZKEKey(this.local_vault_service!.get_zke_key_enc()!, derivedKey, this.userService.getIsVaultLocal()!).then((zke_key)=>{
               this.userService.set_zke_key(zke_key!);
               this.router.navigate(["/vault"], {relativeTo:this.route.root});
             }, (error)=>{
@@ -375,9 +377,9 @@ this.utils.toastError(this.toastr,translation,"")
   }
 
   final_zke_flow(){
-    this.deriveKey().then((derivedKey)=>{
+    this.vaultService.derivePassphrase(this.userService.getDerivedKeySalt()!, this.password).then((derivedKey)=>{
       this.getZKEKey().then((zke_key_encrypted)=>{
-        this.decryptZKEKey(zke_key_encrypted, derivedKey).then((zke_key)=>{
+        this.vaultService.decryptZKEKey(zke_key_encrypted, derivedKey,this.userService.getIsVaultLocal()!).then((zke_key)=>{
           this.userService.set_zke_key(zke_key!);
           if(this.is_oauth_flow){
             this.router.navigate(["/oauth/synchronize"], {relativeTo:this.route.root});
@@ -406,19 +408,7 @@ this.utils.toastError(this.toastr,error,"")
   }
 
 
-  deriveKey() : Promise<CryptoKey>{
-    return new Promise((resolve, reject) => {
-      const derivedKeySalt = this.userService.getDerivedKeySalt();
-      if(derivedKeySalt != null){
-        this.crypto.deriveKey(derivedKeySalt, this.password).then(key=>{
-          resolve(key);
-        });
-      } else {
-        this.isLoading=false;
-        reject("Impossible to retrieve enough data to decrypt your vault");
-      }
-    });
-  }
+  
 
   getZKEKey(): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -434,39 +424,5 @@ this.utils.toastError(this.toastr,error,"")
   }
 
 
-  decryptZKEKey(zke_key_encrypted: string, derivedKey: CryptoKey): Promise<CryptoKey> {
-    return new Promise((resolve, reject) => {
-      this.crypto.decrypt(zke_key_encrypted, derivedKey).then(zke_key_b64=>{
-        if (zke_key_b64 != null) {
-          const zke_key_raw = Buffer.from(zke_key_b64!, 'base64');
-
-          window.crypto.subtle.importKey(
-            "raw",
-            zke_key_raw,
-            "AES-GCM",
-            true,
-            ["encrypt", "decrypt"]
-          ).then((zke_key)=>{
-            resolve(zke_key);
-          }, (error)=>{
-            this.translate.get("login.errors.import_vault.key_dec").subscribe((translation)=>{
-            reject(translation + " " + error);
-            });
-          });;
-        } else {
-          if(this.userService.getIsVaultLocal()!){
-            this.translate.get("login.errors.import_vault.wrong_passphrase").subscribe((translation)=>{
-            reject(translation);
-            });
-          } else {
-            this.translate.get("login.errors.import_vault.key_dec").subscribe((translation)=>{
-            reject(translation);
-            });
-          }
-          
-        }
-        
-      });
-  });
-  }
+  
 }
