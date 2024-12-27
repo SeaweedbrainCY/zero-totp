@@ -320,7 +320,7 @@
   "import_vault": {
     "errors": {
       "bad_passphrase": "Passphrase erronée",
-      "decryption_failure": "Une erreur est survenue en déchiffrant la clé Zero-Knowledge. Le coffre pourrait être corrompu",
+      "decryption_failure": "Une erreur est survenue en déchiffrant ton coffre. Il pourrait être corrompu",
       "derivation_failure": "Une erreur est survenue en dérivant ta passphrase",
       "vault_decryption_failure": "Une erreur est survenue en déchiffrant ton coffre"
     },

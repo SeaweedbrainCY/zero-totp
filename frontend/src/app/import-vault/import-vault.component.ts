@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 import { LocalVaultV1Service, UploadVaultStatus } from '../common/upload-vault/LocalVaultv1Service.service';
 import { Utils } from '../common/Utils/utils';
 import { VaultService } from '../common/VaultService/vault.service';
+import { of } from 'rxjs';
 
 
 

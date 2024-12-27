@@ -320,7 +320,7 @@
   "import_vault": {
     "errors": {
       "bad_passphrase": "Wrong passphrase",
-      "decryption_failure": "An error occured while decrypting your zero-knowledge encryption key. Your vault might be corrupted",
+      "decryption_failure": "An error occured while decrypting your vault. It might be corrupted",
       "derivation_failure": "An error occured while derivating your passphrase.",
       "vault_decryption_failure": "An error occured while decrypting your vault"
     },
