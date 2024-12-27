@@ -162,8 +162,8 @@
                                             </div>
                                             <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                                 <div class="dropdown-content">
-                                                    <a class="dropdown-item">
-                                                        {{ 'vault.storage.local.restore' | translate }} <span class="tag is-info is-light"><fa-icon [icon]="faFlask"></fa-icon> {{ 'available_soon' | translate }}</span>
+                                                    <a class="dropdown-item" [routerLink]="['/import/vault']">
+                                                        {{ 'vault.storage.local.restore' | translate }}
                                                     </a>
                                                     <a href="/login/#openVault" class="dropdown-item">
                                                         {{ 'vault.storage.local.open_ro' | translate }}

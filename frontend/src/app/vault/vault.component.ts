@@ -494,5 +494,8 @@ export class VaultComponent implements OnInit {
     this.filterVault();
   }
 
+
+  
+
 }
 
