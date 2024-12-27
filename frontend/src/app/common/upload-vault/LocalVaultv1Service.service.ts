@@ -75,9 +75,10 @@ export class LocalVaultV1Service {
                     const sanitized_uuid = this.sanitizer.sanitize(SecurityContext.HTML, secret.uuid)
                     const sanitized_enc_secret = this.sanitizer.sanitize(SecurityContext.HTML, secret.enc_secret)
                     if(sanitized_uuid != null && sanitized_enc_secret != null){
-                      secret.uuid = sanitized_uuid;
-                      secret.enc_secret = sanitized_enc_secret;
-                      enc_secrets.push(secret)
+                      let sanitized_secret = new Map<string, string>();
+                      sanitized_secret.set("uuid", sanitized_uuid);
+                      sanitized_secret.set("enc_secret", sanitized_enc_secret);
+                      enc_secrets.push(sanitized_secret);
                   } else {
                     resolve(UploadVaultStatus.INVALID_ARGUMENT);
                   }
