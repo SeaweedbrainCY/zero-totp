@@ -49,7 +49,8 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   height: number = 0;
 
   decrypted_vault: Map<string, Map<string, string>> | undefined;
-  decryption_error: string | undefined;
+  decryption_error: string = "";
+  decrypt_input_visible = true;
 
 
   private readonly viewportChange = this.viewportRuler
@@ -116,10 +117,14 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
               }
             } else if (this.step == "decrypt") {
               if(this.local_vault_service == null){
-                console.log("null")
                 this.router.navigate(['/import/vault/zero-totp/import'])
               } else {
-                this.is_continue_disabled = true;
+                if(this.decrypted_vault == undefined){
+                  this.is_continue_disabled = true;
+                } else {
+                  this.is_continue_disabled = false;
+                }
+              
               }
               
             } else if (this.step == "select") {
@@ -148,6 +153,13 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   redirectToFirstStep() {
     this.router.navigate(['/import/vault/' + this.vault_type + '/' + this.vault_steps.get(this.vault_type!)![0]])
   }
+
+  hideDecryptionInput() {
+    setTimeout(() => {
+      this.decrypt_input_visible = false;
+    }, 1000);
+  }
+
 
   openFile(event: any): void {
     console.log(event)
@@ -338,12 +350,17 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
 
     decrypt(){
+      if(!this.decrypt_input_visible){
+        return;
+      }
       this.decryption_error = "";
       if(this.local_vault_service != null){
         this.vaultService.derivePassphrase(this.local_vault_service!.get_derived_key_salt()!, this.imported_vault_passphrase).then((derivedKey)=>{
           this.vaultService.decryptZKEKey(this.local_vault_service!.get_zke_key_enc()!, derivedKey, true).then((zke_key)=>{
             this.vaultService.decryptVault(this.local_vault_service!.get_enc_secrets()!, zke_key).then((decrypted_vault)=>{
               this.decrypted_vault = decrypted_vault;
+              this.is_continue_disabled = false;
+              this.hideDecryptionInput();
 
             }, (error)=>{
               this.translate.get("import_vault.errors.decryption_failure").subscribe((translation)=>{

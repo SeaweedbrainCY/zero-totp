@@ -143,16 +143,17 @@
             'encrypted' | translate}} <fa-icon [icon]="faLock" class="mr-2" ></fa-icon> </span> <span
             class="has-text-weight-bold has-text-success" *ngIf="decrypted_vault != undefined">{{ 'decrypted' | translate}} <fa-icon [icon]="faUnlock"
               class="mr-2"></fa-icon> </span></p>
-              <p class=" has-text-centered has-text-danger">{{decryption_error}}</p><br>
+              <p class="has-text-centered has-text-danger has-text-weight-bold" [ngClass]="{'shake':decryption_error != ''}">{{decryption_error}}</p><br>
 
-        <div class="field has-addons" style="width: 70vw;">
-          <div class="control is-expanded">
-            <input class="input" type="password" placeholder="{{'passphrase'| translate}}" name="imported_vault_passphrase"
-              [(ngModel)]="imported_vault_passphrase">
+        <div class="will_be_reduced "  [ngClass]="{ 'field has-addons' : decrypt_input_visible, 'has-text-centered':!decrypt_input_visible, reduced:decrypted_vault != undefined && decrypt_input_visible }" style="width: 70vw;">
+          <div class="control is-expanded " *ngIf="decrypt_input_visible">
+            <input class="input will_be_reduced" [ngClass]="{reduced:decrypted_vault != undefined}" type="password" placeholder="{{'passphrase'| translate}}" name="imported_vault_passphrase"
+              [(ngModel)]="imported_vault_passphrase"  >
           </div>
           <div class="control">
             <button class="button is-success" (click)="decrypt()">
-              <fa-icon [icon]="faUnlockKeyhole" class="mr-2"></fa-icon> {{'decrypt'| translate}}
+              <span *ngIf="decrypt_input_visible"><fa-icon [icon]="faUnlockKeyhole" class="mr-2"></fa-icon> {{'decrypt'| translate}}</span>
+              <span *ngIf="!decrypt_input_visible"> {{'decrypted'| translate}} <fa-icon [icon]="faCircleCheck" class="ml-2"></fa-icon></span>
             </button>
           </div>
         </div>
