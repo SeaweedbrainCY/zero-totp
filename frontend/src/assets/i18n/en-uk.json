@@ -318,6 +318,12 @@
   "hour": "hour",
   "import_from": "Import from",
   "import_vault": {
+    "errors": {
+      "bad_passphrase": "Wrong passphrase",
+      "decryption_failure": "An error occured while decrypting your zero-knowledge encryption key. Your vault might be corrupted",
+      "derivation_failure": "An error occured while derivating your passphrase.",
+      "vault_decryption_failure": "An error occured while decrypting your vault"
+    },
     "merging_method": {
       "merge": {
         "paragraph": "Merge the imported vault with the current one. No TOTP codes will be deleted, the imported vault will be added to the current one.",
@@ -328,6 +334,7 @@
         "title": "Replace"
       }
     },
+    "secure_text": "secure (encrypted)",
     "steps": {
       "decrypt": "Decrypt your vault",
       "encrypt": "Encrypt and upload",

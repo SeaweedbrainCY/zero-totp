@@ -85,30 +85,14 @@
         </div>
       </li>
 
+
       <li class="step-item " [ngClass]="{
-                'is-completed':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) > 2, 
-                'is-active':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) == 2
-                }">
+        'is-completed':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) > 2, 
+        'is-active':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) == 2
+        }">
         <div class="step-marker">
           <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=2">3</span>
           <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >2">
-            <fa-icon [icon]="faCheck"></fa-icon>
-          </span>
-        </div>
-        <div class="step-details" *ngIf="!isMobileDevice">
-          <p class="step-title">{{
-            'import_vault.steps.select' | translate }}</p>
-          <p></p>
-        </div>
-      </li>
-
-      <li class="step-item " [ngClass]="{
-        'is-completed':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) > 3, 
-        'is-active':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) == 3
-        }">
-        <div class="step-marker">
-          <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=3">4</span>
-          <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >3">
             <fa-icon [icon]="faCheck"></fa-icon>
           </span>
         </div>
@@ -129,7 +113,7 @@
       </h3>
       <div class="is-flex is-justify-content-center mt-6 mb-6">
 
-        <div class="file is-boxed" *ngIf="local_vault_service != null ">
+        <div class="file is-boxed" *ngIf="local_vault_service == null ">
           <label class="file-label">
             <input class="file-input" type="file" name="resume" accept=".zero-totp,.txt" (change)="openFile($event)" [disabled]="is_importing">
             <span class="file-cta">
@@ -143,6 +127,9 @@
             </span>
           </label>
         </div>
+        <div *ngIf="local_vault_service != null && local_vault_service.get_is_signature_valid()">
+          <p class="has-text-centered has-text-weight-bold">{{file_name}} - <span class="has-text-success">{{"import_vault.secure_text" | translate}} <fa-icon [icon]="faLock" class="ml-2"></fa-icon></span></p>
+        </div>
       </div>
     </div>
 
@@ -152,18 +139,19 @@
         'import_vault.zero_totp.decrypt' | translate }}
       </h3>
       <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center mt-6 mb-6 ">
-        <p class=" has-text-centered">zero_totp_backup.txt <span class="has-text-weight-bold has-text-danger">{{
-            'encrypted' | translate}} <fa-icon [icon]="faLock" class="mr-2"></fa-icon> </span> <span
-            class="has-text-weight-bold has-text-success">{{ 'decrypted' | translate}} <fa-icon [icon]="faUnlock"
-              class="mr-2"></fa-icon> </span></p><br>
+        <p class=" has-text-centered">{{file_name}} - <span class="has-text-weight-bold has-text-danger" *ngIf="decrypted_vault == undefined">{{
+            'encrypted' | translate}} <fa-icon [icon]="faLock" class="mr-2" ></fa-icon> </span> <span
+            class="has-text-weight-bold has-text-success" *ngIf="decrypted_vault != undefined">{{ 'decrypted' | translate}} <fa-icon [icon]="faUnlock"
+              class="mr-2"></fa-icon> </span></p>
+              <p class=" has-text-centered has-text-danger">{{decryption_error}}</p><br>
 
         <div class="field has-addons" style="width: 70vw;">
           <div class="control is-expanded">
-            <input class="input" type="password" placeholder="{{'passphrase'| translate}}" name="vault_password"
-              [(ngModel)]="vault_password">
+            <input class="input" type="password" placeholder="{{'passphrase'| translate}}" name="imported_vault_passphrase"
+              [(ngModel)]="imported_vault_passphrase">
           </div>
           <div class="control">
-            <button class="button is-success">
+            <button class="button is-success" (click)="decrypt()">
               <fa-icon [icon]="faUnlockKeyhole" class="mr-2"></fa-icon> {{'decrypt'| translate}}
             </button>
           </div>
@@ -171,45 +159,6 @@
       </div>
     </div>
 
-    <div *ngIf="step == 'select'">
-      <h3 class="is-size-3 has-text-centered has-text-weight-bold has-text-dark has-text-dark"
-        style="line-height: normal;"> {{
-        'import_vault.zero_totp.select' | translate }}
-      </h3>
-      <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center mt-6 mb-6 ">
-        <div class="notification is-success  is-flex is-justify-content-center is-align-items-center"
-          style="width: 50vw; cursor: pointer;" (click)="selectMergingOption('merge')"
-          [ngClass]="{'is-light': selected_merging_option != 'merge'}">
-          <div class="mr-5">
-            <fa-icon [icon]="faCircleEmpty" *ngIf="selected_merging_option != 'merge'"></fa-icon>
-            <fa-icon [icon]="faCircleCheck" *ngIf="selected_merging_option == 'merge'"></fa-icon>
-          </div>
-          <div>
-            <p class="has-text-weight-bold">{{
-              'import_vault.merging_method.merge.title' | translate }}</p>
-            <p>{{
-              'import_vault.merging_method.merge.paragraph' | translate }}</p>
-          </div>
-        </div>
-
-
-        <div class="notification is-warning is-flex is-justify-content-center is-align-items-center"
-          style="width: 50vw; cursor: pointer;" (click)="selectMergingOption('replace')"
-          [ngClass]="{'is-light': selected_merging_option != 'replace'}">
-          <div class="mr-5">
-            <fa-icon [icon]="faCircleEmpty" *ngIf="selected_merging_option != 'replace'"></fa-icon>
-            <fa-icon [icon]="faCircleCheck" *ngIf="selected_merging_option == 'replace'"></fa-icon>
-          </div>
-          <div>
-            <p class="has-text-weight-bold">{{
-              'import_vault.merging_method.replace.title' | translate }}</p>
-            <p>{{
-              'import_vault.merging_method.replace.paragraph' | translate }}</p>
-          </div>
-        </div>
-
-      </div>
-    </div>
 
     <div *ngIf="step == 'encrypt'">
       <h3 class="is-size-3 has-text-centered has-text-weight-bold has-text-dark has-text-dark"
@@ -258,7 +207,7 @@
 </section>
 
 <div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isUnsecureVaultModaleActive}">
-  <div class="modal-bakcground" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive"></div>
+  <div class="modal-background" (click)="rejectUnsecureVault()"></div>
   <div class="modal-content">
       <section class="modal-card-body">
           <h1 class="is-size-2 has-text-danger">{{ 'login.backup.unsecure.popup.title' | translate }}</h1>
@@ -267,9 +216,9 @@
           <br><br>
       </section>
       <footer class="modal-card-foot is-flex is-justify-content-right">
-          <button class="button is-success" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive">{{ 'login.backup.unsecure.popup.button.cancel' | translate }}</button>
+          <button class="button is-success" (click)="rejectUnsecureVault()">{{ 'login.backup.unsecure.popup.button.cancel' | translate }}</button>
           <button class="button is-danger" (click)="acceptUnsecureVault()" >{{ 'login.backup.unsecure.popup.continue' | translate }}</button>
       </footer>
   </div>
-  <button class="modal-close is-large" aria-label="close" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive" ></button>
+  <button class="modal-close is-large" aria-label="close" (click)="rejectUnsecureVault()" ></button>
 </div>
