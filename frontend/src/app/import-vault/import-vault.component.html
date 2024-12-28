@@ -176,14 +176,15 @@
         
         
         
-        <div class="box " style="margin: 0; " [style]="isMobileDevice ? 'width: 80vw;' : 'width: 60vw;'">
+        <div class="box " style="margin: 0; " [style]="isMobileDevice ? 'width: 80vw;' : 'width: 60vw;'" *ngIf="decrypted_vault != undefined">
           <p class="has-text-weight-bold mb-4">{{'import_vault.zero_totp.will_be_kept' | translate }}</p>
           <div class="is-flex is-justify-content-center is-align-items-center is-flex-direction-column" *ngFor="let key of decrypted_vault!.keys()" >
-            <div class="notification is-light" style="width: 100%; margin-bottom: 5px;" [ngClass]="uploaded_uuid.includes(key) ? 'is-success' : ' is-primary '">
+            <div class="notification is-light" style="width: 100%; margin-bottom: 5px;" [ngClass]="{'is-success' : uploaded_uuid.includes(key),' is-primary': uploaded_uuid.includes(key) && upload_error_uuid.includes(key), 'is-danger': upload_error_uuid.includes(key)}">
               <p>
                 <fa-icon [icon]="faCloudArrowUp" class="mr-4" *ngIf="!uploading"></fa-icon>
-                <fa-icon [icon]="faCircleNotch" class="mr-4" *ngIf="uploading && !uploaded_uuid.includes(key)" [animation]="'spin'" ></fa-icon>
-                <fa-icon [icon]="faFileCircleCheck" class="mr-4" *ngIf="uploading && uploaded_uuid.includes(key)" ></fa-icon>
+                <fa-icon [icon]="faCircleNotch" class="mr-4" *ngIf="uploading && !uploaded_uuid.includes(key) && !upload_error_uuid.includes(key)" [animation]="'spin'" ></fa-icon>
+                <fa-icon [icon]="faFileCircleCheck" class="mr-4" *ngIf="uploaded_uuid.includes(key)" ></fa-icon>
+                <fa-icon [icon]="faFileExcel" class="mr-4" *ngIf=" upload_error_uuid.includes(key)" ></fa-icon>
                 {{decrypted_vault!.get(key)!.get("name")}}
               </p>
             </div>
@@ -246,8 +247,8 @@
   <div class="modal-background"></div>
   <div class="modal-content">
       <section class="modal-card-body">
-          <h1 class="is-size-2 has-text-success has-text-centered">{{ 'import_vault.success_with_error_modal.title' | translate }}</h1>
-          <strong>{{ 'import_vault.success_with_error_modal.message' | translate }}</strong>. 
+          <h1 class="is-size-2 has-text-primary has-text-centered">{{ 'import_vault.success_with_error_modal.title' | translate }}</h1>
+          <strong>{{ 'import_vault.success_with_error_modal.message' | translate }}</strong>
           <ul *ngFor="let uuid of upload_error_uuid">
             <li>{{decrypted_vault!.get(uuid)!.get('name')}}</li>
             </ul>

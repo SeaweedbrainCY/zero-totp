@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { faFileArrowDown, faArrowRight, faCloudArrowUp, faCheck, faUnlockKeyhole, faLock, faUnlock, faCircleCheck, faCircleNotch, faCircleExclamation, faFileCircleCheck } from '@fortawesome/free-solid-svg-icons';
-import { faCircle } from '@fortawesome/free-regular-svg-icons';
+import { faCircle, faFileExcel } from '@fortawesome/free-regular-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, RouterStateSnapshot, NavigationEnd } from '@angular/router';
 import { ViewportRuler } from '@angular/cdk/scrolling';
@@ -38,6 +38,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   faUnlock = faUnlock;
   faCircleEmpty = faCircle;
   faCircleCheck = faCircleCheck;
+  faFileExcel = faFileExcel;
   faCircleNotch = faCircleNotch;
   continue_button_text = "continue";
   local_vault_service: LocalVaultV1Service | null = null;
@@ -425,10 +426,11 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
       });
 
       const uploadPromises: Promise<void>[] = [];
+      const encryptPromises: Promise<void>[] = [];
 
 
       for(let uuid of this.decrypted_vault!.keys()){
-        this.encryptSecret(this.decrypted_vault!.get(uuid)!).then((enc_jsonProperty)=>{
+        const encrypt_promise = this.encryptSecret(this.decrypted_vault!.get(uuid)!).then((enc_jsonProperty)=>{
           const upload_promise = this.uploadSecret(uuid, enc_jsonProperty).then((response)=>{
               this.uploaded_uuid.push(uuid);
               console.log(response)
@@ -448,12 +450,14 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
               this.utils.toastError(this.toastr, translation, "Secret name : " + this.decrypted_vault!.get(uuid)!.get("name") + ". Error: " + error);
             });
         });
-
-       Promise.all(uploadPromises).then(()=>{
-          this.uploading = false;
-          this.importSuccess = true;
-       });
+        encryptPromises.push(encrypt_promise);
     }
+    Promise.all(encryptPromises).then(()=>{
+      Promise.all(uploadPromises).then(()=>{
+        this.uploading = false;
+        this.importSuccess = true;
+     });
+     });
   }
 
 

@@ -348,7 +348,8 @@
     },
     "success_with_error_modal": {
       "back_return": "Retour à l'import",
-      "title": "Import fini"
+      "title": "Import fini",
+      "message": "L'import est terminé mais certains secrets n'ont pas pu être importés. Les secrets non-ajoutés sont les suivants :"
     },
     "title": "Importer un coffre",
     "uploading": {
