@@ -93,14 +93,14 @@ export class Utils {
 
 
       public toastSuccess(toastr:ToastrService, title:string, message:string){
-        toastr.success(title, message,{
+        toastr.success(message,title,{
           timeOut: 5000,
           closeButton: true,
           progressBar: true,
         });
       }
       public toastError(toastr:ToastrService,title:string, message:string){
-        toastr.error(title, message,{
+        toastr.error(message, title,{
           timeOut: 30000,
           closeButton: true,
           progressBar: true,
