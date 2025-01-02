@@ -4,8 +4,9 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
-import { faLightbulb, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faLightbulb, faXmark, faVault, faKey, faGears, faUser } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
+
 
 
 @Component({
@@ -18,6 +19,10 @@ export class NavbarComponent implements OnInit{
   isNavbarExpanded = false;
   isIdleWatchingEnabled = false;
   faXmark=faXmark
+  faUser=faUser;
+  faKey=faKey;
+  faGears=faGears;
+  faVault=faVault;
   faLightbulb = faLightbulb;
   current_language:string = localStorage.getItem('language') || 'en-uk';
   isLangDropdownExpanded = false;

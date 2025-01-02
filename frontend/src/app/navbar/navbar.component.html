@@ -31,16 +31,16 @@
     <div id="navbarBasicExample" class="navbar-menu" [ngClass]="{'is-active': isNavbarExpanded}" >
       <div class="navbar-start"  *ngIf="userService.getId()!=null">
         <a class="navbar-item" (click)="navigateToRoute('vault')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault'}">
-          {{ 'my_vault' | translate }}
+          <fa-icon [icon]="faVault" class="mr-2"></fa-icon> {{ 'my_vault' | translate }}
         </a>
         <a class="navbar-item" (click)="navigateToRoute('vault/add')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault/add'}">
-          {{ 'navbar.add' | translate }}
+          <fa-icon [icon]="faKey" class="mr-2"></fa-icon>  {{ 'navbar.add' | translate }}
         </a>
         <a class="navbar-item" (click)="navigateToRoute('preferences')" [ngClass]="{'has-text-weight-bold':currentUrl == '/preferences'}">
-          {{ 'navbar.preferences' | translate }}
+          <fa-icon [icon]="faGears" class="mr-2"></fa-icon>  {{ 'navbar.preferences' | translate }}
         </a>
         <a class="navbar-item" (click)="navigateToRoute('account')" [ngClass]="{'has-text-weight-bold':currentUrl == '/account'}">
-          {{ 'navbar.account' | translate }}
+          <fa-icon [icon]="faUser" class="mr-2"></fa-icon>  {{ 'navbar.account' | translate }}
         </a>
       </div>
       <div class="navbar-start"  *ngIf="userService.getId()==null && !this.userService.getIsVaultLocal()">
