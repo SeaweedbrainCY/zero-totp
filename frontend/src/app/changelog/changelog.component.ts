@@ -14,6 +14,17 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "02/12/2025",
+      version: "b5.1.0",
+      added: [
+        "Whole new feature : you can now import a backup of your Zero-TOTP vault directly in your current vault. This helps you to easily restore a backup or migrate an account. This feature is available in the Account page and storage option of your vault page",
+      ],
+      fixed:[
+       "We fixed a medium CVE in the API dependencies.", 
+       "We fixed an issue in the parsing of imported vaults to avoid any potential security issue.",
+      ]
+    },
+    {
       date: "08/11/2024",
       version: "b5.0.0",
       added: [
