@@ -339,7 +339,7 @@ export class VaultComponent implements OnInit {
         const a = document.createElement('a');
         a.href = url;
         const date = String(formatDate(new Date (), 'dd-MM-yyyy-hh-mm-ss', 'en'));
-        a.download = 'enc_vault_' + date + '.zero-totp';
+        a.download = 'Zero-TOTP_backup_' + date + '.txt';
         a.click();
         window.URL.revokeObjectURL(url);
         this.utils.toastSuccess(this.toastr, this.translate.instant("vault.downloaded") ,"");
