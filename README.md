@@ -1,12 +1,21 @@
 # Zero-TOTP
 <p align="center">
-    <img src="https://img.shields.io/uptimerobot/status/m794827592-25c510a0c14f34a3812711a9%20?label=zero-totp.com&link=zero-totp.com"/>
-    <img src="https://img.shields.io/uptimerobot/status/m795499972-828167232e3d77f12e0505fd?label=api.zero-totp.com&link=zero-totp.com"/>
+    <img src="https://img.shields.io/uptimerobot/status/m794827592-25c510a0c14f34a3812711a9%20?label=Frontend&link=zero-totp.com"/>
+    <img src="https://img.shields.io/uptimerobot/ratio/m794827592-25c510a0c14f34a3812711a9?label=Frontend%20uptime%20(30d)">
+    <img src="https://img.shields.io/uptimerobot/status/m795499972-828167232e3d77f12e0505fd?label=API&link=zero-totp.com"/>
+    <img src="https://img.shields.io/uptimerobot/ratio/m795499972-828167232e3d77f12e0505fd?label=API%20uptime%20(30d)">
     <br>
     <img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/main.yml/badge.svg?branch="/>
      <a href="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml"><img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml/badge.svg" alt="Test and Coverage"/></a>
     <a href='https://coveralls.io/github/SeaweedbrainCY/zero-totp'><img src='https://coveralls.io/repos/github/SeaweedbrainCY/zero-totp/badge.svg' alt='Coverage Status' /></a>
     <img src="https://img.shields.io/github/license/seaweedbraincy/zero-totp"/>
+    <img src="https://img.shields.io/github/v/release/seaweedbraincy/zero-totp"/>
+    <img alt="GitHub commits since latest release (branch)" src="https://img.shields.io/github/commits-since/seaweedbraincy/zero-totp/latest/dev">
+    <br>
+    <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues/seaweedbraincy/zero-totp">
+    <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues-closed/seaweedbraincy/zero-totp">
+    <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues-pr/seaweedbraincy/zero-totp">
+    <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues-pr-closed/seaweedbraincy/zero-totp">
 </p>
 
 <img src="https://github.com/SeaweedbrainCY/zero-totp/blob/main/frontend/src/assets/logo_zero_totp_dark.png?raw=true"/>
@@ -25,7 +34,7 @@ You are the only one able to decrypt these information, thanks to your strong an
 *Zero Knowledge Encryption (ZKE) refers to a robust security measure that ensures the utmost protection of your data. With ZKE, your information is encrypted locally on your device before being uploaded to the cloud, and only you hold the encryption keys, guaranteeing that no one, including the service provider, can access your data without your explicit permission. This empowers you with complete control over your sensitive information while enjoying the convenience and flexibility of cloud storage.*
 
 ## Project progress
-*Updated 23 jan. 2024*
+*Updated 2 jan. 2025*
 > [!TIP]
 > As of today, all focus is on the web app (main and Rescue) and their self-hosted version. The iOS app and the CLI app are not in development for the moment.
 
@@ -33,7 +42,7 @@ You are the only one able to decrypt these information, thanks to your strong an
 | --- | --- | --- | --- |
 | [Rescue Zero-TOTP](https://rescue.zero-totp.com) | ✅ | ✅ | ✅ |
 | [Zero-TOTP Web App](https://zero-totp.com) | ✅ | ✅ | ⏳ |
-| Zero-TOTP web app self-host | ✅ | ⏳ | ⏳ |
+| Zero-TOTP web app self-host | ✅ | ✅ | ⏳ |
 | Rescue Zero-TOTP self-host | ✅ | ⏳ | ⏳ |
 | Zero-TOTP iOS App | ⏳ | ⏳ | ⏳ |
 | Zero-TOTP CLI App | ⏳ | ⏳ | ⏳ |
