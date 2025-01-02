@@ -49,6 +49,10 @@
       "unknown": "Oups, an error occured. Answer from the server : "
     },
     "loading": "Retrieving your favorite ice-cream flavor ... ",
+    "manage_vault": {
+      "import": "Import data from a vault",
+      "title": "Manage your vault"
+    },
     "passphrase": {
       "confirm": "Confirm Passphrase",
       "current": "Your current passphrase",

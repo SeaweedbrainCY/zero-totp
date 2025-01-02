@@ -49,6 +49,10 @@
       "unknown": "Oups, une erreur est survenue. Réponse du serveur : "
     },
     "loading": "Récupération de ta saveur de glace préférée ... ",
+    "manage_vault": {
+      "import": "Importer des données depuis un coffre",
+      "title": "Gère ton coffre"
+    },
     "passphrase": {
       "confirm": "Confirme ta passphrase",
       "current": "Ta passphrase actuelle",
