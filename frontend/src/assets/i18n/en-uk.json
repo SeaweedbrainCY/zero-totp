@@ -696,6 +696,7 @@
     "title": "Scan the QR code from the website your are activating TOTP 2FA on"
   },
   "red": "Red",
+  "retry": "Try again",
   "save": "Save",
   "seconds": "seconds",
   "session_expired": "Oups, you session is expired !",

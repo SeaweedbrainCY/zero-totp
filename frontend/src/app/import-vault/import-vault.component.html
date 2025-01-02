@@ -181,7 +181,7 @@
           <div class="is-flex is-justify-content-center is-align-items-center is-flex-direction-column" *ngFor="let key of decrypted_vault!.keys()" >
             <div class="notification is-light" style="width: 100%; margin-bottom: 5px;" [ngClass]="{'is-success' : uploaded_uuid.includes(key),' is-primary': uploaded_uuid.includes(key) && upload_error_uuid.includes(key), 'is-danger': upload_error_uuid.includes(key)}">
               <p>
-                <fa-icon [icon]="faCloudArrowUp" class="mr-4" *ngIf="!uploading"></fa-icon>
+                <fa-icon [icon]="faCloudArrowUp" class="mr-4" *ngIf="!uploading && !uploaded_uuid.includes(key) && !upload_error_uuid.includes(key)"></fa-icon>
                 <fa-icon [icon]="faCircleNotch" class="mr-4" *ngIf="uploading && !uploaded_uuid.includes(key) && !upload_error_uuid.includes(key)" [animation]="'spin'" ></fa-icon>
                 <fa-icon [icon]="faFileCircleCheck" class="mr-4" *ngIf="uploaded_uuid.includes(key)" ></fa-icon>
                 <fa-icon [icon]="faFileExcel" class="mr-4" *ngIf=" upload_error_uuid.includes(key)" ></fa-icon>
@@ -257,6 +257,7 @@
       </section>
       <footer class="modal-card-foot is-flex is-justify-content-center">
         <button class="button is-primary mr-2"  [routerLink]="['/import/vault']">{{ 'import_vault.success_with_error_modal.back_return' | translate }}</button>
+        <button class="button is-primary mr-2 ml-2"  (click)="retryFailedOnes()">{{ 'retry' | translate }}</button>
           <button class="button is-primary ml-2"  [routerLink]="['/vault']">{{ 'import_vault.success_modal.button' | translate }}</button>
       </footer>
   </div>

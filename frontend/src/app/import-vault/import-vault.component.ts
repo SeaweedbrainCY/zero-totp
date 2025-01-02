@@ -482,10 +482,24 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
           resolve(response);
         },
         error: (error)=>{
-          reject(error);
+          reject(error.message + error.error.message);
         }
       });
     });
+  }
+
+  retryFailedOnes(){
+    for(let uuid of this.decrypted_vault!.keys()){
+      if(!this.upload_error_uuid.includes(uuid)){
+        this.decrypted_vault!.delete(uuid);
+      }
+    }
+    this.uploading = true;
+    this.upload_error_uuid = [];
+    this.uploaded_uuid = [];
+    this.import_had_error = false;
+    this.importSuccess = false;
+    this.upload();
   }
 
 

@@ -348,8 +348,8 @@
     },
     "success_with_error_modal": {
       "back_return": "Retour à l'import",
-      "title": "Import fini",
-      "message": "L'import est terminé mais certains secrets n'ont pas pu être importés. Les secrets non-ajoutés sont les suivants :"
+      "message": "L'import est terminé mais certains secrets n'ont pas pu être importés. Les secrets non-ajoutés sont les suivants :",
+      "title": "Import fini"
     },
     "title": "Importer un coffre",
     "uploading": {
@@ -696,6 +696,7 @@
     "title": "Scanne le QRCode de l'application dont tu souhaites activer le 2FA TOTP"
   },
   "red": "Rouge",
+  "retry": "Réessayer",
   "save": "Sauvegarder",
   "seconds": "secondes",
   "session_expired": "Oups, ta session a expirée !",
