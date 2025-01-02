@@ -45,6 +45,7 @@ import { RouterModule } from '@angular/router';
 import { routes } from './app-routing.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { httpInterceptorProviders } from './helpers/auth.interceptor';
+import { ImportVaultComponent } from './import-vault/import-vault.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -78,7 +79,8 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
         OauthSyncComponent,
         PreferencesComponent,
         OpenSourceLibraryComponent,
-        EmailVerificationComponent
+        EmailVerificationComponent,
+        ImportVaultComponent,
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,

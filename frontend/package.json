@@ -35,6 +35,7 @@
     "animate.css": "^4.1.1",
     "buffer": "^6.0.3",
     "bulma": "^0.9.4",
+    "bulma-extensions": "^6.2.7",
     "bulma-modal-fx": "^1.1.1",
     "ngx-cookie": "^6.0.1",
     "ngx-toastr": "^18.0.0",

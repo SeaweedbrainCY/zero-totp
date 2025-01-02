@@ -97,7 +97,14 @@ export class VaultComponent implements OnInit {
       this.userService.setVaultTags([]);
       this.http.get("/api/v1/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         const data = JSON.parse(JSON.stringify(response.body))
-        this.decrypt_and_display_vault(data.enc_secrets);
+        let encrypted_secret_vault = new Array<Map<string, string>>();
+        for (let secret of data.enc_secrets){
+          let secret_map = new Map<string, string>();
+          secret_map.set("uuid", secret.uuid);
+          secret_map.set("enc_secret", secret.enc_secret);
+          encrypted_secret_vault.push(secret_map);
+        }
+        this.decrypt_and_display_vault(encrypted_secret_vault);
       }, (error) => {
         this.reloadSpin = true
         if(error.status == 404){
@@ -163,7 +170,7 @@ export class VaultComponent implements OnInit {
     });
   }
 
-  decrypt_and_display_vault(encrypted_vault:any){
+  decrypt_and_display_vault(encrypted_vault:Array<Map<string, string>>){
     this.reloadSpin = true
       this.vault = new Map<string, Map<string,string>>();
       this.vaultUUIDs = [];
@@ -172,7 +179,10 @@ export class VaultComponent implements OnInit {
       try{
         this.startDisplayingCode()
         for (let secret of encrypted_vault){
-          this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
+          const uuid = secret.get("uuid");
+          const enc_secret = secret.get("enc_secret");
+          if(uuid != null && enc_secret != null){
+          this.crypto.decrypt(enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
             if(dec_secret == null){
               this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
                 this.utils.toastError(this.toastr, translation,"");
@@ -182,10 +192,10 @@ export class VaultComponent implements OnInit {
               fakeProperty.set("name", "🔒")
               fakeProperty.set("secret", "");
 
-              this.vault?.set(secret.uuid, fakeProperty);
+              this.vault?.set(uuid, fakeProperty);
             } else {
                 try{
-                  this.vault?.set(secret.uuid, this.utils.mapFromJson(dec_secret));
+                  this.vault?.set(uuid, this.utils.mapFromJson(dec_secret));
                   this.userService.setVault(this.vault!);
 
                   this.filterVault(); // to display all the vault
@@ -207,13 +217,22 @@ export class VaultComponent implements OnInit {
                 }
               }
           }).catch((error)=>{
+            console.log(error);
             this.translate.get("vault.error.decryption").subscribe((translation: string) => {
               this.utils.toastError(this.toastr,  translation + " " + error,"");
           });
           });
+        } else {
+          console.log("uuid or enc_secret is null");
+            this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+              this.utils.toastError(this.toastr,  translation,"");
+            });
+        }
+        
         }
         this.reloadSpin = false
-      } catch {
+      } catch (e){
+        console.log(e);
         this.translate.get("vault.error.wrong_key_vault").subscribe((translation: string) => {
             this.utils.toastError(this.toastr,translation,"")
       });
@@ -493,6 +512,9 @@ export class VaultComponent implements OnInit {
     }
     this.filterVault();
   }
+
+
+  
 
 }
 

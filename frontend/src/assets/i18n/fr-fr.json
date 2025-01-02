@@ -49,6 +49,10 @@
       "unknown": "Oups, une erreur est survenue. Réponse du serveur : "
     },
     "loading": "Récupération de ta saveur de glace préférée ... ",
+    "manage_vault": {
+      "import": "Importer des données depuis un coffre",
+      "title": "Gère ton coffre"
+    },
     "passphrase": {
       "confirm": "Confirme ta passphrase",
       "current": "Ta passphrase actuelle",
@@ -142,8 +146,11 @@
   "cancel": "Retour",
   "changelog": "Changelog",
   "close": "Fermer",
+  "confirm": "Confirmer",
   "continue": "Continuer",
   "copied": "Copié !",
+  "decrypt": "Déchiffrer",
+  "decrypted": "déchiffré",
   "delete": "Supprimer",
   "email": "Email",
   "email_verif": {
@@ -193,6 +200,7 @@
       "success": "Email vérifié ! ✅"
     }
   },
+  "encrypted": "chiffré",
   "footer": {
     "bug": "Signaler un bug",
     "opensource": "Composants open-source"
@@ -207,6 +215,7 @@
     "user_not_found": "Utilisateur non trouvé",
     "username_exists": "Nom d'utilisateur déjà existant"
   },
+  "give_up": "Abandonner",
   "green": "Vert",
   "home": {
     "about": {
@@ -311,6 +320,65 @@
     }
   },
   "hour": "heure",
+  "import_from": "Importer depuis",
+  "import_vault": {
+    "errors": {
+      "bad_passphrase": "Passphrase erronée",
+      "decryption_failure": "Une erreur est survenue en déchiffrant ton coffre. Il pourrait être corrompu",
+      "derivation_failure": "Une erreur est survenue en dérivant ta passphrase",
+      "vault_decryption_failure": "Une erreur est survenue en déchiffrant ton coffre"
+    },
+    "merging_method": {
+      "merge": {
+        "paragraph": "Fusionner le coffre importer avec le coffre actuel. Aucuns codes TOTP ne sera supprimé, le coffre importé sera ajouté à l'actuel.",
+        "title": "Fusionner"
+      },
+      "replace": {
+        "paragraph": "Remplacer tous les codes TOTP actuels avec le coffre importé. Tous les codes TOTP actuels seront supprimés et les nouveaux, ajoutés.",
+        "title": "Remplacer"
+      }
+    },
+    "secure_text": "sécurisé (chiffré)",
+    "steps": {
+      "decrypt": "Déchiffre ton coffre",
+      "encrypt": "Chiffrer et uploader",
+      "import_vault": "Importe ton coffre",
+      "select": "Sélectionner la méthode de fusion"
+    },
+    "success_modal": {
+      "button": "Ouvrir mon coffre",
+      "message": "Ton coffre a été importé et ajouté avec succès à ton coffre Zero-TOTP. Tu peux maintenant l'ouvrir pour voir tous tes codes TOTP.",
+      "title": "Import réussi 🎉"
+    },
+    "success_with_error_modal": {
+      "back_return": "Retour à l'import",
+      "message": "L'import est terminé mais certains secrets n'ont pas pu être importés. Les secrets non-ajoutés sont les suivants :",
+      "title": "Import fini"
+    },
+    "title": "Importer un coffre",
+    "uploading": {
+      "errors": {
+        "encrypt": "Une erreur est survenue en chiffrant le secret suivant. Il ne sera pas ajouté à ton coffre.",
+        "upload": "Une erreur est survenue en envoyant le secret suivant. Le secret ne sera pas ajouté au coffre."
+      },
+      "steps": {
+        "encryption": "Chiffrement et envoie ...",
+        "uploading": "Envoie de "
+      }
+    },
+    "zero_totp": {
+      "decrypt": "Déchiffre ton coffre",
+      "encrypt": "Chiffrer le nouveau coffre et l'uploader",
+      "encrypt_titles": {
+        "subtitle": "Importer la backup datant du ",
+        "warning": "Chiffrement et envoi en cours. Ne ferme pas cette page"
+      },
+      "import": "Importe une backup de ton coffre Zero-TOTP",
+      "select": "Méthode de fusion",
+      "will_be_deleted": "Sera supprimé",
+      "will_be_kept": "Sera ajouté"
+    }
+  },
   "less": "Moins",
   "loading": "Chargement ...",
   "log_in": "Connexion",
@@ -398,6 +466,7 @@
     "why": "Pourquoi Zero-TOTP"
   },
   "never": "Jamais",
+  "none": "Aucun",
   "oauth": {
     "error": {
       "impossible": "Erreur : Impossible de backup ton coffre. Réessaye de synchroniser ton compte Google Drive."
@@ -631,6 +700,7 @@
     "title": "Scanne le QRCode de l'application dont tu souhaites activer le 2FA TOTP"
   },
   "red": "Rouge",
+  "retry": "Réessayer",
   "save": "Sauvegarder",
   "seconds": "secondes",
   "session_expired": "Oups, ta session a expirée !",

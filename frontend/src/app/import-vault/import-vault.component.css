@@ -1,0 +1,10 @@
+.will_be_reduced {
+    width: 100%;
+    transition: width 2s ease;
+  }
+  
+.reduced {
+    width: 0vw !important;
+    padding: 0; 
+
+  }

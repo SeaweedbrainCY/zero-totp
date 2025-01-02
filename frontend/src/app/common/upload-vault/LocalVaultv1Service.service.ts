@@ -26,7 +26,7 @@ export class LocalVaultV1Service {
   date: string | null = null;
   derived_key_salt: string | null = null;
   zke_key_enc: string | null = null;
-  enc_secrets: Map<string, string> | null = null;
+  enc_secrets: Array<Map<string, string>> | null = null;
   is_signature_valid: boolean = false;
 
 
@@ -66,7 +66,7 @@ export class LocalVaultV1Service {
       if(context.hasOwnProperty("version")){
         if(context.version == 1){
           const required_keys = ["version", "date", "derived_key_salt", "zke_key_enc", "secrets"]
-          let enc_secrets = Array();
+          let enc_secrets = Array<Map<string, string>>();
           for(let key of required_keys){
             if(context.hasOwnProperty(key)){
               if(key == "secrets"){
@@ -75,9 +75,10 @@ export class LocalVaultV1Service {
                     const sanitized_uuid = this.sanitizer.sanitize(SecurityContext.HTML, secret.uuid)
                     const sanitized_enc_secret = this.sanitizer.sanitize(SecurityContext.HTML, secret.enc_secret)
                     if(sanitized_uuid != null && sanitized_enc_secret != null){
-                      secret.uuid = sanitized_uuid;
-                      secret.enc_secret = sanitized_enc_secret;
-                      enc_secrets.push(secret)
+                      let sanitized_secret = new Map<string, string>();
+                      sanitized_secret.set("uuid", sanitized_uuid);
+                      sanitized_secret.set("enc_secret", sanitized_enc_secret);
+                      enc_secrets.push(sanitized_secret);
                   } else {
                     resolve(UploadVaultStatus.INVALID_ARGUMENT);
                   }
@@ -99,7 +100,7 @@ export class LocalVaultV1Service {
           this.date = context.date;
           this.derived_key_salt = context.derived_key_salt;
           this.zke_key_enc = context.zke_key_enc;
-          this.enc_secrets = context.secrets;
+          this.enc_secrets = enc_secrets;
            this.crypto.verifySignature(unsecure_vault_b64, signature).then(result => {
             if(result){
               this.is_signature_valid = true;
@@ -138,7 +139,7 @@ export class LocalVaultV1Service {
     return this.zke_key_enc;
   }
 
-  get_enc_secrets(): Map<string, string> | null {
+  get_enc_secrets(): Array<Map<string, string>> | null {
     return this.enc_secrets;
   }
 

@@ -98,9 +98,30 @@ video {
 
 
 
+/* ANIMATIONS */
+.shake {
+  animation: shake_anim 1s;
+}
+
+@keyframes shake_anim {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+
+
 /*@import "../node_modules/bulma/css/bulma.css";*/
 @import "../node_modules/bulma/bulma.sass";
-
+@import "../node_modules/bulma-extensions/bulma-steps/dist/css/bulma-steps.sass";
 
 /*Toast CSS*/
 /* based on angular-toastr css https://github.com/Foxandxss/angular-toastr/blob/cb508fe6801d6b288d3afc525bb40fee1b101650/dist/angular-toastr.css */
