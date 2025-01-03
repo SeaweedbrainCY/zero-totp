@@ -17,6 +17,7 @@ import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 import { PreferencesComponent } from './preferences/preferences.component';
 import { OpenSourceLibraryComponent } from './open-source-library/open-source-library.component';
 import { EmailVerificationComponent } from './email-verification/email-verification.component';
+import { ImportVaultComponent } from './import-vault/import-vault.component';
 
 export const routes: Routes = [
   {path:'', component: HomeComponent},
@@ -37,6 +38,8 @@ export const routes: Routes = [
   {path: "preferences", component: PreferencesComponent},
   {path: "opensource", component: OpenSourceLibraryComponent},
   {path:"emailVerification", component: EmailVerificationComponent},
+  {path: "import/vault", component: ImportVaultComponent},
+  {path: "import/vault/:type/:step", component: ImportVaultComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 

@@ -49,6 +49,10 @@
       "unknown": "Oups, an error occured. Answer from the server : "
     },
     "loading": "Retrieving your favorite ice-cream flavor ... ",
+    "manage_vault": {
+      "import": "Import data from a vault",
+      "title": "Manage your vault"
+    },
     "passphrase": {
       "confirm": "Confirm Passphrase",
       "current": "Your current passphrase",
@@ -142,8 +146,11 @@
   "cancel": "Cancel",
   "changelog": "Changelog",
   "close": "Close",
+  "confirm": "Confirm",
   "continue": "Continue",
   "copied": "Copied !",
+  "decrypt": "Decrypt",
+  "decrypted": "decrypted",
   "delete": "Delete",
   "email": "Email",
   "email_verif": {
@@ -193,6 +200,7 @@
       "success": "Your email is verified ! ✅"
     }
   },
+  "encrypted": "encrypted",
   "footer": {
     "bug": "Report a bug",
     "opensource": "Open-Source Component"
@@ -207,6 +215,7 @@
     "user_not_found": "User not found",
     "username_exists": "Username already exists"
   },
+  "give_up": "Quit",
   "green": "Green",
   "home": {
     "about": {
@@ -311,6 +320,65 @@
     }
   },
   "hour": "hour",
+  "import_from": "Import from",
+  "import_vault": {
+    "errors": {
+      "bad_passphrase": "Wrong passphrase",
+      "decryption_failure": "An error occured while decrypting your vault. It might be corrupted",
+      "derivation_failure": "An error occured while derivating your passphrase.",
+      "vault_decryption_failure": "An error occured while decrypting your vault"
+    },
+    "merging_method": {
+      "merge": {
+        "paragraph": "Merge the imported vault with the current one. No TOTP codes will be deleted, the imported vault will be added to the current one.",
+        "title": "Merge"
+      },
+      "replace": {
+        "paragraph": "Replace all current TOTP codes with the imported one. All TOTP codes from the current vault will be deleted and the new one, added.",
+        "title": "Replace"
+      }
+    },
+    "secure_text": "secure (encrypted)",
+    "steps": {
+      "decrypt": "Decrypt your vault",
+      "encrypt": "Encrypt and upload",
+      "import_vault": "Import your vault",
+      "select": "Select the merging method"
+    },
+    "success_modal": {
+      "button": "Open my vault",
+      "message": "Your vault has been successfully imported and added to your Zero-TOTP vault. You can now open it to see all your totp codes",
+      "title": "Import successful 🎉"
+    },
+    "success_with_error_modal": {
+      "back_return": "Go back to import",
+      "message": "The import is done, but some secrets failed to be added. The non-added secrets are the following ones : ",
+      "title": "Import done"
+    },
+    "title": "Import a vault",
+    "uploading": {
+      "errors": {
+        "encrypt": "An error occured while encrypted the following secret. It will not be added to your vault.",
+        "upload": "An error occured while uploading the following secret. It will not be added to your vault."
+      },
+      "steps": {
+        "encryption": "Encrypting and uploading ...",
+        "uploading": "Uploading"
+      }
+    },
+    "zero_totp": {
+      "decrypt": "Decrypt your vault",
+      "encrypt": "Encrypt and upload the new vault",
+      "encrypt_titles": {
+        "subtitle": "Import the backup of ",
+        "warning": "Encryption and upload in progress. Do not close your browser"
+      },
+      "import": "Import a backup of your Zero-TOTP vault",
+      "select": "Merging method",
+      "will_be_deleted": "To delete",
+      "will_be_kept": "Will be added"
+    }
+  },
   "less": "Less",
   "loading": "Loading ...",
   "log_in": "Log in",
@@ -365,7 +433,7 @@
       "oauth": "One last step, please confirm your password to complete the synchronization",
       "rate_limited": "You are rate limited ! Your IP as generated too much failed login attempts in a short period of time. You will be able to try to login again in {{time}} min. If you are using a VPN, try another location or disable it.",
       "server_error": "Error : Impossible ro retrieve information from the server",
-      "session_end": "For your safety, your session must be renewed every hour.",
+      "session_end": "For your safety, your session must be renewed.",
       "session_killed": "For your safety, you have been disconnected because you have reloaded or closed the tab",
       "session_timeout": "For your safety, you have been disconnected after due to inactivity. You can customize this delay in your preferences"
     },
@@ -398,6 +466,7 @@
     "why": "Why Zero-TOTP"
   },
   "never": "Never",
+  "none": "None",
   "oauth": {
     "error": {
       "impossible": "Error : Impossible to backup your vault. Please, try to re-sync your Google Drive account."
@@ -631,6 +700,7 @@
     "title": "Scan the QR code from the website your are activating TOTP 2FA on"
   },
   "red": "Red",
+  "retry": "Try again",
   "save": "Save",
   "seconds": "seconds",
   "session_expired": "Oups, you session is expired !",
