@@ -26,6 +26,12 @@ jobs:
         - name: Generate sitemap.xml
           working-directory: ./frontend
           run: bash generate_sitemap.sh 
+        - name: Populating API version
+          working-directory: ./api
+          run: echo ${{ github.ref_name }} > ./VERSION
+        - name: Populating API version
+          working-directory: ./api
+          run: echo ${{ github.ref_name }} > ./VERSION && echo ${{ github.sha}} | cut -c1-7 >> ./VERSION
         - name: Build Docker image
           working-directory: ./frontend
           run: current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/frontend:latest . 
