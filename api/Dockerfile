@@ -6,7 +6,7 @@ WORKDIR /api
 RUN apt-get clean \
     && apt-get -y update
 
-RUN apt-get -y install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools gcc default-libmysqlclient-dev pkg-config jq
+RUN apt-get -y install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools gcc default-libmysqlclient-dev pkg-config jq curl
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 EXPOSE 8080
@@ -17,4 +17,4 @@ RUN mkdir /var/log/api/ && touch /var/log/api/gunicorn_error.log && touch /var/l
 RUN chown -R 1001:1001 /var/log/api/
 USER 1001:1001
 CMD ["./start.sh"]
-HEALTHCHECK --interval=1m --timeout=30s --start-period=10s --retries=2 CMD ./docker-healthcheck.sh
+HEALTHCHECK --interval=1m --timeout=30s --start-period=10s --retries=2 CMD docker-healthcheck.sh
