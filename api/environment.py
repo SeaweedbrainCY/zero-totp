@@ -79,15 +79,9 @@ class APIConfig:
         for key in self.option_config:
             if key not in data:
                 logging.warning(f"api.{key} is not set. Ignoring it ...")
-        if "port" not in data:
-            logging.warning(f"api.'port' is not set. Using default value: 8080")
-            data["port"] = 8080
-        
-        try:
-            self.port = int(data["port"]) 
-        except:
-            logging.warning("api.port is not valid. Ignoring it. Setting default value: 8080")
-            self.port = 8080
+
+        logging.info("API will listen on port 8080")
+        self.port = 8080
         
         self.jwt_secret = data["jwt_secret"]            
         self.private_key_path = data["private_key_path"]
