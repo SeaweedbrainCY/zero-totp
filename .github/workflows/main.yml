@@ -27,9 +27,6 @@ jobs:
         - name: Create frontend environment file
           working-directory: ./frontend
           run: bash generate-env.sh '${{ github.ref_name }}' '${{secrets.RSA_PUBLIC_KEY}}'
-        - name: Populating API version
-          working-directory: ./api
-          run: echo ${{ github.ref_name }} > ./VERSION && echo ${{ github.sha}} | cut -c1-7 >> ./VERSION
         - name: Generate sitemap.xml
           working-directory: ./frontend
           run: bash generate_sitemap.sh 
@@ -48,6 +45,12 @@ jobs:
         - uses: actions/checkout@v3
         - name: Login to Docker Hub
           run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+        - name: Populating API version
+          working-directory: ./api
+          run: echo ${{ github.ref_name }} > ./VERSION
+        - name: Populating API version
+          working-directory: ./api
+          run: echo ${{ github.ref_name }} > ./VERSION && echo ${{ github.sha}} | cut -c1-7 >> ./VERSION
         - name: Build Docker image
           working-directory: ./api
           run: current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/') && docker build -t $REPO:latest -t $REPO:$current_version . 
