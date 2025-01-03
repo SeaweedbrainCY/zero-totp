@@ -729,6 +729,18 @@ paths:
                     example: 1723399133
         "500":
           description: Internal server error
+  /healthcheck:
+    get:
+      operationId: controllers.health_check
+      tags:
+        - General
+      summary: Check the health of the API
+      security: []
+      responses:
+        "200": 
+          description: API is healthy
+        "500":
+          description: API is unhealthy
 components:
   securitySchemes:
     SessionToken:
