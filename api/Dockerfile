@@ -17,4 +17,4 @@ RUN mkdir /var/log/api/ && touch /var/log/api/gunicorn_error.log && touch /var/l
 RUN chown -R 1001:1001 /var/log/api/
 USER 1001:1001
 CMD ["./start.sh"]
-HEALTHCHECK --interval=1m --timeout=30s --start-period=10s --retries=2 CMD docker-healthcheck.sh
+HEALTHCHECK --interval=1m --timeout=30s --start-period=10s --retries=2 CMD ./docker-healthcheck.sh || exit 1
