@@ -150,12 +150,18 @@ class APIConfig:
             self.node_check_enabled = False
 
         self.version = "0.0.0"
+        self.build = "0000000"
         with open("VERSION", "r") as f:
-            version = f.read().strip()
-            if re.match(r"^b?v?\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$", version):
+            version = f.readline().strip()
+            if re.match(r"^b?v?\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$", version) or version == "dev":
                 self.version = version
             else:
                 logging.warning(f"VERSION file is not in the correct format. Using default value: 0.0.0")
+            build = f.readline().strip() # github short sha1
+            if re.match(r"^[a-f0-9]{7}$", build):
+                self.build = build
+            else:
+                logging.warning(f"VERSION file is not in the correct format. Using default build: 0000000")
 
                 
         

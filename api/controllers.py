@@ -911,10 +911,12 @@ def health_check():
         logging.warning("Database healthcheck failed : " + str(e))
         health_status["database"] = "NOT OK"
     health_status["version"] = conf.api.version
+    health_status["build"] = conf.api.build
 
     if health_status["database"] == "OK":
         health_status["health"] = "OK"
     else:
         health_status["health"] = "NOT OK"
+    
     return health_status, 200
     
