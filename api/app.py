@@ -101,16 +101,6 @@ def clean_rate_limiting_from_db():
                 count += 1
         logging.info(f"Deleted {count} expired session tokens at {dt.datetime.now(dt.UTC).isoformat()}")
 
-# DEPRECATED
-#@flask.before_request
-#def before_request():
-#    if not conf.database.are_all_tables_created:
-#        with app.app.app_context():
-#            db.create_all()
-#            db.session.commit()
-#            logging.info("✅  Tables created")
-#            logging.info(db.metadata.tables.keys())
-#            conf.database.are_all_tables_created = True
 
 
 @flask.after_request
@@ -121,7 +111,10 @@ def after_request(response):
     elif response.status_code >= 400:
         logging.warning(f"Completed request ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url} method={request.method} status={response.status_code}")
     else :
-        logging.info(f"Completed request ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url} method={request.method} status={response.status_code}")
+        if request.path == "/api/v1/healthcheck":
+            logging.debug(f"Completed healthcheck. If healthcheck failed, please check the logs above.")
+        else:
+            logging.info(f"Completed request ip={utils.get_ip(request)} gw={request.remote_addr} url={request.url} method={request.method} status={response.status_code}")
     return response
     
 
