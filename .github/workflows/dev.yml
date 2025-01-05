@@ -1,4 +1,4 @@
-name: "zero-totp.com deployment"
+name: "dev.zero-totp.com deployment"
 
 on:
   push:
