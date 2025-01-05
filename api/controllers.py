@@ -35,6 +35,11 @@ from CryptoClasses.encryption import ServiceSideEncryption
 from database.db import db
 import threading
 from uuid import uuid4
+import hmac
+import hashlib
+from sqlalchemy import text
+ 
+
 
 
 
@@ -892,3 +897,26 @@ def auth_refresh_token(ip, *args, **kwargs):
     response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
     response.set_auth_cookies(new_session_token, new_refresh_token)
     return response
+
+
+def health_check():
+    health_status = {}
+    if conf.api.node_check_enabled:
+        health_status["node"] = hmac.new(conf.api.node_name_hmac_secret.encode('utf-8'), conf.api.node_name.encode('utf-8'), hashlib.sha256).hexdigest()
+    
+    try:
+        db.session.execute(text('SELECT 1'))
+        health_status["database"] = "OK"
+    except Exception as e:
+        logging.warning("Database healthcheck failed : " + str(e))
+        health_status["database"] = "NOT OK"
+    health_status["version"] = conf.api.version
+    health_status["build"] = conf.api.build
+
+    if health_status["database"] == "OK":
+        health_status["health"] = "OK"
+    else:
+        health_status["health"] = "NOT OK"
+    
+    return health_status, 200
+    

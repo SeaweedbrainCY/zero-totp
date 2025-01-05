@@ -6,6 +6,7 @@ from CryptoClasses.serverRSAKeys import ServerRSAKeys
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Hash import SHA512
 import ipaddress
+import re
 
 class EnvironmentConfig:
     required_keys = ["type", "config_version", "domain"]
@@ -78,15 +79,9 @@ class APIConfig:
         for key in self.option_config:
             if key not in data:
                 logging.warning(f"api.{key} is not set. Ignoring it ...")
-        if "port" not in data:
-            logging.warning(f"api.'port' is not set. Using default value: 8080")
-            data["port"] = 8080
-        
-        try:
-            self.port = int(data["port"]) 
-        except:
-            logging.warning("api.port is not valid. Ignoring it. Setting default value: 8080")
-            self.port = 8080
+
+        logging.info("API will listen on port 8080")
+        self.port = 8080
         
         self.jwt_secret = data["jwt_secret"]            
         self.private_key_path = data["private_key_path"]
@@ -130,6 +125,38 @@ class APIConfig:
             except Exception as e:
                 logging.error(f"[FATAL] Load config fail. api.refresh_token_validity is not valid. {e}")
                 exit(1)
+        
+        if "health_check" in data:
+            if 'node_check_enabled':
+                self.node_check_enabled = data["health_check"]["node_check_enabled"]
+                if self.node_check_enabled:
+                    required_node_health_check_keys = ["node_name", "node_name_hmac_secret"]
+                    for key in required_node_health_check_keys:
+                        if key not in data["health_check"]:
+                            logging.error(f"[FATAL] Load config fail. api.health_check.node_check_enabled is True so api.health_check require the key {key} to exist.")
+                            exit(1)
+                    self.node_name = data["health_check"]["node_name"]
+                    self.node_name_hmac_secret = data["health_check"]["node_name_hmac_secret"]
+            else:
+                logging.error(f"[FATAL] Load config fail. api.health_check require the key node_check_enabled to exist. {e}")
+                exit(1)
+        else: 
+            self.node_check_enabled = False
+
+        self.version = "0.0.0"
+        self.build = "0000000"
+        with open("VERSION", "r") as f:
+            version = f.readline().strip()
+            if re.match(r"^b?v?\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$", version) or version == "dev":
+                self.version = version
+            else:
+                logging.warning(f"VERSION file is not in the correct format. Using default value: 0.0.0")
+            build = f.readline().strip() # github short sha1
+            if re.match(r"^[a-f0-9]{7}$", build):
+                self.build = build
+            else:
+                logging.warning(f"VERSION file is not in the correct format. Using default build: 0000000")
+
                 
         
 class DatabaseConfig:

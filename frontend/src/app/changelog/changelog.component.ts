@@ -14,6 +14,15 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "05/12/2025",
+      version: "b5.2.0",
+      added: [
+        "A healthcheck endpoint to enable a better monitoring of the API",
+      ],
+      fixed:[
+      ]
+    },
+    {
       date: "02/12/2025",
       version: "b5.1.0",
       added: [

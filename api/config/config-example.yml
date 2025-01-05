@@ -63,6 +63,15 @@ api:
     ## Default: 1day 
     # refresh_token_validity: 86400 
 
+     ## Health check endpoint used to check if the API is running correctly.
+    # health_check:
+        ## Node name check. This check is used to determine which api node is answering API calls. 
+        ## This is useful for load balancing. 
+        ## The API will return the SHA256-HMAC(node_name, node_name_hmac_secret) in the response.
+        # node_check_enabled: false 
+        # node_name: "example" 
+        # node_name_hmac_secret: "changeme"
+
 
 
 
