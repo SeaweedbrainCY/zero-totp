@@ -52,7 +52,7 @@ video {
   position: fixed;
   bottom: 18px;
   right: 18px;
-  
+  z-index: 99 !important;
 }
 
 .coffee-button {
@@ -60,6 +60,7 @@ video {
   height: 60px;
   background-color: #ffdd57; /* Background color for the button */
   border-radius: 50%;
+  
   display: flex;
   justify-content: center;
   align-items: center;
@@ -71,7 +72,9 @@ video {
 .github-button {
   width: 60px;
   height: 60px;
+  padding: 10px;
   border-radius: 50%;
+  background-color: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
