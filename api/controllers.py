@@ -901,6 +901,7 @@ def auth_refresh_token(ip, *args, **kwargs):
 
 def health_check():
     health_status = {}
+    global_healthy = True
     if conf.api.node_check_enabled:
         health_status["node"] = hmac.new(conf.api.node_name_hmac_secret.encode('utf-8'), conf.api.node_name.encode('utf-8'), hashlib.sha256).hexdigest()
     
@@ -910,13 +911,12 @@ def health_check():
     except Exception as e:
         logging.warning("Database healthcheck failed : " + str(e))
         health_status["database"] = "NOT OK"
+        global_healthy = False
     health_status["version"] = conf.api.version
     health_status["build"] = conf.api.build
 
-    if health_status["database"] == "OK":
-        health_status["health"] = "OK"
-    else:
-        health_status["health"] = "NOT OK"
+    health_status["health"] = "OK" if global_healthy else "NOT OK"
+    http_status = 200 if global_healthy else 500
     
-    return health_status, 200
+    return health_status, http_status
     
