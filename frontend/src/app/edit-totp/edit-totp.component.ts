@@ -142,10 +142,15 @@ export class EditTOTPComponent implements OnInit{
   }
 
   checkURI(){
-    this.nameError = "";
+    this.uriError = "";
     if(this.utils.sanitize(this.uri) != this.uri){
-      this.nameError =  "totp.error.char";
+      this.uriError =  "totp.error.char";
       return;
+    }
+    if(this.uri != "") {
+      if(!this.uri.startsWith("http://") && !this.uri.startsWith("https://")){
+        this.uri = "https://" + this.uri;
+      }
     }
     if(this.favicon == true){
       if(this.uri == ""){
@@ -348,7 +353,7 @@ export class EditTOTPComponent implements OnInit{
     this.checkName();
     this.checkSecret();
     this.checkURI();
-    if(this.nameError != "" || this.secretError != "" || this.uriError != ""){
+    if(this.nameError != "" || this.secretError != "" ){
       this.isSaving = false;
       return;
     }

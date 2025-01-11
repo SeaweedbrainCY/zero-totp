@@ -523,13 +523,13 @@
     "vault": {
       "display": {
         "favicon": {
-          "info1": "Lorsqu'il est activé, ton navigateur tentera de récupérer la favicon du site que tu ajoutes à ton coffre. En cas d'échec, il affichera une icône par défaut.",
+          "info1": "Lorsqu'il est activé, ton navigateur tentera de récupérer la favicon (logo) du site que tu ajoutes à ton coffre. En cas d'échec, il affichera une icône par défaut.",
           "info2": "La favicon est récupérée par votre navigateur en utilisant l'API DuckDuckGo (un moteur de recherche respectueux de la vie privée). Zero-TOTP ne transmet aucune information à DuckDuckGo (mise à part l'URL du site) ni au site web cible . L'URI ou le nom de domaine n'est jamais transmis aux serveurs de zero-totp.",
           "info3": "Tu peux désactiver cette fonctionnalité globalement, l'activer globalement, ou utiliser les paramètres individuels pour chaque secret.",
           "option": {
             "enabled": "Si activé seulement"
           },
-          "title": "Afficher les favicon des sites web à côté de leur nom"
+          "title": "Afficher les logos (favicon) des sites web à côté de leur nom"
         },
         "subtitle": "Paramètres généraux sur l'affichage de ton coffre.",
         "title": "Paramètre d'affichage du coffre"
@@ -805,7 +805,7 @@
         },
         "label": "Ajouter le logo favicon du site web."
       },
-      "label": "Afficher la favicon",
+      "label": "Afficher le logo du site web (favicon)",
       "policy": {
         "always": "Politique globale : Toujours",
         "never": "Politique globale : Jamais"
@@ -826,6 +826,9 @@
         "placeholder": "Nom du tag",
         "title": "Ajouter un tag"
       }
+    },
+    "uri": {
+      "title": "URL du site web"
     }
   },
   "unlock": "Déverrouiller",
