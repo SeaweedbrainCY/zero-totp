@@ -64,6 +64,12 @@
       </div>
   
       <div class="navbar-end">
+        <div class="navbar-item" [ngClass]="{'is-active': isLangDropdownExpanded}">
+          <button class="button is-ghost has-text-white" style="padding-left: 0px; padding-right: 0px;" (click)="toggleThemeButton()">
+            <fa-icon [icon]="faSun" size="2xl" *ngIf="current_theme == 'dark'"></fa-icon>
+            <fa-icon [icon]="faMoon" size="2xl" *ngIf="current_theme == 'light'"></fa-icon>
+          </button>
+        </div>
         <div class="navbar-item has-dropdown lang-dropdown" [ngClass]="{'is-active': isLangDropdownExpanded}">
           <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded = !isLangDropdownExpanded">
             <img src="{{get_current_language_info().image}}" alt="{{get_current_language_info().name}}">
