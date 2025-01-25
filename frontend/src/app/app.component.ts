@@ -12,8 +12,12 @@ import { DOCUMENT } from '@angular/common';
 export class AppComponent implements OnInit{
   title = 'frontend';
   constructor(private renderer: Renderer2, @Inject(DOCUMENT) private document: Document) { 
-    
-    this.renderer.setAttribute(document.documentElement, 'data-theme', 'light');
+    const theme = localStorage.getItem('theme');
+    if (theme == 'dark') {
+      this.renderer.setAttribute(document.documentElement, 'data-theme', 'dark');
+    } else {
+      this.renderer.setAttribute(document.documentElement, 'data-theme', 'light');
+    }
   }
 
   

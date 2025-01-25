@@ -212,9 +212,11 @@ export class NavbarComponent implements OnInit{
     if(this.current_theme == 'light'){
       window.document.documentElement.setAttribute('data-theme', 'dark');
       this.current_theme = 'dark';
+      localStorage.setItem('theme','dark');
     } else {
       window.document.documentElement.setAttribute('data-theme', 'light');
       this.current_theme = 'light';
+      localStorage.setItem('theme','light');
     }
   }
 
