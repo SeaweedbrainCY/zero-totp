@@ -113,6 +113,10 @@ export class HomeComponent implements OnInit {
     
  }
 
+ scrollTo(element: HTMLElement) {
+  element.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
+ }
+
 
 }
 

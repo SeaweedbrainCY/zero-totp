@@ -10,7 +10,7 @@
           <h2><strong class="has-text-weight-semibold has-text-white is-size-5" translate>home.trust.no.one</strong></h2><br><br>
           <div class="buttons">
             <a class="button is-info  is-medium has-text-weight-semibold" href="/login" translate>home.button.openVault</a>
-            <a class="button is-info is-light is-medium has-text-weight-semibold " href="#totp" translate>home.button.learnMore</a>
+            <a class="button is-info is-light is-medium has-text-weight-semibold" (click)="scrollTo(totp)" translate>home.button.learnMore</a>
             </div>
         </div>
         <div class="is-half column is-flex is-flex-direction-column is-justify-content-center">
@@ -28,15 +28,15 @@
       <h1 class="is-size-2 has-text-weight-bold is-family-secondary" style="line-height: normal;" translate>home.title <span class="has-text-danger" translate>home.title.strong</span> </h1><br>
       <h3 translate>home.subtitle <strong class="has-text-danger" translate>home.subtitle.opensource</strong> home.subtitle.and <strong
           class="has-text-danger" translate>home.subtitle.zke</strong> home.subtitle.platform</h3><br>
-      <h2><strong class="has-text-weight-semibold is-size-5 " translate>home.trust.no.one</strong></h2><br><br>
+      <h2><strong class="has-text-weight-semibold is-size-5 has-text-white" translate>home.trust.no.one</strong></h2><br><br>
       <div class="has-text-centered">
-        <a class="button is-info  is-medium has-text-weight-semibold" href="/login" translate>home.button.openVault</a><br>
-        <a class="button is-info is-light is-medium has-text-weight-semibold" href="#how-it-works" translate>home.button.learnMore</a>
+        <a class="button is-info  is-medium has-text-weight-semibold mb-2" href="/login" translate>home.button.openVault</a><br>
+        <a class="button is-info is-light is-medium has-text-weight-semibold" (click)="scrollTo(totp)" translate>home.button.learnMore</a>
       </div>
     </div>
   </article>
 
-  <article class="hero is-half has-text-dark has-background-white" id="totp">
+  <article class="hero is-half has-text-dark has-background-white" #totp>
     <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 has-text-dark mr-4 ml-4">{{"home.tuto.title" | translate}}</h1>
     <div class="is-flex is-justify-content-space-around is-flex-wrap-wrap columns mt-6">
       <div class="column  is-half-fullhd is-half-widescreen is-half-desktop is-two-thirds-tablet is-two-thirds-mobile is-flex is-flex-direction-column is-justify-content-center ">
