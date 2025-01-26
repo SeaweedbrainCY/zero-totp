@@ -1,7 +1,7 @@
-<section class=" mt-6 " style="min-height: 70vh;">
+<section class=" mt-6 pt-6" style="min-height: 70vh;">
   <div class="">
     <div>
-      <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-dark " style="line-height: normal;">
+      <h1 class="is-size-1 has-text-centered has-text-weight-bold" style="line-height: normal;">
         <fa-icon [icon]="faFileArrowDown" class="mr-2"></fa-icon> {{
         'import_vault.title' | translate }}
       </h1>
@@ -49,65 +49,41 @@
   </div>
   <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center mt-6 pt-2"
     *ngIf="vault_type != null && vault_type == 'zero-totp'">
-    <ul class="steps " style="width: 90vw;">
-
-      <li class="step-item" [ngClass]="{
-                            'is-completed':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) > 0, 
-                            'is-active':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) == 0
-                            }">
-        <div class="step-marker">
-          <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=0">1</span>
-          <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >0">
-            <fa-icon [icon]="faCheck"></fa-icon>
-          </span>
+    <div class="is-flex is-justify-content-space-around" style="width:70vw">
+      <div class="is-flex is-justify-content-center is-align-items-center is-flex-wrap-wrap">
+        <div class="tag is-rounded is-success is-size-5 has-text-weight-bold" [ngClass]="{'is-light':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) < 0}">
+          1
         </div>
-        <div class="step-details" *ngIf="!isMobileDevice">
-          <p class="step-title"> {{
-            'import_vault.steps.import_vault' | translate }}</p>
-          <p></p>
+        <div class="has-text-weight-bold ml-3 mr-3 has-text-centered">
+          {{'import_vault.steps.import_vault' | translate }}
         </div>
-      </li>
-
-      <li class="step-item " [ngClass]="{
-                'is-completed':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) > 1, 
-                'is-active':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) == 1
-                }">
-        <div class="step-marker">
-          <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=1">2</span>
-          <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >1">
-            <fa-icon [icon]="faCheck"></fa-icon>
-          </span>
+      </div>
+      <div class="is-flex is-justify-content-center is-align-items-center is-flex-wrap-wrap">
+        <div class="tag is-rounded is-success is-size-5 has-text-weight-bold" [ngClass]="{'is-light':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) < 1}">
+          2
         </div>
-        <div class="step-details" *ngIf="!isMobileDevice">
-          <p class="step-title">{{
-            'import_vault.steps.decrypt' | translate }}</p>
-          <p></p>
+        <div class="has-text-weight-bold ml-3 mr-3 has-text-centered">
+          {{'import_vault.steps.decrypt' | translate }}
         </div>
-      </li>
+      </div>
+      <div class="is-flex is-justify-content-center is-align-items-center is-flex-wrap-wrap">
+        <div class="tag is-rounded is-success is-light is-size-5 has-text-weight-bold" [ngClass]="{'is-light':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) < 2}">
+          3
+        </div>
+        <div class="has-text-weight-bold ml-3 mr-3 has-text-centered">
+          {{'import_vault.steps.encrypt' | translate }}
+        </div>
+      </div>
+      
+      
+    </div>
+    
 
 
-      <li class="step-item " [ngClass]="{
-        'is-completed':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) > 2, 
-        'is-active':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) == 2
-        }">
-        <div class="step-marker">
-          <span *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) <=2">3</span>
-          <span class="icon" *ngIf="this.vault_steps.get(this.vault_type)!.indexOf(this.step!) >2">
-            <fa-icon [icon]="faCheck"></fa-icon>
-          </span>
-        </div>
-        <div class="step-details" *ngIf="!isMobileDevice">
-          <p class="step-title">{{
-            'import_vault.steps.encrypt' | translate }}</p>
-          <p></p>
-        </div>
-      </li>
-
-    </ul>
     <div style="border-top:1px lightgray solid; width: 30vw; height: 1px;" class="mt-4 mb-4"></div>
 
     <div *ngIf="step == 'import'">
-      <h3 class="is-size-3 has-text-centered has-text-weight-bold has-text-dark has-text-dark"
+      <h3 class="is-size-3 has-text-centered has-text-weight-bold "
         style="line-height: normal;"> {{
         'import_vault.zero_totp.import' | translate }}
       </h3>
@@ -115,7 +91,8 @@
 
         <div class="file is-boxed" *ngIf="local_vault_service == null ">
           <label class="file-label">
-            <input class="file-input" type="file" name="resume" accept=".zero-totp,.txt" (change)="openFile($event)" [disabled]="is_importing">
+            <input class="file-input" type="file" name="resume" accept=".zero-totp,.txt" (change)="openFile($event)"
+              [disabled]="is_importing">
             <span class="file-cta">
               <span class="file-icon">
                 <fa-icon [icon]="faCloudArrowUp" *ngIf="!is_importing" size="2xl" class="mb-2"></fa-icon>
@@ -128,32 +105,41 @@
           </label>
         </div>
         <div *ngIf="local_vault_service != null && local_vault_service.get_is_signature_valid()">
-          <p class="has-text-centered has-text-weight-bold">{{file_name}} - <span class="has-text-success">{{"import_vault.secure_text" | translate}} <fa-icon [icon]="faLock" class="ml-2"></fa-icon></span></p>
+          <p class="has-text-centered has-text-weight-bold">{{file_name}} - <span
+              class="has-text-success">{{"import_vault.secure_text" | translate}} <fa-icon [icon]="faLock"
+                class="ml-2"></fa-icon></span></p>
         </div>
       </div>
     </div>
 
     <div *ngIf="step == 'decrypt'">
-      <h3 class="is-size-3 has-text-centered has-text-weight-bold has-text-dark has-text-dark"
+      <h3 class="is-size-3 has-text-centered has-text-weight-bold "
         style="line-height: normal;"> {{
         'import_vault.zero_totp.decrypt' | translate }}
       </h3>
       <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center mt-6 mb-6 ">
-        <p class=" has-text-centered">{{file_name}} - <span class="has-text-weight-bold has-text-danger" *ngIf="decrypted_vault == undefined">{{
-            'encrypted' | translate}} <fa-icon [icon]="faLock" class="mr-2" ></fa-icon> </span> <span
-            class="has-text-weight-bold has-text-success" *ngIf="decrypted_vault != undefined">{{ 'decrypted' | translate}} <fa-icon [icon]="faUnlock"
-              class="mr-2"></fa-icon> </span></p>
-              <p class="has-text-centered has-text-danger has-text-weight-bold" [ngClass]="{'shake':decryption_error != ''}">{{decryption_error}}</p><br>
+        <p class=" has-text-centered">{{file_name}} - <span class="has-text-weight-bold has-text-danger"
+            *ngIf="decrypted_vault == undefined">{{
+            'encrypted' | translate}} <fa-icon [icon]="faLock" class="mr-2"></fa-icon> </span> <span
+            class="has-text-weight-bold has-text-success" *ngIf="decrypted_vault != undefined">{{ 'decrypted' |
+            translate}} <fa-icon [icon]="faUnlock" class="mr-2"></fa-icon> </span></p>
+        <p class="has-text-centered has-text-danger has-text-weight-bold" [ngClass]="{'shake':decryption_error != ''}">
+          {{decryption_error}}</p><br>
 
-        <div class="will_be_reduced "  [ngClass]="{ 'field has-addons' : decrypt_input_visible, 'has-text-centered':!decrypt_input_visible, reduced:decrypted_vault != undefined && decrypt_input_visible }" style="width: 70vw;">
+        <div class="will_be_reduced "
+          [ngClass]="{ 'field has-addons' : decrypt_input_visible, 'has-text-centered':!decrypt_input_visible, reduced:decrypted_vault != undefined && decrypt_input_visible }"
+          style="width: 70vw;">
           <div class="control is-expanded " *ngIf="decrypt_input_visible">
-            <input class="input will_be_reduced" [ngClass]="{reduced:decrypted_vault != undefined}" type="password" placeholder="{{'passphrase'| translate}}" name="imported_vault_passphrase"
-              [(ngModel)]="imported_vault_passphrase"  >
+            <input class="input will_be_reduced" [ngClass]="{reduced:decrypted_vault != undefined}" type="password"
+              placeholder="{{'passphrase'| translate}}" name="imported_vault_passphrase"
+              [(ngModel)]="imported_vault_passphrase">
           </div>
           <div class="control">
             <button class="button is-success" (click)="decrypt()">
-              <span *ngIf="decrypt_input_visible"><fa-icon [icon]="faUnlockKeyhole" class="mr-2"></fa-icon> {{'decrypt'| translate}}</span>
-              <span *ngIf="!decrypt_input_visible"> {{'decrypted'| translate}} <fa-icon [icon]="faCircleCheck" class="ml-2"></fa-icon></span>
+              <span *ngIf="decrypt_input_visible"><fa-icon [icon]="faUnlockKeyhole" class="mr-2"></fa-icon> {{'decrypt'|
+                translate}}</span>
+              <span *ngIf="!decrypt_input_visible"> {{'decrypted'| translate}} <fa-icon [icon]="faCircleCheck"
+                  class="ml-2"></fa-icon></span>
             </button>
           </div>
         </div>
@@ -162,29 +148,39 @@
 
 
     <div *ngIf="step == 'encrypt'">
-      <h3 class="is-size-3 has-text-centered has-text-weight-bold has-text-dark has-text-dark"
+      <h3 class="is-size-3 has-text-centered has-text-weight-bold "
         style="line-height: normal;"> {{
-        'import_vault.zero_totp.encrypt' | translate }} <fa-icon [icon]="faCircleNotch" class="ml-2" [animation]="'spin'" *ngIf="uploading"></fa-icon>
+        'import_vault.zero_totp.encrypt' | translate }} <fa-icon [icon]="faCircleNotch" class="ml-2"
+          [animation]="'spin'" *ngIf="uploading"></fa-icon>
       </h3>
-      <br><p class="is-size-4 has-text-centered mt-4" *ngIf="!uploading">{{
+      <br>
+      <p class="is-size-4 has-text-centered mt-4" *ngIf="!uploading">{{
         'import_vault.zero_totp.encrypt_titles.subtitle' | translate }} {{vault_date}} ? </p>
-        <p class="is-size-4 has-text-centered mt-4 has-text-danger has-text-weight-bold" *ngIf="uploading"><fa-icon [icon]="faCircleExclamation" class="mr-2"></fa-icon> {{
-          'import_vault.zero_totp.encrypt_titles.warning' | translate }}</p>
+      <p class="is-size-4 has-text-centered mt-4 has-text-danger has-text-weight-bold" *ngIf="uploading"><fa-icon
+          [icon]="faCircleExclamation" class="mr-2"></fa-icon> {{
+        'import_vault.zero_totp.encrypt_titles.warning' | translate }}</p>
 
-          <p class="has-text-centered"  *ngIf="uploading">{{upload_state}}<fa-icon [icon]="faCircleNotch" class="ml-2" [animation]="'spin'"></fa-icon></p>
+      <p class="has-text-centered" *ngIf="uploading">{{upload_state}}<fa-icon [icon]="faCircleNotch" class="ml-2"
+          [animation]="'spin'"></fa-icon></p>
       <div class="is-flex is-justify-content-space-around is-align-items-stretch is-flex-wrap-wrap mt-2 mb-6">
-        
-        
-        
-        <div class="box " style="margin: 0; " [style]="isMobileDevice ? 'width: 80vw;' : 'width: 60vw;'" *ngIf="decrypted_vault != undefined">
+
+
+
+        <div class="box " style="margin: 0; " [style]="isMobileDevice ? 'width: 80vw;' : 'width: 60vw;'"
+          *ngIf="decrypted_vault != undefined">
           <p class="has-text-weight-bold mb-4">{{'import_vault.zero_totp.will_be_kept' | translate }}</p>
-          <div class="is-flex is-justify-content-center is-align-items-center is-flex-direction-column" *ngFor="let key of decrypted_vault!.keys()" >
-            <div class="notification is-light" style="width: 100%; margin-bottom: 5px;" [ngClass]="{'is-success' : uploaded_uuid.includes(key),' is-primary': uploaded_uuid.includes(key) && upload_error_uuid.includes(key), 'is-danger': upload_error_uuid.includes(key)}">
+          <div class="is-flex is-justify-content-center is-align-items-center is-flex-direction-column"
+            *ngFor="let key of decrypted_vault!.keys()">
+            <div class="notification is-light" style="width: 100%; margin-bottom: 5px;"
+              [ngClass]="{'is-success' : uploaded_uuid.includes(key),' is-primary': uploaded_uuid.includes(key) && upload_error_uuid.includes(key), 'is-danger': upload_error_uuid.includes(key)}">
               <p>
-                <fa-icon [icon]="faCloudArrowUp" class="mr-4" *ngIf="!uploading && !uploaded_uuid.includes(key) && !upload_error_uuid.includes(key)"></fa-icon>
-                <fa-icon [icon]="faCircleNotch" class="mr-4" *ngIf="uploading && !uploaded_uuid.includes(key) && !upload_error_uuid.includes(key)" [animation]="'spin'" ></fa-icon>
-                <fa-icon [icon]="faFileCircleCheck" class="mr-4" *ngIf="uploaded_uuid.includes(key)" ></fa-icon>
-                <fa-icon [icon]="faFileExcel" class="mr-4" *ngIf=" upload_error_uuid.includes(key)" ></fa-icon>
+                <fa-icon [icon]="faCloudArrowUp" class="mr-4"
+                  *ngIf="!uploading && !uploaded_uuid.includes(key) && !upload_error_uuid.includes(key)"></fa-icon>
+                <fa-icon [icon]="faCircleNotch" class="mr-4"
+                  *ngIf="uploading && !uploaded_uuid.includes(key) && !upload_error_uuid.includes(key)"
+                  [animation]="'spin'"></fa-icon>
+                <fa-icon [icon]="faFileCircleCheck" class="mr-4" *ngIf="uploaded_uuid.includes(key)"></fa-icon>
+                <fa-icon [icon]="faFileExcel" class="mr-4" *ngIf=" upload_error_uuid.includes(key)"></fa-icon>
                 {{decrypted_vault!.get(key)!.get("name")}}
               </p>
             </div>
@@ -215,50 +211,57 @@
 <div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isUnsecureVaultModaleActive}">
   <div class="modal-background" (click)="rejectUnsecureVault()"></div>
   <div class="modal-content">
-      <section class="modal-card-body">
-          <h1 class="is-size-2 has-text-danger">{{ 'login.backup.unsecure.popup.title' | translate }}</h1>
-          <strong>{{ 'login.backup.unsecure.popup.strong' | translate }}</strong>. {{ 'login.backup.unsecure.popup.desc' | translate }}<br>
-          <strong>{{ 'login.backup.unsecure.popup.strong2' | translate }}</strong>
-          <br><br>
-      </section>
-      <footer class="modal-card-foot is-flex is-justify-content-right">
-          <button class="button is-success" (click)="rejectUnsecureVault()">{{ 'login.backup.unsecure.popup.button.cancel' | translate }}</button>
-          <button class="button is-danger" (click)="acceptUnsecureVault()" >{{ 'login.backup.unsecure.popup.continue' | translate }}</button>
-      </footer>
+    <section class="modal-card-body">
+      <h1 class="is-size-2 has-text-danger">{{ 'login.backup.unsecure.popup.title' | translate }}</h1>
+      <strong>{{ 'login.backup.unsecure.popup.strong' | translate }}</strong>. {{ 'login.backup.unsecure.popup.desc' |
+      translate }}<br>
+      <strong>{{ 'login.backup.unsecure.popup.strong2' | translate }}</strong>
+      <br><br>
+    </section>
+    <footer class="modal-card-foot is-flex is-justify-content-right">
+      <button class="button is-success mr-2" (click)="rejectUnsecureVault()">{{ 'login.backup.unsecure.popup.button.cancel' |
+        translate }}</button>
+      <button class="button is-danger ml-2" (click)="acceptUnsecureVault()">{{ 'login.backup.unsecure.popup.continue' |
+        translate }}</button>
+    </footer>
   </div>
-  <button class="modal-close is-large" aria-label="close" (click)="rejectUnsecureVault()" ></button>
+  <button class="modal-close is-large" aria-label="close" (click)="rejectUnsecureVault()"></button>
 </div>
 
 <div id="success" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': importSuccess && !import_had_error}">
   <div class="modal-background"></div>
   <div class="modal-content">
-      <section class="modal-card-body">
-          <h1 class="is-size-2 has-text-success has-text-centered">{{ 'import_vault.success_modal.title' | translate }}</h1>
-          <strong>{{ 'import_vault.success_modal.message' | translate }}</strong>. 
-          <br><br>
-      </section>
-      <footer class="modal-card-foot is-flex is-justify-content-center">
-          <button class="button is-primary"  [routerLink]="['/vault']">{{ 'import_vault.success_modal.button' | translate }}</button>
-      </footer>
+    <section class="modal-card-body">
+      <h1 class="is-size-2 has-text-success has-text-centered">{{ 'import_vault.success_modal.title' | translate }}</h1>
+      <strong>{{ 'import_vault.success_modal.message' | translate }}</strong>.
+      <br><br>
+    </section>
+    <footer class="modal-card-foot is-flex is-justify-content-center">
+      <button class="button is-primary" [routerLink]="['/vault']">{{ 'import_vault.success_modal.button' | translate
+        }}</button>
+    </footer>
   </div>
 </div>
 
 <div id="success" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': importSuccess && import_had_error}">
   <div class="modal-background"></div>
   <div class="modal-content">
-      <section class="modal-card-body">
-          <h1 class="is-size-2 has-text-primary has-text-centered">{{ 'import_vault.success_with_error_modal.title' | translate }}</h1>
-          <strong>{{ 'import_vault.success_with_error_modal.message' | translate }}</strong>
-          <ul *ngFor="let uuid of upload_error_uuid">
-            <li>{{decrypted_vault!.get(uuid)!.get('name')}}</li>
-            </ul>
-          <br><br>
-          
-      </section>
-      <footer class="modal-card-foot is-flex is-justify-content-center">
-        <button class="button is-primary mr-2"  [routerLink]="['/import/vault']">{{ 'import_vault.success_with_error_modal.back_return' | translate }}</button>
-        <button class="button is-primary mr-2 ml-2"  (click)="retryFailedOnes()">{{ 'retry' | translate }}</button>
-          <button class="button is-primary ml-2"  [routerLink]="['/vault']">{{ 'import_vault.success_modal.button' | translate }}</button>
-      </footer>
+    <section class="modal-card-body">
+      <h1 class="is-size-2 has-text-primary has-text-centered">{{ 'import_vault.success_with_error_modal.title' |
+        translate }}</h1>
+      <strong>{{ 'import_vault.success_with_error_modal.message' | translate }}</strong>
+      <ul *ngFor="let uuid of upload_error_uuid">
+        <li>{{decrypted_vault!.get(uuid)!.get('name')}}</li>
+      </ul>
+      <br><br>
+
+    </section>
+    <footer class="modal-card-foot is-flex is-justify-content-center">
+      <button class="button is-primary mr-2" [routerLink]="['/import/vault']">{{
+        'import_vault.success_with_error_modal.back_return' | translate }}</button>
+      <button class="button is-primary mr-2 ml-2" (click)="retryFailedOnes()">{{ 'retry' | translate }}</button>
+      <button class="button is-primary ml-2" [routerLink]="['/vault']">{{ 'import_vault.success_modal.button' |
+        translate }}</button>
+    </footer>
   </div>
 </div>
