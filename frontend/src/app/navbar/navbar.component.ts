@@ -4,8 +4,7 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
-import { faLightbulb, faXmark, faVault, faKey, faGears, faUser} from '@fortawesome/free-solid-svg-icons';
-import { faMoon, faSun } from '@fortawesome/free-regular-svg-icons';
+import { faLightbulb, faXmark, faVault, faKey, faGears, faUser, faSun, faMoon} from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
 
