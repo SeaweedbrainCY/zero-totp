@@ -34,7 +34,7 @@
     "@zxing/ngx-scanner": "^18.0.1",
     "animate.css": "^4.1.1",
     "buffer": "^6.0.3",
-    "bulma": "^0.9.4",
+    "bulma": "^1.0.2",
     "bulma-extensions": "^6.2.7",
     "bulma-modal-fx": "^1.1.1",
     "ngx-cookie": "^6.0.1",

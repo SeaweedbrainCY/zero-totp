@@ -1,4 +1,4 @@
-<section>
+<section data-theme="light">
   <article
     class="hero is-fullheight is-dark is-flex is-flex-direction-column is-justify-content-center is-align-items-center  is-hidden-mobile is-hidden-tablet-only">
     <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center	">
@@ -7,10 +7,10 @@
           <h1 class="is-size-1 has-text-weight-bold is-family-secondary	" style="line-height: normal;" translate>home.title <strong class="has-text-danger" translate>home.title.strong</strong> </h1><br>
           <h3 translate>home.subtitle <strong class="has-text-danger" translate>home.subtitle.opensource</strong> home.subtitle.and <strong
               class="has-text-danger" translate>home.subtitle.zke</strong> home.subtitle.platform</h3><br>
-          <h2><strong class="has-text-weight-semibold is-size-5" translate>home.trust.no.one</strong></h2><br><br>
+          <h2><strong class="has-text-weight-semibold has-text-white is-size-5" translate>home.trust.no.one</strong></h2><br><br>
           <div class="buttons">
-            <a class="button is-info  is-medium has-text-weight-semibold block" href="/login" translate>home.button.openVault</a>
-            <a class="button is-info is-light is-medium has-text-weight-semibold block" href="#totp" translate>home.button.learnMore</a>
+            <a class="button is-info  is-medium has-text-weight-semibold" href="/login" translate>home.button.openVault</a>
+            <a class="button is-info is-light is-medium has-text-weight-semibold" (click)="scrollTo(totp)" translate>home.button.learnMore</a>
             </div>
         </div>
         <div class="is-half column is-flex is-flex-direction-column is-justify-content-center">
@@ -28,15 +28,15 @@
       <h1 class="is-size-2 has-text-weight-bold is-family-secondary" style="line-height: normal;" translate>home.title <span class="has-text-danger" translate>home.title.strong</span> </h1><br>
       <h3 translate>home.subtitle <strong class="has-text-danger" translate>home.subtitle.opensource</strong> home.subtitle.and <strong
           class="has-text-danger" translate>home.subtitle.zke</strong> home.subtitle.platform</h3><br>
-      <h2><strong class="has-text-weight-semibold is-size-5 " translate>home.trust.no.one</strong></h2><br><br>
+      <h2><strong class="has-text-weight-semibold is-size-5 has-text-white" translate>home.trust.no.one</strong></h2><br><br>
       <div class="has-text-centered">
-        <a class="button is-info  is-medium has-text-weight-semibold block" href="/login" translate>home.button.openVault</a><br>
-        <a class="button is-info is-light is-medium has-text-weight-semibold block" href="#how-it-works" translate>home.button.learnMore</a>
+        <a class="button is-info  is-medium has-text-weight-semibold mb-2" href="/login" translate>home.button.openVault</a><br>
+        <a class="button is-info is-light is-medium has-text-weight-semibold" (click)="scrollTo(totp)" translate>home.button.learnMore</a>
       </div>
     </div>
   </article>
 
-  <article class="hero is-half has-text-dark" id="totp">
+  <article class="hero is-half has-text-dark has-background-white" #totp>
     <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 has-text-dark mr-4 ml-4">{{"home.tuto.title" | translate}}</h1>
     <div class="is-flex is-justify-content-space-around is-flex-wrap-wrap columns mt-6">
       <div class="column  is-half-fullhd is-half-widescreen is-half-desktop is-two-thirds-tablet is-two-thirds-mobile is-flex is-flex-direction-column is-justify-content-center ">
@@ -82,7 +82,7 @@
 
     </div>
   </article>
-  <article class="hero is-half has-text-dark" id="why-zero-totp">
+  <article class="hero is-half has-text-dark has-background-white" id="why-zero-totp">
     <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 has-text-dark mt-6">{{ 'home.why.title' | translate }}</h1>
     <div class="is-flex is-justify-content-center is-flex-wrap-wrap columns ">
       <div
@@ -95,7 +95,7 @@
         <div class="card-content">
           <div class="content">
             <h1 class="has-text-weight-bold is-size-3">{{ 'home.why.strong_enc.title' | translate }}</h1>
-            <strong>{{ 'home.why.strong_enc.strong' | translate }}</strong> {{ 'home.why.strong_enc.l1' | translate }}<br><br>{{ 'home.why.strong_enc.l2' | translate }}
+            <strong class="has-text-weight-bold has-text-dark">{{ 'home.why.strong_enc.strong' | translate }}</strong> {{ 'home.why.strong_enc.l1' | translate }}<br><br>{{ 'home.why.strong_enc.l2' | translate }}
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@
         <div class="card-content">
           <div class="content">
             <h1 class="has-text-weight-bold is-size-3">{{ 'home.why.zke.title' | translate }}</h1>
-            {{ 'home.why.zke.desc.1' | translate }} <strong>{{ 'home.why.zke.desc.strong' | translate }}</strong> {{ 'home.why.zke.desc.2' | translate }}
+            {{ 'home.why.zke.desc.1' | translate }} <strong class="has-text-weight-bold has-text-dark">{{ 'home.why.zke.desc.strong' | translate }}</strong> {{ 'home.why.zke.desc.2' | translate }}
           </div>
         </div>
       </div>
@@ -123,7 +123,7 @@
         <div class="card-content">
           <div class="content">
             <h1 class="has-text-weight-bold is-size-3">{{ 'home.why.key.title' | translate }}</h1>
-            <strong>{{ 'home.why.key.desc1' | translate }}</strong> {{ 'home.why.key.desc2' | translate }}
+            <strong class="has-text-weight-bold has-text-dark">{{ 'home.why.key.desc1' | translate }}</strong> {{ 'home.why.key.desc2' | translate }}
           </div>
         </div>
       </div>
@@ -137,7 +137,7 @@
         <div class="card-content">
           <div class="content">
             <h1 class="has-text-weight-bold is-size-3">{{ 'home.why.opensource.title' | translate }}</h1>
-            {{ 'home.why.opensource.desc1' | translate }}<strong> {{ 'home.why.opensource.desc2' | translate }}</strong>
+            {{ 'home.why.opensource.desc1' | translate }}<strong class="has-text-weight-bold has-text-dark"> {{ 'home.why.opensource.desc2' | translate }}</strong>
           </div>
         </div>
       </div>
@@ -219,12 +219,12 @@
       </div>
     </div>
   </article>
-  <article class="hero is-halfheight" id="backup-plan">
+  <article class="hero is-halfheight has-background-white has-text-dark" id="backup-plan" data-theme="light">
     <header>
       <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 p-3" >{{ 'home.backup.title' | translate }} <span
           class="has-text-danger">{{ 'home.backup.title_strong' | translate }}</span></h1>
-          <div class="hero-body  is-flex is-flex-direction-column has-text-left is-size-6" style="align-items: normal;">
-            <p>{{ 'home.backup.desc' | translate }} <strong>{{ 'home.backup.desc_strong' | translate }}</strong></p><br><br>
+          <div class="hero-body  is-flex is-flex-direction-column has-text-left is-size-6 " style="align-items: normal;">
+            <p>{{ 'home.backup.desc' | translate }} <strong class="has-text-dark">{{ 'home.backup.desc_strong' | translate }}</strong></p><br><br>
             <div><ul class="fa-ul">
               <li class="mt-4"><span class="fa-li"><fa-icon [icon]="faHouse" size="lg" class="has-text-success"></fa-icon></span><strong><a href="https://zero-totp.com" class="has-text-success"> zero-totp.com</a></strong>. {{ 'home.backup.option.zero_totp' | translate }}<br><span class="tag is-warning is-light">{{ 'home.backup.option.beta' | translate }}</span></li>
               <li class="mt-4"><span class="fa-li"><fa-icon [icon]="faKitMedical" size="lg" class="has-text-danger"></fa-icon></span><strong ><a href="https://rescue.zero-totp.com" class="has-text-danger">rescue.zero-totp.com</a></strong>. {{ 'home.backup.option.rescue' | translate }}<br><span class="tag is-success is-light" >{{ 'home.backup.option.available' | translate }}</span>
@@ -248,7 +248,7 @@
       {{ 'home.about.zke_def' | translate }}
     </p></div>
   </article>
-  <article class="hero is-halfheight" id="project">
+  <article class="hero is-halfheight has-background-white has-text-dark" id="project">
     <header>
       <h1 class="is-size-1 has-text-centered has-text-weight-bold mt-6 p-3" >{{ 'home.project.title' | translate }}</h1>
     </header>

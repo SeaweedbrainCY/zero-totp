@@ -47,7 +47,7 @@
                                     <p class="is-size-7 ">{{ 'vault.storage.zero_totp.location' | translate }}</p>
                                     </div>
                                     <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
-                                        <button class="button is-outlined is-dark" (click)="reload()"><fa-icon [icon]="faRotateRight"
+                                        <button class="button " (click)="reload()"><fa-icon [icon]="faRotateRight"
                                                 class="mr-3"></fa-icon> {{ 'vault.storage.zero_totp.reload' | translate }}</button>
                                     </div>
                                 </div>
@@ -58,7 +58,7 @@
                       is-one-third-widescreen
                       is-one-quarter-fullhd">
                                 <div class="is-flex is-justify-content-center">
-                                    <div class="tags has-addons mb-0" style="align-items: normal;"
+                                    <div class="tags has-addons mb-2" style="align-items: normal;"
                                         (click)="storageOptionOpen = true">
                                         <span class="tag is-medium is-dark" id="google-tag"> <fa-icon
                                                 [icon]="faGoogleDrive" class="pr-1"></fa-icon> <span
@@ -81,11 +81,11 @@
                                     <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
                                         [hidden]="!storageOptionOpen">
                                         <button *ngIf="isGoogleDriveSync == 'false'"
-                                            class="button  is-outlined is-dark mb-3 mr-2 ml-2"
+                                            class="button   mb-3 mr-2 ml-2"
                                             (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
                                                 class="mr-3"></fa-icon> {{ 'vault.storage.google.sync' | translate }} </button>
                                         <button *ngIf="isGoogleDriveSync == 'false'"
-                                            class="button  is-outlined is-dark mb-3 mr-2 ml-2" disabled><fa-icon
+                                            class="button   mb-3 mr-2 ml-2" disabled><fa-icon
                                                 [icon]="faCircleInfo" class="mr-3"></fa-icon> {{ 'vault.storage.google.info' | translate }}</button>
 
                                        
@@ -109,7 +109,7 @@
                                                   </div>
                                                 </div>
                                             <p class="has-text-centered mt-1">
-                                                <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
+                                                <button class="button mb-3 mr-2 ml-2"
                                                     (click)="disable_google_drive()"><fa-icon
                                                         [icon]="faCircleXmark" class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' | translate }}
                                                 </button>
@@ -118,10 +118,10 @@
                                         <div *ngIf="isGoogleDriveSync == 'error'" class="has-text-centered">
                                             <p class="has-text-danger is-size-7 ">{{google_drive_error_message}}</p>
                                             <p class="has-text-centered mt-1">
-                                                <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
+                                                <button class="button   mb-3 mr-2 ml-2"
                                                     (click)="resync_after_error()"><fa-icon [icon]="faLink"
                                                         class="mr-3"></fa-icon> {{ 'vault.storage.google.resync' | translate }} </button>
-                                                        <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
+                                                        <button class="button  mb-3 mr-2 ml-2"
                                                     (click)="disable_google_drive()"><fa-icon
                                                         [icon]="faCircleXmark" class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' | translate }}
                                                 </button>
@@ -138,7 +138,7 @@
                     is-one-third-widescreen
                     is-one-quarter-fullhd">
                                 <div class="is-flex is-justify-content-center">
-                                    <div class="tags has-addons mb-0" style="align-items: normal;"
+                                    <div class="tags has-addons mb-2" style="align-items: normal;"
                                         (click)="storageOptionOpen = true">
                                         <span class="tag is-medium is-dark has-text-weight-bold" id="download-tag">
                                             <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>{{ 'vault.storage.local.title' | translate }}
@@ -150,12 +150,12 @@
                                 <div [hidden]="!storageOptionOpen" class="mb-3">
                                     <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
                                         [hidden]="!storageOptionOpen">
-                                        <button class="button  is-outlined is-dark mb-3 mr-2 ml-2"
+                                        <button class="button   mb-3 mr-2 ml-2"
                                             (click)="downloadVault()"><fa-icon [icon]="faDownload"
                                                 class="mr-3 "></fa-icon>{{ 'vault.storage.local.save' | translate }}</button>
                                         <div class="dropdown" [ngClass]="{'is-active': isRestoreBackupModaleActive}">
                                             <div class="dropdown-trigger">
-                                                <button class="button  is-outlined is-dark mr-2 ml-2 "
+                                                <button class="button  mr-2 ml-2 "
                                                     (click)="isRestoreBackupModaleActive = !isRestoreBackupModaleActive"
                                                     ria-haspopup="true" aria-controls="dropdown-menu"><fa-icon
                                                         [icon]="faUpload" class="mr-3 "></fa-icon>{{ 'vault.storage.local.open' | translate }}</button>

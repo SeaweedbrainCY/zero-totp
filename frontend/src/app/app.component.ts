@@ -9,12 +9,16 @@ import { DOCUMENT } from '@angular/common';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
-
-
 export class AppComponent implements OnInit{
   title = 'frontend';
-  constructor(private renderer: Renderer2, @Inject(DOCUMENT) private document: Document) { }
+  constructor(private renderer: Renderer2, @Inject(DOCUMENT) private document: Document) { 
+    const theme = localStorage.getItem('theme');
+    if (theme == 'dark') {
+      this.renderer.setAttribute(document.documentElement, 'data-theme', 'dark');
+    } else {
+      this.renderer.setAttribute(document.documentElement, 'data-theme', 'light');
+    }
+  }
 
   
 
