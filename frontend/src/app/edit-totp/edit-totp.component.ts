@@ -14,9 +14,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-edit-totp',
-  templateUrl: './edit-totp.component.html',
-  styleUrls: ['./edit-totp.component.css']
+    selector: 'app-edit-totp',
+    templateUrl: './edit-totp.component.html',
+    styleUrls: ['./edit-totp.component.css'],
+    standalone: false
 })
 export class EditTOTPComponent implements OnInit{
   faChevronCircleLeft = faChevronCircleLeft;

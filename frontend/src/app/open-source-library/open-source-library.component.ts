@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-  selector: 'app-open-source-library',
-  templateUrl: './open-source-library.component.html',
-  styleUrls: ['./open-source-library.component.css']
+    selector: 'app-open-source-library',
+    templateUrl: './open-source-library.component.html',
+    styleUrls: ['./open-source-library.component.css'],
+    standalone: false
 })
 export class OpenSourceLibraryComponent {
   MITlicenseExpanded=false;

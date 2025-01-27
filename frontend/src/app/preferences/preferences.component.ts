@@ -10,9 +10,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-preferences',
-  templateUrl: './preferences.component.html',
-  styleUrls: ['./preferences.component.css']
+    selector: 'app-preferences',
+    templateUrl: './preferences.component.html',
+    styleUrls: ['./preferences.component.css'],
+    standalone: false
 })
 export class PreferencesComponent implements OnInit{
   faUser=faUser;

@@ -14,9 +14,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr'; 
 
 @Component({
-  selector: 'app-vault',
-  templateUrl: './vault.component.html',
-  styleUrls: ['./vault.component.css']
+    selector: 'app-vault',
+    templateUrl: './vault.component.html',
+    styleUrls: ['./vault.component.css'],
+    standalone: false
 })
 export class VaultComponent implements OnInit {
   faPen = faPen;

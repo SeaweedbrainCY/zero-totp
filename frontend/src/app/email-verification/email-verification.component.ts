@@ -9,9 +9,10 @@ import { Utils } from '../common/Utils/utils';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-email-verification',
-  templateUrl: './email-verification.component.html',
-  styleUrls: ['./email-verification.component.css']
+    selector: 'app-email-verification',
+    templateUrl: './email-verification.component.html',
+    styleUrls: ['./email-verification.component.css'],
+    standalone: false
 })
 export class EmailVerificationComponent implements OnInit {
   faPaperPlane = faPaperPlane;

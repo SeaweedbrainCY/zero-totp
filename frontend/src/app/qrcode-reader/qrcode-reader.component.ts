@@ -7,9 +7,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { Utils } from '../common/Utils/utils';
 import { ToastrService } from 'ngx-toastr';
 @Component({
-  selector: 'app-qrcode-reader',
-  templateUrl: './qrcode-reader.component.html',
-  styleUrls: ['./qrcode-reader.component.css']
+    selector: 'app-qrcode-reader',
+    templateUrl: './qrcode-reader.component.html',
+    styleUrls: ['./qrcode-reader.component.css'],
+    standalone: false
 })
 export class QrcodeReaderComponent implements OnInit {
   scannerEnabled = true ;

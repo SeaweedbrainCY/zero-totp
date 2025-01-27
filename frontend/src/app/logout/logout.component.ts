@@ -6,9 +6,10 @@ import {faCircleNotch} from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
-  selector: 'app-logout',
-  templateUrl: './logout.component.html',
-  styleUrls: ['./logout.component.css']
+    selector: 'app-logout',
+    templateUrl: './logout.component.html',
+    styleUrls: ['./logout.component.css'],
+    standalone: false
 })
 export class LogoutComponent implements OnInit{
   faCircleNotch = faCircleNotch;

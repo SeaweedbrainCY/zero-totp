@@ -3,9 +3,10 @@ import { Crypto } from '../common/Crypto/crypto';
 import {Buffer} from 'buffer'
 
 @Component({
-  selector: 'app-dev',
-  templateUrl: './dev.component.html',
-  styleUrls: ['./dev.component.css']
+    selector: 'app-dev',
+    templateUrl: './dev.component.html',
+    styleUrls: ['./dev.component.css'],
+    standalone: false
 })
 export class DevComponent {
   salt=""

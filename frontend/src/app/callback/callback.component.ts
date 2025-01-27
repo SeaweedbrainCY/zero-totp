@@ -4,9 +4,10 @@ import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
-  selector: 'app-callback',
-  templateUrl: './callback.component.html',
-  styleUrls: ['./callback.component.css']
+    selector: 'app-callback',
+    templateUrl: './callback.component.html',
+    styleUrls: ['./callback.component.css'],
+    standalone: false
 })
 export class CallbackComponent implements OnInit{
   errorMessage = '';
