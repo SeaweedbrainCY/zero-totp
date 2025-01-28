@@ -15,6 +15,16 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "28/01/2025",
+      version: "b6.0.0",
+      added: [
+        "New Year, new me, Zero-TOTP now has a dark mode ! The global design of all the application has also been improved to be more user-friendly and more modern.",
+      ],
+      fixed:[
+        "We fixed a medium CVE in the frontend dependencies."
+      ]
+    },
+    {
       date: "05/12/2025",
       version: "b5.2.0",
       added: [
