@@ -3,9 +3,10 @@ import { faCirclePlus, faTruckMedical } from '@fortawesome/free-solid-svg-icons'
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-changelog',
-  templateUrl: './changelog.component.html',
-  styleUrls: ['./changelog.component.css']
+    selector: 'app-changelog',
+    templateUrl: './changelog.component.html',
+    styleUrls: ['./changelog.component.css'],
+    standalone: false
 })
 export class ChangelogComponent {
   faCirclePlus = faCirclePlus;

@@ -4,15 +4,16 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
-import { faLightbulb, faXmark, faVault, faKey, faGears, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faLightbulb, faXmark, faVault, faKey, faGears, faUser, faSun, faMoon} from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
 
 
 @Component({
-  selector: 'app-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+    selector: 'app-navbar',
+    templateUrl: './navbar.component.html',
+    styleUrls: ['./navbar.component.css'],
+    standalone: false
 })
 export class NavbarComponent implements OnInit{
   currentUrl:string = "";
@@ -20,8 +21,10 @@ export class NavbarComponent implements OnInit{
   isIdleWatchingEnabled = false;
   faXmark=faXmark
   faUser=faUser;
+  faSun=faSun;
   faKey=faKey;
   faGears=faGears;
+  faMoon=faMoon;
   faVault=faVault;
   faLightbulb = faLightbulb;
   current_language:string = localStorage.getItem('language') || 'en-uk';
@@ -31,6 +34,7 @@ export class NavbarComponent implements OnInit{
   dismissed_notification_key = "hide_notif_banner";
   is_waiting_for_internal_notif = false
   last_notification_check_date = 0;
+  current_theme =  window.document.documentElement.getAttribute('data-theme');
   languages = [
     {
       name:"English", // default one
@@ -202,6 +206,18 @@ export class NavbarComponent implements OnInit{
       }
     }
     return this.languages[0]; // en-uk
+  }
+
+  toggleThemeButton(){
+    if(this.current_theme == 'light'){
+      window.document.documentElement.setAttribute('data-theme', 'dark');
+      this.current_theme = 'dark';
+      localStorage.setItem('theme','dark');
+    } else {
+      window.document.documentElement.setAttribute('data-theme', 'light');
+      this.current_theme = 'light';
+      localStorage.setItem('theme','light');
+    }
   }
 
 

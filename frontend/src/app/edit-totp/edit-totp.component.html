@@ -1,4 +1,4 @@
-<article class="hero is-info" [ngClass]="{
+<article class="hero is-info mt-6" [ngClass]="{
                                       'is-success': color == 'success',
                                       'is-warning': color == 'warning',
                                       'is-danger': color == 'danger',
@@ -56,17 +56,17 @@
         is-one-third-desktop
         is-one-third-widescreen
         is-one-third-fullhd mr-2 ml-2">
-            <label class="label">Favicon URI</label>
+            <label class="label">{{ 'totp.uri.title' | translate}}</label>
             <div class="control has-icons-left has-icons-right">
               <input class="input" type="text" placeholder="https://github.com" name="uri" [(ngModel)]="uri"
                 (change)="checkURI()"
-                [ngClass]="{'is-danger':uriError != '',  'is-success' : uriError == '' && uri != '' }"
+                [ngClass]="{'is-warning':uriError != '',  'is-success' : uriError == '' && uri != '' }"
                 [disabled]="this.userService.getIsVaultLocal()!">
               <span class="icon is-small is-left">
                 <fa-icon [icon]="faGlobe"></fa-icon>
               </span>
             </div>
-            <p class="help is-danger" *ngIf="uriError != ''">{{uriError | translate}}</p>
+            <p class="help is-warning" *ngIf="uriError != ''">{{uriError | translate}}</p>
           </div>
           <div class="field column is-two-thirds-mobile
           is-one-third-tablet
@@ -146,7 +146,7 @@
           </div>
           <div class="control">
             <button class="button is-info block" (click)="save()" [ngClass]="{'is-loading': isSaving}"
-              [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != '' || uriError != '' || isDestroying">{{ 'save' | translate }}</button>
+              [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != ''  || isDestroying">{{ 'save' | translate }}</button>
           </div>
         </div>
       </div>

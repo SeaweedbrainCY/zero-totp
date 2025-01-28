@@ -12,15 +12,29 @@ $primary:#5AA9E6,
 $black:#16262E,
 );*/
 
+$blue: #5AA9E6;
+$red: #FE6847;
+$yellow: #FFCF56;
+$dark: #16262E;
+$green: #63A375;
+$grey-light: #D3D3D3;
+$grey-lighter:#E5E4E2;
 
-$info: #5AA9E6;
-$link:#5AA9E6;
-$danger:#FE6847;
-$warning:#FFCF56;
-$dark:#16262E;
-$success:#63A375;
-$primary:#5AA9E6;
-$black:#16262E;
+
+
+@use "../node_modules/bulma/sass" with (
+  $info:  $blue,
+  $link: $blue,
+  $danger:$red,
+  $warning:$yellow,
+  $dark:$dark,
+  $success: $green,
+  $primary:$blue,
+  $black:$dark,
+  $grey-light:$grey-light
+);
+
+
 
 a:hover{
   text-decoration: underline;
@@ -140,8 +154,9 @@ video {
 
 
 /*@import "../node_modules/bulma/css/bulma.css";*/
-@import "../node_modules/bulma/bulma.sass";
-@import "../node_modules/bulma-extensions/bulma-steps/dist/css/bulma-steps.sass";
+
+
+//@import "../node_modules/bulma-extensions/bulma-steps/dist/css/bulma-steps.sass";
 
 /*Toast CSS*/
 /* based on angular-toastr css https://github.com/Foxandxss/angular-toastr/blob/cb508fe6801d6b288d3afc525bb40fee1b101650/dist/angular-toastr.css */

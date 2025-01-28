@@ -19,9 +19,10 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 
 
 @Component({
-  selector: 'app-import-vault',
-  templateUrl: './import-vault.component.html',
-  styleUrl: './import-vault.component.css'
+    selector: 'app-import-vault',
+    templateUrl: './import-vault.component.html',
+    styleUrl: './import-vault.component.css',
+    standalone: false
 })
 export class ImportVaultComponent implements OnInit, OnDestroy {
   faFileArrowDown = faFileArrowDown;

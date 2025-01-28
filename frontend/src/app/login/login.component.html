@@ -109,8 +109,8 @@
             <br><br>
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
-            <button class="button is-success" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive">{{ 'login.backup.unsecure.popup.button.cancel' | translate }}</button>
-            <button class="button is-danger" (click)="local_vault_service!.set_is_signature_valid(true); isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive; this.isPassphraseModalActive = true;" >{{ 'login.backup.unsecure.popup.continue' | translate }}</button>
+            <button class="button is-success mr-2" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive">{{ 'login.backup.unsecure.popup.button.cancel' | translate }}</button>
+            <button class="button is-danger ml-2" (click)="local_vault_service!.set_is_signature_valid(true); isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive; this.isPassphraseModalActive = true;" >{{ 'login.backup.unsecure.popup.continue' | translate }}</button>
         </footer>
     </div>
     <button class="modal-close is-large" aria-label="close" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive" ></button>

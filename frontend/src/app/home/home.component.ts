@@ -9,9 +9,10 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.css'],
+    standalone: false
 })
 
 
@@ -111,6 +112,10 @@ export class HomeComponent implements OnInit {
       });
     });
     
+ }
+
+ scrollTo(element: HTMLElement) {
+  element.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
  }
 
 

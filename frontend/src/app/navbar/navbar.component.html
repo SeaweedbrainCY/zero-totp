@@ -12,7 +12,7 @@
     <button class="button is-ghost has-text-grey-light" (click)="hide_notification()"> <fa-icon [icon]="faXmark" size="xl" ></fa-icon></button>
   </div>
 </div>
-<nav class="navbar is-dark " role="navigation" aria-label="main navigation">
+<nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item" (click)="navigateToRoute('/')" *ngIf="userService.getId()!=null">
        <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
@@ -64,6 +64,12 @@
       </div>
   
       <div class="navbar-end">
+        <div class="navbar-item" [ngClass]="{'is-active': isLangDropdownExpanded}">
+          <button class="button is-ghost has-text-white" style="padding-left: 0px; padding-right: 0px;" (click)="toggleThemeButton()">
+            <fa-icon [icon]="faSun" class="has-text-warning" size="2xl" *ngIf="current_theme == 'dark'"></fa-icon>
+            <fa-icon [icon]="faMoon"  size="2xl" *ngIf="current_theme == 'light'"></fa-icon>
+          </button>
+        </div>
         <div class="navbar-item has-dropdown lang-dropdown" [ngClass]="{'is-active': isLangDropdownExpanded}">
           <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded = !isLangDropdownExpanded">
             <img src="{{get_current_language_info().image}}" alt="{{get_current_language_info().name}}">

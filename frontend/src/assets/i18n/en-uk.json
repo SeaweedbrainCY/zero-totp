@@ -523,13 +523,13 @@
     "vault": {
       "display": {
         "favicon": {
-          "info1": "When enabled, your browser will try to fetch the favicon of the website you are adding to your vault when displaying it. If it fails, it will display a default icon.",
+          "info1": "When enabled, your browser will try to fetch the favicon (logo) of the website you are adding to your vault when displaying it. If it fails, it will display a default icon.",
           "info2": " The favicon is fetched by your browser using DuckDuckGo API (a privacy friendly search engine). Zero-TOTP does not transmit any information to DuckDuckGo or the target website. The URI or domain name is never transmitted to zero-totp servers. ",
           "info3": " You can disable this feature globally, enable it globally, or use each secrets' setting.",
           "option": {
             "enabled": "If enabled only"
           },
-          "title": "Display website's favicon beside its name"
+          "title": "Display website's logo (favicon) beside its name"
         },
         "subtitle": "Global settings on how your vault is displayed.",
         "title": " Vault display settings"
@@ -803,9 +803,9 @@
           "part2": "You can configure a global policy in your settings. The global policy overrides this setting.",
           "strong": "The URI or domain name is never transmitted to zero-totp servers. Your browser uses DuckDuckGo API to fetch the favicon. No other information than the URI is transmitted by Zero-TOTP to DuckDuckGo or the target website."
         },
-        "label": "Add the favicon logo of the related website."
+        "label": "Add the  website logo (favicon) logo of the related website."
       },
-      "label": "Display favicon",
+      "label": "Display the website logo (favicon)",
       "policy": {
         "always": "Global policy: Always",
         "never": "Global policy: Never"
@@ -826,6 +826,9 @@
         "placeholder": "Tag's name",
         "title": "Add a tag"
       }
+    },
+    "uri": {
+      "title": "Website URL"
     }
   },
   "unlock": "Unlock",
