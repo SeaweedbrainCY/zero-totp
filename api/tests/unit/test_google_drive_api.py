@@ -451,10 +451,10 @@ class TestGoogleDriveAPI(unittest.TestCase):
 
 
         def test_clean_old_backup(self):
-             nb_backup = 30
+             nb_backup = conf.features.backup_config.backup_minimum_count + 10
              
              files_deleted = []
-             files_to_be_deleted = [id for id in range(1, nb_backup - 20)]
+             files_to_be_deleted = [id for id in range(1, nb_backup - conf.features.backup_config.backup_minimum_count)]
              def update_file(fileId, body):
                  files_deleted.append(fileId)
                  return self.drive
@@ -471,14 +471,14 @@ class TestGoogleDriveAPI(unittest.TestCase):
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 self.assertTrue(google_drive_api.clean_backup_retention("creds", 1))
-                self.assertEqual(delete_execute.call_count, nb_backup - 20 - 1)
+                self.assertEqual(delete_execute.call_count, nb_backup - conf.features.backup_config.backup_minimum_count - 1)
                 for file in files_to_be_deleted:
                     self.assertTrue(file in files_deleted)
                 self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
 
 
         def test_clean_backup_not_enough(self):
-             nb_backup = 19
+             nb_backup = conf.features.backup_config.backup_minimum_count - 1
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
@@ -492,7 +492,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
         
         def test_clean_backup_not_old_enough(self):
-             nb_backup = 30
+             nb_backup = conf.features.backup_config.backup_minimum_count + 10
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 today = datetime.datetime.utcnow().strftime('%m-%Y')
@@ -507,7 +507,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
         
         def test_clean_backup_already_cleaned_today(self):
-             nb_backup = 30
+             nb_backup = conf.features.backup_config.backup_minimum_count + 10
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime.utcnow().strftime('%Y-%m-%d'))
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
@@ -521,7 +521,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
         
         def test_clean_backup_no_folder(self):
-             nb_backup = 30
+             nb_backup = conf.features.backup_config.backup_minimum_count + 10
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
@@ -548,7 +548,7 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
         
         def test_clean_backup_bad_files(self):
-             nb_backup = 30 
+             nb_backup = conf.features.backup_config.backup_minimum_count + 10
              with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
                 get_folder = patch("Oauth.google_drive_api.get_folder").start()
