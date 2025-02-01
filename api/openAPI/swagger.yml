@@ -741,6 +741,111 @@ paths:
           description: API is healthy
         "500":
           description: API is unhealthy
+
+  /backup/configuration:
+    get:
+      operationId: endpoints_controllers.backup.get_backup_configuration
+      tags:
+        - Backup
+      summary: Get the configuration of the maximum age and minimum count of backups.  If the backup is older than the max age value, and if the minimum backup number if reach, the backup is deleted. 
+      responses:
+        "200": 
+          description: Return the user's backup configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  max_age_in_days:
+                    type: number
+                    example: 30
+                  backup_minimum_count:
+                    type: number
+                    example: 20
+                  
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access forbidden
+        "500":
+          description: Internal server error
+  /backup/default/configuration:
+    get:
+      operationId: endpoints_controllers.backup.get_default_backup_configuration
+      tags:
+        - Backup
+      summary: Get the default configuration of the maximum age and minimum count of backups.  If the backup is older than the max age value, and if the minimum backup number if reach, the backup is deleted. 
+      responses:
+        "200": 
+          description: Return the server default configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  max_age_in_days:
+                    type: number
+                    example: 30
+                  backup_minimum_count:
+                    type: number
+                    example: 20
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access forbidden
+        "500":
+          description: Internal server error    
+  
+  /backup/configuration/{option}:
+      put:
+        operationId: endpoints_controllers.backup.set_backup_configuration
+        tags:
+          - Backup
+        summary: Set the configuration backups. Option can be "max_age_in_days" or "backup_minimum_count".
+        parameters:
+          - in: path
+            name: option
+            schema:
+              type: string
+            required: true
+            description: The option to update. Can be "max_age_in_days" or "backup_minimum_count"
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - value
+                properties:
+                  value:
+                    type: number
+                    example: 30
+        responses:
+          "201": 
+            description: Return the user's backup configuration
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    max_age_in_days:
+                      type: number
+                      example: 30
+                    backup_minimum_count:
+                      type: number
+                      example: 20
+          "400":
+            description: Bad request
+          "401":
+            description: Unauthorized
+          "403":
+            description: Access forbidden
+          "500":
+            description: Internal server error
+
+
+    
 components:
   securitySchemes:
     SessionToken:
