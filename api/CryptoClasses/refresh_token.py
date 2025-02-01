@@ -19,6 +19,7 @@ def generate_refresh_token(user_id, session_token_id, expiration=-1):
     
     
 def refresh_token_flow(refresh, session, ip):
+        logging.info(f"Refreshing token for user {session.user_id}")
         rate_limiting = RateLimitingRepo()
         session_repo = SessionTokenRepo()
         if refresh.session_token_id == session.id and refresh.user_id == session.user_id:
