@@ -11,6 +11,7 @@ import json
 from base64 import  b64decode
 from Utils import utils
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
+from database.backup_configuration_repo import BackupConfiguration as BackupConfigurationDB
 import requests
 
 FOLDER_NAME = "Zero-TOTP Backup"
@@ -125,8 +126,17 @@ def clean_backup_retention(credentials, user_id) -> bool:
          if (datetime.utcnow() - date).days < 1:
                 logging.info("Backup retention already cleaned today")
                 return True
-    MINIMUM_NB_BACKUP = 20
-    MAXIMUM_BACKUP_AGE = 30
+    
+    backup_conf_db = BackupConfigurationDB()
+    user_backup_conf = backup_conf_db.get_by_user_id(user_id)
+    if user_backup_conf is None: # using default values
+        MINIMUM_NB_BACKUP = conf.features.backup_config.backup_minimum_count
+        MAXIMUM_BACKUP_AGE = conf.features.backup_config.max_age_in_days
+    else:
+        MINIMUM_NB_BACKUP = user_backup_conf.backup_minimum_count
+        MAXIMUM_BACKUP_AGE = user_backup_conf.backup_max_age_days
+
+   
     drive = get_drive_service(credentials)
     folder = get_folder(FOLDER_NAME, drive)
     if folder == None:
