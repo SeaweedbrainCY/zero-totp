@@ -11,7 +11,7 @@ import json
 from base64 import  b64decode
 from Utils import utils
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
-from database.backup_configuration_repo import BackupConfiguration as BackupConfigurationDB
+from database.backup_configuration_repo import BackupConfigurationRepo as BackupConfigurationDB
 import requests
 
 FOLDER_NAME = "Zero-TOTP Backup"
