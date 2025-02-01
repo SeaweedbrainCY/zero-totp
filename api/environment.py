@@ -79,9 +79,16 @@ class APIConfig:
         for key in self.option_config:
             if key not in data:
                 logging.warning(f"api.{key} is not set. Ignoring it ...")
-
-        logging.info("API will listen on port 8080")
-        self.port = 8080
+        
+        if "port" in data:
+            try:
+                self.port = int(data["port"])
+            except Exception as e:
+                logging.error(f"[FATAL] Load config fail. api.port is not valid. {e}")
+                exit(1)
+        else:
+            logging.info("API will listen on port 8080")
+            self.port = 8080
         
         self.jwt_secret = data["jwt_secret"]            
         self.private_key_path = data["private_key_path"]
@@ -212,6 +219,32 @@ class SentryConfig:
                 exit(1)
         self.dsn = data["dsn"]
 
+class BackupConfig:
+    # Default value 
+    backup_minimum_count = 20
+    max_age_in_days = 30
+
+
+    def __init__(self, data):
+        if "backup_minimum_count" in data:
+            try:
+                self.backup_minimum_count = int(data["backup_minimum_count"])
+            except Exception as e:
+                logging.error(f"[FATAL] Load config fail. default_backup_configuration.backup_minimum_count is not valid. {e}")
+                exit(1)
+        else:
+            logging.info("default_backup_configuration.backup_minimum_count is not set. Using default value: 20")
+        if "max_age_in_days" in data:
+            try:
+                self.max_age_in_days = int(data["max_age_in_days"])
+            except Exception as e:
+                logging.error(f"[FATAL] Load config fail. default_backup_configuration.max_age_in_days is not valid. {e}")
+                exit(1)
+        else:
+            logging.info("default_backup_configuration.max_age_in_days is not set. Using default value: 30")
+
+
+
 
 class FeaturesConfig:
     def __init__(self, data):
@@ -219,6 +252,7 @@ class FeaturesConfig:
         self.emails = EmailsConfig(data["emails"]) if "emails" in data else None
         self.rate_limiting = RateLimitingConfig(data["rate_limiting"] if "rate_limiting" in data else [])
         self.sentry = SentryConfig(data["sentry"]) if "sentry" in data else None
+        self.backup_config = BackupConfig(data["default_backup_configuration"] if "default_backup_configuration" in data else [])
 
 
 class Config:
