@@ -555,11 +555,11 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i)
 
                 backup_1_id = str(uuid4())
-                backup_files_to_delete.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files_to_delete.append({"name" : f"{date.strftime('%d-%m-%Y')}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
                 backup_files_to_delete_ids.append(backup_1_id)
 
                 backup_2_id = str(uuid4())
-                backup_files_to_delete.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files_to_delete.append({"name" : f"{date.strftime('%d-%m-%Y')}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
                 backup_files_to_delete_ids.append(backup_2_id)
             
             backup_files_to_keep = []
@@ -569,11 +569,11 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i)
 
                 backup_1_id = str(uuid4())
-                backup_files_to_keep.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files_to_keep.append({"name" : f"{date.strftime('%d-%m-%Y')}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
                 backup_files_to_keep_ids.append(backup_1_id)
 
                 backup_2_id = str(uuid4())
-                backup_files_to_keep.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files_to_keep.append({"name" : f"{date.strftime('%d-%m-%Y')}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
                 backup_files_to_keep_ids.append(backup_2_id)
 
 
@@ -630,11 +630,11 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i+backup_max_age) # Add backup_max_age to make sure the backup is too old
 
                 backup_1_id = str(uuid4())
-                backup_files.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files.append({"name" : f"{date.strftime('%d-%m-%Y')}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
                 backup_files_id.append(backup_1_id)
 
                 backup_2_id = str(uuid4())
-                backup_files.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files.append({"name" : f"{date.strftime('%d-%m-%Y')}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
                 backup_files_id.append(backup_2_id)
 
             
@@ -686,11 +686,11 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i) # Add backup_max_age to make sure the backup is too old
 
                 backup_1_id = str(uuid4())
-                backup_files.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files.append({"name" : f"{date.strftime('%d-%m-%Y')}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
                 backup_files_id.append(backup_1_id)
 
                 backup_2_id = str(uuid4())
-                backup_files.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files.append({"name" : f"{date.strftime('%d-%m-%Y')}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
                 backup_files_id.append(backup_2_id)
 
             
