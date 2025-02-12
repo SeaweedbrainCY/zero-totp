@@ -480,11 +480,11 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i)
 
                 backup_1_id = str(uuid4())
-                backup_files_to_old_to_be_kept.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files_to_old_to_be_kept.append({"name" : f"{date.strftime('%d-%m-%Y')}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
                 backup_files_to_old_to_be_kept_ids.append(backup_1_id)
 
                 backup_2_id = str(uuid4())
-                backup_files_to_old_to_be_kept.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files_to_old_to_be_kept.append({"name" : f"{date.strftime('%d-%m-%Y')}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
                 backup_files_to_old_to_be_kept_ids.append(backup_2_id)
             
             backup_files_to_new_to_be_deleted = []
@@ -494,11 +494,11 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i)
 
                 backup_1_id = str(uuid4())
-                backup_files_to_new_to_be_deleted.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files_to_new_to_be_deleted.append({"name" : f"{date.strftime('%d-%m-%Y')}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
                 backup_files_to_new_to_be_deleted_ids.append(backup_1_id)
 
                 backup_2_id = str(uuid4())
-                backup_files_to_new_to_be_deleted.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files_to_new_to_be_deleted.append({"name" : f"{date.strftime('%d-%m-%Y')}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
                 backup_files_to_new_to_be_deleted_ids.append(backup_2_id)
 
 
