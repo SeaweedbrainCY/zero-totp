@@ -14,7 +14,7 @@ class TestGetServerDefaultBackupConf(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
-        self.get_backup_endpoint = "/api/v1/backup/default/configuration"
+        self.get_backup_endpoint = "/api/v1/backup/configuration?dv=true"
 
         self.backup_conf_repo = BackupConfigurationRepo()
         self.session_repo = SessionTokenRepo()
@@ -47,19 +47,19 @@ class TestGetServerDefaultBackupConf(unittest.TestCase):
 
             response = self.client.get(self.get_backup_endpoint, cookies={"session-token": self.session_token_user1})
             self.assertEqual(response.status_code, 200)
-            self.assertIn("max_age_in_days", response.json())
-            self.assertIn("backup_minimum_count", response.json())
-            self.assertEqual(response.json()["max_age_in_days"], conf.features.backup_config.max_age_in_days)
-            self.assertEqual(response.json()["backup_minimum_count"], conf.features.backup_config.backup_minimum_count)
+            self.assertIn("default_max_age_in_days", response.json())
+            self.assertIn("default_backup_minimum_count", response.json())
+            self.assertEqual(response.json()["default_max_age_in_days"], conf.features.backup_config.max_age_in_days)
+            self.assertEqual(response.json()["default_backup_minimum_count"], conf.features.backup_config.backup_minimum_count)
 
     def test_get_server_default_backup_conf_when_no_conf_yet(self):
         with self.flask_application.app.app_context():
             response = self.client.get(self.get_backup_endpoint, cookies={"session-token": self.session_token_user1})
             self.assertEqual(response.status_code, 200)
-            self.assertIn("max_age_in_days", response.json())
-            self.assertIn("backup_minimum_count", response.json())
-            self.assertEqual(response.json()["max_age_in_days"], conf.features.backup_config.max_age_in_days)
-            self.assertEqual(response.json()["backup_minimum_count"], conf.features.backup_config.backup_minimum_count)
+            self.assertIn("default_max_age_in_days", response.json())
+            self.assertIn("default_backup_minimum_count", response.json())
+            self.assertEqual(response.json()["default_max_age_in_days"], conf.features.backup_config.max_age_in_days)
+            self.assertEqual(response.json()["default_backup_minimum_count"], conf.features.backup_config.backup_minimum_count)
 
     def test_get_server_default_backup_conf_only_max_age_set(self):
         with self.flask_application.app.app_context():
@@ -67,10 +67,10 @@ class TestGetServerDefaultBackupConf(unittest.TestCase):
 
             response = self.client.get(self.get_backup_endpoint, cookies={"session-token": self.session_token_user1})
             self.assertEqual(response.status_code, 200)
-            self.assertIn("max_age_in_days", response.json())
-            self.assertIn("backup_minimum_count", response.json())
-            self.assertEqual(response.json()["max_age_in_days"], conf.features.backup_config.max_age_in_days)
-            self.assertEqual(response.json()["backup_minimum_count"], conf.features.backup_config.backup_minimum_count)
+            self.assertIn("default_max_age_in_days", response.json())
+            self.assertIn("default_backup_minimum_count", response.json())
+            self.assertEqual(response.json()["default_max_age_in_days"], conf.features.backup_config.max_age_in_days)
+            self.assertEqual(response.json()["default_backup_minimum_count"], conf.features.backup_config.backup_minimum_count)
 
 
     def test_get_user_backup_conf_only_minimum_count_set(self):
@@ -79,10 +79,10 @@ class TestGetServerDefaultBackupConf(unittest.TestCase):
 
             response = self.client.get(self.get_backup_endpoint, cookies={"session-token": self.session_token_user1})
             self.assertEqual(response.status_code, 200)
-            self.assertIn("max_age_in_days", response.json())
-            self.assertIn("backup_minimum_count", response.json())
-            self.assertEqual(response.json()["max_age_in_days"], conf.features.backup_config.max_age_in_days)
-            self.assertEqual(response.json()["backup_minimum_count"], conf.features.backup_config.backup_minimum_count)
+            self.assertIn("default_max_age_in_days", response.json())
+            self.assertIn("default_backup_minimum_count", response.json())
+            self.assertEqual(response.json()["default_max_age_in_days"], conf.features.backup_config.max_age_in_days)
             
+            self.assertEqual(response.json()["default_backup_minimum_count"], conf.features.backup_config.backup_minimum_count)
 
 

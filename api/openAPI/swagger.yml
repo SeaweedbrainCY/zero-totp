@@ -745,6 +745,13 @@ paths:
   /backup/configuration:
     get:
       operationId: endpoints_controllers.backup.get_backup_configuration
+      parameters:
+        - in: query
+          name: dv
+          schema:
+            type: string
+          required: false
+          description: Default Value (dv). If dv=true, then the default configuration value are also returned to the user
       tags:
         - Backup
       summary: Get the configuration of the maximum age and minimum count of backups.  If the backup is older than the max age value, and if the minimum backup number if reach, the backup is deleted. 
@@ -762,39 +769,18 @@ paths:
                   backup_minimum_count:
                     type: number
                     example: 20
-                  
+                  default_max_age_in_days:
+                    type: number
+                    example: 30 (optional, only if dv=true)
+                  default_backup_minimum_count:
+                    type: number
+                    example: 20 (optional, only if dv=true)
         "401":
           description: Unauthorized
         "403":
           description: Access forbidden
         "500":
-          description: Internal server error
-  /backup/default/configuration:
-    get:
-      operationId: endpoints_controllers.backup.get_default_backup_configuration
-      tags:
-        - Backup
-      summary: Get the default configuration of the maximum age and minimum count of backups.  If the backup is older than the max age value, and if the minimum backup number if reach, the backup is deleted. 
-      responses:
-        "200": 
-          description: Return the server default configuration
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  max_age_in_days:
-                    type: number
-                    example: 30
-                  backup_minimum_count:
-                    type: number
-                    example: 20
-        "401":
-          description: Unauthorized
-        "403":
-          description: Access forbidden
-        "500":
-          description: Internal server error    
+          description: Internal server error 
   
   /backup/configuration/{option}:
       put:
