@@ -155,7 +155,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
             sorted_files = sorted(result, key=lambda x:  datetime.strptime(x.get("name").split("_")[0], '%d-%m-%Y-%H-%M-%S'))
             logging.info("Found " + str(len(sorted_files)) + " backups")
         except Exception as e:
-             logging.info("Error while sorting backup files : " + str(e))
+             logging.warning(f"file=google_drive_api.py func=clean_backup_retention user_id={user_id} msg='Error while sorting backup files' error_msg='{str(e)}'")
              google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.utcnow().strftime('%Y-%m-%d'))
              return False
         for file in sorted_files[:-MINIMUM_NB_BACKUP]:
