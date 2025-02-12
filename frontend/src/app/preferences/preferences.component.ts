@@ -35,7 +35,7 @@ export class PreferencesComponent implements OnInit{
   faCheck=faCheck;
   faCog=faCog;
   faFlask=faFlask;
-  buttonLoading  ={"favicon_policy":false}
+  buttonLoading  ={"favicon_policy":false, "backup_conf_max_age":false, "backup_conf_min_count":false}
   moreHelpDisplayed = {"favicon_settings":false}
   isDisplayingAdvancedSettings = false;
   faviconPolicy=""; // never, always, enabledOnly
@@ -186,6 +186,55 @@ export class PreferencesComponent implements OnInit{
     });
   }
   }
+
+  updateBackupConfiguration(key:string){
+    let value = -1;
+    if(key == "max_age_in_days"){
+      this.buttonLoading.backup_conf_max_age = true;
+      value = this.backup_max_age;
+    } else if(key == "backup_minimum_count"){
+      this.buttonLoading.backup_conf_min_count = true;
+      value = this.backup_minimum_count;
+    } else {
+      return;
+    }
+
+    this.http.put("/api/v1/backup/configuration/"+key, {"value":value}, {withCredentials:true, observe: 'response'}).subscribe({
+      next:(response) => {
+        if(response.status == 200){
+          this.get_backup_configuration();
+          if(key == "max_age_in_days"){
+            this.buttonLoading.backup_conf_max_age = false;
+          } else if(key == "backup_minimum_count"){
+            this.buttonLoading.backup_conf_min_count = false;
+          }
+        }
+      },
+      error: (error)=>{
+        this.get_backup_configuration();
+        if(key == "max_age_in_days"){
+          this.buttonLoading.backup_conf_max_age = false;
+        } else if(key == "backup_minimum_count"){
+          this.buttonLoading.backup_conf_min_count = false;
+        }
+        let errorMessage = "";
+        if(error.error.message != null){
+          errorMessage = error.error.message;
+        } else if(error.error.detail != null){
+          errorMessage = error.error.detail;
+        }
+        if(error.status == 0){
+          errorMessage = "vault.error.server_unreachable"
+        } else if (error.status == 401){
+          this.userService.clear();
+          this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
+          return;
+        }
+        this.translate.get('preference.error.update').subscribe((translation: string) => {
+          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
+        });
+      }
+  })}
 
 
   displayAdvancedSettings(){

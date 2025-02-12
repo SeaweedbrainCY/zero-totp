@@ -187,14 +187,14 @@
                                     }} </span></label>
                             <div class="field is-flex-tablet">
                                 <div class="control has-icons-left mb-3">
-                                    <input class="input" type="number" placeholder="Default : {{default_backup_minimum_count}}" (name)="backup_minimum_count" [ngModel]="backup_minimum_count">
+                                    <input class="input" type="number" placeholder="Default : {{default_backup_minimum_count}}" name="backup_minimum_count" [(ngModel)]="backup_minimum_count">
                                     <span class="help has-text-left is-danger" *ngIf="false"></span>
                                     <span class="icon is-small is-left">
                                         <fa-icon [icon]="faArrowsRotate"></fa-icon>
                                     </span>
                                 </div>
                                 <div class="has-text-centered">
-                                    <button class="button is-info is-outlined is-centered ml-3">{{"update" |
+                                    <button class="button is-info is-centered ml-3"  [ngClass]="this.buttonLoading.backup_conf_min_count ? 'is-loading':'is-outlined'" (click)="updateBackupConfiguration('backup_minimum_count')" [disabled]="this.buttonLoading.backup_conf_min_count">{{"update" |
                                         translate}}</button>
                                 </div>
                             </div>
@@ -211,14 +211,14 @@
                                 </span></label>
                             <div class="field is-flex-tablet">
                                 <div class="control has-icons-left mb-3">
-                                    <input class="input" type="number" placeholder="Default : {{default_backup_max_age}}" (name)="backup_max_age" [ngModel]="backup_max_age">
+                                    <input class="input" type="number" placeholder="Default : {{default_backup_max_age}}" name="backup_max_age" [(ngModel)]="backup_max_age">
                                     <span class="help has-text-left is-danger" *ngIf="false"></span>
                                     <span class="icon is-small is-left">
                                         <fa-icon [icon]="faArrowsRotate"></fa-icon>
                                     </span>
                                 </div>
                                 <div class="has-text-centered">
-                                    <button class="button is-info is-outlined is-centered ml-3">{{"update" |
+                                    <button class="button is-info is-centered ml-3" [ngClass]="this.buttonLoading.backup_conf_max_age ? 'is-loading':'is-outlined'" (click)="updateBackupConfiguration('max_age_in_days')" [disabled]="this.buttonLoading.backup_conf_max_age">{{"update" |
                                         translate}}</button>
                                 </div>
                             </div>
