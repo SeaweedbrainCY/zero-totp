@@ -1,4 +1,4 @@
-<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingPreferences">
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingPreferences || loading_backup_configuration">
     <article class="hero-body is-flex is-justify-content-center">
         <div>
             <p class="is-light has-text-centered">{{ 'preference.loading' | translate }}<br>
@@ -10,7 +10,7 @@
     </article>
 </section>
 <section class="hero is-halfheight mt-6" style="min-height: 70vh;"
-    *ngIf="loadingPreferencesError && !loadingPreferences">
+    *ngIf="loadingPreferencesError">
     <article class="hero-body is-flex is-justify-content-center">
         <div>
             <p><fa-icon [icon]="faCircleExclamation" style="color:#ff0000;" size="2xl" animation="fade"></fa-icon> </p>
@@ -19,7 +19,7 @@
 </section>
 
 <section class="hero is-halfheight mt-6 " style="min-height: 70vh;"
-    *ngIf="!loadingPreferences && !loadingPreferencesError">
+    *ngIf="!loadingPreferences && !loading_backup_configuration && !loadingPreferencesError">
     <div class="container is-fluid ">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6"
@@ -166,6 +166,69 @@
 
 
 
+
+
+
+                    </div>
+
+
+                    <div class="form-container mt-6">
+                        <h1 class="has-text-info has-text-weight-bold is-size-3">
+                            <fa-icon [icon]="faHardDrive" class="mr-2"></fa-icon> {{ 'preference.backup.section.title' |
+                            translate }}
+                        </h1>
+                        <div style="border-bottom: 1px solid silver"></div>
+                        <p class="has-text-grey pb-3">{{ 'preference.ackup.section.subtitle' | translate }}
+                        </p>
+                        <div class="box">
+
+                            <label class="label is-size-4">{{ 'preference.backup.minimum.title' | translate }}
+                                <span class="tag is-rounded is-info"> {{ 'preference.tag.sync_only' | translate
+                                    }} </span></label>
+                            <div class="field is-flex-tablet">
+                                <div class="control has-icons-left mb-3">
+                                    <input class="input" type="number" placeholder="Default : {{default_backup_minimum_count}}" (name)="backup_minimum_count" [ngModel]="backup_minimum_count">
+                                    <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                    <span class="icon is-small is-left">
+                                        <fa-icon [icon]="faArrowsRotate"></fa-icon>
+                                    </span>
+                                </div>
+                                <div class="has-text-centered">
+                                    <button class="button is-info is-outlined is-centered ml-3">{{"update" |
+                                        translate}}</button>
+                                </div>
+                            </div>
+                            <div class="notification is-info is-light">
+                                <fa-icon [icon]="faCircleInfo"></fa-icon> {{ 'preference.backup.minimum.desc1' |
+                                translate }}<br>
+                                {{ 'preference.backup.minimum.desc2' | translate }}
+                            </div>
+                        </div>
+                        <div class="box">
+
+                            <label class="label is-size-4">{{ 'preference.backup.eol.title' | translate }} <span
+                                    class="tag is-rounded is-info"> {{ 'preference.tag.sync_only' | translate }}
+                                </span></label>
+                            <div class="field is-flex-tablet">
+                                <div class="control has-icons-left mb-3">
+                                    <input class="input" type="number" placeholder="Default : {{default_backup_max_age}}" (name)="backup_max_age" [ngModel]="backup_max_age">
+                                    <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                    <span class="icon is-small is-left">
+                                        <fa-icon [icon]="faArrowsRotate"></fa-icon>
+                                    </span>
+                                </div>
+                                <div class="has-text-centered">
+                                    <button class="button is-info is-outlined is-centered ml-3">{{"update" |
+                                        translate}}</button>
+                                </div>
+                            </div>
+                            <div class="notification is-info is-light">
+                                <fa-icon [icon]="faCircleInfo"></fa-icon> {{ 'preference.backup.eol.desc1' |
+                                translate }}
+                            </div>
+
+                        </div>
+
                     </div>
 
 
@@ -206,61 +269,6 @@
 
                                     <div class="notification is-warning is-light mb-4">
                                         <fa-icon [icon]="faFlask"></fa-icon>{{ 'preference.warning.beta' | translate }}
-                                    </div>
-                                </div>
-                                <div class="box">
-
-                                    <label class="label is-size-4">{{ 'preference.backup.minimum.title' | translate }}
-                                        <span class="tag is-rounded is-info"> {{ 'preference.tag.sync_only' | translate
-                                            }} </span></label>
-                                    <div class="field is-flex-tablet">
-                                        <div class="control has-icons-left mb-3">
-                                            <input class="input" type="number" placeholder="20" value="20" disabled>
-                                            <span class="help has-text-left is-danger" *ngIf="false"></span>
-                                            <span class="icon is-small is-left">
-                                                <fa-icon [icon]="faArrowsRotate"></fa-icon>
-                                            </span>
-                                        </div>
-                                        <div class="has-text-centered">
-                                            <button class="button is-info is-outlined is-centered ml-3"
-                                                disabled>{{"update" | translate}}</button>
-                                        </div>
-                                    </div>
-                                    <div class="notification is-info is-light">
-                                        <fa-icon [icon]="faCircleInfo"></fa-icon>{{ 'preference.backup.minimum.desc1' |
-                                        translate }}<br>
-                                        {{ 'preference.backup.minimum.desc2' | translate }}
-                                    </div>
-
-                                    <div class="notification is-warning is-light">
-                                        <fa-icon [icon]="faFlask"></fa-icon> {{ 'preference.warning.beta' | translate }}
-                                    </div>
-                                </div>
-                                <div class="box">
-
-                                    <label class="label is-size-4">{{ 'preference.backup.eol.title' | translate }} <span
-                                            class="tag is-rounded is-info"> {{ 'preference.tag.sync_only' | translate }}
-                                        </span></label>
-                                    <div class="field is-flex-tablet">
-                                        <div class="control has-icons-left mb-3">
-                                            <input class="input" type="number" placeholder="30" value="30" disabled>
-                                            <span class="help has-text-left is-danger" *ngIf="false"></span>
-                                            <span class="icon is-small is-left">
-                                                <fa-icon [icon]="faArrowsRotate"></fa-icon>
-                                            </span>
-                                        </div>
-                                        <div class="has-text-centered">
-                                            <button class="button is-info is-outlined is-centered ml-3"
-                                                disabled>{{"update" | translate}}</button>
-                                        </div>
-                                    </div>
-                                    <div class="notification is-info is-light">
-                                        <fa-icon [icon]="faCircleInfo"></fa-icon> {{ 'preference.backup.eol.desc1' |
-                                        translate }}
-                                    </div>
-
-                                    <div class="notification is-warning is-light">
-                                        <fa-icon [icon]="faFlask"></fa-icon> {{ 'preference.warning.beta' | translate }}
                                     </div>
                                 </div>
                             </div>

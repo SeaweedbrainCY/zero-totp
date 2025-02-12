@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb, faVault, faSliders, faShieldHalved, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faHardDrive } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -24,6 +25,7 @@ export class PreferencesComponent implements OnInit{
   faVault=faVault;
   faArrowsRotate=faArrowsRotate;
   faXmark=faXmark;
+  faHardDrive=faHardDrive;
   faShieldHalved=faShieldHalved;
   faSliders=faSliders;
   faHourglassStart=faHourglassStart;
@@ -49,6 +51,11 @@ export class PreferencesComponent implements OnInit{
   duration_unit = "";
   minimum_duration = -1;
   maximum_duration = -1;
+  loading_backup_configuration = true;
+  backup_max_age = -1;
+  backup_minimum_count = -1;
+  default_backup_max_age = -1;
+  default_backup_minimum_count = -1;
   constructor( 
     private http: HttpClient,
     public userService: UserService,
@@ -67,6 +74,7 @@ export class PreferencesComponent implements OnInit{
     } 
     this.get_preferences()
     this.get_internal_notification()
+    this.get_backup_configuration()
     this.duration_unit = "hour";
   }
 
@@ -116,6 +124,34 @@ export class PreferencesComponent implements OnInit{
           this.translate.get('preference.error.update').subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
         });
+    });
+  }
+
+  get_backup_configuration(){
+    this.http.get("/api/v1/backup/configuration?dv=true",{withCredentials:true, observe: 'response'}).subscribe({
+      next:(response) => {
+        if(response.body != null){
+          const data = JSON.parse(JSON.stringify(response.body));
+          this.backup_max_age = data.max_age_in_days;
+          this.backup_minimum_count = data.backup_minimum_count;
+          this.default_backup_max_age = data.default_max_age_in_days;
+          this.default_backup_minimum_count = data.default_backup_minimum_count;
+          this.loading_backup_configuration = false;
+        } else {
+          this.loadingPreferencesError = true;
+          this.loading_backup_configuration = false;
+          this.translate.get('preference.error.fetch').subscribe((translation: string) => {
+          this.utils.toastError(this.toastr,translation,"")
+        });
+        }
+      },
+      error: (error)=>{
+        this.loadingPreferencesError = true;
+       this.loading_backup_configuration = false;
+          this.translate.get('preference.error.fetch').subscribe((translation: string) => {
+          this.utils.toastError(this.toastr,translation,error.error.message)
+          });
+      }
     });
   }
 
