@@ -14,7 +14,7 @@ class TestUpdateUserBackupConf(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
-        self.get_backup_endpoint = "/api/v1/backup/configuration/"
+        self.put_backup_endpoint = "/api/v1/backup/configuration/"
 
         self.backup_conf_repo = BackupConfigurationRepo()
         self.session_repo = SessionTokenRepo()
@@ -42,7 +42,7 @@ class TestUpdateUserBackupConf(unittest.TestCase):
 
     def test_update_user_backup_max_age_when_no_conf_yet(self):
         with self.flask_application.app.app_context():
-            response = self.client.put(self.get_backup_endpoint+"max_age_in_days", json={"value": 5}, cookies={"session-token": self.session_token_user1})
+            response = self.client.put(self.put_backup_endpoint+"max_age_in_days", json={"value": 5}, cookies={"session-token": self.session_token_user1})
             self.assertEqual(response.status_code, 200)
             self.assertIn("max_age_in_days", response.json())
             self.assertEqual(response.json()["max_age_in_days"], 5)
@@ -51,7 +51,7 @@ class TestUpdateUserBackupConf(unittest.TestCase):
 
     def test_update_user_minimum_count_when_no_conf_yet(self):
         with self.flask_application.app.app_context():
-            response = self.client.put(self.get_backup_endpoint+"backup_minimum_count", json={"value": 5}, cookies={"session-token": self.session_token_user1})
+            response = self.client.put(self.put_backup_endpoint+"backup_minimum_count", json={"value": 5}, cookies={"session-token": self.session_token_user1})
             self.assertEqual(response.status_code, 200)
             self.assertIn("backup_minimum_count", response.json())
             self.assertEqual(response.json()["backup_minimum_count"], 5)
@@ -61,12 +61,42 @@ class TestUpdateUserBackupConf(unittest.TestCase):
     
     def test_update_with_bad_option(self):
         with self.flask_application.app.app_context():
-            response = self.client.put(self.get_backup_endpoint+"bad_option", json={"value": 5}, cookies={"session-token": self.session_token_user1})
+            response = self.client.put(self.put_backup_endpoint+"bad_option", json={"value": 5}, cookies={"session-token": self.session_token_user1})
             self.assertEqual(response.status_code, 400)
     
     def test_update_without_value(self):
         with self.flask_application.app.app_context():
-            response = self.client.put(self.get_backup_endpoint+"max_age_in_days", json={"bad_body":5}, cookies={"session-token": self.session_token_user1})
+            response = self.client.put(self.put_backup_endpoint+"max_age_in_days", json={"bad_body":5}, cookies={"session-token": self.session_token_user1})
+            self.assertEqual(response.status_code, 400)
+
+    
+    def test_update_with_non_integer_value(self):
+        with self.flask_application.app.app_context():
+            response = self.client.put(self.put_backup_endpoint+"max_age_in_days", json={"value":"bad_value"}, cookies={"session-token": self.session_token_user1})
+            self.assertEqual(response.status_code, 400)
+            response = self.client.put(self.put_backup_endpoint+"backup_minimum_count", json={"value":"bad_value"}, cookies={"session-token": self.session_token_user1})
+            self.assertEqual(response.status_code, 400)
+    
+    def test_update_with_negative_value(self):
+        with self.flask_application.app.app_context():
+            response = self.client.put(self.put_backup_endpoint+"max_age_in_days", json={"value":-5}, cookies={"session-token": self.session_token_user1})
+            self.assertEqual(response.status_code, 400)
+            response = self.client.put(self.put_backup_endpoint+"backup_minimum_count", json={"value":-5}, cookies={"session-token": self.session_token_user1})
+            self.assertEqual(response.status_code, 400)
+
+
+    def test_update_with_too_big_value(self):
+        with self.flask_application.app.app_context():
+            response = self.client.put(self.put_backup_endpoint+"max_age_in_days", json={"value":10001}, cookies={"session-token": self.session_token_user1})
+            self.assertEqual(response.status_code, 400)
+            response = self.client.put(self.put_backup_endpoint+"backup_minimum_count", json={"value":10001}, cookies={"session-token": self.session_token_user1})
+            self.assertEqual(response.status_code, 400)
+
+    def test_update_with_too_big_value(self):
+        with self.flask_application.app.app_context():
+            response = self.client.put(self.put_backup_endpoint+"max_age_in_days", json={"value":10001}, cookies={"session-token": self.session_token_user1})
+            self.assertEqual(response.status_code, 400)
+            response = self.client.put(self.put_backup_endpoint+"backup_minimum_count", json={"value":10001}, cookies={"session-token": self.session_token_user1})
             self.assertEqual(response.status_code, 400)
         
             

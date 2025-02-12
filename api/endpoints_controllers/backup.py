@@ -33,12 +33,25 @@ def set_backup_configuration(user_id, option, body):
     # Valid options:
     # - max_age_in_days
     # - backup_minimum_count
+
+    unsecure_value = body["value"]
+    try :
+        value = int(unsecure_value)
+    except Exception as e:
+        logging.warning(f"The user {user_id} tried to set a non integer value for the backup configuration. Value: {unsecure_value}. Error: {e}")
+        return {"message": "Invalid value"}, 400
+
+    if value < 0:
+        return {"message": "Invalid value"}, 400
+    
+    if value > 10000:
+        return {"message": "Invalid value"}, 400
     
     backup_conf_repo = BackupConfigurationRepo()
     if option == "max_age_in_days":
-        backup_conf = backup_conf_repo.set_backup_max_age_days(user_id, body["value"])
+        backup_conf = backup_conf_repo.set_backup_max_age_days(user_id, value)
     elif option == "backup_minimum_count":
-        backup_conf = backup_conf_repo.set_backup_minimum_count(user_id, body["value"])
+        backup_conf = backup_conf_repo.set_backup_minimum_count(user_id,value)
     else: 
         return {"message": "Invalid option"}, 400
     return {
