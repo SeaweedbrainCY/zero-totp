@@ -21,7 +21,7 @@ class EnvironmentConfig:
         if data["type"] == "local":
             self.type = "local"
             logging.basicConfig(
-                format='%(asctime)s %(levelname)-8s %(message)s',
+                format='%(filename)s:%(lineno)d %(funcName)s %(asctime)s %(levelname)-8s %(message)s',
                 level=logging.DEBUG,
                 datefmt='%Y-%m-%dT%H:%M:%SZ%z')
             logging.debug("Environment set to development")
@@ -38,7 +38,7 @@ class EnvironmentConfig:
             logging.basicConfig(
                  filename="/var/log/api/api.log",
                 filemode='a',
-                format='%(asctime)s %(levelname)-8s %(message)s',
+                format='%(filename)s:%(lineno)d %(funcName)s  %(asctime)s %(levelname)-8s %(message)s',
                 level=logging.INFO,
                 datefmt='%Y-%m-%dT%H:%M:%SZ%z')
             logging.info("Environment set to development")
@@ -49,7 +49,7 @@ class EnvironmentConfig:
             logging.basicConfig(
                 filename="/var/log/api/api.log",
                 filemode='a',
-                format='%(asctime)s %(levelname)-8s %(message)s',
+                format='%(filename)s:%(lineno)d %(funcName)s  %(asctime)s %(levelname)-8s %(message)s',
                 level=logging.INFO,
                 datefmt='%Y-%m-%dT%H:%M:%SZ%z')
             self.frontend_URI = f"https://{data['domain']}"
