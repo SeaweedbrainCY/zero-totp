@@ -1,5 +1,5 @@
 import unittest
-from environment import conf
+from environment import conf, logging
 from unittest.mock import patch
 from Oauth import google_drive_api  
 import datetime
@@ -451,68 +451,270 @@ class TestGoogleDriveAPI(unittest.TestCase):
 ## clean backup retention
 #########################
 
-
-        def test_clean_old_backup_with_user_backup_conf(self):
+        # Only clean backups that are older than the max age
+        def test_clean_old_backup_when_count_is_enough(self):
+            backup_per_day = 2
+            total_days_of_backup = 20
             backup_conf_repo = BackupConfigurationRepo()
-            backup_conf_repo.create_default_backup_configuration(self.user_id)
             with self.application.app.app_context():
-               backup_max_age = backup_conf_repo.set_backup_max_age_days(self.user_id, 10)
-               backup_minimum_count = backup_conf_repo.set_backup_minimum_count(self.user_id, 15)
-            # 2 backups per day, over 20 days. 40 backups. We should keep the first 10 days
+                backup_conf_repo.create_default_backup_configuration(self.user_id)
+                backup_max_age = backup_conf_repo.set_backup_max_age_days(self.user_id, 10).backup_max_age_days
+                backup_minimum_count = backup_conf_repo.set_backup_minimum_count(self.user_id, 15).backup_minimum_count
+            # 2 backups per day, over 20 days. 40 backups. We should keep the last 10 days
 
-            files_deleted = []
-            files_to_be_deleted = [id for id in range(1, nb_backup - backup_minimum_count)]
-            def update_file(fileId, body):
-                files_deleted.append(fileId)
+            mocked_files_delete = []
+            def mock_update_file(fileId, body):
+                mocked_files_delete.append(fileId)
                 return self.drive
-               
+            
             get_folder = patch("Oauth.google_drive_api.get_folder").start()
             get_folder.return_value = {"id" : 1}
             get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
-            get_files_from_folder.return_value = [{"name" : f"{str(day).zfill(2)}-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": day} for day in range(1, nb_backup)]
+
+            # the {backup_minimum_count} last backups are kept
+            backup_files_to_old_to_be_kept = []
+            backup_files_to_old_to_be_kept_ids = []
+
+            # Add one day of padding to avoid any timezone issue. These files are from 11 days ago
+            for i in  range(total_days_of_backup-backup_max_age+2, total_days_of_backup+2):
+                date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i)
+
+                backup_1_id = str(uuid4())
+                backup_files_to_old_to_be_kept.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files_to_old_to_be_kept_ids.append(backup_1_id)
+
+                backup_2_id = str(uuid4())
+                backup_files_to_old_to_be_kept.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files_to_old_to_be_kept_ids.append(backup_2_id)
+            
+            backup_files_to_new_to_be_deleted = []
+            backup_files_to_new_to_be_deleted_ids = []
+
+            for i in range(1, total_days_of_backup-backup_max_age+1):
+                date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i)
+
+                backup_1_id = str(uuid4())
+                backup_files_to_new_to_be_deleted.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files_to_new_to_be_deleted_ids.append(backup_1_id)
+
+                backup_2_id = str(uuid4())
+                backup_files_to_new_to_be_deleted.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files_to_new_to_be_deleted_ids.append(backup_2_id)
+
+
+            
+            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder.return_value = {"id" : 1}
+            get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+            get_files_from_folder.return_value = backup_files_to_old_to_be_kept + backup_files_to_new_to_be_deleted
+
             delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
             delete_execute.return_value = True
             update = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.update").start()
-            update.side_effect = update_file
+            update.side_effect = mock_update_file
+            
             
             with self.application.app.app_context():
-               self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
-               self.assertTrue(google_drive_api.clean_backup_retention("creds", 1))
-               self.assertEqual(delete_execute.call_count, nb_backup - conf.features.backup_config.backup_minimum_count - 1)
-               for file in files_to_be_deleted:
-                   self.assertTrue(file in files_deleted)
-               self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
-
-
-        def test_clean_backup_not_enough(self):
-             nb_backup = conf.features.backup_config.backup_minimum_count - 1
-             with self.application.app.app_context():
                 self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
-                get_folder = patch("Oauth.google_drive_api.get_folder").start()
-                get_folder.return_value = {"id" : 1}
-                get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
-                get_files_from_folder.return_value = [{"name" : f"{str(day).zfill(2)}-01-2023-00-00-00_backup", "explicitlyTrashed": False, "id": day} for day in range(1, nb_backup)]
-                delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
-                delete_execute.return_value = True
-                self.assertTrue(google_drive_api.clean_backup_retention("creds", 1))
-                delete_execute.assert_not_called()
-                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.utcnow().strftime('%Y-%m-%d'))
-        
-        def test_clean_backup_not_old_enough(self):
-             nb_backup = conf.features.backup_config.max_age_in_days
-             with self.application.app.app_context():
-                self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
-                today = datetime.datetime.now(datetime.timezone.utc).strftime('%m-%Y')
-                get_folder = patch("Oauth.google_drive_api.get_folder").start()
-                get_folder.return_value = {"id" : 1}
-                get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
-                get_files_from_folder.return_value = [{"name" : f"{str(day).zfill(2)}-{today}-00-00-00_backup", "explicitlyTrashed": False, "id": day} for day in range(1, nb_backup)]
-                delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
-                delete_execute.return_value = True
-                self.assertTrue(google_drive_api.clean_backup_retention("creds", 1))
-                delete_execute.assert_not_called()
+                clean_result = google_drive_api.clean_backup_retention("creds", 1)
+                self.assertTrue(clean_result)
+
+                for id in backup_files_to_new_to_be_deleted_ids:
+                    self.assertTrue(id not in mocked_files_delete, f"file {id} should be kept, but has been deleted.")
+                for id in backup_files_to_old_to_be_kept_ids:
+                    self.assertTrue(id in mocked_files_delete, f"file {id} should be deleted, but has been kept.")
                 self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d'))
-        
+
+
+        # Only clean backups that are older than the max age, but not all of them to respect the minimum count
+        def test_clean_some_old_backup_when_count_is_enough(self):
+            backup_per_day = 2
+            total_days_of_backup = 20
+            backup_conf_repo = BackupConfigurationRepo()
+            with self.application.app.app_context():
+                backup_conf_repo.create_default_backup_configuration(self.user_id)
+                backup_max_age = backup_conf_repo.set_backup_max_age_days(self.user_id, 10).backup_max_age_days
+                backup_minimum_count = backup_conf_repo.set_backup_minimum_count(self.user_id, 30).backup_minimum_count
+            # 2 backups per day, over 20 days. 40 backups. 30 backups minimum. So only delete the first 5 days
+
+            mocked_files_delete = []
+            def mock_update_file(fileId, body):
+                mocked_files_delete.append(fileId)
+                return self.drive
+            
+            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder.return_value = {"id" : 1}
+            get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+
+            # the {backup_minimum_count} last backups are kept
+            backup_files_to_delete = []
+            backup_files_to_delete_ids = []
+
+            # Add one day of padding to avoid any timezone issue. These files are from 11 days ago
+            for i in  range(backup_minimum_count//backup_per_day+2, total_days_of_backup+2):
+                date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i)
+
+                backup_1_id = str(uuid4())
+                backup_files_to_delete.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files_to_delete_ids.append(backup_1_id)
+
+                backup_2_id = str(uuid4())
+                backup_files_to_delete.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files_to_delete_ids.append(backup_2_id)
+            
+            backup_files_to_keep = []
+            backup_files_to_keep_ids = []
+
+            for i in range(1, backup_minimum_count//backup_per_day+1):
+                date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i)
+
+                backup_1_id = str(uuid4())
+                backup_files_to_keep.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files_to_keep_ids.append(backup_1_id)
+
+                backup_2_id = str(uuid4())
+                backup_files_to_keep.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files_to_keep_ids.append(backup_2_id)
+
+
+            
+            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder.return_value = {"id" : 1}
+            get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+            get_files_from_folder.return_value = backup_files_to_delete + backup_files_to_keep
+
+            delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
+            delete_execute.return_value = True
+            update = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.update").start()
+            update.side_effect = mock_update_file
+            
+            
+            with self.application.app.app_context():
+                self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
+                clean_result = google_drive_api.clean_backup_retention("creds", 1)
+                self.assertTrue(clean_result)
+
+                for id in backup_files_to_keep_ids:
+                    self.assertTrue(id not in mocked_files_delete, f"file {id} should be kept, but has been deleted.")
+                for id in backup_files_to_delete_ids:
+                    self.assertTrue(id in mocked_files_delete, f"file {id} should be deleted, but has been kept.")
+                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d'))
+
+
+
+        # Don't clean backup even if they are older than the max age if there are not enough backups
+        def test_not_clean_old_backup_when_count_is_not_enough(self):
+            backup_per_day = 2
+            total_days_of_backup = 20
+            backup_conf_repo = BackupConfigurationRepo()
+            with self.application.app.app_context():
+                backup_conf_repo.create_default_backup_configuration(self.user_id)
+                backup_max_age = backup_conf_repo.set_backup_max_age_days(self.user_id, 10).backup_max_age_days
+                backup_minimum_count = backup_conf_repo.set_backup_minimum_count(self.user_id, 40).backup_minimum_count
+            # 2 backups per day, over 20 days. 40 backups. 40 backups minimum
+
+            mocked_files_delete = []
+            def mock_update_file(fileId, body):
+                mocked_files_delete.append(fileId)
+                return self.drive
+            
+            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder.return_value = {"id" : 1}
+            get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+
+
+            backup_files = []
+            backup_files_id = []
+
+            for i in  range(1, total_days_of_backup+1):
+                date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i+backup_max_age) # Add backup_max_age to make sure the backup is too old
+
+                backup_1_id = str(uuid4())
+                backup_files.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files_id.append(backup_1_id)
+
+                backup_2_id = str(uuid4())
+                backup_files.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files_id.append(backup_2_id)
+
+            
+            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder.return_value = {"id" : 1}
+            get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+            get_files_from_folder.return_value = backup_files
+
+            delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
+            delete_execute.return_value = True
+            update = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.update").start()
+            update.side_effect = mock_update_file
+            
+            
+            with self.application.app.app_context():
+                self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
+                clean_result = google_drive_api.clean_backup_retention("creds", 1)
+                self.assertTrue(clean_result)
+
+                self.assertEqual(delete_execute.call_count, 0)
+                self.assertEqual(len(mocked_files_delete),0)
+                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d'))
+
+        # Don't clean backup even if they are too many because the minimum age is not reach
+        def test_not_clean_backup_when_not_old_enough(self):
+            backup_per_day = 2
+            total_days_of_backup = 20
+            backup_conf_repo = BackupConfigurationRepo()
+            with self.application.app.app_context():
+                backup_conf_repo.create_default_backup_configuration(self.user_id)
+                backup_max_age = backup_conf_repo.set_backup_max_age_days(self.user_id, 20).backup_max_age_days
+                backup_minimum_count = backup_conf_repo.set_backup_minimum_count(self.user_id, 10).backup_minimum_count
+            # 2 backups per day, over 20 days. 40 backups. 10 backups minimum. We should keep the last 20 days
+
+            mocked_files_delete = []
+            def mock_update_file(fileId, body):
+                mocked_files_delete.append(fileId)
+                return self.drive
+            
+            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder.return_value = {"id" : 1}
+            get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+
+
+            backup_files = []
+            backup_files_id = []
+
+            for i in  range(1, total_days_of_backup+1):
+                date = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=i) # Add backup_max_age to make sure the backup is too old
+
+                backup_1_id = str(uuid4())
+                backup_files.append({"name" : f"{date.strftime("%d-%m-%Y")}-00-00-00_backup", "explicitlyTrashed": False, "id": backup_1_id})
+                backup_files_id.append(backup_1_id)
+
+                backup_2_id = str(uuid4())
+                backup_files.append({"name" : f"{date.strftime("%d-%m-%Y")}-12-00-00_backup", "explicitlyTrashed": False, "id": backup_2_id})
+                backup_files_id.append(backup_2_id)
+
+            
+            get_folder = patch("Oauth.google_drive_api.get_folder").start()
+            get_folder.return_value = {"id" : 1}
+            get_files_from_folder = patch("Oauth.google_drive_api.get_files_from_folder").start()
+            get_files_from_folder.return_value = backup_files
+
+            delete_execute = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.execute").start()
+            delete_execute.return_value = True
+            update = patch("tests.unit.test_google_drive_api.TestGoogleDriveAPI.MockedDriveService.update").start()
+            update.side_effect = mock_update_file
+            
+            
+            with self.application.app.app_context():
+                self.google_integration_db.update_last_backup_clean_date(1, datetime.datetime(year=2023, day=1, month=1).strftime('%Y-%m-%d'))
+                clean_result = google_drive_api.clean_backup_retention("creds", 1)
+                self.assertTrue(clean_result)
+
+                self.assertEqual(delete_execute.call_count, 0)
+                self.assertEqual(len(mocked_files_delete),0)
+                self.assertEqual(self.google_integration_db.get_last_backup_clean_date(1), datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d'))       
+
+                
         def test_clean_backup_already_cleaned_today(self):
              nb_backup = conf.features.backup_config.backup_minimum_count + 10
              with self.application.app.app_context():
