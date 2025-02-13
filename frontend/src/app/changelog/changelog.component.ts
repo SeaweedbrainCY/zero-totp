@@ -15,6 +15,16 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "14/02/2025",
+      version: "b7.0.0",
+      added: [
+        "You can now customize how Zero-TOTP retains your google drive backups. Go into your preferences and update the max age of your backups and the minimum number of backup you want to always keep."
+      ],
+      fixed:[
+        "We fixed a low CVE in the API dependencies."
+      ]
+    },
+    {
       date: "28/01/2025",
       version: "b6.0.0",
       added: [
