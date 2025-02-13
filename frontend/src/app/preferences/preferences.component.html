@@ -1,37 +1,43 @@
-<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingPreferences">
-    <article class="hero-body is-flex is-justify-content-center" >
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingPreferences || loading_backup_configuration">
+    <article class="hero-body is-flex is-justify-content-center">
         <div>
-        <p class="is-light has-text-centered">{{ 'preference.loading' | translate }}<br>
-            <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#000000;" size="2xl"></fa-icon > </p>
-        
+            <p class="is-light has-text-centered">{{ 'preference.loading' | translate }}<br>
+                <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#000000;"
+                    size="2xl"></fa-icon>
+            </p>
+
         </div>
     </article>
 </section>
-<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingPreferencesError && !loadingPreferences">
-    <article class="hero-body is-flex is-justify-content-center" >
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;"
+    *ngIf="loadingPreferencesError">
+    <article class="hero-body is-flex is-justify-content-center">
         <div>
-        <p><fa-icon [icon]="faCircleExclamation"  style="color:#ff0000;" size="2xl" animation="fade"></fa-icon > </p>
+            <p><fa-icon [icon]="faCircleExclamation" style="color:#ff0000;" size="2xl" animation="fade"></fa-icon> </p>
         </div>
     </article>
 </section>
 
-<section class="hero is-halfheight mt-6 " style="min-height: 70vh;" *ngIf="!loadingPreferences && !loadingPreferencesError">
+<section class="hero is-halfheight mt-6 " style="min-height: 70vh;"
+    *ngIf="!loadingPreferences && !loading_backup_configuration && !loadingPreferencesError">
     <div class="container is-fluid ">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6"
                 style="line-height: normal;">{{ 'preference.title' | translate }}
             </h1>
             <div class="is-flex is-justify-content-center">
-                <div class="notification is-link is-light  m-4 is-flex is-justify-content-space-between" *ngIf="notification_message != undefined" style="max-width: 70vw;">
+                <div class="notification is-link is-light  m-4 is-flex is-justify-content-space-between"
+                    *ngIf="notification_message != undefined" style="max-width: 70vw;">
                     <div class="is-flex is-justify-content-center is-flex-direction-column">
-                      <div class="is-flex">
-                        <div class="is-flex is-justify-content-center is-flex-direction-column mr">
-                          <fa-icon [icon]="faLightbulb" class="mr-4"></fa-icon>
+                        <div class="is-flex">
+                            <div class="is-flex is-justify-content-center is-flex-direction-column mr">
+                                <fa-icon [icon]="faLightbulb" class="mr-4"></fa-icon>
+                            </div>
+                            <strong>{{notification_message}}</strong>
                         </div>
-                        <strong>{{notification_message}}</strong></div>
                     </div>
-                  </div>
                 </div>
+            </div>
 
 
             <div class="is-flex columns is-centered mt-4">
@@ -39,186 +45,233 @@
 
                     <div class="form-container ">
                         <h1 class="has-text-info has-text-weight-bold is-size-3">
-                            <fa-icon [icon]="faShieldHalved" class="mr-2"></fa-icon> {{ 'preference.account.security.title' | translate }}
+                            <fa-icon [icon]="faShieldHalved" class="mr-2"></fa-icon> {{
+                            'preference.account.security.title' | translate }}
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
                         <p class="has-text-grey pb-3">{{ 'preference.account.security.subtitle' | translate }}
                         </p>
                         <div class="box">
                             <strong class="mr-1 label is-size-4	">
-                                {{ 'preference.account.security.autolock.title' | translate }} 
-                            </strong> 
-                        
-                            <div >
+                                {{ 'preference.account.security.autolock.title' | translate }}
+                            </strong>
+
+                            <div>
                                 <div>
-                                <label class="has-text-weight-bold">  {{ 'preference.account.security.autolock.label' | translate }} </label>
+                                    <label class="has-text-weight-bold"> {{ 'preference.account.security.autolock.label'
+                                        | translate }} </label>
                                 </div>
                                 <div class="field has-addons ">
                                     <p class="control">
                                         <span class="select">
-                                          <select  #duration_unit_select (change)="change_duration_unit(duration_unit_select.value)" (name)="duration_unit" [ngModel]="duration_unit" value="Unit">
-                                            <option >minute</option>
-                                            <option value="hour" >{{'hour' | translate}}</option>
-                                          </select>
+                                            <select #duration_unit_select
+                                                (change)="change_duration_unit(duration_unit_select.value)"
+                                                (name)="duration_unit" [ngModel]="duration_unit" value="Unit">
+                                                <option>minute</option>
+                                                <option value="hour">{{'hour' | translate}}</option>
+                                            </select>
                                         </span>
-                                      </p>
+                                    </p>
                                     <div class="control">
-                                      <input class="input" [style.width.ch]="input_auto_compute_size(autolock_delay)" type="number" placeholder="10" name="autolock_delay" [(ngModel)]="autolock_delay" min="1" max="60">
+                                        <input class="input" [style.width.ch]="input_auto_compute_size(autolock_delay)"
+                                            type="number" placeholder="10" name="autolock_delay"
+                                            [(ngModel)]="autolock_delay" min="1" max="60">
                                     </div>
                                     <div class="control">
-                                      <button class="button is-info is-outlined" [ngClass]="{'is-loading':autolock_is_updating, 'is-info':!autolock_update_done_animation && !autolock_update_failed_animation, 'is-success':autolock_update_done_animation, 'is-danger':autolock_update_failed_animation}" (click)="autolockDelayUpdate()" >
-                                        <span *ngIf="!autolock_update_done_animation && !autolock_update_failed_animation">{{'update' | translate}}</span>
-                                        <fa-icon *ngIf="autolock_update_done_animation" [icon]="faCheck"></fa-icon>
-                                        <fa-icon *ngIf="autolock_update_failed_animation" [icon]="faXmark"></fa-icon>
-                                      </button>
+                                        <button class="button is-info is-outlined"
+                                            [ngClass]="{'is-loading':autolock_is_updating, 'is-info':!autolock_update_done_animation && !autolock_update_failed_animation, 'is-success':autolock_update_done_animation, 'is-danger':autolock_update_failed_animation}"
+                                            (click)="autolockDelayUpdate()">
+                                            <span
+                                                *ngIf="!autolock_update_done_animation && !autolock_update_failed_animation">{{'update'
+                                                | translate}}</span>
+                                            <fa-icon *ngIf="autolock_update_done_animation" [icon]="faCheck"></fa-icon>
+                                            <fa-icon *ngIf="autolock_update_failed_animation"
+                                                [icon]="faXmark"></fa-icon>
+                                        </button>
                                     </div>
-                                  </div>
-                                  <span class="help has-text-left is-danger" *ngIf="autolock_display_error">
-                                        <span>{{'preference.account.security.autolock.error' | translate : {min:minimum_duration, max:maximum_duration} }}<br></span>
-                                    </span>  
-                                    <span class="help has-text-left is-success" *ngIf="autolock_value_updated">
-                                        <span>{{'preference.account.security.autolock.success' | translate}}<br></span>
-                                    </span>  
-                            </div>
-                            
+                                </div>
+                                <span class="help has-text-left is-danger" *ngIf="autolock_display_error">
+                                    <span>{{'preference.account.security.autolock.error' | translate :
+                                        {min:minimum_duration, max:maximum_duration} }}<br></span>
+                                </span>
+                                <span class="help has-text-left is-success" *ngIf="autolock_value_updated">
+                                    <span>{{'preference.account.security.autolock.success' | translate}}<br></span>
+                                </span>
                             </div>
 
-                            
-                          
+                        </div>
+
+
+
                     </div>
 
                     <div class="form-container mt-6">
                         <h1 class="has-text-info has-text-weight-bold is-size-3">
-                            <fa-icon [icon]="faVault" class="mr-2"></fa-icon>  {{ 'preference.vault.display.title' | translate }}
+                            <fa-icon [icon]="faVault" class="mr-2"></fa-icon> {{ 'preference.vault.display.title' |
+                            translate }}
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
                         <p class="has-text-grey pb-3">{{ 'preference.vault.display.subtitle' | translate }}
                         </p>
                         <div class="box">
                             <strong class="mr-1 label is-size-4	">
-                                {{ 'preference.vault.display.favicon.title' | translate }} <span class="tag is-rounded is-info">{{ 'preference.tag.global' | translate }}
+                                {{ 'preference.vault.display.favicon.title' | translate }} <span
+                                    class="tag is-rounded is-info">{{ 'preference.tag.global' | translate }}
                                 </span>
-                            </strong> 
-                        
+                            </strong>
+
                             <div class="buttons has-addons">
-                                <button class="button "   [ngClass]="{'is-selected is-success':faviconPolicy == 'always'}" (click)="changeFaviconSettings('always')" [disabled]="this.buttonLoading.favicon_policy == true">
+                                <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'always'}"
+                                    (click)="changeFaviconSettings('always')"
+                                    [disabled]="this.buttonLoading.favicon_policy == true">
                                     {{ 'always' | translate }}
                                 </button>
-                                <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'enabledOnly'}" (click)="changeFaviconSettings('enabledOnly')" [disabled]="this.buttonLoading.favicon_policy == true">
+                                <button class="button "
+                                    [ngClass]="{'is-selected is-success':faviconPolicy == 'enabledOnly'}"
+                                    (click)="changeFaviconSettings('enabledOnly')"
+                                    [disabled]="this.buttonLoading.favicon_policy == true">
                                     {{ 'preference.vault.display.favicon.option.enabled' | translate }}
                                 </button>
-                                <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'never'}" (click)="changeFaviconSettings('never')" [disabled]="this.buttonLoading.favicon_policy == true">
+                                <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'never'}"
+                                    (click)="changeFaviconSettings('never')"
+                                    [disabled]="this.buttonLoading.favicon_policy == true">
                                     {{ 'never' | translate }}
                                 </button>
                             </div>
-                            <button class="button is-info is-rounded is-small is-light" *ngIf="!this.moreHelpDisplayed.favicon_settings" (click)="this.moreHelpDisplayed.favicon_settings = true">{{ 'preference.more_info' | translate }} <fa-icon [icon]="faCircleInfo" class="ml-2"></fa-icon></button>
+                            <button class="button is-info is-rounded is-small is-light"
+                                *ngIf="!this.moreHelpDisplayed.favicon_settings"
+                                (click)="this.moreHelpDisplayed.favicon_settings = true">{{ 'preference.more_info' |
+                                translate }} <fa-icon [icon]="faCircleInfo" class="ml-2"></fa-icon></button>
                             <article class="message is-info" *ngIf="this.moreHelpDisplayed.favicon_settings">
                                 <div class="message-header">
-                                  <p>{{ 'preference.more_info' | translate }} <fa-icon [icon]="faCircleInfo" class="ml-2"></fa-icon></p>
-                                  <button class="delete" (click)="this.moreHelpDisplayed.favicon_settings = false"></button>
+                                    <p>{{ 'preference.more_info' | translate }} <fa-icon [icon]="faCircleInfo"
+                                            class="ml-2"></fa-icon></p>
+                                    <button class="delete"
+                                        (click)="this.moreHelpDisplayed.favicon_settings = false"></button>
                                 </div>
                                 <div class="message-body">
                                     <ul>
-                                        <li>  {{ 'preference.vault.display.favicon.info1' | translate }}</li>
+                                        <li> {{ 'preference.vault.display.favicon.info1' | translate }}</li>
                                         <br>
-                                    
-                                      <li> {{ 'preference.vault.display.favicon.info2' | translate }}
-                                      </li><br>
-                                    <li>
-                                       {{ 'preference.vault.display.favicon.info3' | translate }}
-                                    </li>
+
+                                        <li> {{ 'preference.vault.display.favicon.info2' | translate }}
+                                        </li><br>
+                                        <li>
+                                            {{ 'preference.vault.display.favicon.info3' | translate }}
+                                        </li>
                                     </ul>
                                 </div>
-                              </article>
+                            </article>
+                        </div>
+
+
+
+
+
+
+                    </div>
+
+
+                    <div class="form-container mt-6">
+                        <h1 class="has-text-info has-text-weight-bold is-size-3">
+                            <fa-icon [icon]="faHardDrive" class="mr-2"></fa-icon> {{ 'preference.backup.section.title' |
+                            translate }}
+                        </h1>
+                        <div style="border-bottom: 1px solid silver"></div>
+                        <p class="has-text-grey pb-3">{{ 'preference.ackup.section.subtitle' | translate }}
+                        </p>
+                        <div class="box">
+
+                            <label class="label is-size-4">{{ 'preference.backup.minimum.title' | translate }}
+                                <span class="tag is-rounded is-info"> {{ 'preference.tag.sync_only' | translate
+                                    }} </span></label>
+                            <div class="field is-flex-tablet">
+                                <div class="control has-icons-left mb-3">
+                                    <input class="input" type="number" placeholder="Default : {{default_backup_minimum_count}}" name="backup_minimum_count" [(ngModel)]="backup_minimum_count">
+                                    <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                    <span class="icon is-small is-left">
+                                        <fa-icon [icon]="faArrowsRotate"></fa-icon>
+                                    </span>
+                                </div>
+                                <div class="has-text-centered">
+                                    <button class="button is-info is-centered ml-3"  [ngClass]="this.buttonLoading.backup_conf_min_count ? 'is-loading':'is-outlined'" (click)="updateBackupConfiguration('backup_minimum_count')" [disabled]="this.buttonLoading.backup_conf_min_count">{{"update" |
+                                        translate}}</button>
+                                </div>
+                            </div>
+                            <div class="notification is-info is-light">
+                                <fa-icon [icon]="faCircleInfo"></fa-icon> {{ 'preference.backup.minimum.desc1' |
+                                translate }}<br>
+                                {{ 'preference.backup.minimum.desc2' | translate }}
+                            </div>
+                        </div>
+                        <div class="box">
+
+                            <label class="label is-size-4">{{ 'preference.backup.eol.title' | translate }} <span
+                                    class="tag is-rounded is-info"> {{ 'preference.tag.sync_only' | translate }}
+                                </span></label>
+                            <div class="field is-flex-tablet">
+                                <div class="control has-icons-left mb-3">
+                                    <input class="input" type="number" placeholder="Default : {{default_backup_max_age}}" name="backup_max_age" [(ngModel)]="backup_max_age">
+                                    <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                    <span class="icon is-small is-left">
+                                        <fa-icon [icon]="faArrowsRotate"></fa-icon>
+                                    </span>
+                                </div>
+                                <div class="has-text-centered">
+                                    <button class="button is-info is-centered ml-3" [ngClass]="this.buttonLoading.backup_conf_max_age ? 'is-loading':'is-outlined'" (click)="updateBackupConfiguration('max_age_in_days')" [disabled]="this.buttonLoading.backup_conf_max_age">{{"update" |
+                                        translate}}</button>
+                                </div>
+                            </div>
+                            <div class="notification is-info is-light">
+                                <fa-icon [icon]="faCircleInfo"></fa-icon> {{ 'preference.backup.eol.desc1' |
+                                translate }}
                             </div>
 
-                            
-                          
+                        </div>
+
                     </div>
 
 
 
-                    
+
                     <div class="mt-6">
                         <h1 class="has-text-info has-text-weight-bold is-size-3">
-                            <fa-icon [icon]="faSliders" class="mr-2"></fa-icon>  {{ 'preference.advanced.title' | translate }}
+                            <fa-icon [icon]="faSliders" class="mr-2"></fa-icon> {{ 'preference.advanced.title' |
+                            translate }}
                         </h1>
                         <div style="border-bottom: 1px solid silver"></div>
                         <p class="has-text-grey pb-3">{{ 'preference.advanced.subtitle' | translate }}
-                             </p>
+                        </p>
                         <div class="control">
-                            <button class="button is-info is-outlined" (click)="displayAdvancedSettings()" *ngIf="!isDisplayingAdvancedSettings"
-                                data-target="confirmation">{{ 'preference.advanced.button' | translate }}
-                             </button>
-                             <div *ngIf="isDisplayingAdvancedSettings">
-                             <div class="box">
-                                <label class="label is-size-4	">{{ 'preference.iteration.title' | translate }}</label>
-                        <div class="field is-flex-tablet">
-                            <div class="control has-icons-left mb-3">
-                                <input class="input" type="number" placeholder="700000" value="700000" disabled>
-                                <span class="help has-text-left is-danger" *ngIf="false"></span>
-                                <span class="icon is-small is-left">
-                                    <fa-icon [icon]="faShield"></fa-icon>
-                                </span>
-                            </div>
-                            <div class="has-text-centered">
-                                <button class="button is-info is-outlined is-centered ml-3" disabled>{{"update" | translate}}</button>
-                            </div>
-                           
-                        </div>
-                   
-                        <div class="notification is-warning is-light mb-4">
-                           <fa-icon [icon]="faFlask"></fa-icon>{{ 'preference.warning.beta' | translate }}
-                           </div>
-                        </div>
-                        <div class="box">
+                            <button class="button is-info is-outlined" (click)="displayAdvancedSettings()"
+                                *ngIf="!isDisplayingAdvancedSettings" data-target="confirmation">{{
+                                'preference.advanced.button' | translate }}
+                            </button>
+                            <div *ngIf="isDisplayingAdvancedSettings">
+                                <div class="box">
+                                    <label class="label is-size-4	">{{ 'preference.iteration.title' | translate
+                                        }}</label>
+                                    <div class="field is-flex-tablet">
+                                        <div class="control has-icons-left mb-3">
+                                            <input class="input" type="number" placeholder="700000" value="700000"
+                                                disabled>
+                                            <span class="help has-text-left is-danger" *ngIf="false"></span>
+                                            <span class="icon is-small is-left">
+                                                <fa-icon [icon]="faShield"></fa-icon>
+                                            </span>
+                                        </div>
+                                        <div class="has-text-centered">
+                                            <button class="button is-info is-outlined is-centered ml-3"
+                                                disabled>{{"update" | translate}}</button>
+                                        </div>
 
-                           <label class="label is-size-4">{{ 'preference.backup.minimum.title' | translate }} <span class="tag is-rounded is-info"> {{ 'preference.tag.sync_only' | translate }} </span></label>
-                           <div class="field is-flex-tablet">
-                            <div class="control has-icons-left mb-3">
-                                <input class="input" type="number" placeholder="20" value="20" disabled>
-                                <span class="help has-text-left is-danger" *ngIf="false"></span>
-                                <span class="icon is-small is-left">
-                                    <fa-icon [icon]="faArrowsRotate"></fa-icon>
-                                </span>
-                            </div>
-                            <div class="has-text-centered">
-                                <button class="button is-info is-outlined is-centered ml-3" disabled>{{"update" | translate}}</button>
-                            </div>
-                        </div>
-                        <div class="notification is-info is-light">
-                            <fa-icon [icon]="faCircleInfo"></fa-icon>{{ 'preference.backup.minimum.desc1' | translate }}<br>
-                           {{ 'preference.backup.minimum.desc2' | translate }}
-                           </div>
-                        
-                        <div class="notification is-warning is-light">
-                            <fa-icon [icon]="faFlask"></fa-icon> {{ 'preference.warning.beta' | translate }}
-                           </div>
-                        </div>
-                        <div class="box">
+                                    </div>
 
-                           <label class="label is-size-4">{{ 'preference.backup.eol.title' | translate }} <span class="tag is-rounded is-info">  {{ 'preference.tag.sync_only' | translate }} </span></label>
-                           <div class="field is-flex-tablet">
-                            <div class="control has-icons-left mb-3">
-                                <input class="input" type="number" placeholder="30" value="30" disabled>
-                                <span class="help has-text-left is-danger" *ngIf="false"></span>
-                                <span class="icon is-small is-left">
-                                    <fa-icon [icon]="faArrowsRotate"></fa-icon>
-                                </span>
+                                    <div class="notification is-warning is-light mb-4">
+                                        <fa-icon [icon]="faFlask"></fa-icon>{{ 'preference.warning.beta' | translate }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="has-text-centered">
-                                <button class="button is-info is-outlined is-centered ml-3" disabled>{{"update" | translate}}</button>
-                            </div>
-                        </div>
-                        <div class="notification is-info is-light">
-                            <fa-icon [icon]="faCircleInfo"></fa-icon> {{ 'preference.backup.eol.desc1' | translate }}
-                           </div>
-                        
-                        <div class="notification is-warning is-light">
-                         <fa-icon [icon]="faFlask"></fa-icon> {{ 'preference.warning.beta' | translate }}
-                           </div>
-                            </div>
-                        </div>
                         </div>
                     </div>
 

@@ -76,3 +76,7 @@ def test_conf(conf) -> bool:
     ## Sentry
     if conf.features.sentry != None:
         assert isinstance(conf.features.sentry.dsn, str), "features.sentry.dsn is not a string"
+
+    ## Backup
+    assert isinstance(conf.features.backup_config.max_age_in_days, int), "features.default_backup_configuration.max_age_in_days is not an integer"
+    assert isinstance(conf.features.backup_config.backup_minimum_count, int), "features.default_backup_configuration.backup_minimum_count is not an integer"

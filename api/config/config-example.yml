@@ -153,4 +153,14 @@ features:
         ## See https://docs.sentry.io/platforms/python/flask/ for more information.
         # dsn: ""
 
+    ## Optional
+    ## Default backup configuration for users
+    ## Users can change their backup configuration in their settings
+    ## The default configuration will be used if the user does not change it.
+    #  default_backup_configuration:
+        ## The minimum number of backups to keep no matter their age. 
+        # backup_minimum_count: 20
+        ## The minimum age of backups to keep in days (older backups will be deleted if the number of backups is above the minimum count see above).
+        #  max_age_in_days: 30
+
 

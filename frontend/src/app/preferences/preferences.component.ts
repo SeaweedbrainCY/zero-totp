@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb, faVault, faSliders, faShieldHalved, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faHardDrive } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
@@ -24,6 +25,7 @@ export class PreferencesComponent implements OnInit{
   faVault=faVault;
   faArrowsRotate=faArrowsRotate;
   faXmark=faXmark;
+  faHardDrive=faHardDrive;
   faShieldHalved=faShieldHalved;
   faSliders=faSliders;
   faHourglassStart=faHourglassStart;
@@ -33,7 +35,7 @@ export class PreferencesComponent implements OnInit{
   faCheck=faCheck;
   faCog=faCog;
   faFlask=faFlask;
-  buttonLoading  ={"favicon_policy":false}
+  buttonLoading  ={"favicon_policy":false, "backup_conf_max_age":false, "backup_conf_min_count":false}
   moreHelpDisplayed = {"favicon_settings":false}
   isDisplayingAdvancedSettings = false;
   faviconPolicy=""; // never, always, enabledOnly
@@ -49,6 +51,11 @@ export class PreferencesComponent implements OnInit{
   duration_unit = "";
   minimum_duration = -1;
   maximum_duration = -1;
+  loading_backup_configuration = true;
+  backup_max_age = -1;
+  backup_minimum_count = -1;
+  default_backup_max_age = -1;
+  default_backup_minimum_count = -1;
   constructor( 
     private http: HttpClient,
     public userService: UserService,
@@ -67,6 +74,7 @@ export class PreferencesComponent implements OnInit{
     } 
     this.get_preferences()
     this.get_internal_notification()
+    this.get_backup_configuration()
     this.duration_unit = "hour";
   }
 
@@ -119,6 +127,34 @@ export class PreferencesComponent implements OnInit{
     });
   }
 
+  get_backup_configuration(){
+    this.http.get("/api/v1/backup/configuration?dv=true",{withCredentials:true, observe: 'response'}).subscribe({
+      next:(response) => {
+        if(response.body != null){
+          const data = JSON.parse(JSON.stringify(response.body));
+          this.backup_max_age = data.max_age_in_days;
+          this.backup_minimum_count = data.backup_minimum_count;
+          this.default_backup_max_age = data.default_max_age_in_days;
+          this.default_backup_minimum_count = data.default_backup_minimum_count;
+          this.loading_backup_configuration = false;
+        } else {
+          this.loadingPreferencesError = true;
+          this.loading_backup_configuration = false;
+          this.translate.get('preference.error.fetch').subscribe((translation: string) => {
+          this.utils.toastError(this.toastr,translation,"")
+        });
+        }
+      },
+      error: (error)=>{
+        this.loadingPreferencesError = true;
+       this.loading_backup_configuration = false;
+          this.translate.get('preference.error.fetch').subscribe((translation: string) => {
+          this.utils.toastError(this.toastr,translation,error.error.message)
+          });
+      }
+    });
+  }
+
 
   changeFaviconSettings(policy: string){
     if(policy == "never" || policy == "always" || policy == "enabledOnly"){
@@ -150,6 +186,55 @@ export class PreferencesComponent implements OnInit{
     });
   }
   }
+
+  updateBackupConfiguration(key:string){
+    let value = -1;
+    if(key == "max_age_in_days"){
+      this.buttonLoading.backup_conf_max_age = true;
+      value = this.backup_max_age;
+    } else if(key == "backup_minimum_count"){
+      this.buttonLoading.backup_conf_min_count = true;
+      value = this.backup_minimum_count;
+    } else {
+      return;
+    }
+
+    this.http.put("/api/v1/backup/configuration/"+key, {"value":value}, {withCredentials:true, observe: 'response'}).subscribe({
+      next:(response) => {
+        if(response.status == 200){
+          this.get_backup_configuration();
+          if(key == "max_age_in_days"){
+            this.buttonLoading.backup_conf_max_age = false;
+          } else if(key == "backup_minimum_count"){
+            this.buttonLoading.backup_conf_min_count = false;
+          }
+        }
+      },
+      error: (error)=>{
+        this.get_backup_configuration();
+        if(key == "max_age_in_days"){
+          this.buttonLoading.backup_conf_max_age = false;
+        } else if(key == "backup_minimum_count"){
+          this.buttonLoading.backup_conf_min_count = false;
+        }
+        let errorMessage = "";
+        if(error.error.message != null){
+          errorMessage = error.error.message;
+        } else if(error.error.detail != null){
+          errorMessage = error.error.detail;
+        }
+        if(error.status == 0){
+          errorMessage = "vault.error.server_unreachable"
+        } else if (error.status == 401){
+          this.userService.clear();
+          this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
+          return;
+        }
+        this.translate.get('preference.error.update').subscribe((translation: string) => {
+          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
+        });
+      }
+  })}
 
 
   displayAdvancedSettings(){

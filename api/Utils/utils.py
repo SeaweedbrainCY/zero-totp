@@ -192,7 +192,7 @@ def unsafe_json_vault_validation(json:str) -> (bool, str):
 
 
 def revoke_session(session_id=None, refresh_id=None):
-    print("revoking session")
+    logging.info(f"Revoking session {session_id} and refresh {refresh_id}")
     session_repo = SessionTokenRepo()
     refresh_repo = RefreshTokenRepo()
     session = session_repo.get_session_token_by_id(session_id)
