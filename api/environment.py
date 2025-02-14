@@ -49,7 +49,7 @@ class EnvironmentConfig:
             logging.basicConfig(
                 filename="/var/log/api/api.log",
                 filemode='a',
-                format='%(filename)s:%(lineno)d %(funcName)s  %(asctime)s %(levelname)-8s %(message)s',
+                format='%(asctime)s %(levelname)-8s %(filename)s:%(lineno)d %(funcName)s %(message)s',
                 level=logging.INFO,
                 datefmt='%Y-%m-%dT%H:%M:%SZ%z')
             self.frontend_URI = f"https://{data['domain']}"
