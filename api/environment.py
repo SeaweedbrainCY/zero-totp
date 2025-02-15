@@ -12,6 +12,7 @@ class EnvironmentConfig:
     required_keys = ["type", "config_version", "domain"]
     def __init__(self, data) -> None:
         self.config_version = data["config_version"]
+        LOGGING_FORMAT = '%(asctime)s %(levelname)-8s %(filename)s:%(lineno)d %(funcName)s %(message)s'
         
         for key in self.required_keys:
             if key not in data:
@@ -21,7 +22,7 @@ class EnvironmentConfig:
         if data["type"] == "local":
             self.type = "local"
             logging.basicConfig(
-                format='%(filename)s:%(lineno)d %(funcName)s %(asctime)s %(levelname)-8s %(message)s',
+                format=LOGGING_FORMAT,
                 level=logging.DEBUG,
                 datefmt='%Y-%m-%dT%H:%M:%SZ%z')
             logging.debug("Environment set to development")
@@ -38,7 +39,7 @@ class EnvironmentConfig:
             logging.basicConfig(
                  filename="/var/log/api/api.log",
                 filemode='a',
-                format='%(filename)s:%(lineno)d %(funcName)s  %(asctime)s %(levelname)-8s %(message)s',
+                format=LOGGING_FORMAT,
                 level=logging.INFO,
                 datefmt='%Y-%m-%dT%H:%M:%SZ%z')
             logging.info("Environment set to development")
@@ -49,7 +50,7 @@ class EnvironmentConfig:
             logging.basicConfig(
                 filename="/var/log/api/api.log",
                 filemode='a',
-                format='%(filename)s:%(lineno)d %(funcName)s  %(asctime)s %(levelname)-8s %(message)s',
+                format=LOGGING_FORMAT,
                 level=logging.INFO,
                 datefmt='%Y-%m-%dT%H:%M:%SZ%z')
             self.frontend_URI = f"https://{data['domain']}"
