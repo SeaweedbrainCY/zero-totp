@@ -52,7 +52,7 @@ if (table_name == "oauth_tokens"):
             print("\nDecrypted data:")
             print("   - ID: ", entry.id)
             print("   - User ID: ", entry.user_id)
-            print("   - Encrypted credentials: ", decrypted.decode("utf-8"))
+            print("   - Encrypted credentials: ", decrypted)
             print("   - Expires at: ", entry.expires_at)
             print("\n###### Decryption utility done ######\n")
 
