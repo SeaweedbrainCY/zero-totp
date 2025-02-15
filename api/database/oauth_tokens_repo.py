@@ -4,6 +4,9 @@ from zero_totp_db_model.model import Oauth_tokens as Oauth_tokens_model
 class Oauth_tokens:
     def get_by_user_id(self, user_id):
         return db.session.query(Oauth_tokens_model).filter_by(user_id=user_id).first()
+
+    def get_by_entry_id(self, id):
+        return db.session.query(Oauth_tokens_model).filter_by(id=id).first()
     
     def add(self, user_id, enc_credentials, expires_at, nonce, tag):
         oauth_tokens = Oauth_tokens_model(user_id=user_id, enc_credentials=enc_credentials, expires_at=expires_at, cipher_nonce=nonce, cipher_tag=tag);
