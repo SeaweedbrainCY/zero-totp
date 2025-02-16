@@ -151,6 +151,7 @@
   "copied": "Copied !",
   "decrypt": "Decrypt",
   "decrypted": "decrypted",
+  "default": "Default",
   "delete": "Delete",
   "email": "Email",
   "email_verif": {
@@ -490,6 +491,11 @@
         "title": "Account security settings"
       }
     },
+    "ackup": {
+      "section": {
+        "subtitle": "Global settings about how you want your automatic backups to be handle"
+      }
+    },
     "advanced": {
       "button": "Display advanced settings",
       "subtitle": "Settings to manage more precisely your Zero-TOTP account.",
@@ -504,6 +510,9 @@
         "desc1": " This is the minimum number of backup that Zero-TOTP will keep above all in your Google Drive.",
         "desc2": " This paramater overrides any other parameter.",
         "title": "Minimum of backup kept in Google Drive"
+      },
+      "section": {
+        "title": "Backup configuration"
       }
     },
     "error": {

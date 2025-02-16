@@ -11,6 +11,7 @@ import json
 from base64 import  b64decode
 from Utils import utils
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegrationDB
+from database.backup_configuration_repo import BackupConfigurationRepo as BackupConfigurationDB
 import requests
 
 FOLDER_NAME = "Zero-TOTP Backup"
@@ -125,8 +126,17 @@ def clean_backup_retention(credentials, user_id) -> bool:
          if (datetime.utcnow() - date).days < 1:
                 logging.info("Backup retention already cleaned today")
                 return True
-    MINIMUM_NB_BACKUP = 20
-    MAXIMUM_BACKUP_AGE = 30
+    
+    backup_conf_db = BackupConfigurationDB()
+    user_backup_conf = backup_conf_db.get_by_user_id(user_id)
+    if user_backup_conf is None: # using default values
+        MINIMUM_NB_BACKUP = conf.features.backup_config.backup_minimum_count
+        MAXIMUM_BACKUP_AGE = conf.features.backup_config.max_age_in_days
+    else:
+        MINIMUM_NB_BACKUP = user_backup_conf.backup_minimum_count
+        MAXIMUM_BACKUP_AGE = user_backup_conf.backup_max_age_days
+
+   
     drive = get_drive_service(credentials)
     folder = get_folder(FOLDER_NAME, drive)
     if folder == None:
@@ -145,7 +155,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
             sorted_files = sorted(result, key=lambda x:  datetime.strptime(x.get("name").split("_")[0], '%d-%m-%Y-%H-%M-%S'))
             logging.info("Found " + str(len(sorted_files)) + " backups")
         except Exception as e:
-             logging.info("Error while sorting backup files : " + str(e))
+             logging.warning(f"file=google_drive_api.py func=clean_backup_retention user_id={user_id} msg='Error while sorting backup files' error_msg='{str(e)}'")
              google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.utcnow().strftime('%Y-%m-%d'))
              return False
         for file in sorted_files[:-MINIMUM_NB_BACKUP]:

@@ -490,6 +490,11 @@
         "title": "Paramètres de sécurité de ton compte"
       }
     },
+    "ackup": {
+      "section": {
+        "subtitle": "Préférences à propos de la gestion de vos backups automatiques"
+      }
+    },
     "advanced": {
       "button": "Afficher les préférences avancées",
       "subtitle": "Paramètres pour gérer plus précisément ton compte Zero-TOTP.",
@@ -504,6 +509,9 @@
         "desc1": "C'est le nombre minimum de sauvegardes que Zero-TOTP conservera par dessus tout dans ton Google Drive.",
         "desc2": "Ce paramètre outrepasse n'importe quel autre paramètre",
         "title": "Nombre de backup minimal gardé dans Google Drive"
+      },
+      "section": {
+        "title": "Configuration des backups"
       }
     },
     "error": {

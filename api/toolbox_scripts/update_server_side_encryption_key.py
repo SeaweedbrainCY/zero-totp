@@ -4,12 +4,21 @@ from Crypto.Hash import SHA512
 from app import app 
 from database.db import db
 from base64 import b64decode
+from environment import logging
+from time import sleep
 
+logging.basicConfig(level=logging.ERROR)
+app.app.logger.setLevel(logging.ERROR)
 
-print("Welcome to this utility to update the server side encryption key.")
+# Waiting for app to initialize
+sleep(2)
+
+print("\n###### Script init done ######\n")
+print("👋 Welcome to this utility to update the server side encryption key.\n")
 print("You can use this utility to re-encrypt your database stored data with a new key.")
 print("This is useful if you want to rotate your keys.")
 print("Please make sure to backup your database before running this utility.\n")
+print("\n🚨 Keep the current encryption key in the config file.\n")
 print("Did you backup your database? (y/N) : ", end="")
 backup = input()
 if backup.lower() != "y":
