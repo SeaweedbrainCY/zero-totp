@@ -201,6 +201,16 @@
     }
   },
   "encrypted": "chiffré",
+  "faq": {
+    "title": "Foire aux questions",
+    "totp": {
+      "q1": "Qu'est-ce qu'un TOTP ?",
+      "title": "À propos des TOTP"
+    },
+    "vault": {
+      "title": "À propos de ton coffre Zero-TOTP"
+    }
+  },
   "footer": {
     "bug": "Signaler un bug",
     "opensource": "Composants open-source"

@@ -202,6 +202,16 @@
     }
   },
   "encrypted": "encrypted",
+  "faq": {
+    "title": "Frequently asked questions",
+    "totp": {
+      "q1": "What is a TOTP ?",
+      "title": "About TOTP"
+    },
+    "vault": {
+      "title": "About your Zero-TOTP vault"
+    }
+  },
   "footer": {
     "bug": "Report a bug",
     "opensource": "Open-Source Component"
