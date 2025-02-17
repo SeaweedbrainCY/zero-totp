@@ -18,6 +18,7 @@ import { PreferencesComponent } from './preferences/preferences.component';
 import { OpenSourceLibraryComponent } from './open-source-library/open-source-library.component';
 import { EmailVerificationComponent } from './email-verification/email-verification.component';
 import { ImportVaultComponent } from './import-vault/import-vault.component';
+import { FaqComponent } from './faq/faq.component';
 
 export const routes: Routes = [
   {path:'', component: HomeComponent},
@@ -40,6 +41,7 @@ export const routes: Routes = [
   {path:"emailVerification", component: EmailVerificationComponent},
   {path: "import/vault", component: ImportVaultComponent},
   {path: "import/vault/:type/:step", component: ImportVaultComponent},
+  {path: "faq", component: FaqComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 
