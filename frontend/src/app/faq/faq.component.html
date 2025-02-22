@@ -1,4 +1,4 @@
-<section class="hero is-halfheight mt-6 pt-2 pr-6 pl-6 pb-6" style="min-height: 70vh;" id="faq-background">
+<section class="hero is-halfheight mt-6 pt-2 pr-6 pl-6 pb-6" style="min-height: 70vh;" id="faqbg">
     <div class="container is-fluid ">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold pt-6"
@@ -22,7 +22,7 @@
         <h4 class="is-size-5  mb-2">  <fa-icon [icon]="faStopwatch" class="mr-1"></fa-icon> {{ 'faq.totp.title' | translate }}</h4>
         <div class="is-flex is-flex-direction-column is-align-items-center	">
         <div class="box" style="width: 100%;">
-            <div class="is-flex is-justify-content-space-between	">
+            <div class="is-flex is-justify-content-space-between" style="cursor: pointer" (click)="toggle($event)" #q1_1>
             <p class="has-text-weight-bold is-size-6">
                 {{ 'faq.totp.q1' | translate }}
             </p>

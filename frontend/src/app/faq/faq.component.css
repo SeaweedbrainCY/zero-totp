@@ -1,0 +1,11 @@
+[data-theme=dark] {
+    #faqbg {
+        background-color: hsl(0, 0%, 7%);
+    }
+}
+
+[data-theme=light] {
+    #faqbg {
+        background-color: hsl(0, 0%, 96%);
+    }
+}

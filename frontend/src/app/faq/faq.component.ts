@@ -16,12 +16,19 @@ export class FaqComponent {
   faMagnifyingGlass = faMagnifyingGlass;
   faStopwatch=faStopwatch;
   theme: string | null = "light";
+  toggled_q_id : [string] = [""];
 
   constructor(
     private translate: TranslateService, 
     private toastr: ToastrService) {
     this.theme = window.document.documentElement.getAttribute('data-theme');
     console.log(this.theme);
+  }
+
+
+  toggle(event: Event){
+
+
   }
 
 }
