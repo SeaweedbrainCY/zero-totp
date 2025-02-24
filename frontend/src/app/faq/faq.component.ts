@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import {faChevronUp, faChevronDown, faMagnifyingGlass, faStopwatch} from '@fortawesome/free-solid-svg-icons';
+import {faChevronUp, faChevronDown, faMagnifyingGlass, faStopwatch, faShieldHalved} from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -14,9 +14,10 @@ export class FaqComponent {
   faChevronUp = faChevronUp;
   faChevronDown = faChevronDown;
   faMagnifyingGlass = faMagnifyingGlass;
+  faShieldHalved = faShieldHalved;
   faStopwatch=faStopwatch;
   theme: string | null = "light";
-  toggled_q_id : [string] = [""];
+  toggled_q_id : string[] = [];
 
   constructor(
     private translate: TranslateService, 
@@ -26,9 +27,13 @@ export class FaqComponent {
   }
 
 
-  toggle(event: Event){
-
-
+  toggle(id:string){
+    if(this.toggled_q_id.includes(id)){
+      this.toggled_q_id = this.toggled_q_id.filter((value) => value !== id);
+    }else{
+      this.toggled_q_id.push(id);
+    }
+    console.log(this.toggled_q_id);
   }
 
 }

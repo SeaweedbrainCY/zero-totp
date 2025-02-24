@@ -205,11 +205,43 @@
   "faq": {
     "title": "Foire aux questions",
     "totp": {
+      "a1_p1": "Un TOTP (Time-based One-Time Password) est un mot de passe à usage unique, temporaire, utilisé pour l'authentification à deux facteurs (2FA).",
+      "a1_p2": "Un TOTP protège un compte en ajoutant une seconde couche de sécurité en plus du mot de passe. Même si un attaquant obtient le mot de passe, il ne pourra pas se connecter sans le code temporaire, qui change toutes les 30 secondes et ne peut être utilisé qu'une seule fois.",
+      "a2_p1": "Un authentificateur TOTP comme Zero-TOTP sert à renforcer la sécurité de vos comptes en ligne en générant des codes temporaires à usage unique. Lorsqu'un site ou une application demande un code 2FA, Zero-TOTP vous permet de le générer. ",
+      "a2_p2": "Contrairement aux SMS ou aux emails, cette méthode est plus sécurisée, car elle ne peut pas être interceptée. Avec Zero-TOTP, vos clés secrètes restent chiffrées de bout en bout grâce au Zero Knowledge Encryption, ce qui signifie que personne d’autre que vous ne peut y accéder, même pas l’application elle-même.",
+      "a3_p1": "Protéger vos comptes avec la double authentification TOTP est simple et ajoute une couche de sécurité essentielle. Voici les étapes à suivre :",
+      "a3_p10": "Utiliser le code TOTP pour sécuriser votre compte",
+      "a3_p11": "Une fois configuré, Zero-TOTP génère un code temporaire toutes les 30 secondes.",
+      "a3_p12": "Entre ce code sur le site/application que tu veux protéger pour valider l’activation du 2FA.",
+      "a3_p13": "Ton compte est maintenant protégé !",
+      "a3_p14": "Sauvegarder tes codes de récupération",
+      "a3_p15": "La plupart des services fournissent des codes de secours en cas de perte d’accès à ton application d’authentification.",
+      "a3_p16": "Note-les et conserve-les dans un endroit sécurisé, comme un gestionnaire de mots de passe.",
+      "a3_p17": "À chaque connexion, utilise Zero-TOTP",
+      "a3_p18": "Lorsque tu te connectes, après avoir entré ton mot de passe, le site te demandera un code TOTP.",
+      "a3_p19": "Ouvre Zero-TOTP, copie le code affiché et colle-le dans le champ de validation.",
+      "a3_p2": "Activer la double authentification sur votre compte",
+      "a3_p20": "Tu es connecté en toute sécurité !",
+      "a3_p21": "Avec Zero-TOTP tous tes secrets sont protégés par ta passphrase maître. Personne ne peut déchiffrer tes codes TOTP, à part toi.",
+      "a3_p3": "Connecte-toi au site ou à l'application que vous voulez sécuriser.",
+      "a3_p4": "Rends-toi dans les paramètres de sécurité et recherchez l’option Authentification à deux facteurs (2FA) ou TOTP.",
+      "a3_p5": "Choisis l’option Application d’authentification plutôt que SMS ou email.",
+      "a3_p7": "Ouvre ton coffre Zero-TOTP",
+      "a3_p8": "Clique sur ajouter un TOTP et scanne le QRCode",
+      "a3_p9": "Si le site ne propose qu’une clé secrète sous forme de texte, copie-la et colle-la manuellement dans Zero-TOTP.",
       "q1": "Qu'est-ce qu'un TOTP ?",
+      "q2": "A quoi servent les authenticateur TOTP comme Zero-TOTP ? ",
+      "q3": "Comment protéger mes comptes avec la double authentification TOTP ?",
       "title": "À propos des TOTP"
     },
     "vault": {
       "title": "À propos de ton coffre Zero-TOTP"
+    },
+    "zero-totp": {
+      "q1": "Comment Zero-TOTP est-il sécurisé ?",
+      "q2": "Que se passe-t-il si Zero-TOTP est down, bug ou devient injoingable ? ",
+      "q3": "Que se passe-t-il si Zero-TOTP est compromis ? ",
+      "title": "À propos de Zero-TOTP"
     }
   },
   "footer": {

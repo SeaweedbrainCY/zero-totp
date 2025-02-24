@@ -1,43 +1,225 @@
 <section class="hero is-halfheight mt-6 pt-2 pr-6 pl-6 pb-6" style="min-height: 70vh;" id="faqbg">
     <div class="container is-fluid ">
         <div>
-            <h1 class="is-size-1 has-text-centered has-text-weight-bold pt-6"
-                style="line-height: normal;">{{ 'faq.title' | translate }}
+            <h1 class="is-size-1 has-text-centered has-text-weight-bold pt-6" style="line-height: normal;">{{
+                'faq.title' | translate }}
             </h1>
             <br>
             <div class="is-flex is-justify-content-center">
-            <div class="field" style="width: 40vw;">
-                <p class="control has-icons-left">
-                  <input class="input is-rounded" type="text" placeholder="{{ 'Search' | translate }}" />
-                  <span class="icon is-small is-left">
-                    <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
-                  </span>
-                </p>
-              </div>
+                <div class="field" style="width: 40vw;">
+                    <p class="control has-icons-left">
+                        <input class="input is-rounded" type="text" placeholder="{{ 'Search' | translate }}" />
+                        <span class="icon is-small is-left">
+                            <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+                        </span>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 
     <article>
-        <h4 class="is-size-5  mb-2">  <fa-icon [icon]="faStopwatch" class="mr-1"></fa-icon> {{ 'faq.totp.title' | translate }}</h4>
+        <h4 class="is-size-5  mb-2"> <fa-icon [icon]="faStopwatch" class="mr-1"></fa-icon> {{ 'faq.totp.title' |
+            translate }}</h4>
         <div class="is-flex is-flex-direction-column is-align-items-center	">
-        <div class="box" style="width: 100%;">
-            <div class="is-flex is-justify-content-space-between" style="cursor: pointer" (click)="toggle($event)" #q1_1>
-            <p class="has-text-weight-bold is-size-6">
-                {{ 'faq.totp.q1' | translate }}
-            </p>
-            <div>
-                <fa-icon [icon]="faChevronDown"></fa-icon>
+
+            <div class="box mb-1" style="width: 100%; cursor: pointer" (click)="toggle('q1_1')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.totp.q1' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q1_1')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q1_1')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q1_1')" class="p-3">
+                    {{ 'faq.totp.a1_p1' | translate }}
+                    <br />
+                    {{ 'faq.totp.a1_p2' | translate }}
+                </p>
             </div>
+
+            <div class="box mt-2 mb-1" style="width: 100%; cursor: pointer" (click)="toggle('q1_2')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.totp.q2' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q1_2')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q1_2')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q1_2')" class="p-3">
+                    {{ 'faq.totp.a2_p1' | translate }}
+                    <br /><br>
+                    {{ 'faq.totp.a2_p2' | translate }}
+                </p>
+            </div>
+
+            <div class="box mt-2 mb-1" style="width: 100%; cursor: pointer" (click)="toggle('q1_3')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.totp.q3' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q1_3')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q1_3')"></fa-icon>
+                    </div>
+
+                </div>
+                <div *ngIf="this.toggled_q_id.includes('q1_3')" class="p-3 content">
+                <p  >
+                    {{ 'faq.totp.a3_p1' | translate }}</p>
+                    <br />
+                    
+                    <p class="has-text-weight-bold">📌 1. {{ 'faq.totp.a3_p2' | translate }}</p>
+                    <ul>
+                        <li>
+                            {{ 'faq.totp.a3_p3' | translate }}
+                        </li>
+                        <li>
+                            {{ 'faq.totp.a3_p4' | translate }}
+                        </li>
+                        <li>
+                            {{ 'faq.totp.a3_p5' | translate }}
+                        </li>
+
+                    </ul>
+
+                    <br/>
+                    <p class="has-text-weight-bold">🔑 2. {{ 'faq.totp.a3_p6' | translate }}</p>
+                    <ul>
+                        <li>
+                            {{ 'faq.totp.a3_p7' | translate }}
+                        </li>
+                        <li>
+                            {{ 'faq.totp.a3_p8' | translate }}
+                        </li>
+                        <li>
+                            {{ 'faq.totp.a3_p9' | translate }}
+                        </li>
+
+                    </ul>
+
+                    <br/>
+                    <p class="has-text-weight-bold">⏳ 3. {{ 'faq.totp.a3_p10' | translate }}</p>
+                    <ul>
+                        <li>
+                            {{ 'faq.totp.a3_p11' | translate }}
+                        </li>
+                        <li>
+                            {{ 'faq.totp.a3_p12' | translate }}
+                        </li>
+                        <li>
+                            {{ 'faq.totp.a3_p13' | translate }}
+                        </li>
+
+                    </ul>
+
+                    <br/>
+                    <p class="has-text-weight-bold">✅ 4. {{ 'faq.totp.a3_p14' | translate }}</p>
+                    <ul>
+                        <li>
+                            {{ 'faq.totp.a3_p15' | translate }}
+                        </li>
+                        <li>
+                            {{ 'faq.totp.a3_p16' | translate }}
+                        </li>
+
+                    </ul>
+
+                    <br/>
+                    <p class="has-text-weight-bold">🛡️ 5. {{ 'faq.totp.a3_p17' | translate }}</p>
+                    <ul>
+                        <li>
+                            {{ 'faq.totp.a3_p18' | translate }}
+                        </li>
+                        <li>
+                            {{ 'faq.totp.a3_p19' | translate }}
+                        </li>
+                        <li>
+                            {{ 'faq.totp.a3_p20' | translate }}
+                        </li>
+
+                    </ul>
+                    <p> {{ 'faq.totp.a3_p21' | translate }}</p>
+
+                </div>
+            </div>
+
+
         </div>
-        </div>
-    </div>
 
     </article>
     <article>
-        <h4 class="is-size-5  has-text-weight-bold ">{{ 'faq.vault.title' | translate }}</h4>
+        <h4 class="is-size-5  has-text-weight-bold mt-4"><fa-icon [icon]="faShieldHalved" class="mr-1"></fa-icon>{{ 'faq.zero-totp.title' | translate }}</h4>
+        <div class="is-flex is-flex-direction-column is-align-items-center	">
+
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q2_1')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.zero-totp.q1' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q2_1')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q2_1')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q2_1')" class="p-3">
+                    {{ 'faq.zero-totp.a1_p1' | translate }}
+                    <br />
+                    {{ 'faq.zero-totp.a1_p2' | translate }}
+                </p>
+            </div>
+
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q2_2')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.zero-totp.q2' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q2_2')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q2_2')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q2_2')" class="p-3">
+                    {{ 'faq.zero-totp.a2_p1' | translate }}
+                    <br />
+                    {{ 'faq.zero-totp.a2_p2' | translate }}
+                </p>
+            </div>
+
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q2_3')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.zero-totp.q3' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q2_3')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q2_3')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q2_3')" class="p-3">
+                    {{ 'faq.zero-totp.a3_p1' | translate }}
+                    <br />
+                    {{ 'faq.zero-totp.a3_p2' | translate }}
+                </p>
+            </div>
+
+
+        </div>
+
+    </article>
+    <article>
+        <h4 class="is-size-5  has-text-weight-bold mt-4">{{ 'faq.vault.title' | translate }}</h4>
 
     </article>
 
-   
-</section>  
+
+</section>

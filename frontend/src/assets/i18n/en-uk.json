@@ -206,11 +206,44 @@
   "faq": {
     "title": "Frequently asked questions",
     "totp": {
+      "a1_p1": "A TOTP (Time-based One-Time Password) is a one-time temporary password used for two-factor authentication (2FA).",
+      "a1_p2": "A TOTP protects an account by adding a second layer of security on top of the password. Even if an attacker gets the password, they won’t be able to log in without the temporary code, which changes every 30 seconds and can only be used once.",
+      "a2_p1": "A TOTP authenticator like Zero-TOTP enhances the security of your online accounts by generating one-time temporary codes. When a website or app requests a 2FA code, Zero-TOTP allows you to generate it.",
+      "a2_p2": "Unlike SMS or email codes, this method is more secure as it cannot be intercepted. With Zero-TOTP, your secret keys remain end-to-end encrypted using Zero Knowledge Encryption, meaning no one but you can access them—not even the app itself.",
+      "a3_p1": "Protecting your accounts with TOTP-based two-factor authentication (2FA) is simple and provides an essential layer of security. Follow these steps:",
+      "a3_p10": "Use the TOTP Code to Secure Your Account",
+      "a3_p11": "Once configured, Zero-TOTP generates a temporary code every 30 seconds.",
+      "a3_p12": "Enter this code on the website to confirm the activation of 2FA.",
+      "a3_p13": "Your account is now protected!",
+      "a3_p14": "Save Your Backup Codes",
+      "a3_p15": "Most services provide recovery codes in case you lose access to your authentication app.",
+      "a3_p16": "Write them down and store them in a secure place, such as a password manager.",
+      "a3_p17": "Use Zero-TOTP for Every Login",
+      "a3_p18": "When logging in, after entering your password, the site will ask for a TOTP code.",
+      "a3_p19": "Open Zero-TOTP, copy the displayed code, and paste it into the verification field.",
+      "a3_p2": "Enable Two-Factor Authentication on Your Account",
+      "a3_p20": "You’re securely logged in!",
+      "a3_p21": "With Zero-TOTP all your secrets are protected by your master passphrase. Nobody except you can decrypt your TOTP codes.",
+      "a3_p3": "Log in to the website or app you want to secure.",
+      "a3_p4": "Go to the security settings and look for Two-Factor Authentication (2FA) or TOTP.",
+      "a3_p5": "Choose Authenticator App instead of SMS or email.",
+      "a3_p6": "Scan the QR Code with Zero-TOTP",
+      "a3_p7": "Open your Zero-TOTP vault",
+      "a3_p8": "Click on add a new TOTP and scan the QR code displayed on the site.",
+      "a3_p9": "If the site only provides a secret key in text form, copy and paste it manually into Zero-TOTP.",
       "q1": "What is a TOTP ?",
+      "q2": "What are TOTP authenticator like Zero-TOTP used for ?",
+      "q3": "How to protect my accounts with TOTP as 2FA ?",
       "title": "About TOTP"
     },
     "vault": {
       "title": "About your Zero-TOTP vault"
+    },
+    "zero-totp": {
+      "q1": "What makes Zero-TOTP secure ?",
+      "q2": "What if Zero-TOTP goes down, bugs or is unreachable ?",
+      "q3": "What if Zero-TOTP get breached ? ",
+      "title": "About Zero-TOTP"
     }
   },
   "footer": {
