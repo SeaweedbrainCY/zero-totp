@@ -240,6 +240,13 @@
       "title": "About your Zero-TOTP vault"
     },
     "zero-totp": {
+      "a1_p1": "Zero-TOTP ensures maximum security through several key mechanisms : ",
+      "a1_p2": "Your vault is protected by Zero-Knowledge Encryption, meaning they remain fully private and inaccessible to anyone, including the app itself. Only your passphrase can decrypt it and nothing else.",
+      "a1_p3": "As an open-source project, its code is transparent and can be audited by the community, eliminating any risk of backdoors.",
+      "a1_p4": "Your backups remain under your control and can be automatically saved to Google Drive or locally in your computer. Never fear to lose your data again.",
+      "a1_p5": "Zero-TOTP is hosted on secure servers in Canada, Switzerland, and Germany, ensuring the highest level of data protection. If Zero-TOTP fails or is unreachable, you can still access your vault through the Rescue Zero-TOTP platform : rescue.zero-totp.com.",
+      "a2_p1": "If zero-totp goes down, you can always open a backup of your vault on rescue.zero-totp.com. It is a minimal version of zero-totp, always online, that only allows you to access your vault. Just retrieve a backup file saved on your device or in Google Drive and upload it to rescue.zero-totp.com. With Zero-TOTP you are always in control of your data and its availability.",
+      "a3_p1": "This is the worst case scenario, but we need to take into account all possibilities. No information system can be 100% secure. If Zero-TOTP gets breach you'll be immediately notified. Zero-TOTP is specifically design to protect your data even if the whole system or database are compromised. All your secrets are encrypted on YOUR device, by YOUR passphrase. So even if the attacker gets access to the database, he will not be able to decrypt your secrets without your passphrase. That is the whole purpose of Zero-Knowledge Encryption, which is the foundation of Zero-TOTP. To access your data, an malicious actor would have no choice but to brute force your passphrase which is impossible if you have a strong passphrase. Zero-TOTP is designed to protect your data even in the worst case scenario.",
       "q1": "What makes Zero-TOTP secure ?",
       "q2": "What if Zero-TOTP goes down, bugs or is unreachable ?",
       "q3": "What if Zero-TOTP get breached ? ",

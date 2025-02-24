@@ -159,7 +159,7 @@
         <div class="is-flex is-flex-direction-column is-align-items-center	">
 
             <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q2_1')">
-                <div class="is-flex is-justify-content-space-between">
+                <div class="is-flex is-justify-content-space-between ">
                     <p class="has-text-weight-bold is-size-6">
                         {{ 'faq.zero-totp.q1' | translate }}
                     </p>
@@ -169,11 +169,24 @@
                     </div>
 
                 </div>
-                <p *ngIf="this.toggled_q_id.includes('q2_1')" class="p-3">
-                    {{ 'faq.zero-totp.a1_p1' | translate }}
-                    <br />
-                    {{ 'faq.zero-totp.a1_p2' | translate }}
-                </p>
+                <div *ngIf="this.toggled_q_id.includes('q2_1')" class="p-3 content">
+                <p >
+                    {{ 'faq.zero-totp.a1_p1' | translate }} </p>
+                    <ul>
+                        <li>
+                            🔒 {{ 'faq.zero-totp.a1_p2' | translate }}
+                        </li>
+                        <li>
+                            🛠️ {{ 'faq.zero-totp.a1_p3' | translate }}
+                        </li>
+                        <li>
+                            📂 {{ 'faq.zero-totp.a1_p4' | translate }}
+                        </li>
+                        <li>
+                            📱 {{ 'faq.zero-totp.a1_p5' | translate }}
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q2_2')">
@@ -189,8 +202,6 @@
                 </div>
                 <p *ngIf="this.toggled_q_id.includes('q2_2')" class="p-3">
                     {{ 'faq.zero-totp.a2_p1' | translate }}
-                    <br />
-                    {{ 'faq.zero-totp.a2_p2' | translate }}
                 </p>
             </div>
 
@@ -204,11 +215,11 @@
                         <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q2_3')"></fa-icon>
                     </div>
 
+                    
+
                 </div>
                 <p *ngIf="this.toggled_q_id.includes('q2_3')" class="p-3">
                     {{ 'faq.zero-totp.a3_p1' | translate }}
-                    <br />
-                    {{ 'faq.zero-totp.a3_p2' | translate }}
                 </p>
             </div>
 
