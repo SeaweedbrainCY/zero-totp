@@ -44,17 +44,14 @@
         </a>
       </div>
       <div class="navbar-start"  *ngIf="userService.getId()==null && !this.userService.getIsVaultLocal()">
-        <a class="navbar-item" (click)="changeLocation('#totp')" >
-         {{ 'navbar.how' | translate }}
+        <a class="navbar-item" (click)="navigateToRoute('')" [ngClass]="{'has-text-weight-bold':currentUrl == '/'}">
+          <fa-icon [icon]="faHome"></fa-icon> {{ 'Home' | translate }}
         </a>
-        <a class="navbar-item" (click)="changeLocation('#why-zero-totp')" >
-          {{ 'navbar.why' | translate }}
+        <a class="navbar-item" (click)="navigateToRoute('login')">
+          <fa-icon [icon]="faVault"></fa-icon> {{ 'my_vault' | translate }}
         </a>
-        <a class="navbar-item" (click)="changeLocation('#never-lose-data')">
-          {{ 'navbar.lose' | translate }}
-        </a>
-        <a class="navbar-item" (click)="changeLocation('#backup-plan')">
-          {{ 'navbar.backup' | translate }}
+        <a class="navbar-item" (click)="navigateToRoute('faq')" [ngClass]="{'has-text-weight-bold':currentUrl == '/faq'}">
+          <fa-icon [icon]="faCircleQuestion"></fa-icon> FAQ
         </a>
       </div>
       <div class="navbar-start"  *ngIf="this.userService.getIsVaultLocal()">

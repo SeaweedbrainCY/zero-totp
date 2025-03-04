@@ -283,6 +283,7 @@
   },
   "give_up": "Quit",
   "green": "Green",
+  "Home":"Home",
   "home": {
     "about": {
       "title": "About Zero-Knowledge Encryption",
@@ -610,7 +611,7 @@
       }
     },
     "warning": {
-      "beta": " Zero-TOTP is still in beta. This value will be customizable in the future."
+      "beta": " Zero-TOTP is still under development. This value will be customizable in the future."
     }
   },
   "privacy": {
@@ -782,8 +783,8 @@
   "signup": {
     "beta": {
       "warning": {
-        "desc": "Thanks for joining us ! We are a small team and we are working hard to make Zero-TOTP the best TOTP client. We are still in beta, so some features are not implemented yet, bugs may occur and we need your help to make Zero-TOTP better. Please, report any issue you find. Thank you for your understanding and your help !",
-        "title": "Welcome to the beta version of Zero-TOTP 👋"
+        "desc": "Thanks for joining us !",
+        "title": "Welcome to Zero-TOTP 👋"
       }
     },
     "button": {
@@ -836,7 +837,7 @@
         "forbidden": "' \" < > characters are forbidden in usernames"
       }
     },
-    "welcome": "Welcome aboard of Zero-TOTP beta"
+    "welcome": "Welcome aboard of Zero-TOTP"
   },
   "start": "Start",
   "stop": "Stop",
