@@ -15,6 +15,16 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "04/03/2025",
+      version: "1.0.1",
+      added: [
+        "You can now customize how Zero-TOTP retains your google drive backups. Go into your preferences and update the max age of your backups and the minimum number of backup you want to always keep.",
+        "We are very proud to announce that Zero-TOTP is now out of beta and is now a stable version. Zero-TOTP now has all the necessary features to be a nice, reliable and secure Zero-TOTP client, available on all devices via webapp or PWA. Many new features will come in the future, but the core of Zero-TOTP is now stable and ready for production.",
+      ],
+      fixed:[
+      ]
+    },
+    {
       date: "14/02/2025",
       version: "b7.0.0",
       added: [
