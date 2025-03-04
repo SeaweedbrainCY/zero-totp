@@ -5,6 +5,7 @@
     "not_found": "Page non trouvée",
     "oops": "Oups !"
   },
+  "Search": "Rechercher",
   "abort": "Abandonné",
   "about": "À propos",
   "account": {
@@ -201,6 +202,69 @@
     }
   },
   "encrypted": "chiffré",
+  "faq": {
+    "title": "Foire aux questions",
+    "totp": {
+      "a1_p1": "Un TOTP (Time-based One-Time Password) est un mot de passe à usage unique, temporaire, utilisé pour l'authentification à deux facteurs (2FA).",
+      "a1_p2": "Un TOTP protège un compte en ajoutant une seconde couche de sécurité en plus du mot de passe. Même si un attaquant obtient le mot de passe, il ne pourra pas se connecter sans le code temporaire, qui change toutes les 30 secondes et ne peut être utilisé qu'une seule fois.",
+      "a2_p1": "Un authentificateur TOTP comme Zero-TOTP sert à renforcer la sécurité de vos comptes en ligne en générant des codes temporaires à usage unique. Lorsqu'un site ou une application demande un code 2FA, Zero-TOTP vous permet de le générer. ",
+      "a2_p2": "Contrairement aux SMS ou aux emails, cette méthode est plus sécurisée, car elle ne peut pas être interceptée. Avec Zero-TOTP, vos clés secrètes restent chiffrées de bout en bout grâce au Zero Knowledge Encryption, ce qui signifie que personne d’autre que vous ne peut y accéder, même pas l’application elle-même.",
+      "a3_p1": "Protéger vos comptes avec la double authentification TOTP est simple et ajoute une couche de sécurité essentielle. Voici les étapes à suivre :",
+      "a3_p10": "Utiliser le code TOTP pour sécuriser votre compte",
+      "a3_p11": "Une fois configuré, Zero-TOTP génère un code temporaire toutes les 30 secondes.",
+      "a3_p12": "Entre ce code sur le site/application que tu veux protéger pour valider l’activation du 2FA.",
+      "a3_p13": "Ton compte est maintenant protégé !",
+      "a3_p14": "Sauvegarder tes codes de récupération",
+      "a3_p15": "La plupart des services fournissent des codes de secours en cas de perte d’accès à ton application d’authentification.",
+      "a3_p16": "Note-les et conserve-les dans un endroit sécurisé, comme un gestionnaire de mots de passe.",
+      "a3_p17": "À chaque connexion, utilise Zero-TOTP",
+      "a3_p18": "Lorsque tu te connectes, après avoir entré ton mot de passe, le site te demandera un code TOTP.",
+      "a3_p19": "Ouvre Zero-TOTP, copie le code affiché et colle-le dans le champ de validation.",
+      "a3_p2": "Activer la double authentification sur votre compte",
+      "a3_p20": "Tu es connecté en toute sécurité !",
+      "a3_p21": "Avec Zero-TOTP tous tes secrets sont protégés par ta passphrase maître. Personne ne peut déchiffrer tes codes TOTP, à part toi.",
+      "a3_p3": "Connecte-toi au site ou à l'application que vous voulez sécuriser.",
+      "a3_p4": "Rends-toi dans les paramètres de sécurité et recherchez l’option Authentification à deux facteurs (2FA) ou TOTP.",
+      "a3_p5": "Choisis l’option Application d’authentification plutôt que SMS ou email.",
+      "a3_p7": "Ouvre ton coffre Zero-TOTP",
+      "a3_p8": "Clique sur ajouter un TOTP et scanne le QRCode",
+      "a3_p9": "Si le site ne propose qu’une clé secrète sous forme de texte, copie-la et colle-la manuellement dans Zero-TOTP.",
+      "q1": "Qu'est-ce qu'un TOTP ?",
+      "q2": "A quoi servent les authenticateur TOTP comme Zero-TOTP ? ",
+      "q3": "Comment protéger mes comptes avec la double authentification TOTP ?",
+      "title": "Les codes TOTP"
+    },
+    "vault": {
+      "a1": "Tu peux accéder à tous tes codes en te connectant sur zero-totp.com. Ta passphrase maîtresse sera utilisée pour t'authentifier, puis pour déchiffrer ton coffre. Tu peux aussi ouvrir un fichier de sauvegarde sur zero-totp.com ou rescue.zero-totp.com. Ce sera une version en lecture seule, mais tu pourras afficher tes codes TOTP.",
+      "a2": "Connecte toi a Zero-TOTP, puis dans tes options de stockages sélectionne \"Backup locale\" et ensuite \"Télécharger une backup\". Cela te permettra de télécharger une backup chiffrée de ton coffre. Seule ta passphrase peut la déchiffrer. Tu peux uploader ce fichier sur Zero-TOTP ou rescue.zero-totp.com pour la déchiffrer ou la restaurer.",
+      "a3_1": "Pour assurer une couche de sécurité supplémentaire, Zero-TOTP te permet de controller toi même la gestion des backups de ton coffre. Tu gardes ainsi 100% le contrôle sur la sécurité de tes données et tu pourras télécharger les fichiers de backup pour les upload sur rescue.zero-totp.com si un problème touche Zero-TOTP. ",
+      "a3_2": "Pour activer les backups automatiques sur Google Drive, connecte toi sur Zero-TOTP, puis dans tes options de stockage sélectionne Google Drive. Tu seras ensuite invité à donner le droit à Zero-TOTP de créer des fichiers sur ton drive. ",
+      "a3_3": "Zero-TOTP ne pourra PAS voir tes fichiers Google Drive. Les droits que te demande Zero-TOTP permettra uniquement à l'application de créer et gérer ses propres fichiers. ",
+      "a3_4": "Une fois la connexion effectuée, à chaque modification sur ton coffre Zero-TOTP une backup sera faite sur ton drive. Tu peux gérer la politique de rétention de tes backups dans tes préférences Zero-TOTP.",
+      "a4_1": "Tous la cryptographie mise en oeuvre est publiée et décrite dans la ",
+      "a4_2": "documentation de Zero-TOTP",
+      "a4_3": "et plus généralement la totalité du code source ainsi que toute la cryptographie utilisée est disponible sur le ",
+      "a4_4": "dépôt GitHub de Zero-TOTP",
+      "q1": "Comment accéder à mon coffre et mes codes temporaires ? ",
+      "q2": "Comment télécharger une backup chiffrée de mon coffre sur ma machine ? ",
+      "q3": "Comment fonctionne les backups automatiques sur Google Drive ? ",
+      "q4": "Comment le chiffrement à connaissance nulle est géré par Zero-TOTP ? ",
+      "title": "Ton coffre Zero-TOTP"
+    },
+    "zero-totp": {
+      "a1_p1": "Zero-TOTP garantit une sécurité maximale grâce à plusieurs mécanismes clés :",
+      "a1_p2": "Votre coffre-fort est protégé par le chiffrement Zero-Knowledge, ce qui signifie qu'il reste entièrement privé et inaccessible à quiconque, y compris l'application elle-même. Seule votre phrase de passe peut le déchiffrer, et rien d'autre.",
+      "a1_p3": "En tant que projet open source, son code est transparent et peut être audité par la communauté, éliminant ainsi tout risque de portes dérobées.",
+      "a1_p4": "Vos sauvegardes restent sous votre contrôle et peuvent être enregistrées automatiquement sur Google Drive ou localement sur votre ordinateur. Ne craignez plus jamais de perdre vos données.",
+      "a1_p5": "Zero-TOTP est hébergé sur des serveurs sécurisés au Canada, en Suisse et en Allemagne, garantissant le plus haut niveau de protection des données. Si Zero-TOTP tombe en panne ou devient injoignable, vous pouvez toujours accéder à votre coffre-fort via la plateforme de secours Zero-TOTP : rescue.zero-totp.com.",
+      "a2_p1": "Si Zero-TOTP tombe en panne, vous pouvez toujours ouvrir une sauvegarde de votre coffre-fort sur rescue.zero-totp.com. Il s'agit d'une version minimale de Zero-TOTP, toujours en ligne, qui vous permet uniquement d'accéder à votre coffre-fort. Il vous suffit de récupérer un fichier de sauvegarde enregistré sur votre appareil ou dans Google Drive et de le téléverser sur rescue.zero-totp.com. Avec Zero-TOTP, vous gardez toujours le contrôle de vos données et de leur disponibilité.",
+      "a3_p1": "Ceci est le pire des scénarios, mais nous devons envisager toutes les possibilités. Aucun système d'information ne peut être sécurisé à 100 %. Si Zero-TOTP venait à être compromis, vous en seriez immédiatement averti.  Zero-TOTP est spécifiquement conçu pour protéger vos données, même en cas de compromission totale du système ou de la base de données. Tous vos secrets sont chiffrés sur VOTRE appareil, par VOTRE phrase de passe. Ainsi, même si un attaquant accède à la base de données, il ne pourra pas déchiffrer vos secrets sans votre phrase de passe.  C'est tout l'objectif du chiffrement Zero-Knowledge, qui constitue le fondement de Zero-TOTP. Pour accéder à vos données, un acteur malveillant n'aurait d'autre choix que de forcer votre phrase de passe par une attaque brute, ce qui est impossible si vous utilisez une phrase de passe robuste.  Zero-TOTP est conçu pour protéger vos données, même dans le pire des scénarios.",
+      "q1": "Comment Zero-TOTP est-il sécurisé ?",
+      "q2": "Que se passe-t-il si Zero-TOTP est down, bug ou devient injoingable ? ",
+      "q3": "Que se passe-t-il si Zero-TOTP est compromis ? ",
+      "title": "Le projet Zero-TOTP"
+    }
+  },
   "footer": {
     "bug": "Signaler un bug",
     "opensource": "Composants open-source"
@@ -217,6 +281,7 @@
   },
   "give_up": "Abandonner",
   "green": "Vert",
+  "Home": "Accueil",
   "home": {
     "about": {
       "title": "À propos de la Zero-Knowledge Encryption",
@@ -544,7 +609,7 @@
       }
     },
     "warning": {
-      "beta": "Zero-TOTP est toujours en beta. Cette valeur sera customisable dans le futur."
+      "beta": "Zero-TOTP est toujours en développement. Cette valeur sera customisable dans le futur."
     }
   },
   "privacy": {
@@ -717,7 +782,7 @@
     "beta": {
       "warning": {
         "desc": "Merci de nous avoir rejoint ! Nous sommes une petite équipe et nous travaillons dur pour faire de Zero-TOTP le meilleur client TOTP. Nous sommes encore en version bêta, donc certaines fonctionnalités ne sont pas encore implémentées, des bugs peuvent survenir et nous avons besoin de votre aide pour améliorer Zero-TOTP. Veuillez signaler tout problème que vous rencontrez. Merci pour votre compréhension et votre aide !",
-        "title": "Bienvenue sur la version beta de Zero-TOTP 👋"
+        "title": "Bienvenue sur Zero-TOTP 👋"
       }
     },
     "button": {
@@ -770,7 +835,7 @@
         "forbidden": "Les caractères ' \" < > sont interdits dans des noms d'utilisateur"
       }
     },
-    "welcome": "Bienvenue à bord de Zero-TOTP beta "
+    "welcome": "Bienvenue à bord de Zero-TOTP "
   },
   "start": "Commencer",
   "stop": "Arrêter",

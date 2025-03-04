@@ -1,4 +1,4 @@
-<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingPreferences || loading_backup_configuration">
+<section class="hero is-halfheight mt-6 " style="min-height: 70vh;" *ngIf="loadingPreferences || loading_backup_configuration">
     <article class="hero-body is-flex is-justify-content-center">
         <div>
             <p class="is-light has-text-centered">{{ 'preference.loading' | translate }}<br>
@@ -18,7 +18,7 @@
     </article>
 </section>
 
-<section class="hero is-halfheight mt-6 " style="min-height: 70vh;"
+<section class="hero is-halfheight mt-6 pb-6 " style="min-height: 70vh;"
     *ngIf="!loadingPreferences && !loading_backup_configuration && !loadingPreferencesError">
     <div class="container is-fluid ">
         <div>

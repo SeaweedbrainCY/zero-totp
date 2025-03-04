@@ -1,4 +1,4 @@
-<section class="hero is-halfheight mt-6" style="min-height: 70vh;" *ngIf="loadingAccount">
+<section class="hero is-halfheight mt-6 " style="min-height: 70vh;" *ngIf="loadingAccount">
     <article class="hero-body is-flex is-justify-content-center">
         <div>
             <p class="is-light has-text-centered">{{ 'account.loading' | translate }}<br>
@@ -19,7 +19,7 @@
 </section>
 
 
-<section class="hero is-halfheight mt-6 " style="min-height: 70vh;" *ngIf="!accountLoadingError && !loadingAccount">
+<section class="hero is-halfheight mt-6 pb-6 " style="min-height: 70vh;" *ngIf="!accountLoadingError && !loadingAccount">
     <div class="container is-fluid ">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6"
