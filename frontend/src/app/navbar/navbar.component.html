@@ -42,6 +42,9 @@
         <a class="navbar-item" (click)="navigateToRoute('account')" [ngClass]="{'has-text-weight-bold':currentUrl == '/account'}">
           <fa-icon [icon]="faUser" class="mr-2"></fa-icon>  {{ 'navbar.account' | translate }}
         </a>
+        <a class="navbar-item" (click)="navigateToRoute('faq')" [ngClass]="{'has-text-weight-bold':currentUrl == '/faq'}">
+          <fa-icon [icon]="faCircleQuestion"></fa-icon> FAQ
+        </a>
       </div>
       <div class="navbar-start"  *ngIf="userService.getId()==null && !this.userService.getIsVaultLocal()">
         <a class="navbar-item" (click)="navigateToRoute('')" [ngClass]="{'has-text-weight-bold':currentUrl == '/'}">
