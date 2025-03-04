@@ -155,7 +155,7 @@
 
     </article>
     <article>
-        <h4 class="is-size-5  has-text-weight-bold mt-4"><fa-icon [icon]="faShieldHalved" class="mr-1"></fa-icon>{{ 'faq.zero-totp.title' | translate }}</h4>
+        <h4 class="is-size-5 mt-6"><fa-icon [icon]="faShieldHalved" class="mr-1"></fa-icon>{{ 'faq.zero-totp.title' | translate }}</h4>
         <div class="is-flex is-flex-direction-column is-align-items-center	">
 
             <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q2_1')">
@@ -228,7 +228,88 @@
 
     </article>
     <article>
-        <h4 class="is-size-5  has-text-weight-bold mt-4">{{ 'faq.vault.title' | translate }}</h4>
+        <h4 class="is-size-5  mt-6"><fa-icon [icon]="faVault" class="mr-1"></fa-icon> {{ 'faq.vault.title' | translate }}</h4>
+        <div class="is-flex is-flex-direction-column is-align-items-center	">
+
+
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q3_1')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.vault.q1' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q3_1')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q3_1')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q3_1')" class="p-3">
+                    {{ 'faq.vault.a1' | translate }}
+                </p>
+            </div>
+
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q3_2')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.vault.q2' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q3_2')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q3_2')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q3_2')" class="p-3">
+                    {{ 'faq.vault.a2' | translate }}
+                </p>
+            </div>
+
+            
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q3_3')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.vault.q3' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q3_3')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q3_3')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q3_3')" class="p-3">
+                    {{ 'faq.vault.a3_1' | translate }}
+                </p>
+                <p *ngIf="this.toggled_q_id.includes('q3_3')" class="p-3">
+                    {{ 'faq.vault.a3_2' | translate }}
+                </p>
+                <p *ngIf="this.toggled_q_id.includes('q3_3')" class="p-3">
+                    {{ 'faq.vault.a3_3' | translate }}
+                </p>
+                <p *ngIf="this.toggled_q_id.includes('q3_3')" class="p-3">
+                    {{ 'faq.vault.a3_4' | translate }}
+                </p>
+            </div>
+
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q3_4')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.vault.q4' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q3_4')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q3_4')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q3_4')" class="p-3">
+                    {{ 'faq.vault.a4_1' | translate }} <a href="https://docs.zero-totp.com/code_doc/Cryptography/"> {{ 'faq.vault.a4_2' | translate }}</a>  {{ 'faq.vault.a4_3' | translate }} <a href="https://github.com/seaweedbraincy/zero-totp"> {{ 'faq.vault.a4_4' | translate }}</a>.
+                </p>
+            </div>
+
+
+           
+
+        </div>
 
     </article>
 

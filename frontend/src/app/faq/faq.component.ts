@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import {faChevronUp, faChevronDown, faMagnifyingGlass, faStopwatch, faShieldHalved} from '@fortawesome/free-solid-svg-icons';
+import {faChevronUp, faChevronDown, faMagnifyingGlass, faStopwatch, faShieldHalved, faVault} from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -14,6 +14,7 @@ export class FaqComponent {
   faChevronUp = faChevronUp;
   faChevronDown = faChevronDown;
   faMagnifyingGlass = faMagnifyingGlass;
+  faVault = faVault;
   faShieldHalved = faShieldHalved;
   faStopwatch=faStopwatch;
   theme: string | null = "light";

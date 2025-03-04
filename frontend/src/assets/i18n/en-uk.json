@@ -234,10 +234,24 @@
       "q1": "What is a TOTP ?",
       "q2": "What are TOTP authenticator like Zero-TOTP used for ?",
       "q3": "How to protect my accounts with TOTP as 2FA ?",
-      "title": "About TOTP"
+      "title": "TOTP codes"
     },
     "vault": {
-      "title": "About your Zero-TOTP vault"
+      "a1": "You can access all your codes by login in zero-totp.com. Your master passphrase will be used to authenticate you and then decrypt your vault. You can also open a backup file from zero-totp.com or rescue.zero-totp.com. It will be a read only version, but you will be able to display your TOTP codes. ",
+      "a2": "Log in to Zero-TOTP, then go to your storage options, select \"Backup Locally\" and then \"Save a Backup.\" This will allow you to download an encrypted backup of your vault. Only your passphrase can decrypt it. You can upload this file to Zero-TOTP or rescue.zero-totp.com to decrypt or restore it.",
+      "a3_1": "To ensure an extra layer of security, Zero-TOTP allows you to manage your vault backups yourself. This way, you maintain 100% control over your data's security and can download backup files to upload them to rescue.zero-totp.com if an issue affects Zero-TOTP.",
+      "a3_2": "To enable automatic backups on Google Drive, log in to Zero-TOTP, then go to your storage options and select Google Drive. You will then be prompted to grant Zero-TOTP permission to create files on your Drive.",
+      "a3_3": "Zero-TOTP will NOT be able to see your Google Drive files. The permissions requested by Zero-TOTP only allow the application to create and manage its own files.",
+      "a3_4": "Once connected, every modification to your Zero-TOTP vault will trigger a backup on your Drive. You can manage your backup retention policy in your Zero-TOTP preferences.",
+      "a4_1": "All the cryptographic flow is completely disclosed and described in the ",
+      "a4_2": "Zero-TOTP documentation",
+      "a4_3": "and more generally all the source code, including the cryptographic usage is available in the",
+      "a4_4": "Zero-TOTP's github repository",
+      "q1": "How can I access my vault and my temporary codes ? ",
+      "q2": "How do I download an encrypted backup of my vault to my machine?",
+      "q3": "How do automatic backups on Google Drive work ?",
+      "q4": "How the Zero-Knowledge Encryption is handled by Zero-TOTP ? ",
+      "title": "Your Zero-TOTP vault"
     },
     "zero-totp": {
       "a1_p1": "Zero-TOTP ensures maximum security through several key mechanisms : ",
@@ -250,7 +264,7 @@
       "q1": "What makes Zero-TOTP secure ?",
       "q2": "What if Zero-TOTP goes down, bugs or is unreachable ?",
       "q3": "What if Zero-TOTP get breached ? ",
-      "title": "About Zero-TOTP"
+      "title": "The Zero-TOTP project"
     }
   },
   "footer": {
