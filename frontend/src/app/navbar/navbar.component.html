@@ -1,6 +1,5 @@
-
-
-<div class="notification is-link is-light is-fixed-top mb-0 is-flex is-justify-content-space-between" *ngIf="notification_message != undefined">
+<nav style="position: sticky; top: 0; z-index: 1000;">
+<div class="notification is-link is-light mb-0 is-flex is-justify-content-space-between" *ngIf="notification_message != undefined">
   <div class="is-flex is-justify-content-center is-flex-direction-column">
     <div class="is-flex">
       <div class="is-flex is-justify-content-center is-flex-direction-column mr">
@@ -12,7 +11,7 @@
     <button class="button is-ghost has-text-grey-light" (click)="hide_notification()"> <fa-icon [icon]="faXmark" size="xl" ></fa-icon></button>
   </div>
 </div>
-<nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+<div class="navbar is-dark " role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item" (click)="navigateToRoute('/')" *ngIf="userService.getId()!=null">
        <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
@@ -105,4 +104,5 @@
         </div>
       </div>
     </div>
-  </nav>
+  </div>
+</nav>
