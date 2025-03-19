@@ -8,10 +8,12 @@ if [ -z "$1" ]; then
     echo "# Zero-TOTP Toolbox Script                    #"
     echo "# A tool for administrators to interact with  #"
     echo "# the Zero-TOTP server management             #"
-    echo "# Developed by Nathan Stchepinsky             #"
+    echo "# Developed by Seaweedbrain                   #"
+    echo "# https://github.com/seaweedbraincy           #"
     echo "###############################################"
     echo ""
     echo "Available Commands:"
+    echo "  - db-migrate        : Migrate the database schema to the latest version"
     echo "  - rotate-sse-key    : Rotate the SSE (Server-Side Encryption) key"
     echo "  - decrypt-db-entry  : Decrypt a specific entry in the Zero-TOTP database"
     echo "  - help  : to get help. You can also use help <command> to get help about a specific command"
@@ -23,7 +25,7 @@ if [ -z "$1" ]; then
 fi
 
 # Check if the user has provided a valid command
-if [ "$1" != "rotate-sse-key" ] && [ "$1" != "decrypt-db-entry" ] && [ "$1" != "help" ]; then
+if [ "$1" != "rotate-sse-key" ] && [ "$1" != "decrypt-db-entry" ] && [ "$1" != "db-migrate" ]  && [ "$1" != "help" ]; then
     echo "Invalid command. Use 'help' to see the available commands."
     exit 1
 fi
@@ -47,7 +49,7 @@ if [ "$1" = "help" ]; then
         echo "  - Arguments:"
         echo "      - table-name: The name of the table you want to decrypt an entry from."
         echo "      - entry-id: The ID of the entry you want to decrypt."
-        echo "  - Example: decrypt-db-entry oauth_tokens 10"
+        echo "  - Example: ./admin-toolbox.sh decrypt-db-entry oauth_tokens 10"
         echo ""
         echo "Supported tables:"
         echo "  - oauth_tokens"
@@ -57,7 +59,13 @@ if [ "$1" = "help" ]; then
         echo "rotate-sse-key command:"
         echo "  - Usage: rotate-sse-key"
         echo "  - Description: Rotate the SSE (Server-Side Encryption) key. This will generate a new key and re-encrypt all the data in the database."
-        echo "  - Example: rotate-sse-key"
+        echo "  - Example: ./admin-toolbox.sh rotate-sse-key"
+        exit 0
+    elif [ "$2" = "db-upgrade" ]; then
+        echo "db-upgrade command:"
+        echo "  - Usage: db-upgrade"
+        echo "  - Description: Upgrade the database schema to the latest version. This will apply any pending migrations to the database. IMPORTANT : Make sure to backup your database before running this command."
+        echo "  - Example: ./admin-toolbox.sh db-upgrade"
         exit 0
     else
         echo "Invalid command. Use 'help' to see the available commands."
@@ -70,6 +78,11 @@ elif [ "$1" = "rotate-sse-key" ]; then
     export PYTHONPATH=$(pwd)
     venv/bin/python ./toolbox_scripts/update_server_side_encryption_key.py
     exit 0
+elif [ "$1" = "db-migrate" ]; then
+    echo "###### Database migration loading ... ######"
+    echo ""
+    bash ./toolbox_scripts/migrate_db.sh
+    
 
 elif [ "$1" = "decrypt-db-entry" ]; then
     if [ -z "$2" ] || [ -z "$3" ]; then
