@@ -18,13 +18,14 @@ echo "Migrating the database..."
 echo "" 
 alembic upgrade head > /tmp/alembic_upgrade.log 2>&1
 if [ $? -eq 0 ]; then 
-    cat /tmp/alembic_upgrade.log
     echo ""
     echo "🎉  Database migration completed successfully."
     echo ""
 
 else
+    echo "##### Error trace #####"
     cat /tmp/alembic_upgrade.log
+    echo "##### Error trace #####"
     echo ""
     echo "❌  An error occurred while migrating the database. Check the error message above to understand what happened."
     echo ""
