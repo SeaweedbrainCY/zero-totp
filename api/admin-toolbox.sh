@@ -38,6 +38,7 @@ if [ "$1" = "help" ]; then
         echo ""
         echo "Available Commands:"
         echo "  - rotate-sse-key    : Rotate the SSE (Server-Side Encryption) key"
+        echo "  - db-migrate        : Migrate the database schema to the latest version"
         echo "  - decrypt-db-entry  : Decrypt a specific entry in the Zero-TOTP database" 
         echo "" 
         echo "Use 'help <command>' to get help about a specific command."

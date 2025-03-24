@@ -5,7 +5,7 @@ echo "##### CRITICAL OPERATION #####"
 echo "Please BACKUP your database before proceeding."
 echo "Follow this doc to backup your database: https://docs.zero-totp.com/self_host/database-backup"
 echo ""
-echo "Did you backup your database? (yes/NO)"
+echo -e "Did you backup your database? (yes/NO) \c"
 read backup_confirmation
 if [ "$backup_confirmation" != "yes" ]; then
     echo "Please backup your database before proceeding."
