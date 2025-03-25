@@ -35,12 +35,12 @@ jobs:
           # Check the Quality Gate status.
     - name: SonarQube Quality Gate check
       id: sonarqube-quality-gate-check
-      uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
+      uses: sonarsource/sonarqube-quality-gate-action@master
       with:
         pollingTimeoutSec: 600
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        # SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} 
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} 
 
      
     - name: "Example show SonarQube Quality Gate Status value"
