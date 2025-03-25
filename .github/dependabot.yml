@@ -12,7 +12,7 @@ updates:
   - package-ecosystem: "npm" 
     directory: "/frontend" 
     schedule:
-      interval: "weekly"1
+      interval: "weekly"
   - package-ecosystem: "docker" 
     directory: "/api" 
     schedule:
