@@ -13,10 +13,6 @@ updates:
     directory: "/frontend" 
     schedule:
       interval: "weekly"
-  - package-ecosystem: "pip" 
-    directory: "/api" 
-    schedule:
-      interval: "weekly"
   - package-ecosystem: "docker" 
     directory: "/api" 
     schedule:
