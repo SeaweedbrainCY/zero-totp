@@ -2,8 +2,8 @@
 <p align="center">
     <img src="https://img.shields.io/uptimerobot/status/m794827592-25c510a0c14f34a3812711a9%20?label=Frontend&link=zero-totp.com"/>
     <img src="https://img.shields.io/uptimerobot/ratio/m794827592-25c510a0c14f34a3812711a9?label=Frontend%20uptime%20(30d)">
-    <img src="https://img.shields.io/uptimerobot/status/m795499972-828167232e3d77f12e0505fd?label=API&link=zero-totp.com"/>
-    <img src="https://img.shields.io/uptimerobot/ratio/m795499972-828167232e3d77f12e0505fd?label=API%20uptime%20(30d)">
+    <img src="https://img.shields.io/uptimerobot/status/m798298078-655a23f7108eb3c8082c58ae?label=API&link=zero-totp.com"/>
+    <img src="https://img.shields.io/uptimerobot/ratio/m798298078-655a23f7108eb3c8082c58ae?label=API%20uptime%20(30d)">
     <br>
     <img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/main.yml/badge.svg?branch="/>
      <a href="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml"><img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml/badge.svg" alt="Test and Coverage"/></a>
