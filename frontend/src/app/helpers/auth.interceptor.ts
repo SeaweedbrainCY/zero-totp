@@ -38,7 +38,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
       const interval = setInterval(() => {
         if (!this.isRefreshing) {
           clearInterval(interval);
-          observer.next();
+          observer.next(null)
           observer.complete();
         }
       }, 100);
