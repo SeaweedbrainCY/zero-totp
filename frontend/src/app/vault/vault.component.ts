@@ -12,6 +12,8 @@ import { formatDate } from '@angular/common';
 import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr'; 
+import { TOTP } from "totp-generator"
+
 
 @Component({
     selector: 'app-vault',
@@ -45,7 +47,6 @@ export class VaultComponent implements OnInit {
   vault: Map<string, Map<string,string>> | undefined;
   vaultUUIDs : string[] = [];
   remainingTime = 0;
-  totp = require('totp-generator');
   isModalActive = false
   reloadSpin = false
   storageOptionOpen = false
@@ -267,9 +268,10 @@ export class VaultComponent implements OnInit {
     for(let uuid of this.vaultUUIDs){
       const secret = this.vault!.get(uuid)!.get("secret")!;
       try{
-        let code=this.totp(secret); 
+        let code= TOTP.generate(secret).otp
         this.vault!.get(uuid)!.set("code", code);
       } catch (e){
+        console.log(e);
         let code = "Error"
         this.vault!.get(uuid)!.set("code", code);
       }

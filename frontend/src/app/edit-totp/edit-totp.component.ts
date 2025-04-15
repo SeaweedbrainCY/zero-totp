@@ -12,6 +12,7 @@ import URLParse from 'url-parse';
 import { dom } from '@fortawesome/fontawesome-svg-core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { TOTP } from 'totp-generator'
 
 @Component({
     selector: 'app-edit-totp',
@@ -39,7 +40,6 @@ export class EditTOTPComponent implements OnInit{
   secretError = "";
   color="info";
   selected_color="";
-  totp = require('totp-generator');
   code = "";
   time=80;
   duration = 0;
@@ -171,8 +171,9 @@ export class EditTOTPComponent implements OnInit{
   generateCode(){
   try {
     this.secret = this.secret.replace(/\s/g, "");
-      this.code=this.totp(this.secret);
+      this.code=TOTP.generate(this.secret).otp;
       } catch(e) {
+        console.log(e)
         this.code = this.translate.instant("totp.error.code");
     }
    }
