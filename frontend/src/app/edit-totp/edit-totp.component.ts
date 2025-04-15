@@ -307,7 +307,6 @@ export class EditTOTPComponent implements OnInit{
             if(property!.has("tags")){
               this.tags = this.utils.parseTags(property!.get("tags")!);
             }
-            console.log(this.userService.getVaultTags())
           if(property!.has("tags")){
             this.tags = this.utils.parseTags(property!.get("tags")!);
           }
