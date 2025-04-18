@@ -1,4 +1,4 @@
-<article class="hero is-info mt-6" [ngClass]="{
+<article class="hero is-info" [ngClass]="{
                                       'is-success': color == 'success',
                                       'is-warning': color == 'warning',
                                       'is-danger': color == 'danger',
@@ -13,8 +13,8 @@
       <span *ngIf="secret!=''">{{code}}</span>
     </p>
     <div class="is-flex is-justify-content-center">
-      <progress class="progress is-small" value="{{time}}" max="100"
-        style="width:20vw; height: 5px;">{{time}}%</progress>
+      <progress class="progress is-small" value="{{progress_bar_percent}}" max="100"
+        style="width:20vw; height: 5px;">{{progress_bar_percent}}%</progress>
     </div>
   </div>
 </article>

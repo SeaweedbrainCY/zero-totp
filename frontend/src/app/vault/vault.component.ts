@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer} from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +21,7 @@ import { TOTP } from "totp-generator"
     styleUrls: ['./vault.component.css'],
     standalone: false
 })
-export class VaultComponent implements OnInit {
+export class VaultComponent implements OnInit, OnDestroy {
   faPen = faPen;
   faSquarePlus = faSquarePlus;
   faCopy = faCopy;
@@ -45,8 +45,8 @@ export class VaultComponent implements OnInit {
   faCircleQuestion=faCircleQuestion;
   faUpload=faUpload;
   vault: Map<string, Map<string,string>> | undefined;
+  remainingTime=0;
   vaultUUIDs : string[] = [];
-  remainingTime = 0;
   isModalActive = false
   reloadSpin = false
   storageOptionOpen = false
@@ -58,9 +58,13 @@ export class VaultComponent implements OnInit {
   isGoogleDriveSync = "loading"; // uptodate, loading, error, false
   lastBackupDate = "";
   faviconPolicy = "";
+  animationFrameId: number=0;
   filter="";
   google_drive_error_message = "";
   selectedTags:string[]=[];
+  progress_bar_percent=0;
+  totp_code_expiration = 0;
+  generating_next_totp_code = false;
   constructor(
     public userService: UserService,
     private router: Router,
@@ -135,11 +139,16 @@ export class VaultComponent implements OnInit {
     }    
   }
 
+  ngOnDestroy() {
+    cancelAnimationFrame(this.animationFrameId);
+  }
+
 
 
   startDisplayingCode(){
-        setInterval(()=> { this.generateTime() }, 20);
-        setInterval(()=> { this.generateCode() }, 100);
+    this.compute_totp_expiration();
+       // setInterval(()=> { this.generateTime() }, 20);
+       // setInterval(()=> { this.generateCode() }, 100);
   }
 
   get_preferences(){
@@ -261,8 +270,29 @@ export class VaultComponent implements OnInit {
     this.remainingTime = (duration/30)*100
   }
 
+
+  compute_totp_expiration(){
+
+    const update = () => {
+      const now = Date.now();
+      const remaining = this.totp_code_expiration - now;
+      this.progress_bar_percent = (remaining/300);
+      if(remaining < 0 && !this.generating_next_totp_code){
+        this.generating_next_totp_code = true;
+        this.generateCode();
+        this.compute_totp_expiration();
+      } else {
+        this.animationFrameId = requestAnimationFrame(update);
+      }
+    };
+
+    update();
+  }
+
   generateCode(){
-    if(this.vault == undefined){
+    if(this.vaultUUIDs == undefined){
+      this.totp_code_expiration = TOTP.generate("aa").expires; // Fake the timer
+      this.generating_next_totp_code = false;
       return;
     }
     for(let uuid of this.vaultUUIDs){
@@ -270,6 +300,10 @@ export class VaultComponent implements OnInit {
       try{
         let code= TOTP.generate(secret).otp
         this.vault!.get(uuid)!.set("code", code);
+        if(this.generating_next_totp_code){
+          this.totp_code_expiration = TOTP.generate(secret).expires
+          this.generating_next_totp_code = false;
+        }
       } catch (e){
         console.log(e);
         let code = "Error"
@@ -277,7 +311,10 @@ export class VaultComponent implements OnInit {
       }
     }
 
-
+    if(this.generating_next_totp_code){
+      this.totp_code_expiration = TOTP.generate("aa").expires; // New check in 1s
+      this.generating_next_totp_code = false;
+    }
   }
 
   filterVault(){
@@ -285,6 +322,7 @@ export class VaultComponent implements OnInit {
     let tmp_vault =  Array.from(this.vault!.keys()) as string[];
     if (this.filter == "" && this.selectedTags.length == 0){
       this.vaultUUIDs = tmp_vault;
+      this.generateCode();
       return;
     }
     this.filter = this.filter.replace(/[^a-zA-Z0-9-_]/g, '');
@@ -321,6 +359,7 @@ export class VaultComponent implements OnInit {
       }
     }
   }
+  this.generateCode();
   }
 
   edit(domain:string){
