@@ -22,7 +22,7 @@ jobs:
           run : echo ${{ secrets.TOKEN_GITHUB }} | docker login ghcr.io -u ${{ secrets.USERNAME_GITHUB }} --password-stdin
         - name: Create environment file
           working-directory: ./frontend
-          run: bash generate-env.sh 'dev' '${{secrets.DEV_RSA_PUBLIC_KEY}}'
+          run: bash generate-env.sh '${{ github.ref_name }}' '${{secrets.DEV_RSA_PUBLIC_KEY}}'
         - name: Generate sitemap.xml
           working-directory: ./frontend
           run: bash generate_sitemap.sh 
@@ -48,7 +48,7 @@ jobs:
           working-directory: ./api
           run: echo ${{ github.ref_name }} > ./VERSION && echo ${{ github.sha}} | cut -c1-7 >> ./VERSION
         - name: Build Docker image
-          working-directory: ./frontend
+          working-directory: ./api
           run: current_version=$(echo ${{ github.ref_name }} | sed 's/^v//') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_version -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:dev  . 
         - name: Publish Docker Image
           run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
