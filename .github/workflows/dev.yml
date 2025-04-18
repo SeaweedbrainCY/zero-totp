@@ -2,8 +2,8 @@ name: "dev.zero-totp.com deployment"
 
 on:
   push:
-    branches:
-      - dev
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+-dev.[0-9]+'
 
 jobs:
     tests:
@@ -15,7 +15,7 @@ jobs:
       name: Publish Frontend Docker image
       runs-on: ubuntu-latest
       env:
-        REPO: ${{secrets.DOCKER_DEV_REPO}}
+        REPO: zero-totp-frontend
       steps:
         - uses: actions/checkout@v3
         - name: Login to Github
@@ -28,15 +28,15 @@ jobs:
           run: bash generate_sitemap.sh 
         - name: Build Docker image
           working-directory: ./frontend
-          run: current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/frontend:latest . 
+          run: current_version=$(echo ${{ github.ref_name }} | sed 's/^v//') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_version -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:dev  . 
         - name: Publish Docker Image
-          run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/frontend:latest
+          run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
     docker-api:
       needs: [tests]
       name: Publish API-dev Docker image 
       runs-on: ubuntu-latest
       env:
-        REPO: ${{secrets.DOCKER_DEV_REPO}}
+        REPO: zero-totp-api
       steps:
         - uses: actions/checkout@v3
         - name: Login to Github
@@ -48,10 +48,10 @@ jobs:
           working-directory: ./api
           run: echo ${{ github.ref_name }} > ./VERSION && echo ${{ github.sha}} | cut -c1-7 >> ./VERSION
         - name: Build Docker image
-          working-directory: ./api
-          run: current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/api:latest . 
+          working-directory: ./frontend
+          run: current_version=$(echo ${{ github.ref_name }} | sed 's/^v//') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_version -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:dev  . 
         - name: Publish Docker Image
-          run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/api:latest
+          run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
     deploy-dev-env:
        needs: [docker-frontend, docker-api] 
        name: Deploy on development environment
