@@ -56,6 +56,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   remainingTags:string[] = [];
   totp_code_expiration = 0;
   generating_next_totp_code = false;
+  totp_code_generation_interval:NodeJS.Timeout|undefined;
   constructor(
     private router: Router,
     private route : ActivatedRoute,
@@ -125,12 +126,13 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
       }
     }
     
-
-    this.compute_totp_expiration();
+    this.totp_code_generation_interval = setInterval(()=> { this.compute_totp_expiration() }, 100);
   }
 
   ngOnDestroy() {
-    cancelAnimationFrame(this.animationFrameId);
+    if(this.totp_code_generation_interval != undefined){
+      clearInterval(this.totp_code_generation_interval);
+    }
   }
 
   checkName(){
@@ -170,23 +172,14 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
 
 
   compute_totp_expiration(){
-
-    const update = () => {
       const now = Date.now();
       const remaining = this.totp_code_expiration - now;
       this.progress_bar_percent = (remaining/300);
-      console.log(remaining/100)
       if(remaining < 0 && !this.generating_next_totp_code) {
         this.generating_next_totp_code = true;
         this.generateCode();
         this.compute_totp_expiration();    // <-- redémarre le cycle
-        
-      } else {
-        this.animationFrameId = requestAnimationFrame(update);
-      }
-    };
-
-    update();
+      } 
   }
 
   generateCode(){
