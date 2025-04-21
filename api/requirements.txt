@@ -98,7 +98,7 @@ typing_extensions==4.8.0
 tzlocal==5.2
 uritemplate==4.1.1
 urllib3==2.2.2
-uvicorn==0.24.0.post1
+uvicorn==0.34.2
 uvloop==0.19.0
 virtualenv==20.30.0
 watchfiles==0.21.0
