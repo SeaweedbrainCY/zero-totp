@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
@@ -12,6 +12,7 @@ import URLParse from 'url-parse';
 import { dom } from '@fortawesome/fontawesome-svg-core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { TOTP } from 'totp-generator'
 
 @Component({
     selector: 'app-edit-totp',
@@ -19,7 +20,7 @@ import { ToastrService } from 'ngx-toastr';
     styleUrls: ['./edit-totp.component.css'],
     standalone: false
 })
-export class EditTOTPComponent implements OnInit{
+export class EditTOTPComponent implements OnInit, OnDestroy{
   faChevronCircleLeft = faChevronCircleLeft;
   faGlobe = faGlobe;
   faKey = faKey;
@@ -39,10 +40,9 @@ export class EditTOTPComponent implements OnInit{
   secretError = "";
   color="info";
   selected_color="";
-  totp = require('totp-generator');
+  animationFrameId: number=0;
   code = "";
-  time=80;
-  duration = 0;
+  progress_bar_percent=80;
   currentUrl:string = "";
   secret_uuid:string|null = null;
   isModalActive = false;  
@@ -54,6 +54,9 @@ export class EditTOTPComponent implements OnInit{
   isEditing = false; // true if editing, false if adding
   isSaving = false;
   remainingTags:string[] = [];
+  totp_code_expiration = 0;
+  generating_next_totp_code = false;
+  totp_code_generation_interval:NodeJS.Timeout|undefined;
   constructor(
     private router: Router,
     private route : ActivatedRoute,
@@ -123,11 +126,13 @@ export class EditTOTPComponent implements OnInit{
       }
     }
     
+    this.totp_code_generation_interval = setInterval(()=> { this.compute_totp_expiration() }, 100);
+  }
 
-    setInterval(()=> { this.generateCode() }, 100);
-    setInterval(()=> { this.generateTime() }, 20);
-    
-
+  ngOnDestroy() {
+    if(this.totp_code_generation_interval != undefined){
+      clearInterval(this.totp_code_generation_interval);
+    }
   }
 
   checkName(){
@@ -163,17 +168,30 @@ export class EditTOTPComponent implements OnInit{
     }
   }
 
-  generateTime(){
-    const duration = 30 - Math.floor(Date.now() / 10 % 3000)/100;
-    this.time = (duration/30)*100
+
+
+
+  compute_totp_expiration(){
+      const now = Date.now();
+      const remaining = this.totp_code_expiration - now;
+      this.progress_bar_percent = (remaining/300);
+      if(remaining < 0 && !this.generating_next_totp_code) {
+        this.generating_next_totp_code = true;
+        this.generateCode();
+      } 
   }
 
   generateCode(){
   try {
+    if(this.secret == ""){ return;}
     this.secret = this.secret.replace(/\s/g, "");
-      this.code=this.totp(this.secret);
+      this.code=TOTP.generate(this.secret).otp;
+      this.totp_code_expiration = TOTP.generate(this.secret).expires;
+      this.generating_next_totp_code = false
       } catch(e) {
+        console.log(e)
         this.code = this.translate.instant("totp.error.code");
+        this.generating_next_totp_code = false
     }
    }
    
@@ -307,7 +325,6 @@ export class EditTOTPComponent implements OnInit{
             if(property!.has("tags")){
               this.tags = this.utils.parseTags(property!.get("tags")!);
             }
-            console.log(this.userService.getVaultTags())
           if(property!.has("tags")){
             this.tags = this.utils.parseTags(property!.get("tags")!);
           }

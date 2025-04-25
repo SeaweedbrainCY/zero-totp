@@ -15,6 +15,18 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "25/04/2025",
+      version: "1.1.0",
+      added: [
+       "An important code optimization has been made to improve the performance of the application, especially of your vault and edit page. With this version, the application will use between 3 and 10 times less CPU, save up to 30% of memory and will compute 6 times less data to display your vault. This will improve the performance of the application.",
+       "A new way of Zero-TOTP images deployment has been made to continue the preparation of the self-hosted version.",
+      ],
+      fixed:[
+        "Fix a critical CVE in the API dependencies.",
+        "Upgrade dependencies to maintain the security of the application.",
+      ]
+    },
+    {
       date: "25/03/2025",
       version: "1.0.3",
       added: [

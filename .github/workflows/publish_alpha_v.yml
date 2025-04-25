@@ -1,9 +1,10 @@
-name: "dev.zero-totp.com deployment"
+name: "Publish alpha version"
 
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+-dev.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+'
 
 jobs:
     tests:
@@ -28,7 +29,7 @@ jobs:
           run: bash generate_sitemap.sh 
         - name: Build Docker image
           working-directory: ./frontend
-          run: current_version=$(echo ${{ github.ref_name }} | sed 's/^v//') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_version -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:dev  . 
+          run: current_version=$(echo ${{ github.ref_name }} | sed 's/^v//') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_version  . 
         - name: Publish Docker Image
           run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
     docker-api:
@@ -49,16 +50,7 @@ jobs:
           run: echo ${{ github.ref_name }} > ./VERSION && echo ${{ github.sha}} | cut -c1-7 >> ./VERSION
         - name: Build Docker image
           working-directory: ./api
-          run: current_version=$(echo ${{ github.ref_name }} | sed 's/^v//') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_version -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:dev  . 
+          run: current_version=$(echo ${{ github.ref_name }} | sed 's/^v//') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_version  . 
         - name: Publish Docker Image
           run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
-    deploy-dev-env:
-       needs: [docker-frontend, docker-api] 
-       name: Deploy on development environment
-       runs-on: ubuntu-latest
-       steps:
-         - name: Dev env deployment
-           uses: distributhor/workflow-webhook@v3
-           env:
-             webhook_url: ${{ secrets.WEBHOOK_URL_DEV }}
         

@@ -21,7 +21,6 @@ export class QrcodeReaderComponent implements OnInit {
   hasPermission: undefined | boolean= undefined;
   hasDevices : undefined | boolean = undefined;
   scannerStarted = false;
-  totp = require('totp-generator');
   currentUrl:string = "";
 
   constructor(

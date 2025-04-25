@@ -36,7 +36,6 @@ export class HomeComponent implements OnInit {
   encrypted = "";
   plaintext = "";
   decrypted="";
-  totp = require('totp-generator');
   code = "";
   duration=0;
   example_domain=""
