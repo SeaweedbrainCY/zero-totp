@@ -178,12 +178,12 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
       if(remaining < 0 && !this.generating_next_totp_code) {
         this.generating_next_totp_code = true;
         this.generateCode();
-        this.compute_totp_expiration();    // <-- redémarre le cycle
       } 
   }
 
   generateCode(){
   try {
+    if(this.secret == ""){ return;}
     this.secret = this.secret.replace(/\s/g, "");
       this.code=TOTP.generate(this.secret).otp;
       this.totp_code_expiration = TOTP.generate(this.secret).expires;

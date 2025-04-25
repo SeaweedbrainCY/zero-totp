@@ -281,7 +281,6 @@ export class VaultComponent implements OnInit, OnDestroy {
       if(remaining < 0 && !this.generating_next_totp_code){
         this.generating_next_totp_code = true;
         this.generateCode();
-        this.compute_totp_expiration();
       }
   }
 

@@ -76,6 +76,7 @@
             <label class="label">{{ 'totp.secret.add.label' | translate }}</label>
             <div class="control has-icons-left has-icons-right">
               <input class="input" type="text" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret"
+                (change)="checkSecret()"
                 (keyup)="checkSecret()"
                 [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }"
                 [disabled]="this.userService.getIsVaultLocal()!">
