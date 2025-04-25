@@ -35,8 +35,8 @@ google-auth-oauthlib==1.1.0
 googleapis-common-protos==1.61.0
 greenlet==3.0.3
 gunicorn==23.0.0
-h11==0.14.0
-httpcore==1.0.2
+h11==0.16.0
+httpcore==1.0.9
 httplib2==0.22.0
 httptools==0.6.1
 httpx==0.25.1
