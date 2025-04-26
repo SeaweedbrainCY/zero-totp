@@ -127,6 +127,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
     }
     
     this.totp_code_generation_interval = setInterval(()=> { this.compute_totp_expiration() }, 100);
+    this.generateCode();
   }
 
   ngOnDestroy() {
