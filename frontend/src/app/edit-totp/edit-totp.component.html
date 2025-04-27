@@ -68,14 +68,15 @@
             </div>
             <p class="help is-warning" *ngIf="uriError != ''">{{uriError | translate}}</p>
           </div>
-          <div class="field column is-two-thirds-mobile
+          <div class=" column is-two-thirds-mobile
           is-one-third-tablet
           is-one-third-desktop
           is-one-third-widescreen
-          is-one-third-fullhd mr-2 ml-2">
+          is-one-third-fullhd mr-2 ml-2 ">
             <label class="label">{{ 'totp.secret.add.label' | translate }}</label>
+            <div class="field has-addons">
             <div class="control has-icons-left has-icons-right">
-              <input class="input" type="text" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret"
+              <input class="input" type="{{isSecretVisible ? 'text' : 'password'}}" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret"
                 (change)="checkSecret()"
                 (keyup)="checkSecret()"
                 [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }"
@@ -84,6 +85,13 @@
                 <fa-icon [icon]="faKey"></fa-icon>
               </span>
             </div>
+            <div class="control" >
+              <a class="button" (click)="isSecretVisible = !isSecretVisible">
+                <fa-icon [icon]="faEyeSlash" *ngIf="isSecretVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isSecretVisible" size="sm"></fa-icon>
+              </a>
+              
+            </div>
+          </div>
             <p class="help is-danger" *ngIf="secretError != ''">{{secretError | translate}}</p>
           </div>
         </div>

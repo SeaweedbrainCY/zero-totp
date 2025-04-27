@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch, faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
 
 import { Crypto } from '../common/Crypto/crypto';
@@ -28,6 +28,8 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   faCircleNotch = faCircleNotch;
   faPlus = faPlus;
   faCheck = faCheck;
+  faEyeSlash=faEyeSlash;
+  faEye=faEye;
   faCircleQuestion = faCircleQuestion;
   faviconURL = "";
   name = "";
@@ -54,6 +56,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   isEditing = false; // true if editing, false if adding
   isSaving = false;
   remainingTags:string[] = [];
+  isSecretVisible=true;
   totp_code_expiration = 0;
   generating_next_totp_code = false;
   totp_code_generation_interval:NodeJS.Timeout|undefined;
@@ -99,6 +102,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
         
     } else {
       this.isEditing = true;
+      this.isSecretVisible = false;
       console.log("is editing")
       if(!this.userService.getIsVaultLocal()){
         this.getSecretTOTP()
