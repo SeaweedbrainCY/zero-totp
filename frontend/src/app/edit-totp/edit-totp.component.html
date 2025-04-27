@@ -41,7 +41,7 @@
         is-one-third-fullhd mr-2 ml-2">
             <label class="label">{{ 'name' | translate }}</label>
             <div class="field has-addons">
-            <div class="control has-icons-left has-icons-right">
+            <div class="control has-icons-left">
               <input class="input" type="text" placeholder="GitHub" name="name" [(ngModel)]="name"
                 (keyup)="checkName()"
                 [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }"
@@ -65,7 +65,7 @@
         is-one-third-fullhd mr-2 ml-2">
             <label class="label">{{ 'totp.uri.title' | translate}}</label>
             <div class="field has-addons">
-            <div class="control has-icons-left has-icons-right">
+            <div class="control has-icons-left">
               <input class="input" type="text" placeholder="https://github.com" name="uri" [(ngModel)]="uri"
                 (change)="checkURI()"
                 [ngClass]="{'is-warning':uriError != '',  'is-success' : uriError == '' && uri != '' }"
@@ -89,7 +89,7 @@
           is-one-third-fullhd mr-2 ml-2 ">
             <label class="label">{{ 'totp.secret.add.label' | translate }}</label>
             <div class="field has-addons">
-            <div class="control has-icons-left has-icons-right">
+            <div class="control has-icons-left">
               <input class="input" type="{{isSecretVisible ? 'text' : 'password'}}" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret"
                 (change)="checkSecret()"
                 (keyup)="checkSecret()"
