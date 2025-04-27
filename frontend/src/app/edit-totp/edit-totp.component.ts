@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch, faEyeSlash, faEye, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
 
 import { Crypto } from '../common/Crypto/crypto';
@@ -28,6 +28,9 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   faCircleNotch = faCircleNotch;
   faPlus = faPlus;
   faCheck = faCheck;
+  faEyeSlash=faEyeSlash;
+  faXmark=faXmark;
+  faEye=faEye;
   faCircleQuestion = faCircleQuestion;
   faviconURL = "";
   name = "";
@@ -54,6 +57,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   isEditing = false; // true if editing, false if adding
   isSaving = false;
   remainingTags:string[] = [];
+  isSecretVisible=true;
   totp_code_expiration = 0;
   generating_next_totp_code = false;
   totp_code_generation_interval:NodeJS.Timeout|undefined;
@@ -99,6 +103,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
         
     } else {
       this.isEditing = true;
+      this.isSecretVisible = false;
       console.log("is editing")
       if(!this.userService.getIsVaultLocal()){
         this.getSecretTOTP()
@@ -127,7 +132,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
     }
     
     this.totp_code_generation_interval = setInterval(()=> { this.compute_totp_expiration() }, 100);
-    this.generateCode();
+    
   }
 
   ngOnDestroy() {
@@ -289,6 +294,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
             this.uuid = this.secret_uuid!;
             this.name = property.get("name")!;
             this.secret = property.get("secret")!;
+            this.generateCode();
             this.color = property.get("color")!;
             this.translate.get("blue").subscribe((blue: string) => {
             switch(this.color){
