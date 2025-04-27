@@ -127,7 +127,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
     }
     
     this.totp_code_generation_interval = setInterval(()=> { this.compute_totp_expiration() }, 100);
-    this.generateCode();
+    
   }
 
   ngOnDestroy() {
@@ -289,6 +289,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
             this.uuid = this.secret_uuid!;
             this.name = property.get("name")!;
             this.secret = property.get("secret")!;
+            this.generateCode();
             this.color = property.get("color")!;
             this.translate.get("blue").subscribe((blue: string) => {
             switch(this.color){
