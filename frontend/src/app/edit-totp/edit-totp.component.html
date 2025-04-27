@@ -112,7 +112,7 @@
         <div class="notification is-warning has-text-centered" *ngIf="this.userService.getIsVaultLocal()!">
           {{ 'totp.error.ro' | translate }}
         </div>
-        <div class="field p-5 is-flex is-justify-content-center">
+        <div class="field p-5 is-flex is-justify-content-center has-text-centered">
           
           <label class="checkbox">
             <input type="checkbox" name="favicon" [(ngModel)]="favicon" (change)="loadFavicon()" class="mr-3">
