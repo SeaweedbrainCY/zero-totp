@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch, faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch, faEyeSlash, faEye, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
 
 import { Crypto } from '../common/Crypto/crypto';
@@ -29,6 +29,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   faPlus = faPlus;
   faCheck = faCheck;
   faEyeSlash=faEyeSlash;
+  faXmark=faXmark;
   faEye=faEye;
   faCircleQuestion = faCircleQuestion;
   faviconURL = "";

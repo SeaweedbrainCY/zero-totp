@@ -34,12 +34,13 @@
     is-three-quarters-fullhd">
       <div class="is-flex is-justify-content-space-around is-flex-direction-column	">
         <div class="is-flex is-justify-content-space-around columns is-flex-wrap-wrap">
-          <div class="field column is-two-thirds-mobile
+          <div class="column is-two-thirds-mobile
         is-one-third-tablet
         is-one-third-desktop
         is-one-third-widescreen
         is-one-third-fullhd mr-2 ml-2">
             <label class="label">{{ 'name' | translate }}</label>
+            <div class="field has-addons">
             <div class="control has-icons-left has-icons-right">
               <input class="input" type="text" placeholder="GitHub" name="name" [(ngModel)]="name"
                 (keyup)="checkName()"
@@ -49,14 +50,21 @@
                 <fa-icon [icon]="faPassport"></fa-icon>
               </span>
             </div>
+            <div class="control ">
+              <a class="button" (click)="this.name= '';">
+                  <fa-icon [icon]="faXmark"></fa-icon>
+              </a>
+            </div>
+            </div>
             <p class="help is-danger" *ngIf="nameError != ''">{{nameError | translate}}</p>
           </div>
-          <div class="field column is-two-thirds-mobile
+          <div class="column is-two-thirds-mobile
         is-one-third-tablet
         is-one-third-desktop
         is-one-third-widescreen
         is-one-third-fullhd mr-2 ml-2">
             <label class="label">{{ 'totp.uri.title' | translate}}</label>
+            <div class="field has-addons">
             <div class="control has-icons-left has-icons-right">
               <input class="input" type="text" placeholder="https://github.com" name="uri" [(ngModel)]="uri"
                 (change)="checkURI()"
@@ -65,6 +73,12 @@
               <span class="icon is-small is-left">
                 <fa-icon [icon]="faGlobe"></fa-icon>
               </span>
+            </div>
+            <div class="control ">
+              <a class="button" (click)="this.uri= '';">
+                  <fa-icon [icon]="faXmark"></fa-icon>
+              </a>
+            </div>
             </div>
             <p class="help is-warning" *ngIf="uriError != ''">{{uriError | translate}}</p>
           </div>
