@@ -920,3 +920,9 @@ def health_check():
     
     return health_status, http_status
     
+
+
+def get_public_key():
+    with open(conf.api.public_key_path, "r") as f:
+        public_key = f.read()
+    return {"public_key": public_key}, 200

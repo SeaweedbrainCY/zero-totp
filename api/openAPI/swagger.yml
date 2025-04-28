@@ -380,6 +380,28 @@ paths:
         "404":
           description: No secrets found
 
+  /vault/verification/public-key:
+    get:
+      operationId: controllers.get_public_key
+      tags:
+        - Vault
+      summary: Return the public key used to verify the vault signature
+      security: []
+      responses:
+        "200": # status code
+          description: Return the public key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  public_key:
+                    type: string
+                    example: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQ...\n-----END PUBLIC KEY-----"
+
+
+
+
   /google-drive/oauth/authorization-flow:
     get:
       operationId: controllers.get_authorization_flow
