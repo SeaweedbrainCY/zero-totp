@@ -380,7 +380,7 @@ paths:
         "404":
           description: No secrets found
 
-  /vault/verification/public-key:
+  /vault/signature/public-key:
     get:
       operationId: controllers.get_public_key
       tags:
