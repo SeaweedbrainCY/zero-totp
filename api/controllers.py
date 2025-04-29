@@ -38,6 +38,7 @@ from uuid import uuid4
 import hmac
 import hashlib
 from sqlalchemy import text
+from CryptoClasses.serverRSAKeys import ServerRSAKeys
  
 
 
@@ -925,4 +926,8 @@ def health_check():
 def get_public_key():
     with open(conf.api.public_key_path, "r") as f:
         public_key = f.read()
-    return {"public_key": public_key}, 200
+    if ServerRSAKeys().validate_rsa_public_key(public_key):
+        return {"public_key": public_key}, 200
+    else:
+        logging.error("This is a critical error from get_public_key(). A public key has been requested but the key is not valid. An error as been returned to the user.")
+        return {"message": "Invalid"}, 403
