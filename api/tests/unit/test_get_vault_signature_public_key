@@ -1,0 +1,31 @@
+import unittest
+from app import app
+from environment import conf
+from unittest.mock import patch
+from environment import logging
+
+
+class TestGetVaultSignaturePublicKey(unittest.TestCase):
+
+    def setUp(self):
+        self.flask_application = app
+        self.client = self.flask_application.test_client()
+        self.endpoint = "vault/signature/public-key"
+        
+            
+ 
+    
+    
+    def test_get_vault_signature_public_key(self):
+        """
+        Test the /vault/signature/public-key endpoint
+        """
+        with open("./tests/ressources/test_public.pem", "r") as f:
+            public_key = f.read()
+        with self.flask_application.app.app_context():
+            response = self.client.get(self.endpoint)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.json()["public_key"], public_key)
+            
+
+
