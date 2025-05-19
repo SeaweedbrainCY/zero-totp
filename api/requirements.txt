@@ -24,7 +24,7 @@ filelock==3.18.0
 Flask==3.1.1
 Flask-Alembic==3.1.1
 Flask-APScheduler==1.13.1
-Flask-Cors==5.0.1
+Flask-Cors==6.0.0
 Flask-Migrate==4.1.0
 Flask-SQLAlchemy==3.1.1
 google-api-core==2.14.0
