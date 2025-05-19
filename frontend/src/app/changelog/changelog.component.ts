@@ -15,6 +15,16 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "18/05/2025",
+      version: "1.1.4",
+      added: [
+      ],
+      fixed:[
+        "Fix 3 moderate CVE in the API dependencies.",
+        "Upgrade dependencies to maintain the security of the application.",
+      ]
+    },
+    {
       date: "25/04/2025",
       version: "1.1.0",
       added: [
