@@ -433,38 +433,57 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
       const uploadPromises: Promise<void>[] = [];
       const encryptPromises: Promise<void>[] = [];
 
-
-      for(let uuid of this.decrypted_vault!.keys()){
-        const encrypt_promise = this.encryptSecret(this.decrypted_vault!.get(uuid)!).then((enc_jsonProperty)=>{
-
-          const upload_promise = this.uploadSecret(uuid, enc_jsonProperty).then((response)=>{
-              this.uploaded_uuid.push(uuid);
-              console.log(response)
-          }, (error)=>{
-            console.log(error)
-            this.upload_error_uuid.push(uuid);
-            this.import_had_error = true;
-            this.translate.get("import_vault.uploading.errors.upload").subscribe((translation)=>{
-              this.utils.toastError(this.toastr, translation, "Secret name : " + this.decrypted_vault!.get(uuid)!.get("name") + ". Error: " + error);
-            });
-          });
-          uploadPromises.push(upload_promise);
-        }, (error)=>{
-          this.upload_error_uuid.push(uuid);
-          this.import_had_error = true
-            this.translate.get("import_vault.uploading.errors.encrypt").subscribe((translation)=>{
-              this.utils.toastError(this.toastr, translation, "Secret name : " + this.decrypted_vault!.get(uuid)!.get("name") + ". Error: " + error);
-            });
-        });
-        encryptPromises.push(encrypt_promise);
-    }
-    Promise.all(encryptPromises).then(()=>{
-      Promise.all(uploadPromises).then(()=>{
-        this.uploading = false;
-        this.importSuccess = true;
-     });
+     this.processVaultConcurrently().then(() => {
+      this.uploading = false;
+      this.importSuccess = true;
      });
   }
+
+  async processVaultConcurrently() {
+  const concurrencyLimit = 5;
+  const queue: (() => Promise<void>)[] = [];
+  const tasks: Promise<void>[] = [];
+
+  for (const [uuid, secretMap] of this.decrypted_vault!) {
+    // Wrap each upload in a task function
+    queue.push(async () => {
+      try {
+        const enc_jsonProperty = await this.encryptSecret(secretMap);
+        await this.uploadSecret(uuid, enc_jsonProperty);
+
+        this.uploaded_uuid.push(uuid);
+        console.log("Uploaded:", uuid);
+      } catch (error) {
+        console.error("Error uploading", uuid, error);
+        this.upload_error_uuid.push(uuid);
+        this.import_had_error = true;
+
+        this.translate.get("import_vault.uploading.errors.upload").subscribe((translation) => {
+          this.utils.toastError(
+            this.toastr,
+            translation,
+            "Secret name: " + secretMap.get("name") + ". Error: " + error
+          );
+        });
+      }
+    });
+  }
+
+  // Function to run queue with concurrency limit
+  const runQueue = async () => {
+    const workers = new Array(concurrencyLimit).fill(0).map(async () => {
+      while (queue.length) {
+        const task = queue.shift();
+        if (task) {
+          await task();
+        }
+      }
+    });
+    await Promise.all(workers);
+  };
+
+  await runQueue();
+}
 
 
   encryptSecret(secret_properties: Map<string, string>): Promise<string>{
@@ -483,8 +502,6 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
   uploadSecret(uuid: string, enc_jsonProperty: string): Promise<HttpResponse<Object>> {
     return new Promise((resolve, reject)=>{
-      // Add a fake delay to not overwhelm the API
-      setTimeout(() => {
         this.http.post("/api/v1/encrypted_secret", {enc_secret:enc_jsonProperty},{withCredentials:true, observe: 'response'}).subscribe({
           next:(response) => {
             resolve(response);
@@ -493,7 +510,6 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
             reject(error.message + error.error.message);
           }
         });
-      }, 500);
     });
   }
 
