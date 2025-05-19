@@ -251,9 +251,9 @@
             </div>
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
-            <button class="button is-success" (click)="deletionModal()" [disabled]="buttonLoading['deletion']">{{
+            <button class="button is-success mr-1" (click)="deletionModal()" [disabled]="buttonLoading['deletion']">{{
                 'account.delete.popup.button.return' | translate }}</button>
-            <button class="button is-danger" (click)="deleteAccount()"
+            <button class="button is-danger ml-1" (click)="deleteAccount()"
                 [ngClass]="{'is-loading': buttonLoading['deletion']}"
                 [disabled]="deleteAccountConfirmationCountdown >0">{{ 'account.delete.popup.button.destroy' | translate
                 }}<span *ngIf="deleteAccountConfirmationCountdown >0"> ({{deleteAccountConfirmationCountdown}}
