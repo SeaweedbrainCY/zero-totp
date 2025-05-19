@@ -13,6 +13,7 @@ from database.preferences_repo import Preferences as Preferences_repo
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
 from zero_totp_db_model.model  import Preferences as PreferencesModel
 from database.session_token_repo import SessionTokenRepo 
+from CryptoClasses import refresh_token as refresh_token_crypto_utility
 from uuid import uuid4
 from environment import conf
 
@@ -85,6 +86,13 @@ class TestDeleteAccount(unittest.TestCase):
             _, self.user_blocked_session_token = self.session_token_repo.generate_session_token(self.user_blocked)
             _, self.user_not_verified_session_token = self.session_token_repo.generate_session_token(self.user_not_verified)
             _, self.user_admin_session_token = self.session_token_repo.generate_session_token(self.user_admin_id)
+
+            refresh_token_crypto_utility.generate_refresh_token(self.full_user_id, self.full_user_session_token)
+            refresh_token_crypto_utility.generate_refresh_token(self.user_without_google_drive, self.user_without_google_drive_session_token)
+            refresh_token_crypto_utility.generate_refresh_token(self.user_blocked, self.user_blocked_session_token)
+            refresh_token_crypto_utility.generate_refresh_token(self.user_not_verified, self.user_not_verified_session_token)
+            refresh_token_crypto_utility.generate_refresh_token(self.user_admin_id, self.user_admin_session_token)
+            
             
             db.session.commit()
     

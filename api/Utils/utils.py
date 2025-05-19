@@ -79,17 +79,18 @@ def delete_user_from_database(user_id):
     Preferences_repo().delete(user_id)
     TOTP_secret_repo().delete_all(user_id)
     ZKE_encryption_key_repo().delete(user_id)
-    User_repo().delete(user_id)
     EmailVerificationToken().delete(user_id)
     RateLimitingRepo().flush_by_user_id(user_id)
+    SessionTokenRepo().delete_by_user_id(user_id)
     RefreshTokenRepo().delete_by_user_id(user_id)
+    User_repo().delete(user_id)
     logging.info("User " + str(user_id) + " deleted from database")
 
 
 def generate_new_email_verification_token(user_id):
     email_verification_token_repo = EmailVerificationToken()
     email_verification_token_repo.delete(user_id)
-    token = b64encode(os.urandom(5)).decode()
+    token = os.urandom(5).hex()
     expiration = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
     email_verification_token_repo.add(user_id, token,expiration.timestamp())
     return token
