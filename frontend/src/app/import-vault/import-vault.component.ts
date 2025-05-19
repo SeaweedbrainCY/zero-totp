@@ -46,6 +46,10 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   isUnsecureVaultModaleActive = false;
   imported_vault_passphrase = "";
   vault_date = "";
+  // Délai initial entre les requêtes API (en ms)
+  apiRequestDelay: number = 500;
+  // Facteur multiplicateur pour le backoff exponentiel en cas d'erreur 429
+  apiBackoffFactor: number = 1.5;
 
   isMobileDevice = false;
 
@@ -432,6 +436,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
       for(let uuid of this.decrypted_vault!.keys()){
         const encrypt_promise = this.encryptSecret(this.decrypted_vault!.get(uuid)!).then((enc_jsonProperty)=>{
+
           const upload_promise = this.uploadSecret(uuid, enc_jsonProperty).then((response)=>{
               this.uploaded_uuid.push(uuid);
               console.log(response)
@@ -478,14 +483,17 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
   uploadSecret(uuid: string, enc_jsonProperty: string): Promise<HttpResponse<Object>> {
     return new Promise((resolve, reject)=>{
-      this.http.post("/api/v1/encrypted_secret", {enc_secret:enc_jsonProperty},{withCredentials:true, observe: 'response'}).subscribe({
-        next:(response) => {
-          resolve(response);
-        },
-        error: (error)=>{
-          reject(error.message + error.error.message);
-        }
-      });
+      // Add a fake delay to not overwhelm the API
+      setTimeout(() => {
+        this.http.post("/api/v1/encrypted_secret", {enc_secret:enc_jsonProperty},{withCredentials:true, observe: 'response'}).subscribe({
+          next:(response) => {
+            resolve(response);
+          },
+          error: (error)=>{
+            reject(error.message + error.error.message);
+          }
+        });
+      }, 500);
     });
   }
 
