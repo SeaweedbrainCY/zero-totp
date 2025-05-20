@@ -212,7 +212,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
               } else if (version == 1) {
                 this.local_vault_service = this.localVaultv1
-                this.local_vault_service.parseUploadedVault(unsecure_context).then((vault_parsing_status) => {
+                this.local_vault_service.parseUploadedVault(unsecure_context, api_public_key).then((vault_parsing_status) => {
                   switch (vault_parsing_status) {
                     case UploadVaultStatus.SUCCESS: {
                       this.file_name = input.files[0].name

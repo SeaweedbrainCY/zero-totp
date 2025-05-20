@@ -44,6 +44,7 @@ export class LoginComponent implements OnInit {
   isPassphraseVisible=false;
   isLocalVaultPassphraseVisible=false;
   remember=false;
+  api_public_key: string| undefined = undefined;
 
   constructor(
     private http: HttpClient,
@@ -171,7 +172,10 @@ export class LoginComponent implements OnInit {
             
           } else if (version == 1){
             this.local_vault_service = this.localVaultv1
-          this.local_vault_service.parseUploadedVault(unsecure_context).then((vault_parsing_status) => {
+            if(this.api_public_key == undefined){
+              this.http.post("/api/v1/encrypted_secret", {enc_secret:enc_jsonProperty},{withCredentials:true, observe: 'response'}).subscribe({
+            }
+          this.local_vault_service.parseUploadedVault(unsecure_context, this.api_public_key).then((vault_parsing_status) => {
           switch (vault_parsing_status) {
             case UploadVaultStatus.SUCCESS:{
               this.isPassphraseModalActive = true;
