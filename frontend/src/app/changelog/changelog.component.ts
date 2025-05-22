@@ -15,6 +15,16 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "22/05/2025",
+      version: "1.2.1",
+      added: [
+        "When verifying the authenticity of an imported vault, the frontend now fetches the public key from the API.  This feature has been implemented to allow self hosted version of Zero-TOTP to be able to verify their own exported vault. As backup, if the API is now available, a official zero-totp public key is still hardcoded in Zero-TOTP frontend"
+      ],
+      fixed:[
+        
+      ]
+    },
+    {
       date: "18/05/2025",
       version: "1.1.5",
       added: [
