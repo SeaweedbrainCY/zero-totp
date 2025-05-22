@@ -46,6 +46,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   isUnsecureVaultModaleActive = false;
   imported_vault_passphrase = "";
   vault_date = "";
+  api_public_key=undefined;
 
   isMobileDevice = false;
 
@@ -212,7 +213,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
               } else if (version == 1) {
                 this.local_vault_service = this.localVaultv1
-                this.local_vault_service.parseUploadedVault(unsecure_context, api_public_key).then((vault_parsing_status) => {
+                this.local_vault_service.parseUploadedVault(unsecure_context, this.api_public_key).then((vault_parsing_status) => {
                   switch (vault_parsing_status) {
                     case UploadVaultStatus.SUCCESS: {
                       this.file_name = input.files[0].name

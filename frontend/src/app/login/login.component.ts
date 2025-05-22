@@ -173,8 +173,17 @@ export class LoginComponent implements OnInit {
           } else if (version == 1){
             this.local_vault_service = this.localVaultv1
             if(this.api_public_key == undefined){
-              this.http.post("/api/v1/encrypted_secret", {enc_secret:enc_jsonProperty},{withCredentials:true, observe: 'response'}).subscribe({
-            }
+              this.http.get("/api/v1/vault/signature/public-key",{withCredentials:true, observe: 'response'}).subscribe({
+                next:(response) => {
+                  const data = JSON.parse(JSON.stringify(response.body))
+                  this.api_public_key = data.public_key;
+                  console.log(this.api_public_key);
+                },
+                error: (error)=>{
+                }
+            });
+           }
+            
           this.local_vault_service.parseUploadedVault(unsecure_context, this.api_public_key).then((vault_parsing_status) => {
           switch (vault_parsing_status) {
             case UploadVaultStatus.SUCCESS:{
