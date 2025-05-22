@@ -349,6 +349,9 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
         }
       });
+         reader.onerror = (() => {
+     this.loading_file = false;
+   });
     } catch {
       this.is_importing = false
       this.local_vault_service = null;

@@ -277,7 +277,10 @@ export class LoginComponent implements OnInit {
         this.loading_file = false;
       }
     });
+    reader.onerror = (() => {
 
+      this.loading_file = false;
+    });
   }
 
 
