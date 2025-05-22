@@ -27,3 +27,10 @@ class SessionTokenRepo:
         session_token.revoke_timestamp = datetime.datetime.now(datetime.UTC).timestamp()
         db.session.commit()
         return session_token
+    
+    def delete_by_user_id(self, user_id):
+        session_tokens = SessionToken.query.filter_by(user_id=user_id).all()
+        for session_token in session_tokens:
+            db.session.delete(session_token)
+        db.session.commit()
+        return session_tokens

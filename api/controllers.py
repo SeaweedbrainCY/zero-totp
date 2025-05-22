@@ -819,7 +819,7 @@ def verify_email(user_id,body):
     token_obj = token_db.get_by_user_id(user_id)
     if token_obj == None:
         return {"message": "email_verif.error.no_active_code"}, 403
-    if float(token_obj.expiration) < datetime.datetime.utcnow().timestamp():
+    if datetime.datetime.now(tz=datetime.timezone.utc).timestamp() > float(token_obj.expiration) :
         token_db.delete(user_id)
         return {"message": "email_verif.error.expired"}, 403
     if int(token_obj.failed_attempts >= 5):

@@ -15,6 +15,20 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "18/05/2025",
+      version: "1.1.5",
+      added: [
+        "Email verification codes are now restricted to hexadecimal characters to make to manual typing easier.",
+      ],
+      fixed:[
+        "Fix a bug that might create issue when trying to delete the Zero-TOTP account.",
+        "Fix several UI issues",
+        "Fix 3 moderate CVE in the API dependencies.",
+        "Upgrade dependencies to maintain the security of the application.",
+        "Fix a issue while importing a new vault, causing the import to fail if the vault was containing a huge number of elements."
+      ]
+    },
+    {
       date: "25/04/2025",
       version: "1.1.0",
       added: [
