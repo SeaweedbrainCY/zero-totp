@@ -92,7 +92,7 @@
         <div class="file is-boxed" *ngIf="local_vault_service == null">
           <label class="file-label">
             <input class="file-input" type="file" name="resume" accept=".zero-totp,.txt" (change)="openFile($event)"
-              [disabled]="is_importing">
+             >
             <span class="file-cta">
               <span class="file-icon">
                 <fa-icon [icon]="faCloudArrowUp" *ngIf="!is_importing" size="2xl" class="mb-2"></fa-icon>
