@@ -79,8 +79,10 @@ export class Crypto {
           let public_key_str = ""
           if(api_public_key == undefined){
             public_key_str = environment.API_public_key
+            console.log("Using default public key")
           } else {
             public_key_str = api_public_key
+            console.log("Using provided public key")
           }
           const publicKey = await this.importPublicKey(public_key_str);
           const result = await window.crypto.subtle.verify(

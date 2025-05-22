@@ -80,12 +80,13 @@
         <div class="mt-6">
           <div class="file is-boxed">
             <label class="file-label">
-              <input class="file-input" type="file" name="resume" accept=".zero-totp, .txt" (change)="openFile($event)">
+              <input class="file-input" type="file" name="resume" accept=".zero-totp, .txt" (change)="openFile($event)" [disabled]="loading_file">
               <span class="file-cta">
                 <span class="file-icon">
-                  <fa-icon [icon]="faCloudArrowUp"></fa-icon>
+                  <fa-icon [icon]="faCloudArrowUp" *ngIf="!loading_file"></fa-icon>
+                   <fa-icon [icon]="faCircleNotch" *ngIf="loading_file" [animation]="true ? 'spin' : undefined"></fa-icon >
                 </span>
-                <span class="file-label">
+                <span class="file-label"  *ngIf="!loading_file">
                  {{ 'login.backup.vault_backup' | translate }}
                 </span>
               </span>
