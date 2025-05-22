@@ -49,7 +49,7 @@ export class LocalVaultV1Service {
     
   }
 
-  parseUploadedVault(unsecure_context_b64:string): Promise< UploadVaultStatus> {
+  parseUploadedVault(unsecure_context_b64:string, api_public_key:string|undefined): Promise< UploadVaultStatus> {
     return new Promise< UploadVaultStatus>((resolve) => {
       try{
       if(unsecure_context_b64.split(",").length != 2){
@@ -101,7 +101,7 @@ export class LocalVaultV1Service {
           this.derived_key_salt = context.derived_key_salt;
           this.zke_key_enc = context.zke_key_enc;
           this.enc_secrets = enc_secrets;
-           this.crypto.verifySignature(unsecure_vault_b64, signature).then(result => {
+           this.crypto.verifySignature(unsecure_vault_b64, signature, api_public_key).then(result => {
             if(result){
               this.is_signature_valid = true;
              resolve(UploadVaultStatus.SUCCESS);
