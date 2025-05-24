@@ -1,4 +1,17 @@
 #!/usr/bin/env bash
+
+if [ "$1" = "auto-upgrade" ]; then
+    echo "🔄 Auto upgrade asked. Use this option with precaution"
+    alembic upgrade head
+    if [ $? -eq 0 ]; then
+        echo "✅ Base de données mise à jour avec succès!"
+    else
+        echo "❌ Échec de la mise à jour de la base de données"
+        exit 1
+    fi
+fi
+
+
 alembic check > /tmp/alembic_check.log 2>&1
 if [ $? -eq 0 ]; then 
     cat /tmp/alembic_check.log > /var/log/api/api.log
