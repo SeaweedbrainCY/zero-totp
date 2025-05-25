@@ -4,9 +4,9 @@ if [ "$1" = "auto-upgrade" ]; then
     echo "🔄 Auto upgrade asked. Use this option with precaution"
     alembic upgrade head
     if [ $? -eq 0 ]; then
-        echo "✅ Base de données mise à jour avec succès!"
+        echo "✅ Database updated successfully"
     else
-        echo "❌ Échec de la mise à jour de la base de données"
+        echo "❌ An error occurred while updating the database. Check the error message above to understand what happened."
         exit 1
     fi
 fi
