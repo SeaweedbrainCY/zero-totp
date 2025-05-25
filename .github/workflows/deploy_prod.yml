@@ -43,7 +43,7 @@ jobs:
               -t seaweedbrain/$REPO:$current_short_version \
               -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:latest \
               -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_long_version \
-              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:current_short_version . 
+              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_short_version . 
         - name: Publish Docker Image to DockerHub
           run: docker push seaweedbrain/$REPO --all-tags
         - name: Publish Docker Image to Github Registry
@@ -77,7 +77,7 @@ jobs:
               -t seaweedbrain/$REPO:$current_short_version \
               -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:latest \
               -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_long_version \
-              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:current_short_version . 
+              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_short_version . 
         - name: Publish Docker Image to DockerHub
           run: docker push seaweedbrain/$REPO --all-tags
         - name: Publish Docker Image to Github Registry
