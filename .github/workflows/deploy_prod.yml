@@ -22,6 +22,8 @@ jobs:
         REPO: zero-totp-frontend
       steps:
         - uses: actions/checkout@v3
+        - name: Login to Github
+          run : echo ${{ secrets.TOKEN_GITHUB }} | docker login ghcr.io -u ${{ secrets.USERNAME_GITHUB }} --password-stdin
         - name: Login to Docker Hub
           run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
         - name: Create frontend environment file
@@ -37,7 +39,7 @@ jobs:
             current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
             docker build -t $REPO:latest -t $REPO:$current_long_version -t $REPO:$current_short_version . 
         - name: Publish Docker Image to DockerHub
-          run: docker push $REPO --all-tags
+          run: docker push seaweedbrain/$REPO --all-tags
         - name: Publish Docker Image to Github Registry
           run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
     docker-api:
@@ -65,7 +67,7 @@ jobs:
             current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
             docker build -t $REPO:latest -t $REPO:$current_long_version -t $REPO:$current_short_version . 
         - name: Publish Docker Image to DockerHub
-          run: docker push $REPO --all-tags
+          run: docker push seaweedbrain/$REPO --all-tags
         - name: Publish Docker Image to Github Registry
           run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
 
