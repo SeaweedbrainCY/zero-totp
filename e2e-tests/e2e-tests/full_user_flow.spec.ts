@@ -1,20 +1,17 @@
 import { test, expect } from '@playwright/test';
-import { chromium } from '@playwright/test';
+
 
 test.use({
   ignoreHTTPSErrors: true
 });
 
-let username = 'Test';
-let email = 'test@test.test';
-let passphrase = 'fake-$tvIpw5VKH97f0CxEF6C';
 
-test('Signup flow', async ({  }) => {
-  const browser = await chromium.launch({
-        args: ['--host-resolver-rules=MAP zero-totp.lan 127.0.0.1:443'] 
-    });
+let seed = Math.random().toString(36)
+let username = 'Test' + seed;
+let email = 'test' + seed + '@test.test';
+let passphrase = 'fake-$tvIpw5VKH97f0CxEF6C' + seed;
 
-  const page = await browser.newPage();
+test('Signup flow', async ({ page }) => {
   await page.goto('https://zero-totp.lan/signup');
   await page.getByRole('textbox', { name: 'Username' }).click();
   await page.getByRole('textbox', { name: 'Username' }).fill(username);
