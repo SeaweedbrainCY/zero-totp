@@ -37,7 +37,13 @@ jobs:
           run: |
             current_short_version=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/') 
             current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
-            docker build -t $REPO:latest -t $REPO:$current_long_version -t $REPO:$current_short_version . 
+            docker build \
+              -t seaweedbrain/$REPO:latest \
+              -t seaweedbrain/$REPO:$current_long_version \
+              -t seaweedbrain/$REPO:$current_short_version \
+              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:latest \
+              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_long_version \
+              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:current_short_version . 
         - name: Publish Docker Image to DockerHub
           run: docker push seaweedbrain/$REPO --all-tags
         - name: Publish Docker Image to Github Registry
@@ -65,7 +71,13 @@ jobs:
           run: |
             current_short_version=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/') 
             current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
-            docker build -t $REPO:latest -t $REPO:$current_long_version -t $REPO:$current_short_version . 
+            docker build \
+              -t seaweedbrain/$REPO:latest \
+              -t seaweedbrain/$REPO:$current_long_version \
+              -t seaweedbrain/$REPO:$current_short_version \
+              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:latest \
+              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_long_version \
+              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:current_short_version . 
         - name: Publish Docker Image to DockerHub
           run: docker push seaweedbrain/$REPO --all-tags
         - name: Publish Docker Image to Github Registry
