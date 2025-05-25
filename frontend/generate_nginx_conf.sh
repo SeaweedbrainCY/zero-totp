@@ -9,7 +9,7 @@ http {
         listen 80;
         root /usr/share/nginx/html/frontend/browser;
         index index.html;
-        add_header Content-Security-Policy \"default-src https://*.zero-totp.com; style-src 'self' 'unsafe-inline'; object-src 'none' ; script-src $hashes; img-src 'self' https://icons.duckduckgo.com/; base-uri 'self'; frame-src 'self'; connect-src 'self' https://*.zero-totp.com https://icons.duckduckgo.com/; manifest-src 'self'; worker-src 'self';\" always;
+        add_header Content-Security-Policy \"default-src 'self'; style-src 'self' 'unsafe-inline'; object-src 'none' ; script-src $hashes; img-src 'self' https://icons.duckduckgo.com/; base-uri 'self'; frame-src 'self'; connect-src 'self' 'self' https://icons.duckduckgo.com/; manifest-src 'self'; worker-src 'self';\" always;
 
         location / {
             try_files \$uri \$uri/ /index.html;

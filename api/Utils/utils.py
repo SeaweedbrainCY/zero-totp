@@ -13,6 +13,7 @@ from database.email_verification_repo import EmailVerificationToken
 from database.rate_limiting_repo import RateLimitingRepo 
 from database.refresh_token_repo import RefreshTokenRepo
 from database.session_token_repo import SessionTokenRepo
+from database.backup_configuration_repo import BackupConfigurationRepo
 import os
 from hashlib import sha256
 from base64 import b64encode
@@ -78,6 +79,7 @@ def delete_user_from_database(user_id):
     GoogleDriveIntegration_repo().delete(user_id)
     Preferences_repo().delete(user_id)
     TOTP_secret_repo().delete_all(user_id)
+    BackupConfigurationRepo().delete(user_id)
     ZKE_encryption_key_repo().delete(user_id)
     EmailVerificationToken().delete(user_id)
     RateLimitingRepo().flush_by_user_id(user_id)

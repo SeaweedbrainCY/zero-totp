@@ -15,6 +15,17 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "25/05/2025",
+      version: "1.3.0",
+      added: [
+        "Several features have been added under the hood to prepare Zero-TOTP for the self-hosted version. This version is a major step towards the self-hosted version of Zero-TOTP.",
+        "Further automated tests have been added to ensure the stability and reliability of the application.",
+      ],
+      fixed:[
+        "A bug causing the account deletion to be impossible when the user had custom backup settings"
+      ]
+    },
+    {
       date: "22/05/2025",
       version: "1.2.1",
       added: [

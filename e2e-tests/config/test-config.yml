@@ -1,0 +1,119 @@
+## 
+## This is an example configuration for Zero-TOTP.
+##
+
+## If a value is commented out, the default value will be used.
+
+
+api:
+    ## The port the API will listen on. Default is 8080.
+    # port: 8080
+
+    ## The secret that will be used to sign JWT tokens. CHANGE THIS VALUE !
+    ## A random 128 alphanumeric string is required.
+    jwt_secret: "false_secret_Xt4PF5TYTCyxVz3xHa828MH2KBgMAeSfXQYcHf35ARuMu3sV42zvFVYjRRDU8bRH"
+
+
+    ## Absolute path to the API private key used to sign the vault to guarantee its authenticity.
+    ## This must be a PEM encoded RSA private key.
+    private_key_path: "/tmp/test_private.pem"
+
+    ## Absolute path to the API public key used to verify vault the vault signature before opening it in the frontend.
+    ## This must be a PEM encoded RSA public key.
+    public_key_path: "/tmp/test_public.pem"
+
+    ## Secret used to encrypt flask session.
+    ## A random 128 alphanumeric string is required.
+    flask_secret_key: "false_secret_Xt4PF5TYTCyxVz3xHa828MH2KBgMAeSfXQYcHf35ARuMu3sV42zvFVYjRRDU8bRH"
+
+    ## Server side encryption key used to encrypt data stored in the database that is not Encrypted by the ZKE flow
+    ## A random 128 alphanumeric string is required.
+    ## BE CAREFULL WITHOUT THIS KEY SOME OF SAVED DATA WILL BE UNREADABLE
+    ## DO NOT LOOSE THIS KEY
+    ## DO NOT COMPROMISE THIS KEY
+    server_side_encryption_key: "false_secret_LTmf3l2d7H5F9NoEREeKOS0hVTeaiJBtuaCJpsn9Y1Kzgv9qNWB5mcmceZCap2oz3xLIibu1kszl81yM1xEYvUU38JF9ArYF912NCA7S6LmGLlEpm9acQzPypXhtNEse" 
+
+    ## Configuration of google drive Oauth. 
+    ## See https://developers.google.com/identity/protocols/oauth2 for more information.
+    #oauth:
+    #      ## See https://developers.google.com/identity/protocols/oauth2 for more information.
+    #    client_secret_file_path: "./tests/ressources/fake_client_secret.json"
+
+
+
+
+
+environment:
+  ## The environment the API is running in.
+  ## This value is used to determine the logging level, CORS and other settings.
+  ## Possible values are "local", "development" and "production".
+  ## Running non production type can cause security issues.
+  type: "production"
+
+  ## DO NOT MODIFY THIS VALUE
+  ## THIS VALUE IS AUTOMATICALLY GENERATED/UPDATED
+  ## MODIFICATION OF THIS VALUE WILL CAUSE THE API TO FAIL OR NEVER START
+  config_version: 1.0
+
+  domain: "zero-totp.lan"
+
+database:
+    ## The URI of the database to connect to.
+    ## The URI must be in the format of "mysql://user:password@host/db_name"
+    database_uri: "mysql://api:tmppassword@database:3306/zero_totp"
+
+
+
+features:
+
+
+    
+    ## Optional
+    ## Email notifications configuration
+    emails:
+        ## Optional 
+        ## Require email validation for new users.
+        ## If set to true, users will have to validate their email address before they can use the service.
+        ## If set to false, users will be able to use the service without validating their email address.
+        require_email_validation: false
+
+        ## Required if require_email_validation is set to true
+        ## Configuration of the SMTP server used to send emails.
+        #email_sender_address: "Zero-TOTP <zero-totp@example.com>"
+        #email_smtp_server: "smtp.example.com"
+        #email_smtp_port: 587
+        #email_smtp_username: "username"
+        #email_smtp_password: "password"
+
+    ## Optional
+    ## Configuration of the rate limiting protection
+    rate_limiting:
+        
+        ## Max consecutives failed login per IP in 1h
+        ## Default : 10
+        login_attempts_limit_per_ip: 10
+
+        ## Ban time per IP in minutes
+        ## Default : 15 min
+        login_ban_time: 15
+
+
+
+        ## Max email verification request per user in 1h
+        ## Default : 5
+        send_email_attempts_limit_per_user: 5
+
+        ## Email ban time per user in minutes
+        ## Default : 60 min
+        email_ban_time: 60
+    
+
+    ## Optional
+    ## Sentry configuration to centralize error tracking
+    ## Keep commented to disable
+    #sentry:
+        ## Sentry DSN
+        ## See https://docs.sentry.io/platforms/python/flask/ for more information.
+        #dsn: "not a dns"
+
+
