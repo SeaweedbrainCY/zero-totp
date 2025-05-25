@@ -24,9 +24,6 @@ jobs:
           with:
             compose-file: "./e2e-tests/docker-compose.yml"
         
-        - name: Add localhost DNS entry
-          run: echo "127.0.0.1 zero-totp.test" | sudo tee -a /etc/hosts
-        
         - uses: actions/setup-node@v4
           with:
             node-version: lts/*

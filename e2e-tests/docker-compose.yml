@@ -11,6 +11,7 @@ services:
       - ./config/test-config.yml:/api/config/config.yml
     depends_on:
       - database
+    restart: always
   database:
     environment:
       MYSQL_ROOT_PASSWORD: tmppassword
