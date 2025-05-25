@@ -1,0 +1,25 @@
+name: "dev.zero-totp.com deployment"
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+-dev.[0-9]+'
+
+jobs:
+    e2e-tests:
+        uses: ./.github/workflows/e2e_tests.yml
+        secrets:
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+    deploy-dev-env:
+       needs: [e2e-tests] 
+       name: Deploy development environment
+       runs-on: ubuntu-latest
+       steps:
+         - name: Dev env deployment
+           uses: distributhor/workflow-webhook@v3
+           env:
+             webhook_url: ${{ secrets.WEBHOOK_URL_DEV }}
+        

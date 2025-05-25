@@ -1,17 +1,26 @@
 name: "dev.zero-totp.com deployment"
 
 on:
-  push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+-dev.[0-9]+'
+  workflow_call:
+    secrets:
+      GITGUARDIAN_API_KEY:
+        required: true
+      SONAR_TOKEN:
+        required: true
+      SONAR_HOST_URL:
+        required: true
+      
 
 jobs:
-    tests:
-        uses: ./.github/workflows/test.yml 
-        secrets:
-          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+    tests_and_security:
+      name: Tests and security analysis
+      uses: ./.github/workflows/security_analysis.yml  # use the callable tests job to run tests
+      secrets:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }} 
     docker-frontend:
-      needs: [tests]
+      needs: [tests_and_security]
       name: Publish Frontend Docker image
       runs-on: ubuntu-latest
       env:
@@ -52,13 +61,4 @@ jobs:
           run: current_version=$(echo ${{ github.ref_name }} | sed 's/^v//') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_version -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:dev  . 
         - name: Publish Docker Image
           run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
-    deploy-dev-env:
-       needs: [docker-frontend, docker-api] 
-       name: Deploy on development environment
-       runs-on: ubuntu-latest
-       steps:
-         - name: Dev env deployment
-           uses: distributhor/workflow-webhook@v3
-           env:
-             webhook_url: ${{ secrets.WEBHOOK_URL_DEV }}
         
