@@ -60,6 +60,13 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            - name: Use last published image 
+              working-directory: ./e2e-tests
+              run: |
+                current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+                sed -i "s|\(image: ghcr.io/seaweedbraincy/zero-totp-api:\).*|\1$current_version|"
+                sed -i "s|\(image: ghcr.io/seaweedbraincy/zero-totp-frontend:\).*|\1$current_version|"
+
             - name: Run e2e docker compose
               uses: hoverkraft-tech/compose-action@v2.0.1
               with:
