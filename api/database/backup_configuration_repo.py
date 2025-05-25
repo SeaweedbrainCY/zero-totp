@@ -32,3 +32,10 @@ class BackupConfigurationRepo:
         db.session.commit()
         return backup_conf
     
+    def delete(self, user_id):
+        backup_conf = self.get_by_user_id(user_id)
+        if backup_conf is not None:
+            db.session.delete(backup_conf)
+            db.session.commit()
+        
+    
