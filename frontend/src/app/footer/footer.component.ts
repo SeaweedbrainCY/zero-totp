@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { faGlobe, faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { on } from 'events';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -16,6 +17,8 @@ export class FooterComponent {
   faGlobe = faGlobe;
   faEnvelope = faEnvelope;
   imageHash = environment.imageHash;
+  today_year = new Date().getFullYear();
+
   
       constructor() { }
 
