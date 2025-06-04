@@ -28,7 +28,7 @@
     "@ng-idle/core": "^14.0.0",
     "@ngx-translate/core": "^16.0.4",
     "@ngx-translate/http-loader": "^16.0.1",
-    "@types/node": "^20.8.4",
+    "@types/node": "^22.15.29",
     "@zxing/browser": "^0.1.5",
     "@zxing/library": "^0.21.3",
     "@zxing/ngx-scanner": "^19.0.0",
