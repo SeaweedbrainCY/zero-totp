@@ -40,12 +40,49 @@
             
           </div>
         </div>
-        <div class="control has-text-left" style="margin-top: -20px;" *ngIf="!is_oauth_flow">
+        <div class="control has-text-left mb-4" style="margin-top: -20px;" *ngIf="!is_oauth_flow">
           <label class="checkbox">
             <input type="checkbox" name="remember" [(ngModel)]="remember">
             {{ 'login.remember' | translate }} 
           </label>
         </div>
+        </div>
+        <div class="has-text-centered mt-6 mb-4 is-flex is-justify-content-center is-align-items-center">
+        <span>You are using </span>
+        <div class="dropdown is-active">
+          <div class="dropdown-trigger">
+             <button class="button is-ghost" aria-haspopup="true" aria-controls="dropdown-menu"> zero-totp.com <span class="tag is-success is-rounded  has-text-white ml-2" style="text-decoration: none !important;">Official</span> </button>
+            
+          </div>
+          <div class="dropdown-menu" id="dropdown-menu" role="menu">
+            <div class="dropdown-content">
+              <a href="#" class="dropdown-item"> Dropdown item </a>
+              <a class="dropdown-item"> Other dropdown item </a>
+              <a href="#" class="dropdown-item is-active"> Active dropdown item </a>
+              <a href="#" class="dropdown-item"> Other dropdown item </a>
+              <hr class="dropdown-divider" />
+              <a href="#" class="dropdown-item"> With a divider </a>
+            </div>
+          </div>
+        </div>
+       
+         <div class="dropdown is-hoverable">
+            <div class="dropdown-trigger">
+              <a  aria-haspopup="true" aria-controls="dropdown-menu4">
+                <fa-icon
+        [icon]="faCircleQuestion" class="has-text-grey"></fa-icon>
+              </a>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+              <div class="dropdown-content">
+                <div class="dropdown-item">
+                  <p class="has-text-left"><strong>Why is this important ?</strong><br> bla bla</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+
         </div>
         <div class="has-text-centered	block">
         

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey, faCircleNotch, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
 import { Router, ActivatedRoute } from '@angular/router';
@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
   faEnvelope = faEnvelope;
   faLock = faLock;
   faCheck = faCheck;
+  faCircleQuestion=faCircleQuestion;
   faXmark = faXmark;
   faCircleNotch = faCircleNotch;
   faKey = faKey;
