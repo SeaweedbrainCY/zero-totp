@@ -17,6 +17,7 @@ export class ChangelogComponent {
     {
       date: "04/06/2025",
       version: "1.4.0",
+      added: [],
       fixed:[
         "A lot of packages have been updated on the frontend and API side to improve the stability and security of the application.",
       ]
