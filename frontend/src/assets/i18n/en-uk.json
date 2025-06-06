@@ -5,6 +5,7 @@
     "not_found": "Page not found.",
     "oops": "Oops!"
   },
+  "Home": "Home",
   "Search": "Search",
   "abort": "Abort",
   "about": "About",
@@ -283,7 +284,6 @@
   },
   "give_up": "Quit",
   "green": "Green",
-  "Home":"Home",
   "home": {
     "about": {
       "title": "About Zero-Knowledge Encryption",
@@ -504,6 +504,17 @@
       "session_killed": "For your safety, you have been disconnected because you have reloaded or closed the tab",
       "session_timeout": "For your safety, you have been disconnected after due to inactivity. You can customize this delay in your preferences"
     },
+    "instance": {
+      "select": {
+        "title": "Select a Zero-TOTP instance",
+        "why": {
+          "p1": "Zero-TOTP is open-source, meaning anyone can run their own Zero-TOTP. Only signup or login to a Zero-TOTP instance that you trust.",
+          "p2": "If you have any doubt, use the official instance, zero-totp.com.",
+          "title": "Why is this important ?"
+        }
+      },
+      "you_are_using": "You are using"
+    },
     "open_button": "Open my vault",
     "remember": "Remember my email address",
     "rescue": {
@@ -542,6 +553,7 @@
       "loading": "Synchronizing, do not close your browser..."
     }
   },
+  "official": "Official",
   "orange": "Orange",
   "passphrase": "Passphrase",
   "preference": {
@@ -778,6 +790,7 @@
   "retry": "Try again",
   "save": "Save",
   "seconds": "seconds",
+  "self_hosted": "Self-hosted",
   "session_expired": "Oups, you session is expired !",
   "sign_up": "Sign up",
   "signup": {

@@ -5,6 +5,7 @@
     "not_found": "Page non trouvée",
     "oops": "Oups !"
   },
+  "Home": "Accueil",
   "Search": "Rechercher",
   "abort": "Abandonné",
   "about": "À propos",
@@ -281,7 +282,6 @@
   },
   "give_up": "Abandonner",
   "green": "Vert",
-  "Home": "Accueil",
   "home": {
     "about": {
       "title": "À propos de la Zero-Knowledge Encryption",
@@ -502,6 +502,17 @@
       "session_killed": "Pour ta sécurité tu as été déconnecté car tu as rafraichi ou fermé l'onglet ",
       "session_timeout": "Pour ta sécurité, tu as été déconnecté car tu étais inactif. Tu peux personnaliser la durée d'inactivité maximum dans tes préférences."
     },
+    "instance": {
+      "select": {
+        "title": "Sélectionne une instance Zero-TOTP",
+        "why": {
+          "p1": "Zero-TOTP est open source, ce qui signifie que tout le monde peut héberger son propre Zero-TOTP. Ne te connecte que sur une instance de Zero-TOTP en laquelle tu as confiance.",
+          "p2": "En cas de doute, utilise l'instance officielle, zero-totp.com",
+          "title": "Pourquoi c'est important ?"
+        }
+      },
+      "you_are_using": "Tu utilises"
+    },
     "open_button": "Ouvrir mon coffre",
     "remember": "Mémoriser mon adresse email",
     "rescue": {
@@ -540,6 +551,7 @@
       "loading": "Synchronisation, ne ferme pas cette page ... "
     }
   },
+  "official": "Officiel",
   "orange": "Orange",
   "passphrase": "Passphrase",
   "preference": {
@@ -776,6 +788,7 @@
   "retry": "Réessayer",
   "save": "Sauvegarder",
   "seconds": "secondes",
+  "self_hosted": "Auto-hébergé",
   "session_expired": "Oups, ta session a expirée !",
   "sign_up": "Inscription",
   "signup": {
