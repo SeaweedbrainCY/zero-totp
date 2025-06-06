@@ -10,12 +10,6 @@
     </div>
     <div class="has-text-centered	is-full is-flex is-flex-direction-column is-justify-content-center">
       <div class="has-text-centered columns p-5" >
-       <!-- <div class="notification is-warning column is-6 is-offset-3 is-light">
-          <p>  <fa-icon [icon]="faFlask" size="2xl" ></fa-icon> </p>
-          <strong class="block">{{ 'signup.beta.warning.title' | translate }}<br>
-          </strong><br>
-          <span>{{ 'signup.beta.warning.desc' | translate }}</span>
-        </div>-->
       </div>
       <div class="field is-full is-flex is-justify-content-center has-addons ">
         <p class="control has-icons-left" style="min-width: 30vw;">
@@ -86,13 +80,66 @@
             {{ 'signup.checkbox.privacy_policy' | translate }} <a href="https://zero-totp.com/privacy">{{'privacy_policy' | translate}}</a>
           </label>
         </div>
-        <!--<div class="control">
-      <label class="checkbox" style="max-width: 50vw;">
-        <input type="checkbox" name="beta" [(ngModel)]="beta">
-        {{ 'signup.checkbox.beta' | translate }}
-      </label>
-    </div>-->
   </div>
+  <div class="has-text-centered mt-4 mb-4 is-flex is-justify-content-center is-align-items-center">
+      <span> {{'login.instance.you_are_using' | translate}} </span>
+      <div class="dropdown is-hoverable">
+        <div class="dropdown-trigger">
+          <button class="button is-ghost pl-1" aria-haspopup="true" aria-controls="dropdown-menu"> {{current_domain}}
+            <span class="tag is-success is-rounded  has-text-white ml-2" style="text-decoration: none !important;"
+              *ngIf="current_domain == 'zero-totp.com'">{{'official' | translate}} </span>
+            <span class="tag is-info is-rounded  has-text-white ml-2" style="text-decoration: none !important;"
+              *ngIf="current_domain != 'zero-totp.com'">{{'self_hosted' | translate}}</span>
+          </button>
+
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+          <div class="dropdown-content ">
+            <p class="is-size-7" style="padding-left: 16px; padding-right: 16px;">
+              <strong>{{'login.instance.select.title' | translate}}</strong>
+            </p>
+            <hr class="dropdown-divider" />
+            <a href="https://zero-totp.com/signup" class="dropdown-item has-text-centered"
+              [ngClass]="{'is-active': current_domain == 'zero-totp.com'}"
+              style="padding-left: 16px; padding-right: 16px;">zero-totp.com <span
+                class="tag is-success is-rounded  has-text-white ml-2"
+                style="text-decoration: none !important;">{{'official' | translate}}</span> </a>
+            <a class="dropdown-item" 
+              *ngIf="current_domain != 'zero-totp.com'" style="padding-left: 16px; padding-right: 16px;"
+              [ngClass]="{'is-active': current_domain != 'zero-totp.com'}"> {{current_domain}}<span
+                class="tag is-white is-rounded  has-text-black ml-2"
+                style="text-decoration: none !important;">{{'self_hosted' | translate}}</span> </a>
+            <hr class="dropdown-divider" />
+            <p class="is-size-7" style="padding-left: 16px; padding-right: 16px;">
+              <strong>{{'login.instance.select.why.title' | translate}} </strong><br>
+              {{'login.instance.select.why.p1' | translate}}
+              <br>
+              <strong>{{'login.instance.select.why.p2' | translate}}</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="dropdown is-hoverable">
+        <div class="dropdown-trigger">
+          <a aria-haspopup="true" aria-controls="dropdown-menu4">
+            <fa-icon [icon]="faCircleQuestion" class="has-text-grey"></fa-icon>
+          </a>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+          <div class="dropdown-content">
+            <div class="dropdown-item">
+              <p class="has-text-left"><strong>{{'login.instance.select.why.title' | translate}}</strong><br>
+                {{'login.instance.select.why.p1' | translate}}<br>
+                <strong>{{'login.instance.select.why.p2' | translate}}</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
       </div>
       <div class="has-text-centered	">
       
@@ -104,19 +151,34 @@
 <div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
     <div class="modal-background" (click)="closeModal()"></div>
     <div class="modal-content">
+       <header class="modal-card-head">
+      <h1 class="is-size-2 has-text-success">{{ 'signup.popup.title' | translate }}</h1>
+      </header>
       <section class="modal-card-body">
-        <h1 class="is-size-1 has-text-danger">{{ 'signup.popup.title' | translate }}</h1>
-        {{ 'signup.popup.subtitle.part1' | translate }} <strong>{{ 'signup.popup.subtitle.strong' | translate }}</strong><br><br>
+        <div class="mt-2 has-text-left">
+        <p>
+        {{ 'signup.popup.subtitle.part1' | translate }} <strong>{{ 'signup.popup.subtitle.strong' | translate }}</strong></p><br>
       {{ 'signup.popup.subititle.part2' | translate }}<br><br>
-      <strong>{{ 'signup.popup.instruction' | translate }}</strong><br>
-        <code>{{ 'signup.popup.phrase' | translate }}</code><br><br>
-        <input class="input" type="text" placeholder="{{ 'signup.popup.phrase' | translate }}" name="input" [(ngModel)]="input" (keyup)="confirmSentence()">
+      <p class="has-text-weight-bold has-text-success">
+      {{ 'signup.popup.subititle.part3' | translate }}</p>
+      <ul class="has-text-success">
+        <li>
+          🔐 <span class="has-text-weight-bold" >{{ 'signup.popup.subititle.part4' | translate }} : </span>  
+          {{ 'signup.popup.subititle.part4_1' | translate }}
+        </li>
+         <li>
+          🧠 <span class="has-text-weight-bold" >{{ 'signup.popup.subititle.part5' | translate }} :</span>
+          {{ 'signup.popup.subititle.part5_1' | translate }}
+        </li>
+      </ul>
+      
+      </div>
 
       </section>
       
       <footer class="modal-card-foot is-flex is-justify-content-right">
         <button class="button mr-1" (click)="closeModal()">{{ 'cancel' | translate }}</button>
-        <button class="button is-success ml-1" [disabled]="modal_confim_button_diabled" (click)="signup()">{{ 'signup.button.create' | translate }}</button>
+        <button class="button is-success ml-1"  (click)="signup()">{{ 'signup.button.create' | translate }}</button>
       </footer>
     </div>
     <button class="modal-close is-large" aria-label="close" (click)="closeModal()"></button>

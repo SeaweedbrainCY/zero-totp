@@ -792,18 +792,12 @@
   "session_expired": "Oups, ta session a expirée !",
   "sign_up": "Inscription",
   "signup": {
-    "beta": {
-      "warning": {
-        "desc": "Merci de nous avoir rejoint ! Nous sommes une petite équipe et nous travaillons dur pour faire de Zero-TOTP le meilleur client TOTP. Nous sommes encore en version bêta, donc certaines fonctionnalités ne sont pas encore implémentées, des bugs peuvent survenir et nous avons besoin de votre aide pour améliorer Zero-TOTP. Veuillez signaler tout problème que vous rencontrez. Merci pour votre compréhension et votre aide !",
-        "title": "Bienvenue sur Zero-TOTP 👋"
-      }
-    },
     "button": {
-      "create": "Créer mon coffre",
+      "create": "Ma passphrase est sûre",
+      "i_understand": "Je comprends",
       "start": "C'est parti !"
     },
     "checkbox": {
-      "beta": "Je comprends qu'il s'agit d'une version beta et j'en accepte les risques. Je comprends que toutes les fonctionnalités ne sont pas encore implémentées et que des bugs peuvent apparaître. Je m'engage à signaler tout problème que je pourrais trouver.",
       "privacy_policy": "J'ai lu et j'accepte la"
     },
     "email": {
@@ -813,7 +807,6 @@
       }
     },
     "errors": {
-      "beta": "N'oublie pas d'accepter les conditions de la Beta !",
       "hashing": "Une erreur est survenue en hachant ta passphrase. Réessaye plus tard",
       "missing_fields": "Tu n'as pas oublié quelque chose ?",
       "terms": "N'oublie pas d'accepter les termes et conditions !",
@@ -833,13 +826,18 @@
       "instruction": "Pour créer ton coffre, recopie la phrase suivante",
       "phrase": "Ma passphrase est forte et je ne l'oublierai pas",
       "subititle": {
-        "part2": "Toi et seulement toi peut ouvrir ton coffre."
+        "part2": "Ta passphrase et uniquement ta passphrase peut ouvrir ton coffre. Par sécurité, il est complètement impossible de récupérer ta passphrase si tu la perds.",
+        "part3": "Il est absolument crucial que : ",
+        "part4": "Ta passphrase soit robuste",
+        "part4_1" : "tout dépend d'elle ! Elle ne doit pas être facilement devinable.",
+        "part5": "Tu n'oublies pas ta passphrase",
+        "part5_1" : "Il n'existe et n'existera jamais aucuns moyen de la récupérer. C'est ce qui rend Zero-TOTP aussi sûr."
       },
       "subtitle": {
-        "part1": "Zero-TOTP utilise du chiffrement dit \"Zero-Knowledge\" ce qui veut dire qu'il sera",
+        "part1": "Zero-TOTP utilise du chiffrement \"Zero-Knowledge\" ce qui veut dire qu'il sera",
         "strong": "impossible de récupérer ta passphrase si tu la perds !"
       },
-      "title": "Es-tu sûr ?"
+      "title": "Ta passphrase est assez forte ?"
     },
     "subtitle": "Un voyage sûr et fiable",
     "success": "Compte créé avec succès 🎉🎉",

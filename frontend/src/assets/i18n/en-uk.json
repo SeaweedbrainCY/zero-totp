@@ -794,18 +794,12 @@
   "session_expired": "Oups, you session is expired !",
   "sign_up": "Sign up",
   "signup": {
-    "beta": {
-      "warning": {
-        "desc": "Thanks for joining us !",
-        "title": "Welcome to Zero-TOTP 👋"
-      }
-    },
     "button": {
-      "create": "Create my vault",
+      "create": "My passphrase is strong",
+      "i_understand": "I understand",
       "start": "Start my zero-trip "
     },
     "checkbox": {
-      "beta": "I understand this is a beta version and I accept the risks. I understand that all features are not implemented yet, bugs may occur and I agree to report any issue I find.",
       "privacy_policy": "I agree to the"
     },
     "email": {
@@ -815,7 +809,6 @@
       }
     },
     "errors": {
-      "beta": "Dont forget to accept the beta conditions !",
       "hashing": "An error occured while hashing your password. Please, try again",
       "missing_fields": "Did you forget to fill something ?",
       "terms": "Dont forget to accept terms & conditions !",
@@ -835,13 +828,18 @@
       "instruction": "To create your vault type the following sentence :",
       "phrase": "My passphrase is strong and I won't forget it",
       "subititle": {
-        "part2": "You and only you can open your vault."
+        "part2": "Your passphrase, and only your passphrase, can open your vault. For security reasons, it is completely impossible to recover your passphrase if you lose it.",
+"part3": "It is absolutely crucial that:",
+"part4": "Your passphrase is strong",
+"part4_1": "everything depends on it! It must not be easy to guess.",
+"part5": "You do not forget your passphrase",
+"part5_1": "There is and will never be any way to recover it. That’s what makes Zero-TOTP so secure."
       },
       "subtitle": {
         "part1": "Zero-TOTP uses Zero Knowledge Encryption, which means that ",
         "strong": "you won't be able to recover your password if you lose it !"
       },
-      "title": "Are you sure ?"
+      "title": "Is your passphrase strong enough ?"
     },
     "subtitle": "Have a safe and pleasant zero-trip",
     "success": "Account created successfully 🎉🎉",

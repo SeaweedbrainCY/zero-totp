@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash , faFlask} from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash , faFlask, faCircleQuestion} from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
@@ -22,6 +22,7 @@ export class SignupComponent implements OnInit {
   faCheck=faCheck;
   faUser=faUser;
   faDiscord=faDiscord;
+  faCircleQuestion=faCircleQuestion;
   faXmark=faXmark;
   faFlagCheckered=faFlagCheckered;
   faEye=faEye;
@@ -43,11 +44,11 @@ export class SignupComponent implements OnInit {
   encryptedZKEkey=""
   derivedKeySalt=""
   passphraseSalt=""
-  modal_confim_button_diabled=true;
   beta=true;
   isModalSentenceCompleted=false;
   isPasswordVisible=false;
   isConfirmPasswordVisible=false;
+  current_domain = "";
 
 
   constructor(
@@ -62,7 +63,7 @@ export class SignupComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    return;
+    this.current_domain = window.location.host;
   }
 
   checkPassword(){
@@ -205,10 +206,5 @@ this.closeModal()
     this.isModalActive=false;
   }
 
-  confirmSentence(){
-    if(this.input.replace(/[^a-zA-Z]/g, '') == this.translate.instant("signup.popup.phrase").replace(/[^a-zA-Z]/g, '')){
-      this.modal_confim_button_diabled = false
-      this.isModalSentenceCompleted = true
-    }
-  }
+  
 }
