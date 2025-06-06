@@ -48,7 +48,6 @@ export class LoginComponent implements OnInit {
   remember = false;
   api_public_key: string | undefined = undefined;
   loading_file = false;
-  instance_dropdown_is_active = false;
   current_domain = "";
 
   constructor(
