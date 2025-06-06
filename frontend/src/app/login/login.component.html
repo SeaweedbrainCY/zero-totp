@@ -62,8 +62,8 @@
               <p class="is-size-7" style="padding-left: 16px; padding-right: 16px;"><strong>{{'login.instance.select.title' | translate}}</strong>
               </p>
               <hr class="dropdown-divider" />
-              <a href="https://zero-totp.com.login" class="dropdown-item has-text-centered" [ngClass]="{'is-active': current_domain == 'zero-totp.com'}" style="padding-left: 16px; padding-right: 16px;">zero-totp.com <span class="tag is-success is-rounded  has-text-white ml-2" style="text-decoration: none !important;">{{'official' | translate}}</span>  </a>
-              <a class="dropdown-item" *ngIf="current_domain != 'zero-totp.com'" style="padding-left: 16px; padding-right: 16px;" [ngClass]="{'is-active': current_domain != 'zero-totp.com'}" > {{current_domain}}<span class="tag is-white is-rounded  has-text-black ml-2" style="text-decoration: none !important;" >{{'self_hosted' | translate}}</span>  </a>
+              <a href="https://zero-totp.com/login" class="dropdown-item has-text-centered" [ngClass]="{'is-active': current_domain == 'zero-totp.com'}" style="padding-left: 16px; padding-right: 16px;">zero-totp.com <span class="tag is-success is-rounded  has-text-white ml-2" style="text-decoration: none !important;">{{'official' | translate}}</span>  </a>
+              <a class="dropdown-item" (click)="instance_dropdown_is_active=false" *ngIf="current_domain != 'zero-totp.com'" style="padding-left: 16px; padding-right: 16px;" [ngClass]="{'is-active': current_domain != 'zero-totp.com'}" > {{current_domain}}<span class="tag is-white is-rounded  has-text-black ml-2" style="text-decoration: none !important;" >{{'self_hosted' | translate}}</span>  </a>
               <hr class="dropdown-divider" />
               <p class="is-size-7" style="padding-left: 16px; padding-right: 16px;"><strong>{{'login.instance.select.why.title' | translate}} </strong><br>
                 {{'login.instance.select.why.p1' | translate}}
