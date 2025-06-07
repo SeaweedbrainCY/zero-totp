@@ -245,6 +245,15 @@ class BackupConfig:
             logging.info("default_backup_configuration.max_age_in_days is not set. Using default value: 30")
 
 
+class PrivacyPolicyConfig:
+    def __init__(self):
+        self.available_languages = ["en", "fr"]
+        self.privacy_policy_mk_file_path = {
+            "en": "./config/assets/privacy_policy/privacy_policy_en.md",
+            "fr": "./config/assets/privacy_policy/privacy_policy_fr.md"
+        }
+        
+
 
 
 class FeaturesConfig:
@@ -254,6 +263,7 @@ class FeaturesConfig:
         self.rate_limiting = RateLimitingConfig(data["rate_limiting"] if "rate_limiting" in data else [])
         self.sentry = SentryConfig(data["sentry"]) if "sentry" in data else None
         self.backup_config = BackupConfig(data["default_backup_configuration"] if "default_backup_configuration" in data else [])
+        self.privacy_policy = PrivacyPolicyConfig()
 
 
 class Config:
