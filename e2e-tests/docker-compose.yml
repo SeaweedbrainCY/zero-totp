@@ -1,11 +1,11 @@
 services:
   frontend:
     container_name: frontend
-    image: ghcr.io/seaweedbraincy/zero-totp-frontend:1.3.0-dev.3
+    image: ghcr.io/seaweedbraincy/zero-totp-frontend:dev
 
   api:
     container_name: api
-    image: ghcr.io/seaweedbraincy/zero-totp-api:1.3.0-dev.3
+    image: ghcr.io/seaweedbraincy/zero-totp-api:dev
     command: ./start.sh auto-upgrade
     volumes:
       - ./config/test-config.yml:/api/config/config.yml
