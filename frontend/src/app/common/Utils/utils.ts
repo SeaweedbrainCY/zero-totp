@@ -18,6 +18,10 @@ export class Utils {
       return valid.test(domain_name);
     }
 
+    isDeviceMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
+
 
 
     vaultToJson(vault:  Map<string, Map<string, string>>):string{
