@@ -782,10 +782,16 @@ paths:
       responses:
         "200": 
           description: Privacy policy in Markdown format
+          content:
+            text/markdown:
+              schema:
+                type: string
+                example: "# Privacy Policy\n\nThis is the privacy policy in Markdown format."
         "404":
           description: No privacy policy defined for this Zero-TOTP instance
         "500":
           description: Internal server error
+        
 
   /backup/configuration:
     get:
