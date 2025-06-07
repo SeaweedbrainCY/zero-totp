@@ -763,6 +763,29 @@ paths:
           description: API is healthy
         "500":
           description: API is unhealthy
+  
+  /privacy-policy:
+    get:
+      operationId: endpoints_controllers.privacy_policy.get_privacy_policy
+      tags:
+        - General
+      parameters:
+        - in: query
+          name: lang 
+          required: true
+          schema:
+            type: string
+          description: The language of the privacy policy to return. Supported languages are "en" for English and "fr" for French.
+          example: "en"
+      summary: Return the privacy policy formatted in Markdown
+      security: []
+      responses:
+        "200": 
+          description: Privacy policy in Markdown format
+        "404":
+          description: No privacy policy defined for this Zero-TOTP instance
+        "500":
+          description: Internal server error
 
   /backup/configuration:
     get:
