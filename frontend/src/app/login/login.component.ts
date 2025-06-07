@@ -49,6 +49,7 @@ export class LoginComponent implements OnInit {
   api_public_key: string | undefined = undefined;
   loading_file = false;
   current_domain = "";
+  instance_dropdown_active=false;
 
   constructor(
     private http: HttpClient,
@@ -59,7 +60,7 @@ export class LoginComponent implements OnInit {
     private localVaultv1: LocalVaultV1Service,
     private translate: TranslateService,
     private toastr: ToastrService,
-    private utils: Utils,
+    public utils: Utils,
     private vaultService: VaultService
   ) {
   }
@@ -449,6 +450,12 @@ export class LoginComponent implements OnInit {
       });
     });
 
+  }
+
+  zero_totp_instance_button_click() {
+    if(this.utils.isDeviceMobile()){
+      this.instance_dropdown_active = !this.instance_dropdown_active;
+    }
   }
 
 

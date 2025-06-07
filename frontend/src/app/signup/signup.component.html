@@ -81,11 +81,12 @@
           </label>
         </div>
   </div>
-  <div class="has-text-centered mt-4 mb-4 is-flex is-justify-content-center is-align-items-center">
+  <div class="has-text-centered mt-4 mb-4 is-flex is-justify-content-center is-align-items-center is-flex-wrap-wrap">
       <span> {{'login.instance.you_are_using' | translate}} </span>
-      <div class="dropdown is-hoverable">
+      <div class="is-flex is-justify-content-center is-align-items-center">
+      <div class="dropdown " [ngClass]="{'is-active': instance_dropdown_active, 'is-hoverable': !this.utils.isDeviceMobile()}">
         <div class="dropdown-trigger">
-          <button class="button is-ghost pl-1" aria-haspopup="true" aria-controls="dropdown-menu"> {{current_domain}}
+          <button class="button is-ghost pl-1" aria-haspopup="true" aria-controls="dropdown-menu" (click)="zero_totp_instance_button_click()"> {{current_domain}}
             <span class="tag is-success is-rounded  has-text-white ml-2" style="text-decoration: none !important;"
               *ngIf="current_domain == 'zero-totp.com'">{{'official' | translate}} </span>
             <span class="tag is-info is-rounded  has-text-white ml-2" style="text-decoration: none !important;"
@@ -93,6 +94,7 @@
           </button>
 
         </div>
+        
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content ">
             <p class="is-size-7" style="padding-left: 16px; padding-right: 16px;">
@@ -106,7 +108,7 @@
                 style="text-decoration: none !important;">{{'official' | translate}}</span> </a>
             <a class="dropdown-item" 
               *ngIf="current_domain != 'zero-totp.com'" style="padding-left: 16px; padding-right: 16px;"
-              [ngClass]="{'is-active': current_domain != 'zero-totp.com'}"> {{current_domain}}<span
+              [ngClass]="{'is-active': current_domain != 'zero-totp.com'}" (click)="instance_dropdown_active=false"> {{current_domain}}<span
                 class="tag is-white is-rounded  has-text-black ml-2"
                 style="text-decoration: none !important;">{{'self_hosted' | translate}}</span> </a>
             <hr class="dropdown-divider" />
@@ -136,6 +138,7 @@
             </div>
           </div>
         </div>
+      </div>
       </div>
 
 

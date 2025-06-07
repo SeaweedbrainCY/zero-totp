@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../common/User/user.service';
 
+
 @Component({
     selector: 'app-signup',
     templateUrl: './signup.component.html',
@@ -48,11 +49,12 @@ export class SignupComponent implements OnInit {
   isPasswordVisible=false;
   isConfirmPasswordVisible=false;
   current_domain = "";
+  instance_dropdown_active = false;
 
 
   constructor(
     private http: HttpClient,
-    private utils: Utils,
+    public utils: Utils,
     private crypto:Crypto,
     private router: Router,
     private route: ActivatedRoute,
@@ -201,5 +203,10 @@ export class SignupComponent implements OnInit {
     this.isModalActive=false;
   }
 
+  zero_totp_instance_button_click() {
+    if(this.utils.isDeviceMobile()){
+      this.instance_dropdown_active = !this.instance_dropdown_active;
+    }
+  }
   
 }
