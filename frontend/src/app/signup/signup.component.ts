@@ -45,7 +45,6 @@ export class SignupComponent implements OnInit {
   derivedKeySalt=""
   passphraseSalt=""
   beta=true;
-  isModalSentenceCompleted=false;
   isPasswordVisible=false;
   isConfirmPasswordVisible=false;
   current_domain = "";
@@ -123,10 +122,7 @@ export class SignupComponent implements OnInit {
 
 
   signup() {
-    if(!this.isModalSentenceCompleted){
-      this.openModal();
-    } else {
-this.closeModal()
+    this.closeModal()
     this.emailErrorMessage="";
     this.usernameErrorMessage="";
     this.passwordErrorMessage = [''];
@@ -156,7 +152,6 @@ this.closeModal()
         this.hashPassword()
       });
     });   
-  }
   }
 
   hashPassword(){
