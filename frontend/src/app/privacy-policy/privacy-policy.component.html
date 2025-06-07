@@ -1,7 +1,37 @@
-<section class="hero  is-halfheight m-6  has-text-weight-medium pb-6	" style="min-height: 70vh;">
+<section class="hero content is-halfheight m-6  has-text-weight-medium pb-6	" style="min-height: 70vh;">
+  <article class="hero-body is-flex is-justify-content-center"
+    *ngIf="!is_privacy_policy_loaded && !loading_error">
+    <div>
+      <p class="has-text-weight-bold has-text-centered">{{ 'privacy.loading' | translate }}<br>
+        <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#000000;"
+          size="2xl"></fa-icon>
+      </p>
 
-<markdown
-  [src]="'path/to/file.md'">
-</markdown>
+      <p class="has-text-weight-light has-text-centered">{{ 'privacy.fallback_message' | translate }}
+        <a href="https://github.com/SeaweedbrainCY/zero-totp/tree/main/api/config/assets/privacy_policy">GitHub <fa-icon
+            [icon]="faArrowUpRightFromSquare"></fa-icon></a>.
+      </p>
+
+    </div>
+  </article>
+  <article class="hero-body is-flex is-justify-content-center"
+    *ngIf="loading_error">
+    <div>
+      <p class="has-text-weight-bold has-text-centered">{{ 'privacy.error_loading' | translate }}<br>
+        <fa-icon [icon]="faCircleXmark" style="color:#FE6847;"size="2xl"></fa-icon>
+      </p>
+
+      <p class="has-text-weight-bold has-text-centered">{{ 'privacy.error_message' | translate }}
+        <a href="https://github.com/SeaweedbrainCY/zero-totp/tree/main/api/config/assets/privacy_policy">GitHub <fa-icon
+            [icon]="faArrowUpRightFromSquare"></fa-icon></a>.
+      </p>
+
+    </div>
+  </article>
+  <markdown 
+    *ngIf="privacy_policy_md != undefined && !loading_error" 
+    [data]="privacy_policy_md"
+    >
+  </markdown>
 
 </section>

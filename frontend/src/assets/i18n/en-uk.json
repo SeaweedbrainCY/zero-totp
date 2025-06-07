@@ -5,6 +5,7 @@
     "not_found": "Page not found.",
     "oops": "Oops!"
   },
+  "Home": "Home",
   "Search": "Search",
   "abort": "Abort",
   "about": "About",
@@ -283,7 +284,6 @@
   },
   "give_up": "Quit",
   "green": "Green",
-  "Home":"Home",
   "home": {
     "about": {
       "title": "About Zero-Knowledge Encryption",
@@ -651,6 +651,9 @@
       "desc": "We only use authentication cookies for session management. No tracking cookies are used.",
       "title": "Cookies"
     },
+    "error_loading": "An error occured while loading the privacy policy. Please try again later.",
+    "error_message": "While we are working on this, you can always retrieve the Zero-TOTP privacy policy on ",
+    "fallback_message": "If you are stuck on the loading you can always retrieve the Zero-TOTP privacy policy on ",
     "intro": {
       "part1": "Welcome to Zero-TOTP, a web application where users can securely store their TOTP codes for 2FA authentication with third-party services. At Zero-TOTP, we prioritize the privacy and security of your data. This Privacy Policy outlines how we collect, use, and protect your information. By using our services, you agree to the terms of this Privacy Policy.",
       "part2": "This Privacy Policy aims to define the principles and guidelines implemented by the Zero-TOTP regarding the processing of personal data of users of the website zero-totp.com and rescue.zero-totp.com. The concept of \"personal data\" corresponds to the definition provided by Article 4 of the General Data Protection Regulation of the European Union (GDPR 2016/679). It refers to any information capable of directly or indirectly identifying a natural person, such as a username, email address, etc. Zero-TOTP affirms its commitment to complying with the applicable laws and regulations concerning data protection and undertakes to preserve their security, confidentiality, and integrity. Zero-TOTP formally commits not to sell, rent, exchange, or give away any personal information."
@@ -666,6 +669,7 @@
       "desc3": "Please note that while the source code is open and freely available, the use of Zero-TOTP as a service provided by us is subject to the terms outlined in this Privacy Policy.",
       "title": "Open Source and GPL 3 License"
     },
+    "loading": "Loading the privacy policy ...",
     "location": {
       "long1": "To maximize redundancy, replication, and availability, we store data in three countries: Canada, Germany, and Switzerland. This practice is compliant with the GDPR, as all these countries are recognized by the EU as acceptable for data transfer. Additionally, we adhere to Swiss privacy laws and Quebec's Law 25 on data protection.",
       "long2": "Please note that the list of countries where data is stored may change in the future. If we add a new country that is not an EU member, Canada, the USA, or Switzerland, we will notify users accordingly.",
