@@ -1,4 +1,5 @@
 from environment import conf, logging
+from flask import Response
 
 
 # GET /privacy-policy
@@ -9,7 +10,11 @@ def get_privacy_policy(lang="en"):
             lang = "en"
         with open(conf.features.privacy_policy.privacy_policy_mk_file_path[lang], "r") as f:
             privacy_policy = f.read()
-        return {"markdown": privacy_policy}, 200
+        return Response(
+            privacy_policy,
+            mimetype="text/markdown",
+            headers={"Content-Disposition": "inline; filename=privacy_policy.md"}
+        )
     except Exception as e:
         logging.error("Error while reading privacy policy file: " + str(e))
         return {"message": "No privacy policy defined for this instance."}, 404
