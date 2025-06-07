@@ -87,10 +87,10 @@
         </div>
         <div class="navbar-item">
           <div class="buttons">
-            <a class="button is-info" *ngIf="userService.getId() == null" href="/signup">
+            <a class="button is-info" *ngIf="userService.getId() == null" (click)="navigateToRoute('signup')">
               <span [ngClass]="{'has-text-weight-bold':currentUrl == '/signup'}">{{ 'sign_up' | translate }}</span>
             </a>
-            <a class="button is-light" *ngIf="userService.getId()== null" href="/login">
+            <a class="button is-light" *ngIf="userService.getId()== null" (click)="navigateToRoute('login')">
               <span [ngClass]="{'has-text-weight-bold':currentUrl == '/login'}">{{ 'log_in' | translate }}</span>
             </a>
 
