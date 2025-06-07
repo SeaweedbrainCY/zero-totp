@@ -145,7 +145,7 @@
       
       <div class="field">
         <div class="control">
-          <button class="button is-info is-medium mt-6" (click)="signup()" data-target="confirmation"  [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading || emailErrorMessage != '' || passwordErrorMessage.length > 1 || usernameErrorMessage != '' || !terms || !beta">{{ 'signup.button.start' | translate }}
+          <button class="button is-info is-medium mt-6" (click)="openModal()" data-target="confirmation"  [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading || emailErrorMessage != '' || passwordErrorMessage.length > 1 || usernameErrorMessage != '' || !terms || !beta">{{ 'signup.button.start' | translate }}
             </button>
 
 <div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
