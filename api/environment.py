@@ -248,10 +248,12 @@ class BackupConfig:
 class PrivacyPolicyConfig:
     def __init__(self):
         self.available_languages = ["en", "fr"]
-        self.privacy_policy_mk_file_path = {
-            "en": "./config/assets/privacy_policy/privacy_policy_en.md",
-            "fr": "./config/assets/privacy_policy/privacy_policy_fr.md"
-        }
+        self.privacy_policy_mk_file_path = {}
+        for lang in self.available_languages:
+            if os.path.exists(f"./config/assets/privacy_policy/privacy_policy_{lang}.md"):
+                self.privacy_policy_mk_file_path[lang] = f"./config/assets/privacy_policy/privacy_policy_{lang}.md"
+            else:
+                self.privacy_policy_mk_file_path[lang] = f"./assets/privacy_policy/privacy_policy_{lang}.md"
         
 
 
