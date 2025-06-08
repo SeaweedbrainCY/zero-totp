@@ -8,7 +8,9 @@ services:
     image: ghcr.io/seaweedbraincy/zero-totp-api:dev
     command: ./start.sh auto-upgrade
     volumes:
-      - ./config/test-config.yml:/api/config/config.yml
+      - ./zero-totp/config/:/api/config/
+      - ./secret:/api/secret
+      - /var/log/api:/var/log/api
     depends_on:
       - database
     restart: always
@@ -29,7 +31,7 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - ./config/Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy/config/Caddyfile:/etc/caddy/Caddyfile
     depends_on:
       - frontend
       - api
