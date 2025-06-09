@@ -10,7 +10,7 @@ services:
     volumes:
       - ./zero-totp/config/:/api/config/
       - ./secret:/api/secret
-      - ./logs:/var/log/api
+      - ./zero-totp-logs:/var/log/api
     depends_on:
       - database
     restart: always
