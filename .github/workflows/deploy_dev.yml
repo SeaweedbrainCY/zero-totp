@@ -64,6 +64,7 @@ jobs:
               working-directory: ./e2e-tests
               run: |
                 current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+                echo "Current version: $current_version"
                 sed -i "s|\(image: ghcr.io/seaweedbraincy/zero-totp-api:\).*|\1$current_version|" docker-compose.yml
                 sed -i "s|\(image: ghcr.io/seaweedbraincy/zero-totp-frontend:\).*|\1$current_version|" docker-compose.yml
 
@@ -71,6 +72,9 @@ jobs:
               uses: hoverkraft-tech/compose-action@v2.0.1
               with:
                 compose-file: "./e2e-tests/docker-compose.yml"
+
+            - name: Display current images
+              run: docker images
             
             - uses: actions/setup-node@v4
               with:
@@ -87,8 +91,7 @@ jobs:
                 cat /etc/hosts
             - name: Run Playwright tests
               working-directory: ./e2e-tests
-              run: npx playwright test 
-              timeout-minutes: 10
+              run: npx playwright test
             - uses: actions/upload-artifact@v4
             
               if: ${{ !cancelled() }}
