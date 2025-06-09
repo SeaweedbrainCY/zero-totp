@@ -15,15 +15,6 @@ let email2 = 'test' + seed2 + '@test.test';
 let passphrase = 'fake-$tvIpw5VKH97f0CxEF6C' + seed;
 let passphrase2 = 'fake-$tvIpw5VKH97f0CxEF6C' + seed2;
 
-console.log("Random logging informations :");
-console.log("Username: " + username);
-console.log("Username2: " + username2);
-console.log("Email: " + email);
-console.log("Email2: " + email2);
-console.log("Passphrase: " + passphrase);
-console.log("Passphrase2: " + passphrase2);
-
-
 test('Signup flow', async ({ page }) => {
   await page.goto('https://zero-totp.lan/signup');
   await page.getByRole('textbox', { name: 'Username' }).click();
