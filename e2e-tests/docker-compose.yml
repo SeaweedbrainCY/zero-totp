@@ -1,12 +1,14 @@
 services:
   frontend:
     container_name: frontend
+    user: "101:101"
     image: ghcr.io/seaweedbraincy/zero-totp-frontend:dev
 
   api:
     container_name: api
     image: ghcr.io/seaweedbraincy/zero-totp-api:dev
     command: ./start.sh auto-upgrade
+    user: "101:101"
     volumes:
       - ./zero-totp/config/:/api/config/
       - ./secret:/api/secret
