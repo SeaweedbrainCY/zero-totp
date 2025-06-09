@@ -89,6 +89,18 @@ jobs:
               run: |
                 echo "127.0.0.1 zero-totp.lan" | sudo tee -a /etc/hosts
                 cat /etc/hosts
+
+            - name: Verify is the API is healthy
+              run: |
+                response=$(curl -ks https://zero-totp.lan/api/v1/healthcheck)
+                health_status=$(echo "$response" | jq .health)
+                if [[ $health_status != '"OK"' ]]; then
+                  echo "API is not healthy: $response"
+                  docker logs -f --tail 100 api
+                  exit 1
+                else
+                  echo "API is healthy"
+                fi
             - name: Run Playwright tests
               working-directory: ./e2e-tests
               run: npx playwright test
