@@ -13,9 +13,14 @@ touch /api/logs/gunicorn_error.log
 touch /api/logs/gunicorn_access.log
 
 
-if [ "$USER" = "" ]; then
-    echo "USER environment variable is not set. Defaulting to 1001:1001"
-    USER="1001:1001"
+if [ "$USER_UID" = "" ]; then
+    echo "USER_UID environment variable is not set. Defaulting to 1001"
+    USER_UID="1001"
+fi
+
+if [ "$USER_GID" = "" ]; then
+    echo "USER_GID environment variable is not set. Defaulting to 1001"
+    USER_GID="1001"
 fi
 
 
