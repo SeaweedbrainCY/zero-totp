@@ -37,7 +37,7 @@ class EnvironmentConfig:
         elif data["type"] == "development":
             self.type = "development"
             logging.basicConfig(
-                 filename="/var/log/api/api.log",
+                 filename="/api/logs/api.log",
                 filemode='a',
                 format=LOGGING_FORMAT,
                 level=logging.INFO,
@@ -48,7 +48,7 @@ class EnvironmentConfig:
         else:
             self.type = "production"
             logging.basicConfig(
-                filename="/var/log/api/api.log",
+                filename="/api/logs/api.log",
                 filemode='a',
                 format=LOGGING_FORMAT,
                 level=logging.INFO,
