@@ -92,7 +92,7 @@ jobs:
 
             - name: Verify is the API is healthy
               run: |
-                response=$(curl -ks https://zero-totp.lan/api/v1/healthcheck)
+                response=$(curl -ks https://localhost/api/v1/healthcheck)
                 health_status=$(echo "$response" | jq .health)
                 if [[ $health_status != '"OK"' ]]; then
                   echo "API is not healthy: $response"

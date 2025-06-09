@@ -55,7 +55,7 @@ environment:
   ## MODIFICATION OF THIS VALUE WILL CAUSE THE API TO FAIL OR NEVER START
   config_version: 1.0
 
-  domain: "zero-totp.lan"
+  domain: "localhost"
 
 database:
     ## The URI of the database to connect to.
