@@ -15,7 +15,7 @@ on:
 
 jobs:
   tests:
-    uses: ./.github/workflows/test.yml  # use the callable tests job to run tests
+    uses: ./.github/workflows/test.yml  #
     secrets:
       GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
   sonarqube:
