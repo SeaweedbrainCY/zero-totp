@@ -85,10 +85,6 @@ jobs:
             - name: Install Playwright Browsers
               working-directory: ./e2e-tests
               run: npx playwright install --with-deps
-            - name: Add DNS entry to /etc/hosts
-              run: |
-                echo "127.0.0.1 zero-totp.lan" | sudo tee -a /etc/hosts
-                cat /etc/hosts
 
             - name: Verify is the API is healthy
               run: |
