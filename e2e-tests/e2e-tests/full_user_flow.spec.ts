@@ -15,17 +15,8 @@ let email2 = 'test' + seed2 + '@test.test';
 let passphrase = 'fake-$tvIpw5VKH97f0CxEF6C' + seed;
 let passphrase2 = 'fake-$tvIpw5VKH97f0CxEF6C' + seed2;
 
-console.log("Random logging informations :");
-console.log("Username: " + username);
-console.log("Username2: " + username2);
-console.log("Email: " + email);
-console.log("Email2: " + email2);
-console.log("Passphrase: " + passphrase);
-console.log("Passphrase2: " + passphrase2);
-
-
 test('Signup flow', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/signup');
+  await page.goto('https://localhost/signup');
   await page.getByRole('textbox', { name: 'Username' }).click();
   await page.getByRole('textbox', { name: 'Username' }).fill(username);
   await page.getByRole('textbox', { name: 'Email' }).click();
@@ -47,7 +38,7 @@ test('Signup flow', async ({ page }) => {
 
 
 test('Add TOTP code', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -86,7 +77,7 @@ test('Add TOTP code', async ({ page }) => {
 
 
 test('Add several TOTP code', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -165,7 +156,7 @@ test('Add several TOTP code', async ({ page }) => {
 
 
 test('Edit TOTP code', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -194,7 +185,7 @@ test('Edit TOTP code', async ({ page }) => {
 
 
 test('Delete TOTP code', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -212,7 +203,7 @@ test('Delete TOTP code', async ({ page }) => {
 
 
 test('Edit preferences', async ({ page }) => {
-   await page.goto('https://zero-totp.lan/login');
+   await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -251,7 +242,7 @@ test('Edit preferences', async ({ page }) => {
 
 
 test('Edit account', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -300,7 +291,7 @@ test('Edit account', async ({ page }) => {
 
 
 test('Delete account', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email2);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
