@@ -99,6 +99,7 @@ jobs:
               working-directory: ./e2e-tests
               run: |
                 current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+                echo "Current version: $current_version"
                 sed -i "s|\(image: ghcr.io/seaweedbraincy/zero-totp-api:\).*|\1$current_version|" docker-compose.yml
                 sed -i "s|\(image: ghcr.io/seaweedbraincy/zero-totp-frontend:\).*|\1$current_version|" docker-compose.yml
 
@@ -106,6 +107,8 @@ jobs:
               uses: hoverkraft-tech/compose-action@v2.0.1
               with:
                 compose-file: "./e2e-tests/docker-compose.yml"
+            - name: Display current images
+              run: docker images
             
             - uses: actions/setup-node@v4
               with:
@@ -116,10 +119,18 @@ jobs:
             - name: Install Playwright Browsers
               working-directory: ./e2e-tests
               run: npx playwright install --with-deps
-            - name: Add DNS entry to /etc/hosts
+              
+            - name: Verify if the API is healthy
               run: |
-                echo "127.0.0.1 zero-totp.lan" | sudo tee -a /etc/hosts
-                cat /etc/hosts
+                response=$(curl -ks https://localhost/api/v1/healthcheck)
+                health_status=$(echo "$response" | jq .health)
+                if [[ $health_status != '"OK"' ]]; then
+                  echo "API is not healthy: $response"
+                  docker logs -f --tail 100 api
+                  exit 1
+                else
+                  echo "API is healthy"
+                fi
             - name: Run Playwright tests
               working-directory: ./e2e-tests
               run: npx playwright test 
