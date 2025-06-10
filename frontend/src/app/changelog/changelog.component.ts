@@ -14,16 +14,6 @@ export class ChangelogComponent {
   imageHash = environment.imageHash;
 
   changelogs = [
-     {
-      date: "09/06/2025",
-      version: "1.5.0",
-      added: [
-        "This is another big step towards the self-hosted version of Zero-TOTP. In the login and signup pages you are now aware of what kind of Zero-TOTP instance you are using. zero-totp.com is the official instance and for now all the users are marked as 'self-hosted'. This is important to keep the users aware of why this is important.",
-      ],
-      fixed:[
-        "The signup process doesn't require anymore the user to re-type the phrase 'My passphrase is strong and I won't forger it'. Instead a more user-friendly pop-up is displayed to ensure the user understands the importance of the passphrase and that it is strong enough.",
-      ]
-    },
     {
       date: "09/06/2025",
       version: "1.6.0",
@@ -34,6 +24,16 @@ export class ChangelogComponent {
       fixed:[
         "API docker image hardening has been done to improve the stability of the application while still restricting it run as a non-root user.",
         "End tp end tests have been improved"
+      ]
+    },
+     {
+      date: "09/06/2025",
+      version: "1.5.0",
+      added: [
+        "This is another big step towards the self-hosted version of Zero-TOTP. In the login and signup pages you are now aware of what kind of Zero-TOTP instance you are using. zero-totp.com is the official instance and for now all the users are marked as 'self-hosted'. This is important to keep the users aware of why this is important.",
+      ],
+      fixed:[
+        "The signup process doesn't require anymore the user to re-type the phrase 'My passphrase is strong and I won't forger it'. Instead a more user-friendly pop-up is displayed to ensure the user understands the importance of the passphrase and that it is strong enough.",
       ]
     },
     {
