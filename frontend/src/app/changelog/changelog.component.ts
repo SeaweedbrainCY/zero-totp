@@ -25,6 +25,18 @@ export class ChangelogComponent {
       ]
     },
     {
+      date: "09/06/2025",
+      version: "1.6.0",
+      added: [
+        "The privacy policy is now more easily accessible on github as a Markdown file.",
+        "For self hosted instances, the privacy policy can easily be updated."
+      ],
+      fixed:[
+        "API docker image hardening has been done to improve the stability of the application while still restricting it run as a non-root user.",
+        "End tp end tests have been improved"
+      ]
+    },
+    {
       date: "04/06/2025",
       version: "1.4.0",
       added: [],

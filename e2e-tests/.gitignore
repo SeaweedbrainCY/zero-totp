@@ -1,3 +1,7 @@
+# Tests
+zero-totp-logs/
+logs/
+
 
 # Playwright
 node_modules/

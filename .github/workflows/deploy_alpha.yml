@@ -1,5 +1,9 @@
 name: "Publish alpha version"
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   push:
     tags:
