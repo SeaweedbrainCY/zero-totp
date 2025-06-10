@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey, faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey, faCircleNotch, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
 import { Router, ActivatedRoute } from '@angular/router';
@@ -22,6 +22,7 @@ export class LoginComponent implements OnInit {
   faEnvelope = faEnvelope;
   faLock = faLock;
   faCheck = faCheck;
+  faCircleQuestion=faCircleQuestion;
   faXmark = faXmark;
   faCircleNotch = faCircleNotch;
   faKey = faKey;
@@ -47,6 +48,8 @@ export class LoginComponent implements OnInit {
   remember = false;
   api_public_key: string | undefined = undefined;
   loading_file = false;
+  current_domain = "";
+  instance_dropdown_active=false;
 
   constructor(
     private http: HttpClient,
@@ -57,7 +60,7 @@ export class LoginComponent implements OnInit {
     private localVaultv1: LocalVaultV1Service,
     private translate: TranslateService,
     private toastr: ToastrService,
-    private utils: Utils,
+    public utils: Utils,
     private vaultService: VaultService
   ) {
   }
@@ -110,6 +113,8 @@ export class LoginComponent implements OnInit {
       this.email = localStorage.getItem("r_email")!;
       this.remember = true;
     }
+
+    this.current_domain = window.location.host;
 
   }
 
@@ -445,6 +450,12 @@ export class LoginComponent implements OnInit {
       });
     });
 
+  }
+
+  zero_totp_instance_button_click() {
+    if(this.utils.isDeviceMobile()){
+      this.instance_dropdown_active = !this.instance_dropdown_active;
+    }
   }
 
 
