@@ -90,7 +90,7 @@ jobs:
               working-directory: ./e2e-tests
               run: npx playwright install --with-deps
 
-            - name: Verify is the API is healthy
+            - name: Verify if the API is healthy
               run: |
                 response=$(curl -ks https://localhost/api/v1/healthcheck)
                 health_status=$(echo "$response" | jq .health)
