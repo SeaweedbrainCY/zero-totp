@@ -27,7 +27,7 @@ test('Signup flow', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Confirm passphrase' }).fill(passphrase);
   await page.getByRole('checkbox', { name: 'I agree to the Privacy Policy' }).check();
   await page.getByRole('button', { name: 'Start my zero-trip' }).click();
-  await page.getByRole('button', { name: 'My passphrase is strong' }).dblclick();
+  await page.getByRole('button', { name: 'My passphrase is strong' }).click();
   await page.waitForURL('**/login/**');
   await page.getByLabel('Account created successfully').click();
   await expect(page.getByText('It\'s time to open your vault !')).toBeVisible();
