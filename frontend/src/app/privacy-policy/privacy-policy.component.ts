@@ -41,9 +41,8 @@ export class PrivacyPolicyComponent implements OnInit {
     load_privacy_policy() {
         this.is_privacy_policy_loaded = false;
         this.loading_error = false;
-        const headers = new HttpHeaders().set('Content-Type', 'text/plain; charset=utf-8');
 
-        this.http.get(this.privacy_policy_url, {observe:'response', responseType: 'text', headers: headers})
+        this.http.get(this.privacy_policy_url, {observe:'response', responseType: 'text'})
             .subscribe({
                 next: (response) => {
                     if(response.status == 200){
