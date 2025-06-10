@@ -6,7 +6,7 @@ services:
   api:
     container_name: api
     image: ghcr.io/seaweedbraincy/zero-totp-api:dev
-    command: ./start.sh auto-upgrade
+    command: ./entrypoint.sh auto-upgrade 
     environment:
       USER_UID: 1001
       USER_GID: 1001

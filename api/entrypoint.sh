@@ -30,4 +30,4 @@ chown -R $USER:$USER /api/logs
 # Switch to user 1001 and execute the main script
 ###
 
-exec gosu $USER:$USER start.sh
+exec gosu $USER:$USER ./start.sh "$@"
