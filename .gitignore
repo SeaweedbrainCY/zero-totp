@@ -10,7 +10,8 @@ __pycache__/
 *.so
 
 
-config.yml
+
+
 # Distribution / packaging
 .Python
 build/

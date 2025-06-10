@@ -899,7 +899,7 @@ def auth_refresh_token(ip, *args, **kwargs):
     response.set_auth_cookies(new_session_token, new_refresh_token)
     return response
 
-
+# GET /healthcheck
 def health_check():
     health_status = {}
     global_healthy = True
@@ -922,7 +922,7 @@ def health_check():
     return health_status, http_status
     
 
-
+# GET /vault/signature/public-key
 def get_public_key():
     with open(conf.api.public_key_path, "r") as f:
         public_key = f.read()
@@ -931,3 +931,4 @@ def get_public_key():
     else:
         logging.error("This is a critical error from get_public_key(). A public key has been requested but the key is not valid. An error as been returned to the user.")
         return {"message": "Invalid"}, 403
+    
