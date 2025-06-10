@@ -3,6 +3,7 @@ name: "zero-totp.com deployment"
 permissions:
   contents: read
   packages: write
+  deployments: write
 
 on:
   push:
