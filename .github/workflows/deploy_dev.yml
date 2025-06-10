@@ -1,5 +1,9 @@
 name: "dev.zero-totp.com deployment"
 
+permissions:
+  contents: read
+  packages: write
+
 on:
   push:
     tags:
@@ -19,7 +23,7 @@ jobs:
       steps:
         - uses: actions/checkout@v3
         - name: Login to Github
-          run : echo ${{ secrets.TOKEN_GITHUB }} | docker login ghcr.io -u ${{ secrets.USERNAME_GITHUB }} --password-stdin
+          run : echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ secrets.USERNAME_GITHUB }} --password-stdin
         - name: Create environment file
           working-directory: ./frontend
           run: bash generate-env.sh '${{ github.ref_name }}' '${{secrets.DEV_RSA_PUBLIC_KEY}}'
@@ -40,7 +44,7 @@ jobs:
       steps:
         - uses: actions/checkout@v3
         - name: Login to Github
-          run : echo ${{ secrets.TOKEN_GITHUB }} | docker login ghcr.io -u ${{ secrets.USERNAME_GITHUB }} --password-stdin
+          run : echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ secrets.USERNAME_GITHUB }} --password-stdin
         - name: Populating API version
           working-directory: ./api
           run: echo ${{ github.ref_name }} > ./VERSION
