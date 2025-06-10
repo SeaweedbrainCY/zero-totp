@@ -18,7 +18,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   retries: 0,
-  workers: 4,
+  workers: 1,
   globalTimeout: 1000 * 60 * 10, // 10 minutes
   reporter: [
     ['html'],

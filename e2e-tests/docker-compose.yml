@@ -1,11 +1,11 @@
 services:
   frontend:
     container_name: frontend
-    image: ghcr.io/seaweedbraincy/zero-totp-frontend:dev
+    image: ghcr.io/seaweedbraincy/zero-totp-frontend:latest
 
   api:
     container_name: api
-    image: ghcr.io/seaweedbraincy/zero-totp-api:dev
+    image: ghcr.io/seaweedbraincy/zero-totp-api:latest
     command: ./entrypoint.sh auto-upgrade 
     environment:
       USER_UID: 1001
