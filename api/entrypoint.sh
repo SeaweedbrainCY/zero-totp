@@ -24,10 +24,10 @@ if [ "$USER_GID" = "" ]; then
 fi
 
 
-chown -R $USER:$USER /api/logs
+chown -R $USER_UID:$USER_GID /api/logs
 
 ###
 # Switch to user 1001 and execute the main script
 ###
 
-exec gosu $USER:$USER ./start.sh "$@"
+exec gosu $USER_UID:$USER_GID ./start.sh "$@"
