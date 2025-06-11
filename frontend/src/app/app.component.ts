@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DOCUMENT } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Renderer2, Inject } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+
 
 
 @Component({
