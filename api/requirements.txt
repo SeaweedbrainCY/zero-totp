@@ -28,9 +28,9 @@ Flask-Cors==6.0.0
 Flask-Migrate==4.1.0
 Flask-SQLAlchemy==3.1.1
 google-api-core==2.14.0
-google-api-python-client==2.108.0
+google-api-python-client==2.171.0
 google-auth==2.23.4
-google-auth-httplib2==0.1.1
+google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.1.0
 googleapis-common-protos==1.61.0
 greenlet==3.0.3
