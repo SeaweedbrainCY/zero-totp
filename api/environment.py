@@ -69,7 +69,7 @@ class OauthConfig:
         self.client_secret_file_path = data["client_secret_file_path"]
 
 class APIConfig:
-    required_keys = [ "jwt_secret", "private_key_path", "public_key_path", "flask_secret_key", "server_side_encryption_key"]
+    required_keys = ["private_key_path", "public_key_path", "flask_secret_key", "server_side_encryption_key"]
     option_config = ["oauth"]
 
     def __init__(self, data, config_version):
@@ -90,8 +90,7 @@ class APIConfig:
         else:
             logging.info("API will listen on port 8080")
             self.port = 8080
-        
-        self.jwt_secret = data["jwt_secret"]            
+                 
         self.private_key_path = data["private_key_path"]
         self.public_key_path = data["public_key_path"]
         self.flask_secret_key = data["flask_secret_key"]

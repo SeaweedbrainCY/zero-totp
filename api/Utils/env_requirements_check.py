@@ -6,8 +6,6 @@ import ipaddress
 def test_conf(conf) -> bool:
     ## API
     assert isinstance(conf.api.port, int), "api.port is not an integer"
-    assert isinstance(conf.api.jwt_secret, str), "api.jwt is not a string"
-    assert len(conf.api.jwt_secret) >= 64, "api.jwt_secret must be at least 64 characters long"
     assert isinstance(conf.api.private_key_path, str), "api.private_key_path is not a string"
     assert isinstance(conf.api.public_key_path, str), "api.public_key_path is not a string"
     try:

@@ -5,7 +5,6 @@ from environment import conf
 from zero_totp_db_model import model
 from unittest.mock import patch
 import datetime
-import jwt
 from uuid import uuid4
 
 

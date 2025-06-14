@@ -9,9 +9,6 @@ api:
     ## The port the API will listen on. Default is 8080.
     # port: 8080
 
-    ## The secret that will be used to sign JWT tokens. CHANGE THIS VALUE !
-    ## A random 128 alphanumeric string is required.
-    jwt_secret: "false_secret_Xt4PF5TYTCyxVz3xHa828MH2KBgMAeSfXQYcHf35ARuMu3sV42zvFVYjRRDU8bRH"
 
 
     ## Absolute path to the API private key used to sign the vault to guarantee its authenticity.
