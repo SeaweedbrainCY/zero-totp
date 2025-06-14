@@ -146,12 +146,23 @@ features:
     
 
     ## Optional
-    ## Sentry configuration to centralize error tracking
-    ## Keep commented to disable
-    #  sentry:
-        ## Sentry DSN
-        ## See https://docs.sentry.io/platforms/python/flask/ for more information.
-        # dsn: ""
+    ## OpenTelemetry/sentry configuration to centralize metrics and traces
+    ## Available type: sentry and openobserve using OpenTelemetry
+
+    #tracing:
+        ## Sentry configuration to centralize error tracking
+        ## Keep commented to disable
+        #  sentry:
+            ## Sentry DSN
+            ## See https://docs.sentry.io/platforms/python/flask/ for more information.
+            # dsn: ""
+
+        ## OpenObserve configuration to centralize metrics and traces
+        ## Keep commented to disable
+        ## See https://openobserve.ai/docs/ingestion/traces/python/#setup-up-credentials for more information.
+        # openobserve:
+            # url: 
+            # access_token: 
 
     ## Optional
     ## Default backup configuration for users

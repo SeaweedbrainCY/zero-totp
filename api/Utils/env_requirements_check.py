@@ -74,8 +74,13 @@ def test_conf(conf) -> bool:
     assert isinstance(conf.features.rate_limiting.email_ban_time, int), "features.rate_limiting.email_ban_time is not an integer"
 
     ## Sentry
-    if conf.features.sentry != None:
-        assert isinstance(conf.features.sentry.dsn, str), "features.sentry.dsn is not a string"
+    if conf.features.tracing.sentry != None:
+        assert isinstance(conf.features.tracing.sentry.dsn, str), "features.sentry.dsn is not a string"
+    
+    ## OpenObserve
+    if conf.features.tracing.openobserve != None:
+        assert isinstance(conf.features.tracing.openobserve.url, str), "features.openobserve.url is not a string"
+        assert isinstance(conf.features.tracing.openobserve.access_token, str), "features.openobserve.access_token is not a string"
 
     ## Backup
     assert isinstance(conf.features.backup_config.max_age_in_days, int), "features.default_backup_configuration.max_age_in_days is not an integer"

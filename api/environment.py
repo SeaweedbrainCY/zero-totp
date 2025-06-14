@@ -256,6 +256,28 @@ class PrivacyPolicyConfig:
                 self.privacy_policy_mk_file_path[lang] = f"./assets/privacy_policy/privacy_policy_{lang}.md"
         
 
+class OpenObserveConfig:
+    required_keys = ["url", "access_token"]
+    def __init__(self, data):
+        for key in self.required_keys:
+            if key not in data:
+                logging.error(f"[FATAL] Load config fail. Was expecting the key features.tracing.openobserve.{key}")
+                exit(1)
+        self.url = data["url"]
+        self.access_token = data["access_token"]
+
+class TracingConfig:
+    def __init__(self, data):
+        self.sentry = None
+        self.openobserve = None
+        if "sentry" in data:
+            self.sentry = SentryConfig(data["sentry"])
+        elif "openobserve" in data:
+            self.openobserve = OpenObserveConfig(data["openobserve"])
+        else:
+            logging.warning("No tracing configuration found. Tracing will not be enabled.")
+        
+        
 
 
 class FeaturesConfig:
@@ -263,6 +285,7 @@ class FeaturesConfig:
                 
         self.emails = EmailsConfig(data["emails"]) if "emails" in data else None
         self.rate_limiting = RateLimitingConfig(data["rate_limiting"] if "rate_limiting" in data else [])
+        self.tracing = TracingConfig(data["tracing"] if "tracing" in data else [])
         self.sentry = SentryConfig(data["sentry"]) if "sentry" in data else None
         self.backup_config = BackupConfig(data["default_backup_configuration"] if "default_backup_configuration" in data else [])
         self.privacy_policy = PrivacyPolicyConfig()
