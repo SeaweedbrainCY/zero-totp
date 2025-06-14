@@ -14,6 +14,9 @@ from monitoring.sentry import sentry_configuration
 from flask_migrate import Migrate
 import datetime as dt
 from flask import request, redirect, make_response
+from Utils import tracing
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
 
 
 def create_app():
@@ -32,6 +35,9 @@ def create_app():
     db.init_app(app)
     sentry_configuration() #optional
     init_db(db)
+
+    if conf.features.tracing.openobserve is not None:   
+        FlaskInstrumentor.instrument_app(app)
     
     
     
