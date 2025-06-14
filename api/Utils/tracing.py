@@ -16,8 +16,8 @@ tracer_provider = TracerProvider(resource=resource)
 # create an OTLP trace exporter
 if conf.features.tracing.openobserve is not None:
     url = conf.features.tracing.openobserve.url
-    headers = {"Authorization": f"Basic conf.features.tracing.openobserve.access_token"}
-    logging.info(f"OpenObserve tracing enabled.")
+    headers = {"Authorization": f"Basic {conf.features.tracing.openobserve.access_token}"}
+
 
 
 exporter = OTLPSpanExporter(endpoint=url, headers=headers)

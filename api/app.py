@@ -37,6 +37,7 @@ def create_app():
     init_db(db)
 
     if conf.features.tracing.openobserve is not None:   
+        logging.info(f"Enabling OpenObserve tracing ...")
         FlaskInstrumentor.instrument_app(app)
     
     
