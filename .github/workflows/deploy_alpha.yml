@@ -1,9 +1,14 @@
-name: "dev.zero-totp.com deployment"
+name: "Publish alpha version"
+
+permissions:
+  contents: read
+  packages: write
 
 on:
   push:
-    branches:
-      - dev
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+'
 
 jobs:
     tests:
@@ -15,28 +20,28 @@ jobs:
       name: Publish Frontend Docker image
       runs-on: ubuntu-latest
       env:
-        REPO: ${{secrets.DOCKER_DEV_REPO}}
+        REPO: zero-totp-frontend
       steps:
         - uses: actions/checkout@v3
         - name: Login to Github
           run : echo ${{ secrets.TOKEN_GITHUB }} | docker login ghcr.io -u ${{ secrets.USERNAME_GITHUB }} --password-stdin
         - name: Create environment file
           working-directory: ./frontend
-          run: bash generate-env.sh 'dev' '${{secrets.DEV_RSA_PUBLIC_KEY}}'
+          run: bash generate-env.sh '${{ github.ref_name }}' '${{secrets.DEV_RSA_PUBLIC_KEY}}'
         - name: Generate sitemap.xml
           working-directory: ./frontend
           run: bash generate_sitemap.sh 
         - name: Build Docker image
           working-directory: ./frontend
-          run: current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/frontend:latest . 
+          run: current_version=$(echo ${{ github.ref_name }} | sed 's/^v//') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_version  . 
         - name: Publish Docker Image
-          run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/frontend:latest
+          run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
     docker-api:
       needs: [tests]
       name: Publish API-dev Docker image 
       runs-on: ubuntu-latest
       env:
-        REPO: ${{secrets.DOCKER_DEV_REPO}}
+        REPO: zero-totp-api
       steps:
         - uses: actions/checkout@v3
         - name: Login to Github
@@ -49,16 +54,7 @@ jobs:
           run: echo ${{ github.ref_name }} > ./VERSION && echo ${{ github.sha}} | cut -c1-7 >> ./VERSION
         - name: Build Docker image
           working-directory: ./api
-          run: current_version=$(echo ${{ github.ref_name }} | sed 's/\([0-9]*\.[0-9]*\).*$/\1/') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/api:latest . 
+          run: current_version=$(echo ${{ github.ref_name }} | sed 's/^v//') && docker build -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_version  . 
         - name: Publish Docker Image
-          run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO/api:latest
-    deploy-dev-env:
-       needs: [docker-frontend, docker-api] 
-       name: Deploy on development environment
-       runs-on: ubuntu-latest
-       steps:
-         - name: Dev env deployment
-           uses: distributhor/workflow-webhook@v3
-           env:
-             webhook_url: ${{ secrets.WEBHOOK_URL_DEV }}
+          run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
         

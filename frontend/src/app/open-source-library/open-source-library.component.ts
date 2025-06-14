@@ -152,14 +152,6 @@ export class OpenSourceLibraryComponent {
       copyright:"",
     },
     {
-      name:"PyJWT",
-      url:"https://github.com/jpadilla/pyjwt",
-      description:"JSON Web Token implementation in Python.",
-      license:"MIT license",
-      licenseUrl:"https://github.com/jpadilla/pyjwt/blob/master/LICENSE",
-      copyright:"Copyright (c) 2015-2022 José Padilla",
-    },
-    {
       name:"pytest",
       url:"https://github.com/pytest-dev/pytest",
       description:"The pytest framework makes it easy to write small tests, yet scales to support complex functional testing.",

@@ -37,7 +37,7 @@ class EnvironmentConfig:
         elif data["type"] == "development":
             self.type = "development"
             logging.basicConfig(
-                 filename="/var/log/api/api.log",
+                 filename="/api/logs/api.log",
                 filemode='a',
                 format=LOGGING_FORMAT,
                 level=logging.INFO,
@@ -48,7 +48,7 @@ class EnvironmentConfig:
         else:
             self.type = "production"
             logging.basicConfig(
-                filename="/var/log/api/api.log",
+                filename="/api/logs/api.log",
                 filemode='a',
                 format=LOGGING_FORMAT,
                 level=logging.INFO,
@@ -69,7 +69,7 @@ class OauthConfig:
         self.client_secret_file_path = data["client_secret_file_path"]
 
 class APIConfig:
-    required_keys = [ "jwt_secret", "private_key_path", "public_key_path", "flask_secret_key", "server_side_encryption_key"]
+    required_keys = ["private_key_path", "public_key_path", "flask_secret_key", "server_side_encryption_key"]
     option_config = ["oauth"]
 
     def __init__(self, data, config_version):
@@ -90,8 +90,7 @@ class APIConfig:
         else:
             logging.info("API will listen on port 8080")
             self.port = 8080
-        
-        self.jwt_secret = data["jwt_secret"]            
+                 
         self.private_key_path = data["private_key_path"]
         self.public_key_path = data["public_key_path"]
         self.flask_secret_key = data["flask_secret_key"]
@@ -245,6 +244,17 @@ class BackupConfig:
             logging.info("default_backup_configuration.max_age_in_days is not set. Using default value: 30")
 
 
+class PrivacyPolicyConfig:
+    def __init__(self):
+        self.available_languages = ["en", "fr"]
+        self.privacy_policy_mk_file_path = {}
+        for lang in self.available_languages:
+            if os.path.exists(f"./config/assets/privacy_policy/privacy_policy_{lang}.md"):
+                self.privacy_policy_mk_file_path[lang] = f"./config/assets/privacy_policy/privacy_policy_{lang}.md"
+            else:
+                self.privacy_policy_mk_file_path[lang] = f"./assets/privacy_policy/privacy_policy_{lang}.md"
+        
+
 
 
 class FeaturesConfig:
@@ -254,6 +264,7 @@ class FeaturesConfig:
         self.rate_limiting = RateLimitingConfig(data["rate_limiting"] if "rate_limiting" in data else [])
         self.sentry = SentryConfig(data["sentry"]) if "sentry" in data else None
         self.backup_config = BackupConfig(data["default_backup_configuration"] if "default_backup_configuration" in data else [])
+        self.privacy_policy = PrivacyPolicyConfig()
 
 
 class Config:

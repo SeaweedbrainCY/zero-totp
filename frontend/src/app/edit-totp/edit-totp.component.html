@@ -1,4 +1,4 @@
-<article class="hero is-info mt-6" [ngClass]="{
+<article class="hero is-info" [ngClass]="{
                                       'is-success': color == 'success',
                                       'is-warning': color == 'warning',
                                       'is-danger': color == 'danger',
@@ -13,8 +13,8 @@
       <span *ngIf="secret!=''">{{code}}</span>
     </p>
     <div class="is-flex is-justify-content-center">
-      <progress class="progress is-small" value="{{time}}" max="100"
-        style="width:20vw; height: 5px;">{{time}}%</progress>
+      <progress class="progress is-small" value="{{progress_bar_percent}}" max="100"
+        style="width:20vw; height: 5px;">{{progress_bar_percent}}%</progress>
     </div>
   </div>
 </article>
@@ -34,13 +34,14 @@
     is-three-quarters-fullhd">
       <div class="is-flex is-justify-content-space-around is-flex-direction-column	">
         <div class="is-flex is-justify-content-space-around columns is-flex-wrap-wrap">
-          <div class="field column is-two-thirds-mobile
+          <div class="column is-two-thirds-mobile
         is-one-third-tablet
         is-one-third-desktop
         is-one-third-widescreen
         is-one-third-fullhd mr-2 ml-2">
             <label class="label">{{ 'name' | translate }}</label>
-            <div class="control has-icons-left has-icons-right">
+            <div class="field has-addons">
+            <div class="control has-icons-left">
               <input class="input" type="text" placeholder="GitHub" name="name" [(ngModel)]="name"
                 (keyup)="checkName()"
                 [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }"
@@ -49,15 +50,22 @@
                 <fa-icon [icon]="faPassport"></fa-icon>
               </span>
             </div>
+            <div class="control ">
+              <a class="button" (click)="this.name= '';">
+                  <fa-icon [icon]="faXmark"></fa-icon>
+              </a>
+            </div>
+            </div>
             <p class="help is-danger" *ngIf="nameError != ''">{{nameError | translate}}</p>
           </div>
-          <div class="field column is-two-thirds-mobile
+          <div class="column is-two-thirds-mobile
         is-one-third-tablet
         is-one-third-desktop
         is-one-third-widescreen
         is-one-third-fullhd mr-2 ml-2">
             <label class="label">{{ 'totp.uri.title' | translate}}</label>
-            <div class="control has-icons-left has-icons-right">
+            <div class="field has-addons">
+            <div class="control has-icons-left">
               <input class="input" type="text" placeholder="https://github.com" name="uri" [(ngModel)]="uri"
                 (change)="checkURI()"
                 [ngClass]="{'is-warning':uriError != '',  'is-success' : uriError == '' && uri != '' }"
@@ -66,16 +74,24 @@
                 <fa-icon [icon]="faGlobe"></fa-icon>
               </span>
             </div>
+            <div class="control ">
+              <a class="button" (click)="this.uri= '';">
+                  <fa-icon [icon]="faXmark"></fa-icon>
+              </a>
+            </div>
+            </div>
             <p class="help is-warning" *ngIf="uriError != ''">{{uriError | translate}}</p>
           </div>
-          <div class="field column is-two-thirds-mobile
+          <div class=" column is-two-thirds-mobile
           is-one-third-tablet
           is-one-third-desktop
           is-one-third-widescreen
-          is-one-third-fullhd mr-2 ml-2">
+          is-one-third-fullhd mr-2 ml-2 ">
             <label class="label">{{ 'totp.secret.add.label' | translate }}</label>
-            <div class="control has-icons-left has-icons-right">
-              <input class="input" type="text" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret"
+            <div class="field has-addons">
+            <div class="control has-icons-left">
+              <input class="input" type="{{isSecretVisible ? 'text' : 'password'}}" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret"
+                (change)="checkSecret()"
                 (keyup)="checkSecret()"
                 [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }"
                 [disabled]="this.userService.getIsVaultLocal()!">
@@ -83,13 +99,20 @@
                 <fa-icon [icon]="faKey"></fa-icon>
               </span>
             </div>
+            <div class="control" >
+              <a class="button" (click)="isSecretVisible = !isSecretVisible">
+                <fa-icon [icon]="faEyeSlash" *ngIf="isSecretVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isSecretVisible" size="sm"></fa-icon>
+              </a>
+              
+            </div>
+          </div>
             <p class="help is-danger" *ngIf="secretError != ''">{{secretError | translate}}</p>
           </div>
         </div>
         <div class="notification is-warning has-text-centered" *ngIf="this.userService.getIsVaultLocal()!">
           {{ 'totp.error.ro' | translate }}
         </div>
-        <div class="field p-5 is-flex is-justify-content-center">
+        <div class="field p-5 is-flex is-justify-content-center has-text-centered">
           
           <label class="checkbox">
             <input type="checkbox" name="favicon" [(ngModel)]="favicon" (change)="loadFavicon()" class="mr-3">

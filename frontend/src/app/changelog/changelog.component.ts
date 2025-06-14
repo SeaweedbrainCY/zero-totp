@@ -15,6 +15,83 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "09/06/2025",
+      version: "1.6.0",
+      added: [
+        "The privacy policy is now more easily accessible on github as a Markdown file.",
+        "For self hosted instances, the privacy policy can easily be updated."
+      ],
+      fixed:[
+        "API docker image hardening has been done to improve the stability of the application while still restricting it run as a non-root user.",
+        "End tp end tests have been improved"
+      ]
+    },
+     {
+      date: "09/06/2025",
+      version: "1.5.0",
+      added: [
+        "This is another big step towards the self-hosted version of Zero-TOTP. In the login and signup pages you are now aware of what kind of Zero-TOTP instance you are using. zero-totp.com is the official instance and for now all the users are marked as 'self-hosted'. This is important to keep the users aware of why this is important.",
+      ],
+      fixed:[
+        "The signup process doesn't require anymore the user to re-type the phrase 'My passphrase is strong and I won't forger it'. Instead a more user-friendly pop-up is displayed to ensure the user understands the importance of the passphrase and that it is strong enough.",
+      ]
+    },
+    {
+      date: "04/06/2025",
+      version: "1.4.0",
+      added: [],
+      fixed:[
+        "A lot of packages have been updated on the frontend and API side to improve the stability and security of the application.",
+      ]
+    },
+    {
+      date: "25/05/2025",
+      version: "1.3.0",
+      added: [
+        "Several features have been added under the hood to prepare Zero-TOTP for the self-hosted version. This version is a major step towards the self-hosted version of Zero-TOTP.",
+        "Further automated tests have been added to ensure the stability and reliability of the application.",
+      ],
+      fixed:[
+        "A bug causing the account deletion to be impossible when the user had custom backup settings"
+      ]
+    },
+    {
+      date: "22/05/2025",
+      version: "1.2.1",
+      added: [
+        "When verifying the authenticity of an imported vault, the frontend now fetches the public key from the API.  This feature has been implemented to allow self hosted version of Zero-TOTP to be able to verify their own exported vault. As backup, if the API is now available, a official zero-totp public key is still hardcoded in Zero-TOTP frontend"
+      ],
+      fixed:[
+        
+      ]
+    },
+    {
+      date: "18/05/2025",
+      version: "1.1.5",
+      added: [
+        "Email verification codes are now restricted to hexadecimal characters to make to manual typing easier.",
+      ],
+      fixed:[
+        "Fix a bug that might create issue when trying to delete the Zero-TOTP account.",
+        "Fix several UI issues",
+        "Fix 3 moderate CVE in the API dependencies.",
+        "Upgrade dependencies to maintain the security of the application.",
+        "Fix a issue while importing a new vault, causing the import to fail if the vault was containing a huge number of elements."
+      ]
+    },
+    {
+      date: "25/04/2025",
+      version: "1.1.0",
+      added: [
+       "An important code optimization has been made to improve the performance of the application, especially of your vault and edit page. With this version, the application will use between 3 and 10 times less CPU, save up to 30% of memory and will compute 6 times less data to display your vault. This will improve the performance of the application.",
+       "A new way of Zero-TOTP images deployment has been made to continue the preparation of the self-hosted version.",
+      ],
+      fixed:[
+        "Fix a critical CVE in the API dependencies.",
+        "Upgrade dependencies to maintain the security of the application.",
+      ]
+    },
+    {
       date: "25/03/2025",
       version: "1.0.3",
       added: [

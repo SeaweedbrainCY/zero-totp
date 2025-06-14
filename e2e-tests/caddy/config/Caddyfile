@@ -1,0 +1,5 @@
+zero-totp.lan localhost {
+    reverse_proxy frontend:80 
+    reverse_proxy /api/* api:8080
+    tls internal
+}

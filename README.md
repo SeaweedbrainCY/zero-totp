@@ -5,12 +5,12 @@
     <img src="https://img.shields.io/uptimerobot/status/m798298078-655a23f7108eb3c8082c58ae?label=API&link=zero-totp.com"/>
     <img src="https://img.shields.io/uptimerobot/ratio/m798298078-655a23f7108eb3c8082c58ae?label=API%20uptime%20(30d)">
     <br>
-    <img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/main.yml/badge.svg?branch="/>
+    <img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/deploy_prod.yml/badge.svg"/>
      <a href="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml"><img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml/badge.svg" alt="Test and Coverage"/></a>
     <a href='https://coveralls.io/github/SeaweedbrainCY/zero-totp'><img src='https://coveralls.io/repos/github/SeaweedbrainCY/zero-totp/badge.svg' alt='Coverage Status' /></a>
     <img src="https://img.shields.io/github/license/seaweedbraincy/zero-totp"/>
     <img src="https://img.shields.io/github/v/release/seaweedbraincy/zero-totp"/>
-    <img alt="GitHub commits since latest release (branch)" src="https://img.shields.io/github/commits-since/seaweedbraincy/zero-totp/latest/dev">
+    <img alt="GitHub commits since latest release (branch)" src="https://img.shields.io/github/commits-since/seaweedbraincy/zero-totp/latest/main">
     <br>
     <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues/seaweedbraincy/zero-totp">
     <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues-closed/seaweedbraincy/zero-totp">

@@ -38,6 +38,7 @@ from uuid import uuid4
 import hmac
 import hashlib
 from sqlalchemy import text
+from CryptoClasses.serverRSAKeys import ServerRSAKeys
  
 
 
@@ -818,7 +819,7 @@ def verify_email(user_id,body):
     token_obj = token_db.get_by_user_id(user_id)
     if token_obj == None:
         return {"message": "email_verif.error.no_active_code"}, 403
-    if float(token_obj.expiration) < datetime.datetime.utcnow().timestamp():
+    if datetime.datetime.now(tz=datetime.timezone.utc).timestamp() > float(token_obj.expiration) :
         token_db.delete(user_id)
         return {"message": "email_verif.error.expired"}, 403
     if int(token_obj.failed_attempts >= 5):
@@ -898,7 +899,7 @@ def auth_refresh_token(ip, *args, **kwargs):
     response.set_auth_cookies(new_session_token, new_refresh_token)
     return response
 
-
+# GET /healthcheck
 def health_check():
     health_status = {}
     global_healthy = True
@@ -919,4 +920,15 @@ def health_check():
     http_status = 200 if global_healthy else 500
     
     return health_status, http_status
+    
+
+# GET /vault/signature/public-key
+def get_public_key():
+    with open(conf.api.public_key_path, "r") as f:
+        public_key = f.read()
+    if ServerRSAKeys().validate_rsa_public_key(public_key):
+        return {"public_key": public_key}, 200
+    else:
+        logging.error("This is a critical error from get_public_key(). A public key has been requested but the key is not valid. An error as been returned to the user.")
+        return {"message": "Invalid"}, 403
     

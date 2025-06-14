@@ -89,10 +89,10 @@
       </h3>
       <div class="is-flex is-justify-content-center mt-6 mb-6">
 
-        <div class="file is-boxed" *ngIf="local_vault_service == null ">
+        <div class="file is-boxed" *ngIf="local_vault_service == null">
           <label class="file-label">
             <input class="file-input" type="file" name="resume" accept=".zero-totp,.txt" (change)="openFile($event)"
-              [disabled]="is_importing">
+             >
             <span class="file-cta">
               <span class="file-icon">
                 <fa-icon [icon]="faCloudArrowUp" *ngIf="!is_importing" size="2xl" class="mb-2"></fa-icon>
@@ -105,7 +105,8 @@
           </label>
         </div>
         <div *ngIf="local_vault_service != null && local_vault_service.get_is_signature_valid()">
-          <p class="has-text-centered has-text-weight-bold">{{file_name}} - <span
+          <p class="has-text-centered has-text-weight-bold"><fa-icon [icon]="faCircleNotch" *ngIf="loading_file" [animation]="true ? 'spin' : undefined"></fa-icon>
+{{file_name}} - <span
               class="has-text-success">{{"import_vault.secure_text" | translate}} <fa-icon [icon]="faLock"
                 class="ml-2"></fa-icon></span></p>
         </div>

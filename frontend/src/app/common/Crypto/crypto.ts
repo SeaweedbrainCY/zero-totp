@@ -72,11 +72,19 @@ export class Crypto {
         return Buffer.from(hash).toString('base64');
     }
 
-    async verifySignature(vault_b64:string, signature_bd64:string):Promise<boolean>{
+    async verifySignature(vault_b64:string, signature_bd64:string, api_public_key:string|undefined):Promise<boolean>{
           const textEncoder = new TextEncoder();
           let encoded_vault = textEncoder.encode(vault_b64);
           let encoded_signature = Buffer.from(signature_bd64, "base64");
-          const publicKey = await this.importPublicKey(environment.API_public_key)
+          let public_key_str = ""
+          if(api_public_key == undefined){
+            public_key_str = environment.API_public_key
+            console.log("Using default public key")
+          } else {
+            public_key_str = api_public_key
+            console.log("Using provided public key")
+          }
+          const publicKey = await this.importPublicKey(public_key_str);
           const result = await window.crypto.subtle.verify(
               "RSASSA-PKCS1-v1_5",
               publicKey,
