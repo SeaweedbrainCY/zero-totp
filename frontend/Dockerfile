@@ -14,6 +14,7 @@ COPY . .
 
 RUN ng build --configuration production --subresource-integrity
 RUN chmod o+x ./generate_nginx_conf.sh
+RUN chmod +x ./docker-healthcheck.sh
 RUN ./generate_nginx_conf.sh
 RUN rm generate_nginx_conf.sh
 
