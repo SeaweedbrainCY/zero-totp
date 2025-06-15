@@ -138,12 +138,17 @@ export class VaultComponent implements OnInit, OnDestroy {
       });
       
     }    
+    // Display the add button 
+    document.getElementById("add-code-button")!.style.display = "flex";
+    document.getElementById("add-code-button")!.onclick = () => {this.isModalActive = true;};
   }
 
   ngOnDestroy() {
     if(this.totp_code_generation_interval != undefined){
       clearInterval(this.totp_code_generation_interval);
     }
+    // Hide the add button
+    document.getElementById("add-code-button")!.style.display = "none";
   }
 
 
