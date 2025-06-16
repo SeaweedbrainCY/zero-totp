@@ -704,11 +704,11 @@
       "phrase": "My passphrase is strong and I won't forget it",
       "subititle": {
         "part2": "Your passphrase, and only your passphrase, can open your vault. For security reasons, it is completely impossible to recover your passphrase if you lose it.",
-"part3": "It is absolutely crucial that:",
-"part4": "Your passphrase is strong",
-"part4_1": "everything depends on it! It must not be easy to guess.",
-"part5": "You do not forget your passphrase",
-"part5_1": "There is and will never be any way to recover it. That’s what makes Zero-TOTP so secure."
+        "part3": "It is absolutely crucial that:",
+        "part4": "Your passphrase is strong",
+        "part4_1": "everything depends on it! It must not be easy to guess.",
+        "part5": "You do not forget your passphrase",
+        "part5_1": "There is and will never be any way to recover it. That’s what makes Zero-TOTP so secure."
       },
       "subtitle": {
         "part1": "Zero-TOTP uses Zero Knowledge Encryption, which means that ",
@@ -822,6 +822,7 @@
       "retrieve_vault": "Error : Impossible to retrieve your vault from the server",
       "server": "Error : Impossible to retrieve your vault from the server.",
       "server_unreachable": "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session.",
+      "unlock": "An error occured while decrypting your vault. Please log out and login again. Error ",
       "wrong_key": "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
       "wrong_key_vault": "Wrong key. You cannot decrypt this vault."
     },
