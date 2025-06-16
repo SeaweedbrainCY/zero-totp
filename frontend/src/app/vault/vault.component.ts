@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer} from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer, faLock, faEye, faEyeSlash, faKey} from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
@@ -25,7 +25,11 @@ export class VaultComponent implements OnInit, OnDestroy {
   faPen = faPen;
   faSquarePlus = faSquarePlus;
   faCopy = faCopy;
+  faKey=faKey;
+  faEye=faEye;
+  faEyeSlash=faEyeSlash;
   faGoogleDrive=faGoogleDrive;
+  faLock = faLock;
   faServer=faServer;
   faCircleXmark= faCircleXmark;
   faCheckCircle = faCheckCircle;
@@ -66,6 +70,9 @@ export class VaultComponent implements OnInit, OnDestroy {
   totp_code_expiration = 0;
   generating_next_totp_code = false;
   totp_code_generation_interval:NodeJS.Timeout|undefined;
+  isPassphraseVisible=false;
+  passphrase: string | undefined = undefined;
+  isVaultEncrypted = false; 
   constructor(
     public userService: UserService,
     private router: Router,
@@ -75,11 +82,16 @@ export class VaultComponent implements OnInit, OnDestroy {
     private utils: Utils,
     private translate: TranslateService,
     private toastr: ToastrService,
-    ) {}
+    ) {
+    }
 
   ngOnInit() {
-    if(this.userService.getId() == null && !this.userService.getIsVaultLocal()){
-      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+    if(this.userService.getVault() == null && !this.userService.getIsVaultLocal()){
+      this.userService.refresh_user_id().then((success) => {
+       this.isVaultEncrypted = true;
+      }, (error) => {
+        this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      });
     } else if(this.userService.getIsVaultLocal()){
       this.local_vault_service = this.userService.getLocalVaultService();
       let vaultDate = "unknown"
@@ -553,6 +565,10 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.selectedTags.push(tag);
     }
     this.filterVault();
+  }
+
+  unlockVault(){
+    return;
   }
 
 

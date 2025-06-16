@@ -1,3 +1,40 @@
+<section class="hero is-fullheight mt-6 pt-6 has-background-dark" style="position: fixed; z-index: 99 !important; width: 100%; top: 0; left: 0;" *ngIf="isVaultEncrypted">
+    <article class=" mt-6 pt-6 has-text-centered w-100 is-justify-content-center " style="width: 100%;">
+        <div>
+        <h1 class="is-size-1  has-text-weight-bold has-text-white">
+            <fa-icon [icon]="faLock" class="pr-2" size="xl"></fa-icon>
+        </h1>
+        <br>
+        <h2 class="is-size-2 has-text-weight-bold has-text-white">
+            Your vault is locked
+        </h2><br>
+        <div class="field is-full is-flex is-justify-content-center has-addons mt-4">
+           
+        <p class="control has-icons-left has-icons-right">
+          <input class="input block" type="{{isPassphraseVisible ? 'text' : 'password'}}"
+            placeholder="{{'passphrase' | translate}}" name="passphrase" [(ngModel)]="passphrase" (keyup.enter)="unlockVault()">
+          <span class="icon is-small is-left">
+            <fa-icon [icon]="faKey"></fa-icon>
+          </span>
+        </p>
+        <div class="control">
+          <a class="button" (click)="isPassphraseVisible = !isPassphraseVisible">
+            <fa-icon [icon]="faEyeSlash" *ngIf="isPassphraseVisible" size="sm"></fa-icon><fa-icon [icon]="faEye"
+              *ngIf="!isPassphraseVisible" size="sm"></fa-icon>
+          </a>
+
+        </div>
+      </div>
+      <button class="button is-info mt-4 has-text-white" (click)="unlockVault()">
+        Decrypt my vault
+      </button>
+        </div>
+    </article>
+    
+   
+
+</section>
+
 <section class="hero  is-halfheight mt-6 pb-6" style="min-height: 70vh;">
     <div class="container  is-fluid ">
         <div>
