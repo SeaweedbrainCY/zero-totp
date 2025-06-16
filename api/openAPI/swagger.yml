@@ -880,7 +880,27 @@ paths:
             description: Access forbidden
           "500":
             description: Internal server error
-
+  /user/derived-key-salt:
+    get: 
+      operationId: endpoints_controllers.user.get_derived_key_salt
+      tags:
+        - User
+      summary: Return the user's derived key salt
+      responses:
+        "200": 
+          description: Return the user's derived key salt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  derivedKeySalt:
+                    type: string
+                    example: "AAAAA="
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
 
     
 components:
