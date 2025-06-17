@@ -27,7 +27,7 @@ class TestGetDerivedKeySalt(unittest.TestCase):
             
             _, self.session_token_user = self.session_token_repo.generate_session_token(self.user_id)
             _, self.session_token_other_user = self.session_token_repo.generate_session_token(self.other_user_id)
-            db.session.commit()
+           
 
 
     def tearDown(self):
