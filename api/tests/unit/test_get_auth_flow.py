@@ -30,6 +30,12 @@ class TestGetAuthFlow(unittest.TestCase):
                 _, self.session_token = self.session_repo.generate_session_token(user.id)
                 db.session.commit()
         
+        def tearDown(self):
+            patch.stopall()
+            with self.application.app.app_context():
+                db.session.remove()
+                db.drop_all()
+        
         
         def test_get_auth_flow(self):
             with self.application.app.app_context():
