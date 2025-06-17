@@ -2,6 +2,8 @@ import unittest
 from app import app
 from database.db import db
 from database.user_repo import User as UserRepo
+from zero_totp_db_model.model import User as UserModel
+from database.session_token_repo import SessionTokenRepo
 from environment import conf, logging
 import datetime
 from unittest.mock import patch
@@ -18,6 +20,7 @@ class TestGetDerivedKeySalt(unittest.TestCase):
 
 
         self.user_repo = UserRepo()
+        self.session_token_repo = SessionTokenRepo()
 
         with self.application.app.app_context():
             db.create_all()
@@ -42,7 +45,7 @@ class TestGetDerivedKeySalt(unittest.TestCase):
             self.client.cookies = {"session-token": self.session_token_user}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertIn("derived_key_salt", response.json)
-            self.assertEqual(response.json["derived_key_salt"], db.session.query(UserRepo).filter_by(id=self.user_id).first().derivedKeySalt)
+            self.assertIn("derived_key_salt", response.json())
+            self.assertEqual(response.json()["derived_key_salt"], db.session.query(UserModel).filter_by(id=self.user_id).first().derivedKeySalt)
 
 
