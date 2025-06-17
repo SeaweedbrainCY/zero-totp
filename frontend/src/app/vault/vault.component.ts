@@ -74,6 +74,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   isPassphraseVisible=false;
   passphrase = "";
   isVaultEncrypted = false; 
+  isDecryptingLockedVaut = false;
+  vaultDecryptionErrorMessage = "";
   constructor(
     public userService: UserService,
     private router: Router,
@@ -88,7 +90,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit() {
-    if(this.userService.getVault() == null && !this.userService.getIsVaultLocal()){
+    if(this.userService.get_zke_key() == null && !this.userService.getIsVaultLocal()){
       this.userService.refresh_user_id().then((success) => {
        this.isVaultEncrypted = true;
       }, (error) => {
@@ -574,11 +576,14 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   unlockVault(){
+    this.isDecryptingLockedVaut = true;
+    this.vaultDecryptionErrorMessage = "";
     this.http.get("/api/v1/user/derived-key-salt", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         if(response.status === 200){
-          const derived_key_salt_req_data = response.body as { salt: string };
-          this.userService.setDerivedKeySalt(derived_key_salt_req_data.salt);
+          const derived_key_salt_req_data = response.body as { derived_key_salt: string };
+          console.log("Derived key salt: " + derived_key_salt_req_data.derived_key_salt);
+          this.userService.setDerivedKeySalt(derived_key_salt_req_data.derived_key_salt);
           this.http.get("/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe({
             next: (response) => {
               if(response.status === 200){
@@ -587,22 +592,25 @@ export class VaultComponent implements OnInit, OnDestroy {
                  this.vaultService.derivePassphrase(this.userService.getDerivedKeySalt()!, this.passphrase).then((derivedKey) => {
                   this.vaultService.decryptZKEKey(zke_encrypted_key, derivedKey, this.userService.getIsVaultLocal()!).then((zke_key) => {
                     this.userService.set_zke_key(zke_key!);
+                    this.isVaultEncrypted = false;
+                    this.isDecryptingLockedVaut = false;
                      this.get_and_decrypt_vault();
                   }, (error) => {
                     console.log(error);
-                    this.translate.get("vault.error.unlock").subscribe((translation: string) => {
-                    this.utils.toastError(this.toastr, translation + " " + "U6", "");
-                    });
+                    this.isDecryptingLockedVaut = false;
+                    this.vaultDecryptionErrorMessage = "generic_errors.invalid_creds";
                   });
                  }, (error) => {
                   console.log(error);
+                  this.isDecryptingLockedVaut = false;
                   this.translate.get("vault.error.unlock").subscribe((translation: string) => {
                     this.utils.toastError(this.toastr, translation + " " + "U5", "");
                   });
                  });
 
               } else {
-                console.log(response)
+                console.log(response);
+                this.isDecryptingLockedVaut = false;
                 this.translate.get("vault.error.unlock").subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation + " " + "U3-"+ response.statusText,"");
         });
@@ -610,6 +618,7 @@ export class VaultComponent implements OnInit, OnDestroy {
 
             }, error: (error) => {
               console.log(error);
+              this.isDecryptingLockedVaut = false;
               this.translate.get("vault.error.unlock").subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation + " " + "U4","");
         });
@@ -618,11 +627,13 @@ export class VaultComponent implements OnInit, OnDestroy {
         });
         } else {
           console.log(response)
+          this.isDecryptingLockedVaut = false;
           this.translate.get("vault.error.unlock").subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation + " " + "U1-"+ response.statusText,"");
         });
         }
       }, error: (error) => {
+        this.isDecryptingLockedVaut = false;
         console.log(error);
         this.translate.get("vault.error.unlock").subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation + " " + "U2","");
