@@ -1,5 +1,5 @@
 a2wsgi==1.8.0
-alembic==1.13.1
+alembic==1.16.2
 anyio==4.0.0
 APScheduler==3.10.4
 asgiref==3.7.2
