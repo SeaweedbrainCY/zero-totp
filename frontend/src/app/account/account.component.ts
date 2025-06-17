@@ -79,10 +79,12 @@ export class AccountComponent implements OnInit {
 
   
   ngOnInit(): void {
-     if(this.userService.getId() == null){
-      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
-       if("email" in this.buttonLoading){
-       }
+     if(this.userService.get_zke_key() == null){
+      this.userService.refresh_user_id().then((success) => {
+        console.log("User refreshed successfully.");
+      }, (error) => {
+        this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      });
     }
     this.get_whoami();
     this.get_internal_notification();
