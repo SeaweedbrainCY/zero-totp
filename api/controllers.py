@@ -105,7 +105,7 @@ def signup():
                     send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
                 except Exception as e:
                     logging.error("Unknown error while sending verification email" + str(e))
-            response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created"}))
+            response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created", "email_verification_required":conf.features.emails.require_email_validation}))
             response.set_cookie("session-token", session_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
             return response
         else :
