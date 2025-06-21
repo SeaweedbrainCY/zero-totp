@@ -28,9 +28,14 @@ test('Signup flow', async ({ page }) => {
   await page.getByRole('checkbox', { name: 'I agree to the Privacy Policy' }).check();
   await page.getByRole('button', { name: 'Start my zero-trip' }).click();
   await page.getByRole('button', { name: 'My passphrase is strong' }).click();
-  await page.waitForURL('**/login/**');
+  await page.waitForURL('**/vault');
   await page.getByLabel('Account created successfully').click();
-  await expect(page.getByText('It\'s time to open your vault !')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Your vault is locked' })).toBeVisible();
+  await expect(page.getByText(email)).toBeVisible();
+  await page.getByRole('textbox', { name: 'Passphrase' }).click();
+  await page.getByRole('textbox', { name: 'Passphrase' }).fill(passphrase);
+  await page.getByRole('button', { name: 'Decrypt my vault' }).click();
+  await expect(page.getByRole('heading', { name: 'Here is your TOTP vault' })).toBeVisible();
 });
 
 
