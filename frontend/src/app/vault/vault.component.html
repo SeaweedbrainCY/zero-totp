@@ -1,4 +1,4 @@
-<section class="hero is-fullheight mt-6 pt-6 has-background-dark" style="position: fixed; z-index: 99 !important; width: 100%; top: 0; left: 0;" *ngIf="isVaultEncrypted">
+<section class="hero is-fullheight mt-6 pt-6 has-background-dark" style="position: fixed; z-index: 99 !important; width: 100%; top: 0; left: 0;" *ngIf="isVaultEncrypted" >
     <article class="is-flex p-6 mb-6 has-text-centered w-100 is-justify-content-center " style="width: 100%; height: 60vh;">
         <div class="is-flex is-flex-direction-column is-align-items-center has-text-centered is-justify-content-space-around">
             <div>
@@ -9,12 +9,12 @@
         <h2 class="is-size-2 has-text-weight-bold has-text-white">
             Your vault is locked
         </h2>
-        <p class="has-text-weight-light">
+        <p class="has-text-weight-light has-text-grey-lighter">
             Your vault is automatically re-encrypted if you reload the page or after a certain period of inactivity. 
         </p>
         </div>
         <div>
-        <p class="has-text-weight-bold mt-4 mb-2">
+        <p class="has-text-weight-bold mt-4 mb-2 has-text-grey-lighter">
                 {{this.userService.getEmail()}}
             </p>
         <div class="field is-full is-flex is-justify-content-center has-addons ">
