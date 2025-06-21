@@ -73,7 +73,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   totp_code_generation_interval:NodeJS.Timeout|undefined;
   isPassphraseVisible=false;
   passphrase = "";
-  isVaultEncrypted = false; 
+  isVaultEncrypted : boolean | undefined; 
   isDecryptingLockedVaut = false;
   vaultDecryptionErrorMessage = "";
   constructor(
@@ -94,9 +94,11 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.userService.refresh_user_id().then((success) => {
        this.isVaultEncrypted = true;
       }, (error) => {
+        this.isVaultEncrypted = false;
         this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
       });
     } else if(this.userService.getIsVaultLocal()){
+      this.isVaultEncrypted = false;
       this.local_vault_service = this.userService.getLocalVaultService();
       let vaultDate = "unknown"
       try{
@@ -111,7 +113,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.vault_date = vaultDate;
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
-      
+      this.isVaultEncrypted = false;
       this.get_and_decrypt_vault();
     }    
     // Display the add button 

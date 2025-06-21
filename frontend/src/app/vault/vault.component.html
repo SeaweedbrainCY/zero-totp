@@ -1,3 +1,12 @@
+<section class="hero is-fullheight mt-6 pt-6 has-background-dark" style="position: fixed; z-index: 99 !important; width: 100%; top: 0; left: 0;" *ngIf="isVaultEncrypted == undefined" >
+    <article class="hero-body is-flex is-justify-content-center">
+        <div>
+                <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#FFFFFF;"
+                    size="2xl"></fa-icon>
+
+        </div>
+    </article>
+</section>
 <section class="hero is-fullheight mt-6 pt-6 has-background-dark" style="position: fixed; z-index: 99 !important; width: 100%; top: 0; left: 0;" *ngIf="isVaultEncrypted" >
     <article class="is-flex p-6 mb-6 has-text-centered w-100 is-justify-content-center " style="width: 100%; height: 60vh;">
         <div class="is-flex is-flex-direction-column is-align-items-center has-text-centered is-justify-content-space-around">
@@ -7,10 +16,12 @@
         </h1>
         <br>
         <h2 class="is-size-2 has-text-weight-bold has-text-white">
-            Your vault is locked
+            {{ 'vault.locked.title' | translate }}
+            
         </h2>
         <p class="has-text-weight-light has-text-grey-lighter">
-            Your vault is automatically re-encrypted if you reload the page or after a certain period of inactivity. 
+            {{ 'vault.locked.subtitle' | translate }}
+            
         </p>
         </div>
         <div>
@@ -49,7 +60,7 @@
 
 </section>
 
-<section class="hero  is-halfheight mt-6 pb-6" style="min-height: 70vh;">
+<section class="hero  is-halfheight mt-6 pb-6" style="min-height: 70vh;" *ngIf="isVaultEncrypted == false">
     <div class="container  is-fluid ">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">{{page_title | translate}} <span *ngIf="vault_date != undefined">{{vault_date}}</span></h1>

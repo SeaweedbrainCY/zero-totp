@@ -842,6 +842,10 @@
         "part3": " in the storage options"
       }
     },
+    "locked": {
+      "subtitle": "Your vault is automatically re-encrypted if you reload the page or after a certain period of inactivity. ",
+      "title": "Your vault is locked"
+    },
     "oauth": {
       "error": {
         "server": "Impossible to start the Oauth flow"
