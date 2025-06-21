@@ -45,6 +45,17 @@ paths:
       responses:
         "201": # status code
           description: Sign up successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User created"
+                  email_verification_required:
+                    type: boolean
+                    example: true
         "400":
           description: Missing required parameters
         "409":
