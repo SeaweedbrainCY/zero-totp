@@ -105,7 +105,7 @@ def signup():
                     send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
                 except Exception as e:
                     logging.error("Unknown error while sending verification email" + str(e))
-            response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created"}))
+            response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created", "email_verification_required":conf.features.emails.require_email_validation}))
             response.set_cookie("session-token", session_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
             return response
         else :
@@ -899,7 +899,7 @@ def auth_refresh_token(ip, *args, **kwargs):
     response.set_auth_cookies(new_session_token, new_refresh_token)
     return response
 
-
+# GET /healthcheck
 def health_check():
     health_status = {}
     global_healthy = True
@@ -922,7 +922,7 @@ def health_check():
     return health_status, http_status
     
 
-
+# GET /vault/signature/public-key
 def get_public_key():
     with open(conf.api.public_key_path, "r") as f:
         public_key = f.read()
@@ -931,3 +931,4 @@ def get_public_key():
     else:
         logging.error("This is a critical error from get_public_key(). A public key has been requested but the key is not valid. An error as been returned to the user.")
         return {"message": "Invalid"}, 403
+    

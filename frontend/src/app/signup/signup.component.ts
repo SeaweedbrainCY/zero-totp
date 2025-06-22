@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash , faFlask} from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash , faFlask, faCircleQuestion} from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../common/User/user.service';
+
 
 @Component({
     selector: 'app-signup',
@@ -22,6 +23,7 @@ export class SignupComponent implements OnInit {
   faCheck=faCheck;
   faUser=faUser;
   faDiscord=faDiscord;
+  faCircleQuestion=faCircleQuestion;
   faXmark=faXmark;
   faFlagCheckered=faFlagCheckered;
   faEye=faEye;
@@ -43,16 +45,16 @@ export class SignupComponent implements OnInit {
   encryptedZKEkey=""
   derivedKeySalt=""
   passphraseSalt=""
-  modal_confim_button_diabled=true;
   beta=true;
-  isModalSentenceCompleted=false;
   isPasswordVisible=false;
   isConfirmPasswordVisible=false;
+  current_domain = "";
+  instance_dropdown_active = false;
 
 
   constructor(
     private http: HttpClient,
-    private utils: Utils,
+    public utils: Utils,
     private crypto:Crypto,
     private router: Router,
     private route: ActivatedRoute,
@@ -62,7 +64,7 @@ export class SignupComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    return;
+    this.current_domain = window.location.host;
   }
 
   checkPassword(){
@@ -122,10 +124,7 @@ export class SignupComponent implements OnInit {
 
 
   signup() {
-    if(!this.isModalSentenceCompleted){
-      this.openModal();
-    } else {
-this.closeModal()
+    this.closeModal()
     this.emailErrorMessage="";
     this.usernameErrorMessage="";
     this.passwordErrorMessage = [''];
@@ -154,8 +153,7 @@ this.closeModal()
         this.derivedKeySalt = randomSalt
         this.hashPassword()
       });
-    });   
-  }
+    });  
   }
 
   hashPassword(){
@@ -180,21 +178,28 @@ this.closeModal()
       passphraseSalt: this.passphraseSalt
     };
 
-    this.http.post("/api/v1/signup", data,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.post("/api/v1/signup", data,  {withCredentials:true, observe: 'response'}).subscribe({
+      next: (response) => {
       this.isLoading=false;
       this.utils.toastSuccess(this.toastr, this.translate.instant("signup.success"),"");
       this.userService.setEmail(this.email)
-      this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
+      const response_data = response.body as { message: string, email_verification_required: boolean };
+      if (response_data.email_verification_required){
+        this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
+      } else {
+        this.router.navigate(["/vault"], {relativeTo:this.route.root});
+      }
+      
 
-    },
-    (error) => {
+    }, error: (error) => {
       console.log(error);
       this.isLoading=false;
       if(error.error.message == undefined){
         error.error.message = this.translate.instant("signup.errors.unknown");
       }
       this.utils.toastError(this.toastr,  "Error : "+ error.error.message,"");
-    });
+    }
+  });
   }
 
  openModal(){
@@ -205,10 +210,10 @@ this.closeModal()
     this.isModalActive=false;
   }
 
-  confirmSentence(){
-    if(this.input.replace(/[^a-zA-Z]/g, '') == this.translate.instant("signup.popup.phrase").replace(/[^a-zA-Z]/g, '')){
-      this.modal_confim_button_diabled = false
-      this.isModalSentenceCompleted = true
+  zero_totp_instance_button_click() {
+    if(this.utils.isDeviceMobile()){
+      this.instance_dropdown_active = !this.instance_dropdown_active;
     }
   }
+  
 }

@@ -1,4 +1,66 @@
-<section class="hero  is-halfheight mt-6 pb-6" style="min-height: 70vh;">
+<section class="hero is-fullheight mt-6 pt-6 has-background-dark" style="position: fixed; z-index: 99 !important; width: 100%; top: 0; left: 0;" *ngIf="isVaultEncrypted == undefined" >
+    <article class="hero-body is-flex is-justify-content-center">
+        <div>
+                <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#FFFFFF;"
+                    size="2xl"></fa-icon>
+
+        </div>
+    </article>
+</section>
+<section class="hero is-fullheight mt-6 pt-6 has-background-dark" style="position: fixed; z-index: 99 !important; width: 100%; top: 0; left: 0;" *ngIf="isVaultEncrypted" >
+    <article class="is-flex p-6 mb-6 has-text-centered w-100 is-justify-content-center " style="width: 100%; height: 60vh;">
+        <div class="is-flex is-flex-direction-column is-align-items-center has-text-centered is-justify-content-space-around">
+            <div>
+        <h1 class="is-size-1  has-text-weight-bold has-text-white">
+            <fa-icon [icon]="faLock" class="pr-2" size="xl"></fa-icon>
+        </h1>
+        <br>
+        <h2 class="is-size-2 has-text-weight-bold has-text-white">
+            {{ 'vault.locked.title' | translate }}
+            
+        </h2>
+        <p class="has-text-weight-light has-text-grey-lighter">
+            {{ 'vault.locked.subtitle' | translate }}
+            
+        </p>
+        </div>
+        <div>
+        <p class="has-text-weight-bold mt-4 mb-2 has-text-grey-lighter">
+                {{this.userService.getEmail()}}
+            </p>
+        <div class="field is-full is-flex is-justify-content-center has-addons ">
+            
+           
+        <p class="control has-icons-left has-icons-right">
+          <input class="input block" type="{{isPassphraseVisible ? 'text' : 'password'}}"
+            placeholder="{{'passphrase' | translate}}" name="passphrase" [(ngModel)]="passphrase" (keyup.enter)="unlockVault()">
+          <span class="icon is-small is-left">
+            <fa-icon [icon]="faKey"></fa-icon>
+          </span>
+        </p>
+        <div class="control">
+          <a class="button" (click)="isPassphraseVisible = !isPassphraseVisible">
+            <fa-icon [icon]="faEyeSlash" *ngIf="isPassphraseVisible" size="sm"></fa-icon><fa-icon [icon]="faEye"
+              *ngIf="!isPassphraseVisible" size="sm"></fa-icon>
+          </a>
+
+        </div>
+      </div>
+      <p class="has-text-weight-light has-text-danger" *ngIf="vaultDecryptionErrorMessage != ''" style="margin-top:-20px">
+        {{vaultDecryptionErrorMessage | translate}}
+      </p>
+      <button class="button is-info mt-4 has-text-white" (click)="unlockVault()">
+        Decrypt my vault
+      </button>
+        </div>
+        </div>
+    </article>
+    
+   
+
+</section>
+
+<section class="hero  is-halfheight mt-6 pb-6" style="min-height: 70vh;" *ngIf="isVaultEncrypted == false">
     <div class="container  is-fluid ">
         <div>
             <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">{{page_title | translate}} <span *ngIf="vault_date != undefined">{{vault_date}}</span></h1>

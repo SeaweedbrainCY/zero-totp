@@ -5,6 +5,7 @@
     "not_found": "Page not found.",
     "oops": "Oops!"
   },
+  "Home": "Home",
   "Search": "Search",
   "abort": "Abort",
   "about": "About",
@@ -283,7 +284,6 @@
   },
   "give_up": "Quit",
   "green": "Green",
-  "Home":"Home",
   "home": {
     "about": {
       "title": "About Zero-Knowledge Encryption",
@@ -504,6 +504,17 @@
       "session_killed": "For your safety, you have been disconnected because you have reloaded or closed the tab",
       "session_timeout": "For your safety, you have been disconnected after due to inactivity. You can customize this delay in your preferences"
     },
+    "instance": {
+      "select": {
+        "title": "Select a Zero-TOTP instance",
+        "why": {
+          "p1": "Zero-TOTP is open-source, meaning anyone can run their own Zero-TOTP. Only signup or login to a Zero-TOTP instance that you trust.",
+          "p2": "If you have any doubt, use the official instance, zero-totp.com.",
+          "title": "Why is this important ?"
+        }
+      },
+      "you_are_using": "You are using"
+    },
     "open_button": "Open my vault",
     "remember": "Remember my email address",
     "rescue": {
@@ -542,6 +553,7 @@
       "loading": "Synchronizing, do not close your browser..."
     }
   },
+  "official": "Official",
   "orange": "Orange",
   "passphrase": "Passphrase",
   "preference": {
@@ -615,135 +627,10 @@
     }
   },
   "privacy": {
-    "changes": {
-      "desc": "We may update this Privacy Policy to reflect changes in our practices or legal requirements. We will notify you of any significant changes via email or through our website.",
-      "title": "Changes to this Privacy Policy"
-    },
-    "collect": {
-      "li1": {
-        "long": "We collect your email address, username, and account creation date for the purpose of creating and managing your Zero-TOTP account.",
-        "short": "User Account Information:"
-      },
-      "li2": {
-        "long": " We use Zero-Knowledge Encryption to store your TOTP codes securely. We have no knowledge of your TOTP codes, secrets, or application URLs.",
-        "short": "Encrypted TOTP Codes:"
-      },
-      "li3": {
-        "long": "If you choose to enable the backup of your vault to Google Drive, we store identifiers (protected by encryption) for Google Drive integration. You can revoke at any moment your google drive integration. This will lead to the deletion of your identifiers.",
-        "short": "Google Drive Integration: "
-      },
-      "li4": {
-        "long": "We use authentication cookies to securely manage your sessions. No tracking cookies are used.",
-        "short": "Authentication Cookies: "
-      },
-      "li5": {
-        "long": "We retain the datetime of your last login on Zero-TOTP. Once you log in again, the previous date in erased by the new one. This information is used for implementing the data retention policy (see 4. Data Retention and User Control).",
-        "short": "Last login date:"
-      },
-      "part1": "We collect the following information:",
-      "title": " Information We Collect"
-    },
-    "contact": {
-      "desc1": "If you have any questions or concerns about this Privacy Policy or your data, please contact us at",
-      "title": "Contact Us"
-    },
-    "cookies": {
-      "desc": "We only use authentication cookies for session management. No tracking cookies are used.",
-      "title": "Cookies"
-    },
-    "intro": {
-      "part1": "Welcome to Zero-TOTP, a web application where users can securely store their TOTP codes for 2FA authentication with third-party services. At Zero-TOTP, we prioritize the privacy and security of your data. This Privacy Policy outlines how we collect, use, and protect your information. By using our services, you agree to the terms of this Privacy Policy.",
-      "part2": "This Privacy Policy aims to define the principles and guidelines implemented by the Zero-TOTP regarding the processing of personal data of users of the website zero-totp.com and rescue.zero-totp.com. The concept of \"personal data\" corresponds to the definition provided by Article 4 of the General Data Protection Regulation of the European Union (GDPR 2016/679). It refers to any information capable of directly or indirectly identifying a natural person, such as a username, email address, etc. Zero-TOTP affirms its commitment to complying with the applicable laws and regulations concerning data protection and undertakes to preserve their security, confidentiality, and integrity. Zero-TOTP formally commits not to sell, rent, exchange, or give away any personal information."
-    },
-    "liability": {
-      "desc1": "While we take every reasonable measure to ensure the security and confidentiality of your data, we cannot guarantee absolute protection against all potential risks. We disclaim any responsibility for the loss, breach, or unauthorized access to your information. By using Zero-TOTP, you acknowledge and accept that the security of your data is dependent on factors beyond our control.",
-      "desc2": "We only provide assurance regarding the robust encryption algorithms and security measures we employ to safeguard your data during storage and transmission.",
-      "title": "Disclaimer of Liability"
-    },
-    "licence": {
-      "desc1": "Zero-TOTP is an open-source application distributed under the GNU General Public License version 3 (GPL 3). This means that our source code is publicly available, and you have the freedom to view, modify, and distribute the software in compliance with the terms of the GPL 3 license.",
-      "desc2": "By choosing to use Zero-TOTP, you acknowledge and agree to comply with the provisions of the GPL 3 license. You can access the complete source code of our application on",
-      "desc3": "Please note that while the source code is open and freely available, the use of Zero-TOTP as a service provided by us is subject to the terms outlined in this Privacy Policy.",
-      "title": "Open Source and GPL 3 License"
-    },
-    "location": {
-      "long1": "To maximize redundancy, replication, and availability, we store data in three countries: Canada, Germany, and Switzerland. This practice is compliant with the GDPR, as all these countries are recognized by the EU as acceptable for data transfer. Additionally, we adhere to Swiss privacy laws and Quebec's Law 25 on data protection.",
-      "long2": "Please note that the list of countries where data is stored may change in the future. If we add a new country that is not an EU member, Canada, the USA, or Switzerland, we will notify users accordingly.",
-      "title": "Data storage location"
-    },
-    "portability": {
-      "long": " To receive your data in a structured, machine-readable format.",
-      "short": "Data Portability:"
-    },
-    "retention": {
-      "correction": {
-        "long": "You can update your username, email, passphrase, and codes (along with their associated data) in your account. For any other corrections, you can contact developer[at]zero-totp.com.",
-        "short": "Data Correction:"
-      },
-      "long1": "We retain all data, including vault information, for a maximum of five years after your last login to comply with GDPR's data storage limitations. You can request the deletion of your account and all associated data through the account settings at any time. You are responsible of the deletion of all the encrypted backups of your vault that you downloaded and that have been stored on Google Drive.",
-      "long2": "Disaster recovery and data availability requirements mean that we have a legitimate interest in maintaining secure and immutable backups. Backups are kept for maxmimum 60 days. Erasure requests will leave those backups untouched, and we will only remove data from backups if legally compelled to.",
-      "short": "Data Retention:",
-      "title": "Data Retention and User Control"
-    },
-    "rights": {
-      "access": {
-        "short": "Access:"
-      },
-      "desc": "You have the following rights:",
-      "desc2": "Please contact us at developer[at]zero-totp.com to exercise these rights.",
-      "erasure": {
-        "long": " To request the deletion of your account and data.",
-        "short": "Erasure:"
-      },
-      "long": " To request access to your personal information.",
-      "objection": {
-        "long": "To object to the processing of your data for specific purposes.",
-        "short": "Objection:"
-      },
-      "rectification": {
-        "long": "To request the correction of inaccurate or incomplete data.",
-        "short": "Rectification:"
-      },
-      "title": "Your Rights"
-    },
-    "security": {
-      "desc": "We employ industry-standard security measures to protect your data. Passwords are hashed using BCRYPT, and key derivation uses PBKDF2 with 700,000 iterations. Data is encrypted using AES 256-bit encryption.",
-      "title": "Security"
-    },
-    "subtitle": {
-      "intro": "Introduction"
-    },
-    "thirdpart": {
-      "part2": " If the user enables the favicon preview, your browser will use the DuckDuckGo API to retrieve the favicon of the website. Please review the privacy policies of DuckDuckGo, as we have no control over their data handling practices. Zero-TOTP does not store any data related to the favicon preview, and the DuckDuckGo API is only used to retrieve the favicon of the website. The only data sent to DuckDuckGo is the URL of the website by your browser. Zero-TOTP does not access or store without encryption this data."
-    },
-    "thirdparty": {
-      "part1": "If the user enables the Google Drive integration, we may integrate with third-party services for user convenience, such as Google Drive. Please review the privacy policies of these services, as we have no control over their data handling practices.",
-      "titles": "Third-Party Services"
-    },
-    "title": "Zero-TOTP Privacy Policy",
-    "update": "Last Updated",
-    "usage": {
-      "auth": {
-        "long": "To verify your identity and secure your account.",
-        "short": "User Authentication:"
-      },
-      "enc": {
-        "long": "To securely store your TOTP codes without knowledge of the actual codes, secrets, or application URLs.",
-        "short": "Encrypted Storage:"
-      },
-      "google": {
-        "short": "Google Drive Backup:"
-      },
-      "hoohle": {
-        "long": " If enabled, to facilitate the backup of encrypted data to your Google Drive."
-      },
-      "part1": "We use your information for the following purposes:",
-      "support": {
-        "long": "To respond to your inquiries and requests sent to",
-        "short": "Customer Support:"
-      },
-      "title": "Use of Information"
-    }
+    "error_loading": "An error occured while loading the privacy policy. Please try again later.",
+    "error_message": "While we are working on this, you can always retrieve the Zero-TOTP privacy policy on ",
+    "fallback_message": "If you are stuck on the loading you can always retrieve the Zero-TOTP privacy policy on ",
+    "loading": "Loading the privacy policy ..."
   },
   "privacy_policy": "Privacy Policy",
   "qrcode": {
@@ -778,21 +665,16 @@
   "retry": "Try again",
   "save": "Save",
   "seconds": "seconds",
+  "self_hosted": "Self-hosted",
   "session_expired": "Oups, you session is expired !",
   "sign_up": "Sign up",
   "signup": {
-    "beta": {
-      "warning": {
-        "desc": "Thanks for joining us !",
-        "title": "Welcome to Zero-TOTP 👋"
-      }
-    },
     "button": {
-      "create": "Create my vault",
+      "create": "My passphrase is strong",
+      "i_understand": "I understand",
       "start": "Start my zero-trip "
     },
     "checkbox": {
-      "beta": "I understand this is a beta version and I accept the risks. I understand that all features are not implemented yet, bugs may occur and I agree to report any issue I find.",
       "privacy_policy": "I agree to the"
     },
     "email": {
@@ -802,7 +684,6 @@
       }
     },
     "errors": {
-      "beta": "Dont forget to accept the beta conditions !",
       "hashing": "An error occured while hashing your password. Please, try again",
       "missing_fields": "Did you forget to fill something ?",
       "terms": "Dont forget to accept terms & conditions !",
@@ -822,13 +703,18 @@
       "instruction": "To create your vault type the following sentence :",
       "phrase": "My passphrase is strong and I won't forget it",
       "subititle": {
-        "part2": "You and only you can open your vault."
+        "part2": "Your passphrase, and only your passphrase, can open your vault. For security reasons, it is completely impossible to recover your passphrase if you lose it.",
+        "part3": "It is absolutely crucial that:",
+        "part4": "Your passphrase is strong",
+        "part4_1": "everything depends on it! It must not be easy to guess.",
+        "part5": "You do not forget your passphrase",
+        "part5_1": "There is and will never be any way to recover it. That’s what makes Zero-TOTP so secure."
       },
       "subtitle": {
         "part1": "Zero-TOTP uses Zero Knowledge Encryption, which means that ",
         "strong": "you won't be able to recover your password if you lose it !"
       },
-      "title": "Are you sure ?"
+      "title": "Is your passphrase strong enough ?"
     },
     "subtitle": "Have a safe and pleasant zero-trip",
     "success": "Account created successfully 🎉🎉",
@@ -936,6 +822,7 @@
       "retrieve_vault": "Error : Impossible to retrieve your vault from the server",
       "server": "Error : Impossible to retrieve your vault from the server.",
       "server_unreachable": "Server unreachable. Please check your internet connection or try again later. Do not reload this tab to avoid losing your session.",
+      "unlock": "An error occured while decrypting your vault. Please log out and login again. Error ",
       "wrong_key": "Wrong key. You cannot decrypt one of the secrets. Displayed secrets can not be complete. Please log out  and log in again.",
       "wrong_key_vault": "Wrong key. You cannot decrypt this vault."
     },
@@ -954,6 +841,10 @@
         "part2": "To restore this backup and sync it on all your devices, log in and then choose",
         "part3": " in the storage options"
       }
+    },
+    "locked": {
+      "subtitle": "Your vault is automatically re-encrypted if you reload the page or after a certain period of inactivity. ",
+      "title": "Your vault is locked"
     },
     "oauth": {
       "error": {

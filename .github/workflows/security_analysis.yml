@@ -1,5 +1,9 @@
 name: "Sonarqube Security Scan"
 
+permissions:
+  contents: read
+
+
 on: 
     pull_request:
         branches:
@@ -15,7 +19,7 @@ on:
 
 jobs:
   tests:
-    uses: ./.github/workflows/test.yml  # use the callable tests job to run tests
+    uses: ./.github/workflows/test.yml  #
     secrets:
       GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
   sonarqube:

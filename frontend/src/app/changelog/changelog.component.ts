@@ -15,6 +15,36 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "09/06/2025",
+      version: "1.6.0",
+      added: [
+        "The privacy policy is now more easily accessible on github as a Markdown file.",
+        "For self hosted instances, the privacy policy can easily be updated."
+      ],
+      fixed:[
+        "API docker image hardening has been done to improve the stability of the application while still restricting it run as a non-root user.",
+        "End tp end tests have been improved"
+      ]
+    },
+     {
+      date: "09/06/2025",
+      version: "1.5.0",
+      added: [
+        "This is another big step towards the self-hosted version of Zero-TOTP. In the login and signup pages you are now aware of what kind of Zero-TOTP instance you are using. zero-totp.com is the official instance and for now all the users are marked as 'self-hosted'. This is important to keep the users aware of why this is important.",
+      ],
+      fixed:[
+        "The signup process doesn't require anymore the user to re-type the phrase 'My passphrase is strong and I won't forger it'. Instead a more user-friendly pop-up is displayed to ensure the user understands the importance of the passphrase and that it is strong enough.",
+      ]
+    },
+    {
+      date: "04/06/2025",
+      version: "1.4.0",
+      added: [],
+      fixed:[
+        "A lot of packages have been updated on the frontend and API side to improve the stability and security of the application.",
+      ]
+    },
+    {
       date: "25/05/2025",
       version: "1.3.0",
       added: [

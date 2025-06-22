@@ -15,17 +15,8 @@ let email2 = 'test' + seed2 + '@test.test';
 let passphrase = 'fake-$tvIpw5VKH97f0CxEF6C' + seed;
 let passphrase2 = 'fake-$tvIpw5VKH97f0CxEF6C' + seed2;
 
-console.log("Random logging informations :");
-console.log("Username: " + username);
-console.log("Username2: " + username2);
-console.log("Email: " + email);
-console.log("Email2: " + email2);
-console.log("Passphrase: " + passphrase);
-console.log("Passphrase2: " + passphrase2);
-
-
 test('Signup flow', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/signup');
+  await page.goto('https://localhost/signup');
   await page.getByRole('textbox', { name: 'Username' }).click();
   await page.getByRole('textbox', { name: 'Username' }).fill(username);
   await page.getByRole('textbox', { name: 'Email' }).click();
@@ -36,18 +27,20 @@ test('Signup flow', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Confirm passphrase' }).fill(passphrase);
   await page.getByRole('checkbox', { name: 'I agree to the Privacy Policy' }).check();
   await page.getByRole('button', { name: 'Start my zero-trip' }).click();
-  await page.getByRole('textbox', { name: 'My passphrase is strong and I' }).click();
-  await page.getByRole('textbox', { name: 'My passphrase is strong and I' }).fill('My passphrase is strong and I won\'t forget i');
-  await page.getByRole('textbox', { name: 'My passphrase is strong and I' }).pressSequentially('t')
-  await page.getByRole('button', { name: 'Create my vault' }).click();
-  await page.waitForURL('**/login/**');
+  await page.getByRole('button', { name: 'My passphrase is strong' }).click();
+  await page.waitForURL('**/vault');
   await page.getByLabel('Account created successfully').click();
-  await expect(page.getByText('It\'s time to open your vault !')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Your vault is locked' })).toBeVisible();
+  await expect(page.getByText(email)).toBeVisible();
+  await page.getByRole('textbox', { name: 'Passphrase' }).click();
+  await page.getByRole('textbox', { name: 'Passphrase' }).fill(passphrase);
+  await page.getByRole('button', { name: 'Decrypt my vault' }).click();
+  await expect(page.getByRole('heading', { name: 'Here is your TOTP vault' })).toBeVisible();
 });
 
 
 test('Add TOTP code', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -86,7 +79,7 @@ test('Add TOTP code', async ({ page }) => {
 
 
 test('Add several TOTP code', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -165,7 +158,7 @@ test('Add several TOTP code', async ({ page }) => {
 
 
 test('Edit TOTP code', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -194,7 +187,7 @@ test('Edit TOTP code', async ({ page }) => {
 
 
 test('Delete TOTP code', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -212,7 +205,7 @@ test('Delete TOTP code', async ({ page }) => {
 
 
 test('Edit preferences', async ({ page }) => {
-   await page.goto('https://zero-totp.lan/login');
+   await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -251,7 +244,7 @@ test('Edit preferences', async ({ page }) => {
 
 
 test('Edit account', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
@@ -300,7 +293,7 @@ test('Edit account', async ({ page }) => {
 
 
 test('Delete account', async ({ page }) => {
-  await page.goto('https://zero-totp.lan/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email2);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();

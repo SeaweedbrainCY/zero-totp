@@ -69,9 +69,13 @@ export class PreferencesComponent implements OnInit{
 
   
   ngOnInit(): void {
-     if(this.userService.getId() == null){
-     this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
-    } 
+     if(this.userService.get_zke_key() == null){
+      this.userService.refresh_user_id().then((success) => {
+        console.log("User refreshed successfully.");
+      }, (error) => {
+        this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      });
+    }
     this.get_preferences()
     this.get_internal_notification()
     this.get_backup_configuration()

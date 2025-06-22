@@ -47,6 +47,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { httpInterceptorProviders } from './helpers/auth.interceptor';
 import { ImportVaultComponent } from './import-vault/import-vault.component';
 import { FaqComponent } from './faq/faq.component';
+import { provideMarkdown } from 'ngx-markdown';
+import { MarkdownModule } from 'ngx-markdown';
+
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -87,6 +90,8 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
         FormsModule,
+        MarkdownModule.forRoot(),
+        MarkdownModule.forChild(),
         FontAwesomeModule,
         ClipboardModule,
         RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' }),
@@ -110,7 +115,7 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
           // Register the ServiceWorker as soon as the application is stable
           // or after 30 seconds (whichever comes first).
           registrationStrategy: 'registerWhenStable:30000'
-        })], providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, httpInterceptorProviders, provideHttpClient(withInterceptorsFromDi()),] })
+        })], providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, provideMarkdown(), provideHttpClient(), provideMarkdown({ loader: HttpClient }),httpInterceptorProviders, provideHttpClient(withInterceptorsFromDi()),] })
 export class AppModule { 
 
   constructor(translate: TranslateService) {

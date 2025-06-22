@@ -1,4 +1,5 @@
 import { ToastrService } from "ngx-toastr";
+import { HttpClient } from "@angular/common/http";
 export class Utils {
 
       
@@ -17,6 +18,10 @@ export class Utils {
       const valid = /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/
       return valid.test(domain_name);
     }
+
+    isDeviceMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
 
 
 

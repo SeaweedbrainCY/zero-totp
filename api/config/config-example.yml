@@ -22,9 +22,6 @@ api:
         # - 10.80.3.0/24
         # - 2606:4700:4700::1111
 
-    ## The secret that will be used to sign JWT tokens. CHANGE THIS VALUE !
-    ## A random 128 alphanumeric string is required.
-    jwt_secret: "unsafe_secret"
 
 
     ## Absolute path to the API private key used to sign the vault to guarantee its authenticity.
