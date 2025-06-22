@@ -40,7 +40,7 @@ httpcore==1.0.9
 httplib2==0.22.0
 httptools==0.6.1
 httpx==0.25.1
-identify==2.6.9
+identify==2.6.12
 idna==3.7
 importlib-metadata==6.8.0
 inflection==0.5.1
