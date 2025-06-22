@@ -704,9 +704,9 @@
         "part2": "Ta passphrase et uniquement ta passphrase peut ouvrir ton coffre. Par sécurité, il est complètement impossible de récupérer ta passphrase si tu la perds.",
         "part3": "Il est absolument crucial que : ",
         "part4": "Ta passphrase soit robuste",
-        "part4_1" : "tout dépend d'elle ! Elle ne doit pas être facilement devinable.",
+        "part4_1": "tout dépend d'elle ! Elle ne doit pas être facilement devinable.",
         "part5": "Tu n'oublies pas ta passphrase",
-        "part5_1" : "Il n'existe et n'existera jamais aucuns moyen de la récupérer. C'est ce qui rend Zero-TOTP aussi sûr."
+        "part5_1": "Il n'existe et n'existera jamais aucuns moyen de la récupérer. C'est ce qui rend Zero-TOTP aussi sûr."
       },
       "subtitle": {
         "part1": "Zero-TOTP utilise du chiffrement \"Zero-Knowledge\" ce qui veut dire qu'il sera",
@@ -820,6 +820,7 @@
       "retrieve_vault": "Impossible de récupérer ton coffre depuis le serveur",
       "server": "Impossible de récupérer ton coffre depuis le serveur",
       "server_unreachable": "Serveur injoignable. Merci de verifier ta connexion internet ou de réessayer. Ne rafraichis pas cette page pour éviter de perdre ta session actuelle.",
+      "unlock": "Une erreur est survenue en déchiffrant ton coffre. Essaye de te reconnecter. Erreur",
       "wrong_key": "Clé invalide. Tu ne peux pas déchiffrer ces secrets. Les secrets affichés peuvent ne pas être complets. Déconnecte plus connecte toi à nouveau",
       "wrong_key_vault": "Clé incorrecte. Tu ne peux pas déchiffrer ce coffre."
     },
@@ -838,6 +839,10 @@
         "part2": "Pour restaurer cette backup et le synchroniser avec tous tes appareils, connecte toi et choisis",
         "part3": "dans les options de stockage"
       }
+    },
+    "locked": {
+      "subtitle": "Ton coffre redevient automatiquement chiffré si tu rafraichis la page ou après une certaine période d'inactivité.",
+      "title": "Ton coffre est verrouillé"
     },
     "oauth": {
       "error": {

@@ -81,8 +81,12 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(){
-    if(this.userService.getId() == null  && !this.userService.getIsVaultLocal()){
-      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+    if(this.userService.get_zke_key() == null  && !this.userService.getIsVaultLocal()){
+      this.userService.refresh_user_id().then((success) => {
+        this.router.navigate(["/vault"], {relativeTo:this.route.root});
+      }, (error) => {
+        this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      });
     } 
     this.secret_uuid = this.route.snapshot.paramMap.get('id');
     if(this.secret_uuid == null){

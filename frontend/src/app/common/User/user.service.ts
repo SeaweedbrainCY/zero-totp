@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Utils }  from '../Utils/utils';
 import { LocalVaultV1Service } from '../upload-vault/LocalVaultv1Service.service';
+import { HttpClient } from '@angular/common/http';
 @Injectable({providedIn: 'root'}) //Note that you will need to declare it as `@Injectable`. 
 
 @Injectable({
@@ -18,7 +19,33 @@ export class UserService {
   private googleDriveSync:boolean | null = null;
   private vault_tags:string[] = [];
 
-  constructor(private utils: Utils) {
+  constructor(
+    private utils: Utils,
+    private http: HttpClient
+  ) {
+   }
+
+   refresh_user_id(): Promise<Boolean> {
+    return new Promise((resolve, reject) => {
+      this.http.get('/api/v1/whoami', {withCredentials:true, observe: 'response'}).subscribe({
+        next: (response) => {
+          if (response.status === 200) {
+            const userData = response.body as { id: number, email: string, username: string };
+            this.setId(userData.id);
+            this.setEmail(userData.email);
+            localStorage.setItem("email", userData.email);
+            resolve(true);
+          } else {
+            console.error('Failed to fetch user data:', response.statusText);
+            resolve(false);
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching user data:', error);
+          reject(false);
+        }
+      });
+    });
    }
 
    getId() : number | null {

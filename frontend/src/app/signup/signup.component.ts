@@ -153,7 +153,7 @@ export class SignupComponent implements OnInit {
         this.derivedKeySalt = randomSalt
         this.hashPassword()
       });
-    });   
+    });  
   }
 
   hashPassword(){
@@ -178,21 +178,28 @@ export class SignupComponent implements OnInit {
       passphraseSalt: this.passphraseSalt
     };
 
-    this.http.post("/api/v1/signup", data,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.post("/api/v1/signup", data,  {withCredentials:true, observe: 'response'}).subscribe({
+      next: (response) => {
       this.isLoading=false;
       this.utils.toastSuccess(this.toastr, this.translate.instant("signup.success"),"");
       this.userService.setEmail(this.email)
-      this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
+      const response_data = response.body as { message: string, email_verification_required: boolean };
+      if (response_data.email_verification_required){
+        this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
+      } else {
+        this.router.navigate(["/vault"], {relativeTo:this.route.root});
+      }
+      
 
-    },
-    (error) => {
+    }, error: (error) => {
       console.log(error);
       this.isLoading=false;
       if(error.error.message == undefined){
         error.error.message = this.translate.instant("signup.errors.unknown");
       }
       this.utils.toastError(this.toastr,  "Error : "+ error.error.message,"");
-    });
+    }
+  });
   }
 
  openModal(){

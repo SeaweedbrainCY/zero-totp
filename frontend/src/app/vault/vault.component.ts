@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer} from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer, faLock, faEye, faEyeSlash, faKey} from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
@@ -13,6 +13,7 @@ import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr'; 
 import { TOTP } from "totp-generator"
+import { VaultService } from '../common/VaultService/vault.service';
 
 
 @Component({
@@ -25,7 +26,11 @@ export class VaultComponent implements OnInit, OnDestroy {
   faPen = faPen;
   faSquarePlus = faSquarePlus;
   faCopy = faCopy;
+  faKey=faKey;
+  faEye=faEye;
+  faEyeSlash=faEyeSlash;
   faGoogleDrive=faGoogleDrive;
+  faLock = faLock;
   faServer=faServer;
   faCircleXmark= faCircleXmark;
   faCheckCircle = faCheckCircle;
@@ -66,6 +71,11 @@ export class VaultComponent implements OnInit, OnDestroy {
   totp_code_expiration = 0;
   generating_next_totp_code = false;
   totp_code_generation_interval:NodeJS.Timeout|undefined;
+  isPassphraseVisible=false;
+  passphrase = "";
+  isVaultEncrypted : boolean | undefined; 
+  isDecryptingLockedVaut = false;
+  vaultDecryptionErrorMessage = "";
   constructor(
     public userService: UserService,
     private router: Router,
@@ -75,12 +85,20 @@ export class VaultComponent implements OnInit, OnDestroy {
     private utils: Utils,
     private translate: TranslateService,
     private toastr: ToastrService,
-    ) {}
+    private vaultService: VaultService,
+    ) {
+    }
 
   ngOnInit() {
-    if(this.userService.getId() == null && !this.userService.getIsVaultLocal()){
-      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+    if(this.userService.get_zke_key() == null && !this.userService.getIsVaultLocal()){
+      this.userService.refresh_user_id().then((success) => {
+       this.isVaultEncrypted = true;
+      }, (error) => {
+        this.isVaultEncrypted = false;
+        this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      });
     } else if(this.userService.getIsVaultLocal()){
+      this.isVaultEncrypted = false;
       this.local_vault_service = this.userService.getLocalVaultService();
       let vaultDate = "unknown"
       try{
@@ -95,7 +113,32 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.vault_date = vaultDate;
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
-      this.get_google_drive_option();
+      this.isVaultEncrypted = false;
+      this.get_and_decrypt_vault();
+    }    
+    // Display the add button 
+    document.getElementById("add-code-button")!.style.display = "flex";
+    document.getElementById("add-code-button")!.onclick = () => {this.isModalActive = true;};
+  }
+
+  ngOnDestroy() {
+    if(this.totp_code_generation_interval != undefined){
+      clearInterval(this.totp_code_generation_interval);
+    }
+    // Hide the add button
+    document.getElementById("add-code-button")!.style.display = "none";
+  }
+
+
+
+  startDisplayingCode(){
+    this.totp_code_generation_interval = setInterval(()=> { this.compute_totp_expiration() }, 100);
+       // setInterval(()=> { this.generateTime() }, 20);
+       // setInterval(()=> { this.generateCode() }, 100);
+  }
+
+  get_and_decrypt_vault(){
+    this.get_google_drive_option();
       this.get_preferences();
 
       this.reloadSpin = true
@@ -136,23 +179,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         });
         }
       });
-      
-    }    
-  }
-
-  ngOnDestroy() {
-    if(this.totp_code_generation_interval != undefined){
-      clearInterval(this.totp_code_generation_interval);
     }
-  }
-
-
-
-  startDisplayingCode(){
-    this.totp_code_generation_interval = setInterval(()=> { this.compute_totp_expiration() }, 100);
-       // setInterval(()=> { this.generateTime() }, 20);
-       // setInterval(()=> { this.generateCode() }, 100);
-  }
 
   get_preferences(){
     this.http.get("/api/v1/preferences?fields=favicon_policy", {withCredentials: true, observe: 'response'}).subscribe((response) => {
@@ -548,6 +575,73 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.selectedTags.push(tag);
     }
     this.filterVault();
+  }
+
+  unlockVault(){
+    this.isDecryptingLockedVaut = true;
+    this.vaultDecryptionErrorMessage = "";
+    this.http.get("/api/v1/user/derived-key-salt", { withCredentials: true, observe: 'response' }).subscribe({
+      next: (response) => {
+        if(response.status === 200){
+          const derived_key_salt_req_data = response.body as { derived_key_salt: string };
+          console.log("Derived key salt: " + derived_key_salt_req_data.derived_key_salt);
+          this.userService.setDerivedKeySalt(derived_key_salt_req_data.derived_key_salt);
+          this.http.get("/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe({
+            next: (response) => {
+              if(response.status === 200){
+                 const zke_req_data = response.body as { zke_encrypted_key: string };
+                 const zke_encrypted_key = zke_req_data.zke_encrypted_key;
+                 this.vaultService.derivePassphrase(this.userService.getDerivedKeySalt()!, this.passphrase).then((derivedKey) => {
+                  this.vaultService.decryptZKEKey(zke_encrypted_key, derivedKey, this.userService.getIsVaultLocal()!).then((zke_key) => {
+                    this.userService.set_zke_key(zke_key!);
+                    this.isVaultEncrypted = false;
+                    this.isDecryptingLockedVaut = false;
+                     this.get_and_decrypt_vault();
+                  }, (error) => {
+                    console.log(error);
+                    this.isDecryptingLockedVaut = false;
+                    this.vaultDecryptionErrorMessage = "generic_errors.invalid_creds";
+                  });
+                 }, (error) => {
+                  console.log(error);
+                  this.isDecryptingLockedVaut = false;
+                  this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+                    this.utils.toastError(this.toastr, translation + " " + "U5", "");
+                  });
+                 });
+
+              } else {
+                console.log(response);
+                this.isDecryptingLockedVaut = false;
+                this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation + " " + "U3-"+ response.statusText,"");
+        });
+              }
+
+            }, error: (error) => {
+              console.log(error);
+              this.isDecryptingLockedVaut = false;
+              this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation + " " + "U4","");
+        });
+
+          }
+        });
+        } else {
+          console.log(response)
+          this.isDecryptingLockedVaut = false;
+          this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation + " " + "U1-"+ response.statusText,"");
+        });
+        }
+      }, error: (error) => {
+        this.isDecryptingLockedVaut = false;
+        console.log(error);
+        this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation + " " + "U2","");
+        });
+      }  
+    })
   }
 
 
