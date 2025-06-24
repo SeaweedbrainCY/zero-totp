@@ -14,6 +14,18 @@ export class ChangelogComponent {
   imageHash = environment.imageHash;
 
   changelogs = [
+     {
+      date: "23/06/2025",
+      version: "1.7",
+      added: [
+        "When you refresh your tab or when your vaults autolocks, you are no longer logged out. You can now continue to access all your settings and preferences and you just have to re-type your passphrase to unlock your vault.",
+        "You can now easily add a new TOTP code from the little '+' button in the bottom left corner of your vault page.",
+
+      ],
+      fixed:[
+        "Dependencies upgraded and CVE fixed.",
+      ]
+    },
     {
       date: "09/06/2025",
       version: "1.6.0",
