@@ -145,4 +145,13 @@ export class UserService {
     localStorage.removeItem("email");
    }
 
+   clearVault(){
+    this.vault = null;
+    this.zke_key = null;
+    this.derivedKeySalt = null;
+    this.passphraseSalt = null;
+    this.isVaultLocal = false;
+    
+   }
+
 }

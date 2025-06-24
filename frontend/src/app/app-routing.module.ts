@@ -26,6 +26,7 @@ export const routes: Routes = [
   {path:'login', component: LoginComponent},
   {path: 'login/:error_param', component: LoginComponent},
   {path:'vault', component: VaultComponent},
+  {path:'vault/locked', component: VaultComponent},
   {path:'vault/edit/:id', component: EditTOTPComponent},
   {path:'vault/add', component: EditTOTPComponent},
   {path:'qrcode', component: QrcodeReaderComponent},
