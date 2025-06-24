@@ -94,6 +94,9 @@ export class NavbarComponent implements OnInit{
   ngOnInit(): void {
     this.get_global_notification();
     this.last_notification_check_date = Math.floor(Date.now()/1000);
+    if(this.userService.get_zke_key() == null){
+          this.userService.refresh_user_id()
+    }
   }
 
   check_notification(){

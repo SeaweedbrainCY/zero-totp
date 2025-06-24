@@ -56,13 +56,6 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(){
-    if(this.userService.get_zke_key() == null){
-      this.userService.refresh_user_id().then((success) => {
-        console.log("User already logged in.");
-      }, (error) => {
-        console.log("User not already logged in.")
-      });
-    }
     const crypto = new Crypto();
     // each second :
     this.current_color_index = Math.floor(Math.random()*3);
