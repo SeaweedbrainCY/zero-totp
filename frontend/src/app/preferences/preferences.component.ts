@@ -73,7 +73,7 @@ export class PreferencesComponent implements OnInit{
       this.userService.refresh_user_id().then((success) => {
         console.log("User refreshed successfully.");
       }, (error) => {
-        this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+        this.router.navigate(["/vault"], {relativeTo:this.route.root});
       });
     }
     this.get_preferences()
