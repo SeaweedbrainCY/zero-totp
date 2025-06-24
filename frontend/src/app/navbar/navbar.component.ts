@@ -76,6 +76,7 @@ export class NavbarComponent implements OnInit{
             if(this.userService.getId() && !this.userService.getIsVaultLocal()){ 
               console.log("Idle timeout " +  this.currentUrl )
               this.userService.clear();
+              this.router.navigate(["/vault"], {relativeTo:this.route.root});
             }
           });
           if(!this.idle.isRunning()){
