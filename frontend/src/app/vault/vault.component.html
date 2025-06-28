@@ -159,8 +159,8 @@
                                             (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
                                                 class="mr-3"></fa-icon> {{ 'vault.storage.google.sync' | translate }}
                                         </button>
-                                        <button *ngIf="isGoogleDriveSync == 'false'" class="button   mb-3 mr-2 ml-2"
-                                            disabled><fa-icon [icon]="faCircleInfo" class="mr-3"></fa-icon> {{
+                                        <button *ngIf="isGoogleDriveSync == 'false'" class="button   mb-3 mr-2 ml-2" [routerLink]="['/faq#google-drive']"
+                                            ><fa-icon [icon]="faCircleInfo" class="mr-3"></fa-icon> {{
                                             'vault.storage.google.info' | translate }}</button>
 
 
@@ -187,13 +187,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <p class="has-text-centered mt-1">
+                                             <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
                                                 <button class="button mb-3 mr-2 ml-2"
                                                     (click)="disable_google_drive()"><fa-icon [icon]="faCircleXmark"
                                                         class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' |
                                                     translate }}
                                                 </button>
-                                            </p>
+                                                <button  class="button   mb-3 mr-2 ml-2" [routerLink]="['/faq#google-drive']"
+                                            ><fa-icon [icon]="faCircleInfo" class="mr-3"></fa-icon> {{
+                                            'vault.storage.google.info' | translate }}</button>
+                                            </div>
                                         </div>
                                         <div *ngIf="isGoogleDriveSync == 'error'" class="has-text-centered">
                                             <p class="has-text-danger is-size-7 ">{{google_drive_error_message}}</p>
