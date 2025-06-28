@@ -145,6 +145,13 @@
   "always": "Always",
   "available_soon": "Available soon !",
   "blue": "Blue",
+  "callback": {
+    "errors": {
+      "refresh_token": {
+        "vault_button": "Open my vault"
+      }
+    }
+  },
   "cancel": "Cancel",
   "changelog": "Changelog",
   "close": "Close",
@@ -835,6 +842,14 @@
       "disabled": "Google Drive disabled ! ✅"
     },
     "google_drive_refresh_token_error": {
+      "li1_a1": "Google Account Permissions page",
+      "li1_p1": "Log into your Google account and go to the",
+      "li2": "Locate \"Zero-TOTP\" in the list of applications and click on it.",
+      "li3": "Click on the \"Remove Access\" button to de-associate Zero-TOTP from your Google account.",
+      "li4": " Try again the synchronization : ",
+      "p1": "An error occurred while trying to sync your vault to Google Drive. It is very likely that Zero-TOTP has not been correctly de-associtated from your Google Drive account.",
+      "p2": "To be able to re-enable the synchronization, you need to following these steps :  ",
+      "p3": "If you don't want to re-enable the synchronization, you can disable it by clicking on the button below : ",
       "title": "An error occured while synching your vault to Google Drive"
     },
     "local": {

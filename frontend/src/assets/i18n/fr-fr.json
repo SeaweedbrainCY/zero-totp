@@ -145,6 +145,13 @@
   "always": "Toujours",
   "available_soon": "Disponible bientôt !",
   "blue": "Bleu",
+  "callback": {
+    "errors": {
+      "refresh_token": {
+        "vault_button": "Ouvrir mon coffre"
+      }
+    }
+  },
   "cancel": "Retour",
   "changelog": "Changelog",
   "close": "Fermer",
@@ -833,6 +840,14 @@
       "disabled": "Google Drive désactivé ! ✅"
     },
     "google_drive_refresh_token_error": {
+      "li1_a1": "autorisations de compte Google",
+      "li1_p1": "Connecte-toi à ton compte Google et rends-toi sur la page des",
+      "li2": "Repère « Zero-TOTP » dans la liste des applications et clique dessus.",
+      "li3": "Clique sur le bouton « Supprimer l'accès » pour dissocier Zero-TOTP de ton compte Google.",
+      "li4": "Réessaie ensuite la synchronisation :",
+      "p1": "Une erreur est survenue en synchronisant ton coffre avec Google Drive. Il est très probable que Zero-TOTP n’ait pas été correctement dissocié de ton compte Google Drive.",
+      "p2": "Pour pouvoir réactiver la synchronisation, tu dois suivre ces étapes :",
+      "p3": "Si tu ne souhaites pas réactiver la synchronisation, tu peux la désactiver en cliquant sur le bouton ci-dessous :",
       "title": "Une erreur est survenue en synchronisant ton coffre avec Google Drive"
     },
     "local": {

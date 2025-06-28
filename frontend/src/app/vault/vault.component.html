@@ -395,32 +395,38 @@
         <section class="modal-card-body" >
             <div class="mt-2 has-text-left">
                 <p>
-                    An error occurred while trying to sync your vault to Google Drive.
-                        It is very likely that Zero-TOTP has not been correctly de-associtated from your Google Drive account.
+                    {{ 'vault.google_drive_refresh_token_error.p1' | translate }}
+                    
                 </p><br>
 
                 <p ><strong class="has-text-info">
-                    To be able to re-enable the synchronization, you need to following these steps :  
+                    {{ 'vault.google_drive_refresh_token_error.p2' | translate }}
+                    
                 </strong></p>
                 <ol>
                     <li> 
-                       Log into your Google account and go to the <a href="https://myaccount.google.com/permissions" target="_blank">Google Account Permissions</a> page (https://myaccount.google.com/permissions).
+                          {{ 'vault.google_drive_refresh_token_error.li1_p1' | translate }}
+                        <a href="https://myaccount.google.com/permissions" target="_blank">{{ 'vault.google_drive_refresh_token_error.li1_a1' | translate }} <fa-icon [icon]="faArrowUpRightFromSquare" class="ml-2"></fa-icon> </a> (https://myaccount.google.com/permissions).
                     </li>
                     <li>
-                        Locate "Zero-TOTP" in the list of applications and click on it.
+                         {{ 'vault.google_drive_refresh_token_error.li2' | translate }}
+                        
                     </li>
                     <li>
-                        Click on the "Remove Access" button to de-associate Zero-TOTP from your Google account.
+                         {{ 'vault.google_drive_refresh_token_error.li3' | translate }}
+                        
                     </li>
                     <li>
-                        Try again the synchronization : 
+                         {{ 'vault.google_drive_refresh_token_error.li4' | translate }}
+                       
                     </li>
                 </ol><br>
                 <p class="has-text-centered">
                     <button class="button is-info" (click)="resync_after_error()" [ngClass]="{'is-loading': isGoogleDriveSync == 'loading'}">{{ 'vault.storage.google.sync' | translate }}</button>
                 </p><br>
                 <p>
-                    If you don't want to re-enable the synchronization, you can disable it by clicking on the button below : 
+                    {{ 'vault.google_drive_refresh_token_error.p3' | translate }}
+                    
                 </p>
                 <p class="has-text-centered">
                      <button class="button  mb-3 mr-2 ml-2"
@@ -428,6 +434,7 @@
                                                         class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' |
                                                     translate }}
                                                 </button>
+                </p>
 
 
             </div>
