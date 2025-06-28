@@ -524,6 +524,9 @@ def oauth_callback(user_id):
             response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state="+flask.session.get('state'),  code=302))
             flask.session.pop("state")
             return response
+    except oauth_flow.NoRefreshTokenError as e:
+        logging.warning(f"Oauth callback for user {user_id} failed because no refresh token was provided.")
+        return make_response(redirect(frontend_URI + "/oauth/callback?status=refresh-token-error&state=none",  code=302))
     except Exception as e:
         logging.error("Error while exchanging the authorization code " + str(e))
         logging.error(traceback.format_exc())
@@ -587,6 +590,9 @@ def verify_last_backup(user_id):
     
     
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+    if credentials.get("refresh_token") is None:
+        logging.warning(f"User {user_id} tried to verify last backup but no refresh token was found in the credentials. This is a blocking error.")
+        return {"message": "Error while connecting to the Google API", "error_id": "3c071611-744a-4c93-95c8-c87ee3fce00d"}, 400
     try:
         last_backup_checksum, last_backup_date = google_drive_api.get_last_backup_checksum(credentials)
     except utils.CorruptedFile as e:
