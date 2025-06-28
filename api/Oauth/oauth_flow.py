@@ -8,6 +8,18 @@ import datetime
 
 SCOPES = ['https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.appdata'] 
 
+class AuthorizationCodeExchangeError(Exception):
+    """Raised when the authorization code exchange fails."""
+    pass 
+
+class NoRefreshTokenError(Exception):
+    """Raised when the authorization code exchange does not return a refresh token."""
+    pass
+
+
+    
+
+
 
 def get_authorization_url(): # pragma: no cover
     # Use the client_secret.json file to identify the application requesting
@@ -49,6 +61,9 @@ def get_credentials(request_url, state): # pragma: no cover
     try:
         flow.fetch_token(authorization_response=authorization_response) 
         credentials = flow.credentials
+        if credentials.refresh_token is None:
+            logging.warning("Getting credentials failed. No refresh token received. The user will be asked to re-authorize the application.")
+            raise NoRefreshTokenError()
         credentials = {
             'token': credentials.token,
             'refresh_token': credentials.refresh_token,
@@ -59,8 +74,8 @@ def get_credentials(request_url, state): # pragma: no cover
             'expiry': str(credentials.expiry)}
         return credentials
     except Exception as e:
-        logging.error("Error while exchanging the authorization code " + str(e))
-        return None
+        logging.error(f"Error exchanging authorization code: {e}")
+        raise AuthorizationCodeExchangeError(f"Failed to exchange authorization code: {e}") from e
 
 
     
