@@ -76,6 +76,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   isVaultEncrypted : boolean | undefined; 
   isDecryptingLockedVaut = false;
   vaultDecryptionErrorMessage = "";
+  google_drive_refresh_token_error_display_modal_active = false;
+  google_drive_refresh_token_error = false;
   constructor(
     public userService: UserService,
     private router: Router,
@@ -490,7 +492,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   check_last_backup(){
-    this.http.get("/api/v1/google-drive/last-backup/verify",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+    this.http.get("/api/v1/google-drive/last-backup/verify",  {withCredentials:true, observe: 'response'}, ).subscribe({
+      next: (response) => {
       const data = JSON.parse(JSON.stringify(response.body))
       if(data.status == "ok"){
         if(data.is_up_to_date == true){
@@ -510,9 +513,19 @@ export class VaultComponent implements OnInit, OnDestroy {
           this.utils.toastError(this.toastr,  translation,"");
         });
       }
-    }, (error) => {
+    }, error: (error) => {
       if(error.status == 404){
         this.backup_vault_to_google_drive();
+      } else if(error.status == 400){
+        const error_info = error.error as { message: string, error_id: string | undefined };
+        if(error_info.error_id != undefined && error_info.error_id ==  "3c071611-744a-4c93-95c8-c87ee3fce00d"){
+          this.isGoogleDriveSync = 'error';
+          this.google_drive_error_message = this.translate.instant("vault.google_drive_refresh_token_error.title");
+          this.google_drive_refresh_token_error_display_modal_active = true;
+          this.google_drive_refresh_token_error = true;
+        } else {
+           this.google_drive_error_message = "An error occured while checking your backup. Got error " + error.status + ". " + error.error.message;
+        }
       } else {
       this.isGoogleDriveSync = 'error';
       let errorMessage = "";
@@ -525,7 +538,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       }
       this.google_drive_error_message = "An error occured while checking your backup. Got error " + error.status + ". " + errorMessage;
     }
-    });
+    }});
   }
 
   disable_google_drive(){

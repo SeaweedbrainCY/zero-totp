@@ -834,6 +834,9 @@
     "google": {
       "disabled": "Google Drive disabled ! ✅"
     },
+    "google_drive_refresh_token_error": {
+      "title": "An error occured while synching your vault to Google Drive"
+    },
     "local": {
       "desc": {
         "code": "restore a backup",
@@ -860,6 +863,7 @@
         "error": {
           "check": "An error occured while checking your\n                                                backup"
         },
+        "how_to_fix": "How to fix ",
         "info": "More info",
         "last_backup": "Last backed-up modification :",
         "resync": "Try to re-sync",

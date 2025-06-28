@@ -832,6 +832,9 @@
     "google": {
       "disabled": "Google Drive désactivé ! ✅"
     },
+    "google_drive_refresh_token_error": {
+      "title": "Une erreur est survenue en synchronisant ton coffre avec Google Drive"
+    },
     "local": {
       "desc": {
         "code": "Restorer une backup",
@@ -858,6 +861,7 @@
         "error": {
           "check": "Une erreur est survenue pendant la vérification de tes backups"
         },
+        "how_to_fix": "Corriger",
         "info": "Plus d'info",
         "last_backup": "Dernière modification sauvegardée :",
         "resync": "Essayer de re-synchroniser",
