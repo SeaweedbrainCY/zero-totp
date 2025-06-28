@@ -43,6 +43,7 @@ export const routes: Routes = [
   {path: "import/vault", component: ImportVaultComponent},
   {path: "import/vault/:type/:step", component: ImportVaultComponent},
   {path: "faq", component: FaqComponent},
+  {path: "faq/:id", component: FaqComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 
