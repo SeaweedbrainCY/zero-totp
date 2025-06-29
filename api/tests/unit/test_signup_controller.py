@@ -125,6 +125,15 @@ class TestSignupController(unittest.TestCase):
         response = self.client.post(self.endpoint, json=self.json_payload)
         self.assertEqual(response.status_code, 400)
 
+
+    def test_signup_when_signup_disabled(self):
+        with patch.object(conf.features, 'signup_enabled', False):
+            with self.application.app.app_context():
+                response = self.client.post(self.endpoint, json=self.json_payload)
+                self.assertEqual(response.status_code, 403)
+                self.assertEqual(response.json["code"], "signup_disabled")
+                self.assertIsNone(db.session.query(User).filter(User.mail == self.json_payload["email"]).first())
+
     
 
    
