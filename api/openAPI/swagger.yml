@@ -779,7 +779,7 @@ paths:
   
   /privacy-policy:
     get:
-      operationId: endpoints_controllers.privacy_policy.get_privacy_policy
+      operationId: endpoints_controllers.general.get_privacy_policy
       tags:
         - General
       parameters:
@@ -802,6 +802,27 @@ paths:
                 example: "# Privacy Policy\n\nThis is the privacy policy in Markdown format."
         "404":
           description: No privacy policy defined for this Zero-TOTP instance
+        "500":
+          description: Internal server error
+
+  /configuration:
+    get:
+      operationId: endpoints_controllers.general.get_configuration
+      tags:
+        - General
+      summary: Get public information related to the API configuration
+      security: []
+      responses:
+        "200": 
+          description: Return the API configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  signup_enabled:
+                    type: boolean
+                    example: true
         "500":
           description: Internal server error
         
