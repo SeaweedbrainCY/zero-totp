@@ -159,7 +159,7 @@
                                             (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
                                                 class="mr-3"></fa-icon> {{ 'vault.storage.google.sync' | translate }}
                                         </button>
-                                        <button *ngIf="isGoogleDriveSync == 'false'" class="button   mb-3 mr-2 ml-2" [routerLink]="['/faq#google-drive']"
+                                        <button *ngIf="isGoogleDriveSync == 'false'" class="button   mb-3 mr-2 ml-2" [routerLink]="['/faq/google-drive']"
                                             ><fa-icon [icon]="faCircleInfo" class="mr-3"></fa-icon> {{
                                             'vault.storage.google.info' | translate }}</button>
 
@@ -193,7 +193,7 @@
                                                         class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' |
                                                     translate }}
                                                 </button>
-                                                <button  class="button   mb-3 mr-2 ml-2" [routerLink]="['/faq#google-drive']"
+                                                <button  class="button   mb-3 mr-2 ml-2" [routerLink]="['/faq/google-drive']"
                                             ><fa-icon [icon]="faCircleInfo" class="mr-3"></fa-icon> {{
                                             'vault.storage.google.info' | translate }}</button>
                                             </div>
