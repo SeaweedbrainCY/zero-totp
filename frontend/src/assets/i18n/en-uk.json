@@ -720,6 +720,7 @@
       }
     },
     "errors": {
+      "already_exist": "This username or email is already taken. Choose another one. ",
       "hashing": "An error occured while hashing your password. Please, try again",
       "missing_fields": "Did you forget to fill something ?",
       "terms": "Dont forget to accept terms & conditions !",

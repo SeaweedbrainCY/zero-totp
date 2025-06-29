@@ -211,7 +211,6 @@
   },
   "encrypted": "chiffré",
   "faq": {
-    "title": "Foire aux questions",
     "google_drive": {
       "a1_1": "Zero-TOTP vise à t’offrir un moyen sécurisé de gérer tes TOTP. Tu gardes le contrôle sur le chiffrement et la disponibilité de ton coffre. En sauvegardant ton     coffre sur Google Drive, tu t’assures d’avoir une copie en cas de panne ou de bug de Zero-TOTP.",
       "a1_2": "Lorsque tu actives la sauvegarde Google Drive, Zero-TOTP crée un dossier nommé 'Zero-TOTP Backup' dans ton Google Drive. Ce dossier contient des fichiers texte    contenant une version chiffrée de ton coffre. Ces fichiers sont chiffrés avec ton mot de passe maître, donc toi seul peux y accéder.",
@@ -241,7 +240,7 @@
       "q7": "D'autres fournisseurs cloud seront-ils pris en charge ?",
       "title": "Sauvegardes automatiques sur Google Drive"
     },
-
+    "title": "Foire aux questions",
     "totp": {
       "a1_p1": "Un TOTP (Time-based One-Time Password) est un mot de passe à usage unique, temporaire, utilisé pour l'authentification à deux facteurs (2FA).",
       "a1_p2": "Un TOTP protège un compte en ajoutant une seconde couche de sécurité en plus du mot de passe. Même si un attaquant obtient le mot de passe, il ne pourra pas se connecter sans le code temporaire, qui change toutes les 30 secondes et ne peut être utilisé qu'une seule fois.",
@@ -719,6 +718,7 @@
       }
     },
     "errors": {
+      "already_exist": "Ce nom d'utilisateur ou cet email est déjà pris. Choisis en un nouveau. ",
       "hashing": "Une erreur est survenue en hachant ta passphrase. Réessaye plus tard",
       "missing_fields": "Tu n'as pas oublié quelque chose ?",
       "terms": "N'oublie pas d'accepter les termes et conditions !",
