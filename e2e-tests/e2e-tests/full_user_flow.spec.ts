@@ -253,7 +253,7 @@ test('Edit account', async ({ page }) => {
   await page.getByRole('button', { name: 'Open my vault' }).click();
   await page.waitForURL('**/vault');
   await expect(page.getByLabel('Vault decrypted ✅')).toContainText('Vault decrypted ✅');
-  await page.getByText('Account').click();
+  await page.getByText('Account', { exact: true }).click();
   await expect(page.locator('app-account')).toContainText('Your current username is: ' + username);
   await page.getByRole('textbox', { name: 'Username' }).click();
   await page.getByRole('textbox', { name: 'Username' }).fill(username2);
@@ -302,7 +302,7 @@ test('Delete account', async ({ page }) => {
   await page.getByRole('button', { name: 'Open my vault' }).click();
   await page.waitForURL('**/vault');
   await expect(page.getByLabel('Vault decrypted ✅')).toContainText('Vault decrypted ✅');
-  await page.getByText('Account').click();
+  await page.getByText('Account', { exact: true }).click();
   await page.getByRole('button', { name: 'Delete your account' }).click();
   await expect(page.locator('#confirmation')).toMatchAriaSnapshot(`
     - heading "Are you sure ?" [level=1]
