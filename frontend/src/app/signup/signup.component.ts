@@ -194,10 +194,11 @@ export class SignupComponent implements OnInit {
     }, error: (error) => {
       console.log(error);
       this.isLoading=false;
-      if(error.error.message == undefined){
-        error.error.message = this.translate.instant("signup.errors.unknown");
+      let error_message = this.translate.instant("signup.errors.unknown");
+      if(error.error != null && error.error.message != null){
+        error_message = error.error.message 
       }
-      this.utils.toastError(this.toastr,  "Error : "+ error.error.message,"");
+      this.utils.toastError(this.toastr,  "Error : "+ error_message,"");
     }
   });
   }
