@@ -161,3 +161,10 @@ features:
         #  max_age_in_days: 30
 
 
+    ## Optional
+    ## Signup enabled 
+    ## If set to false, the API will not allow new users to sign up. Existing users will still be able to log in.
+    ## Default: true
+    # signup_enabled: true
+
+

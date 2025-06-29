@@ -256,7 +256,6 @@ class PrivacyPolicyConfig:
         
 
 
-
 class FeaturesConfig:
     def __init__(self, data):
                 
@@ -265,6 +264,7 @@ class FeaturesConfig:
         self.sentry = SentryConfig(data["sentry"]) if "sentry" in data else None
         self.backup_config = BackupConfig(data["default_backup_configuration"] if "default_backup_configuration" in data else [])
         self.privacy_policy = PrivacyPolicyConfig()
+        self.signup_enabled = data["signup_enabled"] if "signup_enabled" in data else True
 
 
 class Config:

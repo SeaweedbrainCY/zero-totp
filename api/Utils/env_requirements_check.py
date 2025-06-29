@@ -78,3 +78,6 @@ def test_conf(conf) -> bool:
     ## Backup
     assert isinstance(conf.features.backup_config.max_age_in_days, int), "features.default_backup_configuration.max_age_in_days is not an integer"
     assert isinstance(conf.features.backup_config.backup_minimum_count, int), "features.default_backup_configuration.backup_minimum_count is not an integer"
+
+    ## Signup 
+    assert isinstance(conf.features.signup_enabled, bool), "features.signup_enabled is not a boolean"
