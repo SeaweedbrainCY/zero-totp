@@ -719,6 +719,7 @@
     },
     "errors": {
       "already_exist": "Ce nom d'utilisateur ou cet email est déjà pris. Choisis en un nouveau. ",
+      "disabled": "L'inscription a été désactivée par la propriétaire de cette instance. Contacte-le pour ré-activer les inscriptions ou utilise l'instance officielle zero-totp.com.",
       "hashing": "Une erreur est survenue en hachant ta passphrase. Réessaye plus tard",
       "missing_fields": "Tu n'as pas oublié quelque chose ?",
       "terms": "N'oublie pas d'accepter les termes et conditions !",

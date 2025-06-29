@@ -721,6 +721,7 @@
     },
     "errors": {
       "already_exist": "This username or email is already taken. Choose another one. ",
+      "disabled": "Signup to this instance has been disabled by the owner. Contact them to re-enable signup or use the official instance zero-totp.com.",
       "hashing": "An error occured while hashing your password. Please, try again",
       "missing_fields": "Did you forget to fill something ?",
       "terms": "Dont forget to accept terms & conditions !",

@@ -50,6 +50,7 @@ export class SignupComponent implements OnInit {
   isConfirmPasswordVisible=false;
   current_domain = "";
   instance_dropdown_active = false;
+  signup_enabled = true;
 
 
   constructor(
@@ -107,6 +108,15 @@ export class SignupComponent implements OnInit {
       this.emailErrorMessage = this.translate.instant("signup.email.error.forbidden");
       return;
     }
+  }
+
+
+  get_api_configuration(){
+    this.http.get("/api/v1/configuration", {withCredentials:true}).subscribe({
+      next: (response) => {
+        const response_data = response as { signup_enabled: boolean};
+        this.signup_enabled = response_data.signup_enabled;
+      }});
   }
 
   checkUsername(){
@@ -196,6 +206,8 @@ export class SignupComponent implements OnInit {
       this.isLoading=false;
       if (error.status == 409){
         this.utils.toastError(this.toastr,  this.translate.instant("signup.errors.already_exist") ,"");
+      } else if (error.status == 403 && error.error != null && error.error.code != null && error.error.code == "signup_disabled") {
+        this.utils.toastError(this.toastr,  this.translate.instant("signup.errors.disabled") ,"");
       } else {
         let error_message = this.translate.instant("signup.errors.unknown");
         if(error.error != null && error.error.message != null){
