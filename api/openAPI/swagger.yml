@@ -58,6 +58,8 @@ paths:
                     example: true
         "400":
           description: Missing required parameters
+        "403":
+          description: Forbidden. Example, the user is blocked or signup is disabled
         "409":
           description: User already exists
   /login:
