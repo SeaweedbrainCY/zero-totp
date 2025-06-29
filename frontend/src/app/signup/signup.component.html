@@ -1,5 +1,17 @@
 <section class="hero  is-halfheight m-6 pb-6" style="min-height: 70vh;">
-  <div class="hero-body is-flex is-flex-direction-column is-justify-content-space-around	is-fullheight">
+   <div class="hero-body is-flex is-flex-direction-column is-justify-content-space-around	is-fullheight" *ngIf="!signup_enabled">
+      <article class="message is-warning">
+        <div class="message-header">
+          <p><fa-icon [icon]="faDoorClosed" class="mr-2"></fa-icon> Signup is disabled </p>
+        </div>
+        <div class="message-body">
+          The owner of this instance has disabled signup. You need to contact them to re-enable signup. <br><br>
+
+          To use Zero-TOTP, you can also use the official instance <a href="https://zero-totp.com/signup" target="_blank">zero-totp.com <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon> </a>.<br>
+        </div>
+      </article>
+    </div>
+    <div class="hero-body is-flex is-flex-direction-column is-justify-content-space-around	is-fullheight" *ngIf="signup_enabled">
     <div class="has-text-centered	is-full is-flex is-justify-content-center">
       <p><span class="title is-1 is-full has-text-centered has-text-info has-text-weight-bold">
           {{ 'signup.welcome' | translate }} !</span><br />

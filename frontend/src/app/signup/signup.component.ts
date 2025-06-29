@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash , faFlask, faCircleQuestion} from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash , faFlask, faCircleQuestion, faArrowUpRightFromSquare, faDoorClosed} from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
@@ -20,8 +20,10 @@ import { UserService } from '../common/User/user.service';
 export class SignupComponent implements OnInit {
   faEnvelope=faEnvelope;
   faKey=faKey;
+  faDoorClosed=faDoorClosed;
   faCheck=faCheck;
   faUser=faUser;
+  faArrowUpRightFromSquare=faArrowUpRightFromSquare;
   faDiscord=faDiscord;
   faCircleQuestion=faCircleQuestion;
   faXmark=faXmark;
@@ -66,6 +68,7 @@ export class SignupComponent implements OnInit {
 
   ngOnInit(): void {
     this.current_domain = window.location.host;
+    this.get_api_configuration();
   }
 
   checkPassword(){
@@ -116,6 +119,7 @@ export class SignupComponent implements OnInit {
       next: (response) => {
         const response_data = response as { signup_enabled: boolean};
         this.signup_enabled = response_data.signup_enabled;
+        console.log("Signup enabled: ", this.signup_enabled);
       }});
   }
 
