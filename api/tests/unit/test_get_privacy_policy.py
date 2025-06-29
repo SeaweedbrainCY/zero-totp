@@ -1,7 +1,7 @@
 import unittest
 from app import app
 from environment import conf, logging, PrivacyPolicyConfig
-from endpoints_controllers.privacy_policy import conf as controller_conf
+from endpoints_controllers.general import conf as controller_conf
 import os
 
 
