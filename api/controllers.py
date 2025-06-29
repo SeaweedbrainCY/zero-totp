@@ -52,6 +52,8 @@ if conf.environment.type == "development":
 
 # POST /signup
 def signup():
+    if not conf.features.signup_enabled:
+        return {"message": "Signup is disabled", "code":"signup_disabled"}, 403
     try:
         data = request.get_json()
         username = utils.sanitize_input(data["username"].strip())
