@@ -20,12 +20,6 @@ def test_conf(conf) -> bool:
     assert isinstance(conf.api.flask_secret_key, str), "api.flask_secret_key is not a string"
     assert len(conf.api.flask_secret_key) >= 64, "api.flask.secret_key must be at least 64 characters long"
     assert isinstance(conf.api.server_side_encryption_key, bytes), "api.server_side_encryption_key is not a string"
-    if conf.api.oauth != None:
-        assert isinstance(conf.api.oauth.client_secret_file_path, str), "api.oauth.client_secret_file_path is not a string"
-        try:
-            open(conf.api.oauth.client_secret_file_path, "r").close()
-        except Exception as e:
-            raise Exception(f"api.oauth.client_secret_file_path is not a valid path. {e}")
     if conf.api.trusted_proxy != None:
         assert isinstance(conf.api.trusted_proxy, list), "api.trusted_proxy is not a list"
         for ip in conf.api.trusted_proxy:
@@ -81,3 +75,16 @@ def test_conf(conf) -> bool:
 
     ## Signup 
     assert isinstance(conf.features.signup_enabled, bool), "features.signup_enabled is not a boolean"
+
+
+    ## Google drive 
+    assert isinstance(conf.features.google_drive.enabled, bool), "features.google_drive.enabled is not a boolean"
+    if conf.features.google_drive.enabled:
+        assert isinstance(conf.features.google_drive.client_secret_file_path, str), "features.google_drive.client_secret_file_path is not a string"
+        try:
+            open(conf.features.google_drive.client_secret_file_path, "r").close()
+        except FileNotFoundError:
+            logging.error(f"features.google_drive.client_secret_file_path does not exist. Was expecting {conf.features.google_drive.client_secret_file_path}")
+            raise FileNotFoundError(f"features.google_drive.client_secret_file_path does not exist. Was expecting {conf.features.google_drive.client_secret_file_path}")
+        except Exception as e:
+            raise Exception(f"features.google_drive.client_secret_file_path is not a valid path. {e}")
