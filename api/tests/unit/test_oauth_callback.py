@@ -193,7 +193,7 @@ class TestOauthCallback(unittest.TestCase):
 
     def test_oauth_callback_disabled_oauth(self):
         self.client.cookies ={'session-token': self.session_token_user_blocked}
-        patch.object(conf.api, 'oauth', None)
+        patch.object(conf.features.google_drive, 'enabled', False)
         with self.application.app.app_context():
             self.client.get(self.setSateSession)
             self.client.follow_redirects = False
