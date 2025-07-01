@@ -914,6 +914,27 @@ paths:
             description: Access forbidden
           "500":
             description: Internal server error
+
+  /backup/server/options:
+    get:
+      operationId: endpoints_controllers.backup.get_server_backup_options
+      tags:
+        - Backup
+      summary: Get the server backup options
+      responses:
+        "200": 
+          description: Return the server backup options
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  google_drive_enabled:
+                    type: boolean
+                    example: true
+        "500":
+          description: Internal server error
+  
   /user/derived-key-salt:
     get: 
       operationId: endpoints_controllers.user.get_derived_key_salt
