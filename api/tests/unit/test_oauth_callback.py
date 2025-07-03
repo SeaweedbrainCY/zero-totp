@@ -20,7 +20,7 @@ class TestOauthCallback(unittest.TestCase):
                 raise Exception("Test must be run with in memory database")
         self.application = app
         self.client = self.application.test_client()
-        self.creds = {"secret" : "secret_should_be_encrypted", "expiry": datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
+        self.creds = {"secret" : "secret_should_be_encrypted", "expiry": datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d %H:%M:%S.%f")}
         self.endpoint = "/api/v1/google-drive/oauth/callback"
         self.setSateSession = "/api/v1/google-drive/oauth/authorization-flow"
         self.blocked_user_id = 2
@@ -43,11 +43,11 @@ class TestOauthCallback(unittest.TestCase):
         with self.application.app.app_context():
             db.create_all()
             self.user_repo.create(username="user1", email="user1@test.test", password="password", 
-                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(datetime.UTC))
             self.user_repo.create(username="user2", email="user2@test.test", password="password", 
-                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow(),isBlocked=True)
+                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(datetime.UTC),isBlocked=True)
             self.user_repo.create(username="user3", email="user3@test.test", password="password", 
-                    randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.utcnow())
+                    randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.now(datetime.UTC))
             db.session.commit()
             
             _, self.session_token_user_1 = self.session_repo.generate_session_token(1)
