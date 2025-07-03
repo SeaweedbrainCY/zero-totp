@@ -480,7 +480,7 @@ def get_role(user_id, *args, **kwargs):
 
 
     
-# GET /google-drive/oauth/authorization_flow
+# GET /google-drive/oauth/authorization-flow
 def get_authorization_flow():
     if not conf.features.google_drive.enabled:
         return {"message": "Oauth is disabled on this tenant. Contact the tenant administrator to enable it."}, 403 
