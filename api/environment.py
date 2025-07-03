@@ -256,7 +256,7 @@ class FeaturesConfig:
         self.backup_config = BackupConfig(data["default_backup_configuration"] if "default_backup_configuration" in data else [])
         self.privacy_policy = PrivacyPolicyConfig()
         self.signup_enabled = data["signup_enabled"] if "signup_enabled" in data else True
-        self.google_drive = GoogleDriveConfig(data["google_drive"] if "google_drive" in data else [])
+        self.google_drive = GoogleDriveConfig(data["google_drive_backup"] if "google_drive_backup" in data else [])
 
 
 class Config:
