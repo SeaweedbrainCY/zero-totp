@@ -69,7 +69,8 @@ class TestOauthCallback(unittest.TestCase):
     def test_oauth_callback_no_token_yet(self):
         with self.application.app.app_context():
             self.client.cookies = {'session-token': self.session_token_user_1}
-            self.client.get(self.setSateSession)
+            setSateSession =self.client.get(self.setSateSession)
+            self.assertEqual(setSateSession.status_code, 200)
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
@@ -85,7 +86,8 @@ class TestOauthCallback(unittest.TestCase):
         self.client.cookies = {'session-token': self.session_token_user_1}
         self.get_credentials.return_value = None
         with self.application.app.app_context():
-            self.client.get(self.setSateSession)
+            setSateSession = self.client.get(self.setSateSession)
+            self.assertEqual(setSateSession.status_code, 200)
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
@@ -96,7 +98,8 @@ class TestOauthCallback(unittest.TestCase):
         self.client.cookies = {'session-token': self.session_token_user_1}
         with self.application.app.app_context():
             self.oauth_tokens.add(1, "creds", "date","tag", "nonce")
-            self.client.get(self.setSateSession)
+            setSateSession = self.client.get(self.setSateSession)
+            self.assertEqual(setSateSession.status_code, 200)
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
@@ -113,7 +116,8 @@ class TestOauthCallback(unittest.TestCase):
         with self.application.app.app_context():
             self.oauth_tokens.add(1, "creds", "date","tag", "nonce")
             self.google_integration_repo.create(1, 1)
-            self.client.get(self.setSateSession)
+            setSateSession = self.client.get(self.setSateSession)
+            self.assertEqual(setSateSession.status_code, 200)
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
@@ -131,7 +135,8 @@ class TestOauthCallback(unittest.TestCase):
         with self.application.app.app_context():
             google_get_by_userid = patch("database.google_drive_integration_repo.GoogleDriveIntegration.get_by_user_id").start()
             google_get_by_userid.side_effect = Exception("test")
-            self.client.get(self.setSateSession)
+            setSateSession = self.client.get(self.setSateSession)
+            self.assertEqual(setSateSession.status_code, 200)
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
@@ -147,7 +152,8 @@ class TestOauthCallback(unittest.TestCase):
         with self.application.app.app_context():
             add_token = patch("database.oauth_tokens_repo.Oauth_tokens.add").start()
             add_token.return_value = None
-            self.client.get(self.setSateSession)
+            setSateSession = self.client.get(self.setSateSession)
+            self.assertEqual(setSateSession.status_code, 200)
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 302)
@@ -175,7 +181,8 @@ class TestOauthCallback(unittest.TestCase):
     def test_oauth_callback_unverified_user(self):
         self.client.cookies = {'session-token': self.session_token_user_unverified}
         with self.application.app.app_context():
-            self.client.get(self.setSateSession)
+            setSateSession = self.client.get(self.setSateSession)
+            self.assertEqual(setSateSession.status_code, 200)
             self.client.follow_redirects = False
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
@@ -184,8 +191,8 @@ class TestOauthCallback(unittest.TestCase):
     def test_oauth_callback_blocked_user(self):
         self.client.cookies = {'session-token': self.session_token_user_blocked}
         with self.application.app.app_context():
-            self.client.get(self.setSateSession)
-            self.client.follow_redirects = False
+            setSateSession = self.client.get(self.setSateSession)
+            self.assertEqual(setSateSession.status_code, 200)
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
             self.assertEqual(self.google_integration_repo.is_google_drive_enabled(self.blocked_user_id), 0)
@@ -193,9 +200,11 @@ class TestOauthCallback(unittest.TestCase):
 
     def test_oauth_callback_disabled_oauth(self):
         self.client.cookies ={'session-token': self.session_token_user_blocked}
-        patch.object(conf.features.google_drive, 'enabled', False)
-        with self.application.app.app_context():
-            self.client.get(self.setSateSession)
-            self.client.follow_redirects = False
-            response = self.client.get(self.endpoint)
-            self.assertEqual(response.status_code, 403)
+        with patch.object(conf.features.google_drive, 'enabled', False):
+            with self.application.app.app_context():
+                setSateSession = self.client.get(self.setSateSession)
+                self.assertEqual(setSateSession.status_code, 403)
+                self.assertEqual(setSateSession.json()["message"], "Oauth is disabled on this tenant. Contact the tenant administrator to enable it.")
+                self.client.follow_redirects = False
+                response = self.client.get(self.endpoint)
+                self.assertEqual(response.status_code, 403)
