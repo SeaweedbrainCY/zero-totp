@@ -52,6 +52,8 @@ if conf.environment.type == "development":
 
 # POST /signup
 def signup():
+    if not conf.features.signup_enabled:
+        return {"message": "Signup is disabled", "code":"signup_disabled"}, 403
     try:
         data = request.get_json()
         username = utils.sanitize_input(data["username"].strip())
@@ -478,9 +480,9 @@ def get_role(user_id, *args, **kwargs):
 
 
     
-# GET /google-drive/oauth/authorization_flow
+# GET /google-drive/oauth/authorization-flow
 def get_authorization_flow():
-    if not conf.api.oauth:
+    if not conf.features.google_drive.enabled:
         return {"message": "Oauth is disabled on this tenant. Contact the tenant administrator to enable it."}, 403 
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
@@ -524,6 +526,9 @@ def oauth_callback(user_id):
             response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state="+flask.session.get('state'),  code=302))
             flask.session.pop("state")
             return response
+    except oauth_flow.NoRefreshTokenError as e:
+        logging.warning(f"Oauth callback for user {user_id} failed because no refresh token was provided.")
+        return make_response(redirect(frontend_URI + "/oauth/callback?status=refresh-token-error&state=none",  code=302))
     except Exception as e:
         logging.error("Error while exchanging the authorization code " + str(e))
         logging.error(traceback.format_exc())
@@ -587,6 +592,9 @@ def verify_last_backup(user_id):
     
     
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+    if credentials.get("refresh_token") is None:
+        logging.warning(f"User {user_id} tried to verify last backup but no refresh token was found in the credentials. This is a blocking error.")
+        return {"message": "Error while connecting to the Google API", "error_id": "3c071611-744a-4c93-95c8-c87ee3fce00d"}, 400
     try:
         last_backup_checksum, last_backup_date = google_drive_api.get_last_backup_checksum(credentials)
     except utils.CorruptedFile as e:

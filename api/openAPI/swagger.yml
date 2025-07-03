@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.0.4
 info:
   title: zero-totp API
   description: API for the zero-totp application
@@ -58,6 +58,8 @@ paths:
                     example: true
         "400":
           description: Missing required parameters
+        "403":
+          description: Forbidden. Example, the user is blocked or signup is disabled
         "409":
           description: User already exists
   /login:
@@ -777,7 +779,7 @@ paths:
   
   /privacy-policy:
     get:
-      operationId: endpoints_controllers.privacy_policy.get_privacy_policy
+      operationId: endpoints_controllers.general.get_privacy_policy
       tags:
         - General
       parameters:
@@ -800,6 +802,27 @@ paths:
                 example: "# Privacy Policy\n\nThis is the privacy policy in Markdown format."
         "404":
           description: No privacy policy defined for this Zero-TOTP instance
+        "500":
+          description: Internal server error
+
+  /configuration:
+    get:
+      operationId: endpoints_controllers.general.get_configuration
+      tags:
+        - General
+      summary: Get public information related to the API configuration
+      security: []
+      responses:
+        "200": 
+          description: Return the API configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  signup_enabled:
+                    type: boolean
+                    example: true
         "500":
           description: Internal server error
         
@@ -891,6 +914,27 @@ paths:
             description: Access forbidden
           "500":
             description: Internal server error
+
+  /backup/server/options:
+    get:
+      operationId: endpoints_controllers.backup.get_server_backup_options
+      tags:
+        - Backup
+      summary: Get the server backup options
+      responses:
+        "200": 
+          description: Return the server backup options
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  google_drive_enabled:
+                    type: boolean
+                    example: true
+        "500":
+          description: Internal server error
+  
   /user/derived-key-salt:
     get: 
       operationId: endpoints_controllers.user.get_derived_key_salt

@@ -18,8 +18,11 @@ export class FooterComponent {
   faEnvelope = faEnvelope;
   imageHash = environment.imageHash;
   today_year = new Date().getFullYear();
+  current_domain = ""
 
   
-      constructor() { }
+      constructor() { 
+        this.current_domain = window.location.host;
+      }
 
 }

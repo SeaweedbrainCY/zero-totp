@@ -46,7 +46,7 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
         self.session_token_repo = SessionTokenRepo()
 
 
-        self.creds = {"creds": "creds", "expiry":datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
+        self.creds = {"creds": "creds","refresh_token":"fake_token", "expiry":datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
         creds_b64 = base64.b64encode(json.dumps(self.creds).encode("utf-8")).decode("utf-8")
         encrypted_creds = self.sse.encrypt(creds_b64)
         with self.application.app.app_context():

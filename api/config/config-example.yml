@@ -161,3 +161,25 @@ features:
         #  max_age_in_days: 30
 
 
+    ## Optional
+    ## Signup enabled 
+    ## If set to false, the API will not allow new users to sign up. Existing users will still be able to log in.
+    ## Default: true
+    # signup_enabled: true
+
+    ## Optional
+    ## Google Drive automatic backup
+    ## Allow the users to link their Google Drive account to the API and automatically backup their vaults.
+    ## Follow the documentation to set up the Google Drive OAuth credentials.
+    # google_drive_backup:
+        ## Enable or disable the Google Drive automatic backup feature.
+        ## Default: false
+        # enabled: false
+
+        ## The path to the client secret file used to authenticate with Google Drive.
+        ## This file must be in JSON format and contain the OAuth credentials.
+        ## See https://developers.google.com/identity/protocols/oauth2 for more information.
+        # client_secret_file_path: ".secret/client_secret.json"
+
+
+

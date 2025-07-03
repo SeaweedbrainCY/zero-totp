@@ -18,3 +18,11 @@ def get_privacy_policy(lang="en"):
     except Exception as e:
         logging.error("Error while reading privacy policy file: " + str(e))
         return {"message": "No privacy policy defined for this instance."}, 404
+
+
+# GET /configuration
+def get_configuration():
+    config_data = {
+        "signup_enabled": bool(conf.features.signup_enabled),
+    }
+    return config_data, 200
