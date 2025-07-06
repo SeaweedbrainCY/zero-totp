@@ -215,6 +215,7 @@ test('Edit preferences', async ({ page }) => {
   await page.waitForURL('**/vault');
   await expect(page.getByLabel('Vault decrypted ✅')).toContainText('Vault decrypted ✅');
   await page.getByText('Preferences').click();
+  await page.waitForTimeout(1000); // waits for 1 seconds for all preferences to load
   await page.getByRole('combobox').selectOption('hour');
   await page.locator('div').filter({ hasText: /^minutehourUpdate$/ }).getByRole('button').click();
   await expect(page.locator('app-preferences')).toContainText('Success ! This new value will be applied at your next login');
