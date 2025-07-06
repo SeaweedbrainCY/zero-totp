@@ -14,6 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr'; 
 import { TOTP } from "totp-generator"
 import { VaultService } from '../common/VaultService/vault.service';
+import { GlobalConfigurationService } from '../common/GlobalConfiguration/global-configuration.service';
 
 
 @Component({
@@ -79,6 +80,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   vaultDecryptionErrorMessage = "";
   google_drive_refresh_token_error_display_modal_active = false;
   google_drive_refresh_token_error = false;
+  is_google_drive_enabled_on_this_tenant = false;
   constructor(
     public userService: UserService,
     private router: Router,
@@ -89,6 +91,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private toastr: ToastrService,
     private vaultService: VaultService,
+    public globalConfigurationService: GlobalConfigurationService
     ) {
     }
 
@@ -450,27 +453,34 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
 
+  
 
   get_google_drive_option(){
-    this.http.get("/api/v1/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
-      const data = JSON.parse(JSON.stringify(response.body))
-      if(data.status == "enabled"){
-        this.isGoogleDriveEnabled = true;
-        this.check_last_backup();
-      } else {
-        this.isGoogleDriveEnabled = false;
-        this.isGoogleDriveSync = "false";
+    this.globalConfigurationService.is_google_drive_enabled_on_this_tenant().then((enabled) => {
+      this.is_google_drive_enabled_on_this_tenant = enabled;
+      if(enabled){
+        this.http.get("/api/v1/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe({
+          next : (response) => { 
+          const data = JSON.parse(JSON.stringify(response.body))
+          if(data.status == "enabled"){
+            this.isGoogleDriveEnabled = true;
+            this.check_last_backup();
+          } else {
+            this.isGoogleDriveEnabled = false;
+            this.isGoogleDriveSync = "false";
+          }
+        }, error: (error) => {
+            let errorMessage = "";
+            if(error.error.message != null){
+              errorMessage = error.error.message;
+            } else if(error.error.detail != null){
+              errorMessage = error.error.detail;
+            }
+            this.translate.get("vault.error.server").subscribe((translation: string) => {
+              this.utils.toastError(this.toastr,  translation + " "+ errorMessage,"");
+            });
+        }});
       }
-    }, (error) => {
-        let errorMessage = "";
-        if(error.error.message != null){
-          errorMessage = error.error.message;
-        } else if(error.error.detail != null){
-          errorMessage = error.error.detail;
-        }
-        this.translate.get("vault.error.server").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr,  translation + " "+ errorMessage,"");
-        });
     });
   }
 

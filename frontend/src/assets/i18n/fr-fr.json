@@ -625,7 +625,8 @@
       },
       "section": {
         "title": "Configuration des backups"
-      }
+      },
+      "warning": "Les backups automatiques ont été désactivées sur cette instance de Zero-TOTP. Pour utiliser cette fonctionnalité, demande a l'administrateur de l'activer, ou utilise l'instance officielle, zero-totp.com."
     },
     "error": {
       "fetch": "Une erreur est survenue en récupérant tes préférences",

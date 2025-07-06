@@ -83,11 +83,11 @@
             </article>
             <div class="message is-success" *ngIf="!this.userService.getIsVaultLocal()">
                 <div class="message"
-                    [ngClass]="{'is-success': isGoogleDriveSync == 'uptodate' ||  isGoogleDriveSync == 'loading', 'is-warning': isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false' }">
+                    [ngClass]="{'is-success': isGoogleDriveSync == 'uptodate' || !is_google_drive_enabled_on_this_tenant ||  isGoogleDriveSync == 'loading', 'is-warning': isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false' }">
                     <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen"
                         style="cursor: pointer;">
                         <p>{{ 'vault.storage.title' | translate }} <span
-                                *ngIf="isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false'"
+                                *ngIf="(isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false') && is_google_drive_enabled_on_this_tenant"
                                 class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
                         <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">{{ 'less' | translate
                                 }}</span>
@@ -130,7 +130,7 @@
                       is-four-fifths-tablet
                       is-one-third-desktop
                       is-one-third-widescreen
-                      is-one-quarter-fullhd">
+                      is-one-quarter-fullhd" *ngIf="is_google_drive_enabled_on_this_tenant">
                                 <div class="is-flex is-justify-content-center">
                                     <div class="tags has-addons mb-2" style="align-items: normal;"
                                         (click)="storageOptionOpen = true">

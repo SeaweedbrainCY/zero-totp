@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { GlobalConfigurationService } from '../common/GlobalConfiguration/global-configuration.service';
 
 @Component({
     selector: 'app-preferences',
@@ -56,6 +57,7 @@ export class PreferencesComponent implements OnInit{
   backup_minimum_count = -1;
   default_backup_max_age = -1;
   default_backup_minimum_count = -1;
+  is_google_drive_enabled_on_this_tenant = false;
   constructor( 
     private http: HttpClient,
     public userService: UserService,
@@ -64,6 +66,7 @@ export class PreferencesComponent implements OnInit{
     private route: ActivatedRoute,
     private translate: TranslateService,
     private toastr: ToastrService,
+    private globalConfigurationService: GlobalConfigurationService
     ){
     }
 
@@ -81,6 +84,7 @@ export class PreferencesComponent implements OnInit{
     this.get_preferences()
     this.get_internal_notification()
     this.get_backup_configuration()
+    this.check_if_google_drive_is_enabled_on_this_tenant()
     this.duration_unit = "hour";
   }
 
@@ -133,7 +137,18 @@ export class PreferencesComponent implements OnInit{
     });
   }
 
+
+  check_if_google_drive_is_enabled_on_this_tenant() {
+    return this.globalConfigurationService.is_google_drive_enabled_on_this_tenant().then((enabled) => {
+      this.is_google_drive_enabled_on_this_tenant = enabled;
+    }, (error) => {
+      console.log(error);
+      this.is_google_drive_enabled_on_this_tenant = false;
+    });
+  }
+
   get_backup_configuration(){
+
     this.http.get("/api/v1/backup/configuration?dv=true",{withCredentials:true, observe: 'response'}).subscribe({
       next:(response) => {
         if(response.body != null){

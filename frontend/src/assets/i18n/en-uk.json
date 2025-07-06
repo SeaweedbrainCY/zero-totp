@@ -627,7 +627,8 @@
       },
       "section": {
         "title": "Backup configuration"
-      }
+      },
+      "warning": "Automatic backup is currently disabled on this Zero-TOTP tenant. To use this feature, ask the administrator to enable it or use the official instance, zero-totp.com."
     },
     "error": {
       "fetch": "An error occured while retrieving your preferences",
