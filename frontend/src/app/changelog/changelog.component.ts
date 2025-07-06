@@ -14,6 +14,18 @@ export class ChangelogComponent {
   imageHash = environment.imageHash;
 
   changelogs = [
+    {
+      date: "06/07/2025",
+      version: "1.8",
+      added: [
+        "This version continues to prepare Zero-TOTP for the self-hosted version. We are working hard to make it possible in the next releases.",
+        "A FAQ section dedicated to Zero-TOTP.",
+        "For self-hosted instances, signup can be disabled, as well as automatic backups with Google Drive."
+      ],
+      fixed:[
+       "When a user de-associated their google drive account not from Zero-TOTP, Zero-TOTP wasn't correctly unapproved in google drive, therefore creating issues when the user tried to re-associate the account. Now the API catch this kind of issue, and the frontend display to the user a way to fix this."
+      ]
+    },
      {
       date: "23/06/2025",
       version: "1.7",
