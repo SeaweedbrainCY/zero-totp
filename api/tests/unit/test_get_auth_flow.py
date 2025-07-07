@@ -49,4 +49,4 @@ class TestGetAuthFlow(unittest.TestCase):
                     self.client.cookies = {"session-token": self.session_token}
                     response = self.client.get(self.endpoint)
                     self.assertEqual(response.status_code, 403)
-                    self.assertEqual(response.json["message"], "Oauth is disabled on this tenant. Contact the tenant administrator to enable it.")
+                    self.assertEqual(response.json()["message"], "Oauth is disabled on this tenant. Contact the tenant administrator to enable it.")
