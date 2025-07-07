@@ -145,6 +145,13 @@
   "always": "Toujours",
   "available_soon": "Disponible bientôt !",
   "blue": "Bleu",
+  "callback": {
+    "errors": {
+      "refresh_token": {
+        "vault_button": "Ouvrir mon coffre"
+      }
+    }
+  },
   "cancel": "Retour",
   "changelog": "Changelog",
   "close": "Fermer",
@@ -204,6 +211,35 @@
   },
   "encrypted": "chiffré",
   "faq": {
+    "google_drive": {
+      "a1_1": "Zero-TOTP vise à t’offrir un moyen sécurisé de gérer tes TOTP. Tu gardes le contrôle sur le chiffrement et la disponibilité de ton coffre. En sauvegardant ton     coffre sur Google Drive, tu t’assures d’avoir une copie en cas de panne ou de bug de Zero-TOTP.",
+      "a1_2": "Lorsque tu actives la sauvegarde Google Drive, Zero-TOTP crée un dossier nommé 'Zero-TOTP Backup' dans ton Google Drive. Ce dossier contient des fichiers texte    contenant une version chiffrée de ton coffre. Ces fichiers sont chiffrés avec ton mot de passe maître, donc toi seul peux y accéder.",
+      "a2_1": "Une fois activée, Zero-TOTP crée un dossier 'Zero-TOTP Backup' dans ton Google Drive. À chaque modification de ton coffre, une nouvelle sauvegarde chiffrée est    générée et téléversée automatiquement. Tu as ainsi toujours une copie récente sous la main.",
+      "a2_2": "Les sauvegardes se font en arrière-plan, sans que tu aies à t’en soucier. Tu peux continuer à utiliser Zero-TOTP normalement.",
+      "a2_3": "Tu conserveras plusieurs versions de ton coffre dans ton Google Drive. Si tu as besoin de restaurer une ancienne version, il te suffit d’en choisir une dans le    dossier et de l’ouvrir avec Zero-TOTP.",
+      "a2_4": "Tu peux ajuster les paramètres de rétention des sauvegardes dans tes",
+      "a3_1": "Toujours. Tu peux désactiver les sauvegardes automatiques à tout moment dans les paramètres de stockage de ton coffre.",
+      "a3_2": "Désactiver les sauvegardes automatiques ne supprimera pas les fichiers déjà enregistrés sur ton Google Drive. Si tu veux t’en débarrasser, il faudra les supprimer     manuellement.",
+      "a3_3": "Lorsque tu désactives les sauvegardes automatiques, Zero-TOTP oublie tout lien avec ton compte Google Drive. Tu devras le reconnecter si tu veux les réactiver.",
+      "a4_1": "Absolument pas. En autorisant Zero-TOTP à utiliser ton Google Drive, tu lui donnes uniquement l’accès pour créer et modifier ses propres fichiers.",
+      "a4_2": "Zero-TOTP ne peut pas lire, modifier ou supprimer d’autres fichiers. Il n’a aucun accès à ton compte Google en dehors de ce dossier.",
+      "a4_3": "Tu peux consulter les autorisations accordées à Zero-TOTP dans les paramètres de ton compte Google, ou dans le code source disponible sur",
+      "a5_1": "Jamais. Comme toujours avec Zero-TOTP, ton coffre est chiffré avec ta phrase secrète. Elle n’est jamais envoyée ni stockée sur nos serveurs. Même si quelqu’un     accède à ton Google Drive, il ne pourra pas lire ton coffre sans ta phrase secrète.",
+      "a5_2": "Cela signifie que si tu perds ta phrase secrète, tu perds aussi l’accès à ton coffre, même si une sauvegarde existe. Pense donc à bien la retenir.",
+      "a6_1": "C’est justement tout l’intérêt des sauvegardes gérées par l’utilisateur. En cas de souci avec Zero-TOTP, tu peux télécharger une sauvegarde depuis Google Drive et     l’ouvrir sur",
+      "a6_2": "une version légère, toujours en ligne de Zero-TOTP qui permet d’ouvrir un coffre local.",
+      "a6_3": "Tu peux donc accéder à ton coffre même si Zero-TOTP est indisponible.",
+      "a7_1": "Pour l’instant, seul Google Drive est pris en charge. Zero-TOTP est encore en développement actif, et nous prévoyons d’ajouter d’autres fournisseurs cloud à     l’avenir. Si tu as une préférence, n’hésite pas à ouvrir une issue",
+      "a7_2": "sur GitHub.",
+      "q1": "Pourquoi sauvegarder mon coffre sur Google Drive ?",
+      "q2": "Comment fonctionnent les sauvegardes automatiques ?",
+      "q3": "Puis-je arrêter les sauvegardes automatiques ?",
+      "q4": "Zero-TOTP peut-il accéder au contenu de mon Google Drive ?",
+      "q5": "Google ou quelqu’un d’autre peut-il lire mes sauvegardes ?",
+      "q6": "Et si Zero-TOTP tombe en panne ? Comment restaurer mon coffre ?",
+      "q7": "D'autres fournisseurs cloud seront-ils pris en charge ?",
+      "title": "Sauvegardes automatiques sur Google Drive"
+    },
     "title": "Foire aux questions",
     "totp": {
       "a1_p1": "Un TOTP (Time-based One-Time Password) est un mot de passe à usage unique, temporaire, utilisé pour l'authentification à deux facteurs (2FA).",
@@ -589,7 +625,8 @@
       },
       "section": {
         "title": "Configuration des backups"
-      }
+      },
+      "warning": "Les backups automatiques ont été désactivées sur cette instance de Zero-TOTP. Pour utiliser cette fonctionnalité, demande a l'administrateur de l'activer, ou utilise l'instance officielle, zero-totp.com."
     },
     "error": {
       "fetch": "Une erreur est survenue en récupérant tes préférences",
@@ -682,6 +719,8 @@
       }
     },
     "errors": {
+      "already_exist": "Ce nom d'utilisateur ou cet email est déjà pris. Choisis en un nouveau. ",
+      "disabled": "L'inscription a été désactivée par la propriétaire de cette instance. Contacte-le pour ré-activer les inscriptions ou utilise l'instance officielle zero-totp.com.",
       "hashing": "Une erreur est survenue en hachant ta passphrase. Réessaye plus tard",
       "missing_fields": "Tu n'as pas oublié quelque chose ?",
       "terms": "N'oublie pas d'accepter les termes et conditions !",
@@ -832,6 +871,17 @@
     "google": {
       "disabled": "Google Drive désactivé ! ✅"
     },
+    "google_drive_refresh_token_error": {
+      "li1_a1": "autorisations de compte Google",
+      "li1_p1": "Connecte-toi à ton compte Google et rends-toi sur la page des",
+      "li2": "Repère « Zero-TOTP » dans la liste des applications et clique dessus.",
+      "li3": "Clique sur le bouton « Supprimer l'accès » pour dissocier Zero-TOTP de ton compte Google.",
+      "li4": "Réessaie ensuite la synchronisation :",
+      "p1": "Une erreur est survenue en synchronisant ton coffre avec Google Drive. Il est très probable que Zero-TOTP n’ait pas été correctement dissocié de ton compte Google Drive.",
+      "p2": "Pour pouvoir réactiver la synchronisation, tu dois suivre ces étapes :",
+      "p3": "Si tu ne souhaites pas réactiver la synchronisation, tu peux la désactiver en cliquant sur le bouton ci-dessous :",
+      "title": "Une erreur est survenue en synchronisant ton coffre avec Google Drive"
+    },
     "local": {
       "desc": {
         "code": "Restorer une backup",
@@ -858,6 +908,7 @@
         "error": {
           "check": "Une erreur est survenue pendant la vérification de tes backups"
         },
+        "how_to_fix": "Corriger",
         "info": "Plus d'info",
         "last_backup": "Dernière modification sauvegardée :",
         "resync": "Essayer de re-synchroniser",

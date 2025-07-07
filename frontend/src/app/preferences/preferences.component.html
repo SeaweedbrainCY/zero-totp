@@ -180,6 +180,15 @@
                         <div style="border-bottom: 1px solid silver"></div>
                         <p class="has-text-grey pb-3">{{ 'preference.ackup.section.subtitle' | translate }}
                         </p>
+                        <div *ngIf="!is_google_drive_enabled_on_this_tenant">
+                            <div class="notification is-info is-light">
+                                <fa-icon [icon]="faCircleExclamation" class="mr-2"></fa-icon> 
+                                {{ 'preference.backup.warning' |
+                                    translate }}
+                            </div>
+
+                        </div>
+                        <div *ngIf="is_google_drive_enabled_on_this_tenant">
                         <div class="box">
 
                             <label class="label is-size-4">{{ 'preference.backup.minimum.title' | translate }}
@@ -227,6 +236,7 @@
                                 translate }}
                             </div>
 
+                        </div>
                         </div>
 
                     </div>

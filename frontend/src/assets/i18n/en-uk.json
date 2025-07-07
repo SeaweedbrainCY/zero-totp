@@ -145,6 +145,13 @@
   "always": "Always",
   "available_soon": "Available soon !",
   "blue": "Blue",
+  "callback": {
+    "errors": {
+      "refresh_token": {
+        "vault_button": "Open my vault"
+      }
+    }
+  },
   "cancel": "Cancel",
   "changelog": "Changelog",
   "close": "Close",
@@ -205,6 +212,35 @@
   },
   "encrypted": "encrypted",
   "faq": {
+    "google_drive": {
+      "a1_1": "Zero-TOTP aims to provide a secure way to manage your TOTP. It gives you control over encryption and over the availability of your vault. By backing up your vault to Google Drive, you ensure that you have a copy in case Zero-TOTP goes down or encounters a bug.",
+      "a1_2": "When you enable the Google Drive backup, Zero-TOTP will create a folder named 'Zero-TOTP Backup' in your Google Drive. This folder contains text files with an encrypted version of your vault. These files are encrypted with your master password, so only you can access them.",
+      "a2_1": "Once enabled, Zero-TOTP creates a 'Zero-TOTP Backup' folder in your Google Drive. Each time you modify your vault, a new encrypted backup is generated and uploaded automatically. This ensures that you always have a recent copy of your vault.",
+      "a2_2": "Backups are handled in the background, so you don’t have to think about it. You can continue using Zero-TOTP as usual.",
+      "a2_3": "You will always have several backups of your vault in your Google Drive. So if you ever need to restore your vault, you can simply select a old backup in the Google Drive folder and restore it in Zero-TOTP. ",
+      "a2_4": " You can adjust the backup retention settings in your",
+      "a3_1": "Always. You can disable automatic backups anytime in your vault's storage settings.",
+      "a3_2": "Disabling automatic backups won’t delete existing files from your Google Drive. If you wish to remove them, you’ll need to delete them manually.",
+      "a3_3": "When disabling automatic backups, Zero-TOTP forgets everything about your Google Drive account. You’ll need to re-enable it if you want to use backups again.",
+      "a4_1": "Absolutely not. When authorizing Zero-TOTP to use your Google Drive, you only grant it permission to create and modify its own files.",
+      "a4_2": "Zero-TOTP cannot read, modify, or delete any other files and has no access to your Google account beyond its own folder.",
+      "a4_3": "You can audit the permissions granted to Zero-TOTP in your Google Account settings or review the source code on",
+      "a5_1": "Never. Just like always, your vault is encrypted with your passphrase. This passphrase is never sent to our servers or stored anywhere. So even if someone gains    access to your Google Drive, they won’t be able to read your vault without your passphrase.",
+      "a5_2": "That also means if you lose your passphrase, you lose access to your vault — even with a backup. So make sure you remember it.",
+      "a6_1": "That’s exactly the purpose of user-managed backups. If Zero-TOTP has an issue, you can download a backup from Google Drive and open it on",
+      "a6_2": "a lightweight, always-online version of Zero-TOTP that lets you open local vault files.",
+      "a6_3": "This way, you can access your vault even if Zero-TOTP is down.",
+      "a7_1": "For now, only Google Drive is supported. Zero-TOTP is still under active development, and support for other cloud storage providers is planned. If you have a   preference, feel free to open an issue",
+      "a7_2": "on GitHub.",
+      "q1": "Why back up my vault to Google Drive?",
+      "q2": "How do automatic backups work?",
+      "q3": "Can I stop automatic backups?",
+      "q4": "Can Zero-TOTP access my Google Drive content?",
+      "q5": "Can Google—or anyone else—read my backups?",
+      "q6": "What if Zero-TOTP is down? How do I restore my vault?",
+      "q7": "Is support planned for other cloud providers?",
+      "title": "Automatic Backups to Google Drive"
+    },
     "title": "Frequently asked questions",
     "totp": {
       "a1_p1": "A TOTP (Time-based One-Time Password) is a one-time temporary password used for two-factor authentication (2FA).",
@@ -591,7 +627,8 @@
       },
       "section": {
         "title": "Backup configuration"
-      }
+      },
+      "warning": "Automatic backup is currently disabled on this Zero-TOTP tenant. To use this feature, ask the administrator to enable it or use the official instance, zero-totp.com."
     },
     "error": {
       "fetch": "An error occured while retrieving your preferences",
@@ -684,6 +721,8 @@
       }
     },
     "errors": {
+      "already_exist": "This username or email is already taken. Choose another one. ",
+      "disabled": "Signup to this instance has been disabled by the owner. Contact them to re-enable signup or use the official instance zero-totp.com.",
       "hashing": "An error occured while hashing your password. Please, try again",
       "missing_fields": "Did you forget to fill something ?",
       "terms": "Dont forget to accept terms & conditions !",
@@ -834,6 +873,17 @@
     "google": {
       "disabled": "Google Drive disabled ! ✅"
     },
+    "google_drive_refresh_token_error": {
+      "li1_a1": "Google Account Permissions page",
+      "li1_p1": "Log into your Google account and go to the",
+      "li2": "Locate \"Zero-TOTP\" in the list of applications and click on it.",
+      "li3": "Click on the \"Remove Access\" button to de-associate Zero-TOTP from your Google account.",
+      "li4": " Try again the synchronization : ",
+      "p1": "An error occurred while trying to sync your vault to Google Drive. It is very likely that Zero-TOTP has not been correctly de-associtated from your Google Drive account.",
+      "p2": "To be able to re-enable the synchronization, you need to following these steps :  ",
+      "p3": "If you don't want to re-enable the synchronization, you can disable it by clicking on the button below : ",
+      "title": "An error occured while synching your vault to Google Drive"
+    },
     "local": {
       "desc": {
         "code": "restore a backup",
@@ -860,6 +910,7 @@
         "error": {
           "check": "An error occured while checking your\n                                                backup"
         },
+        "how_to_fix": "How to fix ",
         "info": "More info",
         "last_backup": "Last backed-up modification :",
         "resync": "Try to re-sync",

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer, faLock, faEye, faEyeSlash, faKey} from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare} from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
@@ -14,6 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr'; 
 import { TOTP } from "totp-generator"
 import { VaultService } from '../common/VaultService/vault.service';
+import { GlobalConfigurationService } from '../common/GlobalConfiguration/global-configuration.service';
 
 
 @Component({
@@ -26,6 +27,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   faPen = faPen;
   faSquarePlus = faSquarePlus;
   faCopy = faCopy;
+  faArrowUpRightFromSquare = faArrowUpRightFromSquare;
   faKey=faKey;
   faEye=faEye;
   faEyeSlash=faEyeSlash;
@@ -76,6 +78,9 @@ export class VaultComponent implements OnInit, OnDestroy {
   isVaultEncrypted : boolean | undefined; 
   isDecryptingLockedVaut = false;
   vaultDecryptionErrorMessage = "";
+  google_drive_refresh_token_error_display_modal_active = false;
+  google_drive_refresh_token_error = false;
+  is_google_drive_enabled_on_this_tenant = false;
   constructor(
     public userService: UserService,
     private router: Router,
@@ -86,6 +91,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private toastr: ToastrService,
     private vaultService: VaultService,
+    public globalConfigurationService: GlobalConfigurationService
     ) {
     }
 
@@ -447,27 +453,34 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
 
+  
 
   get_google_drive_option(){
-    this.http.get("/api/v1/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
-      const data = JSON.parse(JSON.stringify(response.body))
-      if(data.status == "enabled"){
-        this.isGoogleDriveEnabled = true;
-        this.check_last_backup();
-      } else {
-        this.isGoogleDriveEnabled = false;
-        this.isGoogleDriveSync = "false";
+    this.globalConfigurationService.is_google_drive_enabled_on_this_tenant().then((enabled) => {
+      this.is_google_drive_enabled_on_this_tenant = enabled;
+      if(enabled){
+        this.http.get("/api/v1/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe({
+          next : (response) => { 
+          const data = JSON.parse(JSON.stringify(response.body))
+          if(data.status == "enabled"){
+            this.isGoogleDriveEnabled = true;
+            this.check_last_backup();
+          } else {
+            this.isGoogleDriveEnabled = false;
+            this.isGoogleDriveSync = "false";
+          }
+        }, error: (error) => {
+            let errorMessage = "";
+            if(error.error.message != null){
+              errorMessage = error.error.message;
+            } else if(error.error.detail != null){
+              errorMessage = error.error.detail;
+            }
+            this.translate.get("vault.error.server").subscribe((translation: string) => {
+              this.utils.toastError(this.toastr,  translation + " "+ errorMessage,"");
+            });
+        }});
       }
-    }, (error) => {
-        let errorMessage = "";
-        if(error.error.message != null){
-          errorMessage = error.error.message;
-        } else if(error.error.detail != null){
-          errorMessage = error.error.detail;
-        }
-        this.translate.get("vault.error.server").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr,  translation + " "+ errorMessage,"");
-        });
     });
   }
 
@@ -490,7 +503,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   check_last_backup(){
-    this.http.get("/api/v1/google-drive/last-backup/verify",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+    this.http.get("/api/v1/google-drive/last-backup/verify",  {withCredentials:true, observe: 'response'}, ).subscribe({
+      next: (response) => {
       const data = JSON.parse(JSON.stringify(response.body))
       if(data.status == "ok"){
         if(data.is_up_to_date == true){
@@ -510,9 +524,19 @@ export class VaultComponent implements OnInit, OnDestroy {
           this.utils.toastError(this.toastr,  translation,"");
         });
       }
-    }, (error) => {
+    }, error: (error) => {
       if(error.status == 404){
         this.backup_vault_to_google_drive();
+      } else if(error.status == 400){
+        const error_info = error.error as { message: string, error_id: string | undefined };
+        if(error_info.error_id != undefined && error_info.error_id ==  "3c071611-744a-4c93-95c8-c87ee3fce00d"){
+          this.isGoogleDriveSync = 'error';
+          this.google_drive_error_message = this.translate.instant("vault.google_drive_refresh_token_error.title");
+          this.google_drive_refresh_token_error_display_modal_active = true;
+          this.google_drive_refresh_token_error = true;
+        } else {
+           this.google_drive_error_message = "An error occured while checking your backup. Got error " + error.status + ". " + error.error.message;
+        }
       } else {
       this.isGoogleDriveSync = 'error';
       let errorMessage = "";
@@ -525,7 +549,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       }
       this.google_drive_error_message = "An error occured while checking your backup. Got error " + error.status + ". " + errorMessage;
     }
-    });
+    }});
   }
 
   disable_google_drive(){

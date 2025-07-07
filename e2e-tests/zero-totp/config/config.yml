@@ -30,11 +30,6 @@ api:
     ## DO NOT COMPROMISE THIS KEY
     server_side_encryption_key: "false_secret_LTmf3l2d7H5F9NoEREeKOS0hVTeaiJBtuaCJpsn9Y1Kzgv9qNWB5mcmceZCap2oz3xLIibu1kszl81yM1xEYvUU38JF9ArYF912NCA7S6LmGLlEpm9acQzPypXhtNEse" 
 
-    ## Configuration of google drive Oauth. 
-    ## See https://developers.google.com/identity/protocols/oauth2 for more information.
-    #oauth:
-    #      ## See https://developers.google.com/identity/protocols/oauth2 for more information.
-    #    client_secret_file_path: "./tests/ressources/fake_client_secret.json"
 
 
 
@@ -113,4 +108,6 @@ features:
         ## See https://docs.sentry.io/platforms/python/flask/ for more information.
         #dsn: "not a dns"
 
-
+    google_drive_backup:
+        enabled: true 
+        client_secret_file_path: "./tests/ressources/fake_client_secret.json"
