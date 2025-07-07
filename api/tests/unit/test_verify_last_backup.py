@@ -162,4 +162,12 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
             self.client.cookies = {"session-token": self.unverified_user_session}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
+
+    def test_google_drive_verify_when_tenant_disabled(self):
+        with self.application.app.app_context():
+            with patch.object(conf.features.google_drive, 'enabled', False):
+                self.client.cookies = {"session-token": self.session_token}
+                response = self.client.get(self.endpoint)
+                self.assertEqual(response.status_code, 403)
+                self.assertEqual(response.json()["message"], "Google drive sync is not enabled on this tenant.")
    

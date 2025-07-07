@@ -492,6 +492,8 @@ def get_authorization_flow():
 # GET /google-drive/oauth/callback
 @require_valid_user
 def oauth_callback(user_id):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Oauth is disabled on this tenant. Contact the tenant administrator to enable it."}, 403
     frontend_URI = conf.environment.frontend_URI
     try: 
         credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
@@ -544,6 +546,8 @@ def oauth_callback(user_id):
 #GET /google-drive/option
 @require_valid_user
 def get_google_drive_option(user_id):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Google drive sync is not enabled on this tenant."}, 403
     google_drive_integrations = GoogleDriveIntegrationDB()
     status = google_drive_integrations.is_google_drive_enabled(user_id)
     if status:
@@ -554,6 +558,8 @@ def get_google_drive_option(user_id):
 #PUT /google-drive/backup
 @require_valid_user
 def backup_to_google_drive(user_id, *args, **kwargs):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Google drive sync is not enabled on this tenant."}, 403
     
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
@@ -577,8 +583,11 @@ def backup_to_google_drive(user_id, *args, **kwargs):
         return {"message": "Error while backing up to google drive"}, 500
 
 
+# GET /google-drive/last-backup/verify
 @require_valid_user
 def verify_last_backup(user_id):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Google drive sync is not enabled on this tenant."}, 403
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
     google_drive_integrations = GoogleDriveIntegrationDB()
@@ -613,8 +622,11 @@ def verify_last_backup(user_id):
         return {"status": "ok", "is_up_to_date": False, "last_backup_date": "" }, 200
 
 
+# DELETE /google-drive/option
 @require_valid_user
 def delete_google_drive_option(user_id):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Google drive sync is not enabled on this tenant."}, 403
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
@@ -743,9 +755,11 @@ def set_preference(user_id, body):
     else: # pragma: no cover
         return {"message": "Invalid request"}, 400
 
-
+# DELETE /google-drive/backup
 @require_valid_user
 def delete_google_drive_backup(user_id):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Google drive sync is not enabled on this tenant."}, 403
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)

@@ -198,7 +198,7 @@ class TestOauthCallback(unittest.TestCase):
             self.assertEqual(self.google_integration_repo.is_google_drive_enabled(self.blocked_user_id), 0)
 
 
-    def test_oauth_callback_disabled_oauth(self):
+    def test_oauth_callback_when_disabled_tenant(self):
         self.client.cookies ={'session-token': self.session_token_user_blocked}
         with patch.object(conf.features.google_drive, 'enabled', False):
             with self.application.app.app_context():
