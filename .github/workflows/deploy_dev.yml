@@ -111,8 +111,45 @@ jobs:
                 name: playwright-report
                 path: ./e2e-tests/playwright-report/
                 retention-days: 30
+    
+    api-docker-security-scan:
+      needs: [docker-api]
+      name: Scan API Docker image for security vulnerabilities
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Install Trivy
+          run: |
+            apt-get install wget apt-transport-https gnupg lsb-release
+            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | apt-key add -
+            echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | tee -a /etc/apt/sources.list.d/trivy.list
+            apt-get update
+            apt-get install trivy
+
+        - name: Scan Docker image
+          run: |
+            current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+            trivy image --exit-code 1 --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:$current_version
+    frontend-docker-security-scan:
+      needs: [docker-frontend]
+      name: Scan API Docker image for security vulnerabilities
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Install Trivy
+          run: |
+            apt-get install wget apt-transport-https gnupg lsb-release
+            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | apt-key add -
+            echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | tee -a /etc/apt/sources.list.d/trivy.list
+            apt-get update
+            apt-get install trivy
+
+        - name: Scan Docker image
+          run: |
+            current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+            trivy image --exit-code 1 --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:$current_version
     deploy-dev-env:
-       needs: [e2e-tests] 
+       needs: [e2e-tests, api-docker-security-scan, frontend-docker-security-scan] 
        name: Deploy on development environment
        runs-on: ubuntu-latest
        steps:
