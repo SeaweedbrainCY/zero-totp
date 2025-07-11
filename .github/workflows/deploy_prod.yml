@@ -43,10 +43,8 @@ jobs:
             current_short_version=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/') 
             current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
             docker build \
-              -t seaweedbrain/$REPO:latest \
               -t seaweedbrain/$REPO:$current_long_version \
               -t seaweedbrain/$REPO:$current_short_version \
-              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:latest \
               -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_long_version \
               -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_short_version . 
         - name: Publish Docker Image to DockerHub
@@ -77,10 +75,8 @@ jobs:
             current_short_version=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/') 
             current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
             docker build \
-              -t seaweedbrain/$REPO:latest \
               -t seaweedbrain/$REPO:$current_long_version \
               -t seaweedbrain/$REPO:$current_short_version \
-              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:latest \
               -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_long_version \
               -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_short_version . 
         - name: Publish Docker Image to DockerHub
@@ -141,8 +137,74 @@ jobs:
                 name: playwright-report
                 path: ./e2e-tests/playwright-report/
                 retention-days: 30
+    api-docker-security-scan:
+      needs: [docker-api]
+      name: Scan API Docker image for security vulnerabilities
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Install Trivy
+          run: |
+            sudo apt-get install wget apt-transport-https gnupg lsb-release
+            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+            echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+            sudo apt-get update
+            sudo apt-get install trivy
+
+        - name: Scan Docker image
+          run: |
+            current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+            trivy image --exit-code 1 --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:$current_version
+    frontend-docker-security-scan:
+      needs: [docker-frontend]
+      name: Scan Frontend Docker image for security vulnerabilities
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Install Trivy
+          run: |
+            sudo apt-get install wget apt-transport-https gnupg lsb-release
+            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+            echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+            sudo apt-get update
+            sudo apt-get install trivy
+
+        - name: Scan Docker image
+          run: |
+            current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+            trivy image --exit-code 1 --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:$current_version
+    add-latest-tag-to-docker:
+      needs: [e2e-tests, api-docker-security-scan, frontend-docker-security-scan]
+      name: Add latest tag to Docker images
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Login to Github
+          run : echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ secrets.USERNAME_GITHUB }} --password-stdin
+        - name: Login to Docker Hub
+          run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+        - name: Add latest tag to Frontend image (ghcr.io)
+          run: |
+            docker pull ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:${{ github.ref_name }}
+            docker tag ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:${{ github.ref_name }} ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:latest
+            docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:latest
+        - name: Add latest tag to Frontend image (Docker Hub)
+          run: |
+            docker pull seaweedbrain/zero-totp-frontend:${{ github.ref_name }}
+            docker tag seaweedbrain/zero-totp-frontend:${{ github.ref_name }} seaweedbrain/zero-totp-frontend:latest
+            docker push seaweedbrain/zero-totp-frontend:latest
+        - name: Add latest tag to API image
+          run: |
+            docker pull ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:${{ github.ref_name }}
+            docker tag ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:${{ github.ref_name }} ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:latest
+            docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:latest
+        - name: Add latest tag to API image (Docker Hub)
+          run: |
+            docker pull seaweedbrain/zero-totp-api:${{ github.ref_name }}
+            docker tag seaweedbrain/zero-totp-api:${{ github.ref_name }} seaweedbrain/zero-totp-api:latest
+            docker push seaweedbrain/zero-totp-api:latest
     deploy-production-sw:
-       needs: [e2e-tests]
+       needs: [add-latest-tag-to-docker]
        name: Deploy on production server (SW)
        environment: 
         name: Production (SW)
@@ -154,7 +216,7 @@ jobs:
            env:
              webhook_url: ${{ secrets.WEBHOOK_URL_SW }}
     deploy-production-ca:
-        needs: [e2e-tests]
+        needs: add-latest-tag-to-docker]
         name: Deploy on production server (CANADA)
         environment: 
            name: Production (CANADA)
@@ -166,7 +228,7 @@ jobs:
             env:
               webhook_url: ${{ secrets.WEBHOOK_URL_CA }}
     deploy-production-themis:
-        needs: [e2e-tests]
+        needs: [add-latest-tag-to-docker]
         name: Deploy on production server (THEMIS)
         environment: 
            name: Production (THEMIS)
