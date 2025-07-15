@@ -156,6 +156,14 @@ paths:
       responses:
         "200": # status code
           description: Return the user's ZKE key (encrypted)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  zke_encrypted_key:
+                    type: string
+                    example: "AAAAAA="
         "401":
           description: Unauthorized
         "403":
