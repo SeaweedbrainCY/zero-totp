@@ -7,7 +7,7 @@ attrs==25.3.0
 bcrypt==4.3.0
 blinker==1.9.0
 cachetools==5.3.2
-certifi==2024.7.4
+certifi==2025.7.14
 cffi==1.16.0
 cfgv==3.4.0
 charset-normalizer==3.3.2
