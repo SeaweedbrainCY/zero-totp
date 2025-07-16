@@ -12,7 +12,9 @@ if [ "$USER_GID" = "" ]; then
 fi
 
 touch /var/run/nginx.pid
+mkdir -p /var/cache/nginx /var/log/nginx
 chown -R $USER_UID:$USER_GID /var/cache/nginx /var/run/nginx.pid /var/log/nginx
-echo "Starting nginx ..."
+echo "Starting nginx"
+echo "Logs will be written to /var/log/nginx/error.log and /var/log/nginx/access.log"
 exec su-exec "$USER_UID:$USER_GID" nginx -g "daemon off;"
 
