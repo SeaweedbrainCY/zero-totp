@@ -38,7 +38,7 @@ jobs:
     
     - name: Run semgrep
       #  exclude dockerfile.security.missing-user.missing-user : the entrypoint must be ran as root for setup purposes but will ALWAYS switch to a non-root user for the rest of the execution.
-      run:  semgrep scan --error --exclude-rule dockerfile.security.missing-user.missing-user 
+      run:  semgrep scan --error --exclude-rule dockerfile.security.missing-user.missing-user  dockerfile.security.missing-user-entrypoint.missing-user-entrypoint
 
   python_test_and_coverage:
     name: Units tests and coverage
