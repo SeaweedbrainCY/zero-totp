@@ -3,7 +3,7 @@
 echo ""
 echo "##### CRITICAL OPERATION #####"
 echo "Please BACKUP your database before proceeding."
-echo "Follow this doc to backup your database: https://docs.zero-totp.com/self_host/database-backup"
+echo "Follow this doc to backup your database: https://docs.zero-totp.com/latest/self-host/admin/database-backup/"
 echo ""
 echo -e "Did you backup your database? (yes/NO) \c"
 read backup_confirmation
