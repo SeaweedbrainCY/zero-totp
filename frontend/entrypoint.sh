@@ -16,7 +16,7 @@ mkdir -p /var/cache/nginx
 rm -f /var/log/nginx/access.log /var/log/nginx/error.log
 touch /var/log/nginx/access.log
 touch /var/log/nginx/access.log
-chown -R $USER_UID:$USER_GID /var/cache/nginx /var/run/nginx.pid/var/log/nginx
+chown -R $USER_UID:$USER_GID /var/cache/nginx /var/run/nginx.pid /var/log/nginx
 echo "Starting nginx"
 echo "Logs will be written to/var/log/nginx/access.log and /var/log/nginx/access.log"
 exec su-exec "$USER_UID:$USER_GID" nginx -g "daemon off;"
