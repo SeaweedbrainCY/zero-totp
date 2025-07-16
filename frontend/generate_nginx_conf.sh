@@ -6,7 +6,7 @@ echo "events{}
 http {
     include /etc/nginx/mime.types;
     access_log /app/log/access.log;
-    error_log /app/log/error.log;
+    error_log /app/log/error.log warn;
 
 
     server {
