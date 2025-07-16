@@ -13,6 +13,6 @@ fi
 
 touch /var/run/nginx.pid
 chown -R $USER_UID:$USER_GID /var/cache/nginx /var/run/nginx.pid /var/log/nginx
-
-exec su-exec "$NGINX_USER" nginx -g "daemon off;"
+echo "Starting nginx ..."
+exec su-exec "$$USER_UID:$USER_GID" nginx -g "daemon off;"
 
