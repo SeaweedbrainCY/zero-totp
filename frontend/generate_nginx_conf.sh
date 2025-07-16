@@ -5,10 +5,9 @@ hashes=$(grep -oE 'sha384-[a-zA-Z0-9+/=]*' dist/frontend/browser/index.html |  s
 echo "events{}
 http {
     include /etc/nginx/mime.types;
-    access_log /dev/stdout;
     access_log /app/log/access.log;
     error_log /app/log/error.log;
-    error_log /dev/stderr;
+
 
     server {
         listen 80;

@@ -17,6 +17,6 @@ touch /app/log/error.log
 touch /app/log/access.log
 chown -R $USER_UID:$USER_GID /var/cache/nginx /var/run/nginx.pid /app/log
 echo "Starting nginx"
-echo "Logs will be written to /app/log//rror.log and /app/log/access.log"
+echo "Logs will be written to /app/log/error.log and /app/log/access.log"
 exec su-exec "$USER_UID:$USER_GID" nginx -g "daemon off;"
 
