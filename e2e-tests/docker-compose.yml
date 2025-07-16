@@ -2,6 +2,7 @@ services:
   frontend:
     container_name: frontend
     image: ghcr.io/seaweedbraincy/zero-totp-frontend:dev
+    entrypoint: "ls -la /var/log/nginx"
 
   api:
     container_name: api
