@@ -216,7 +216,7 @@ jobs:
            env:
              webhook_url: ${{ secrets.WEBHOOK_URL_SW }}
     deploy-production-ca:
-        needs: add-latest-tag-to-docker]
+        needs: [add-latest-tag-to-docker]
         name: Deploy on production server (CANADA)
         environment: 
            name: Production (CANADA)
