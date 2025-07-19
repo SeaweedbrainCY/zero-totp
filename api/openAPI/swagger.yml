@@ -287,6 +287,22 @@ paths:
       responses:
         "200": # status code
           description: Return all the user's encrypted secrets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  secrets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uuid:
+                          type: string
+                          example: "5cb7f86f-afe9-4666-9728-47ea2f505957"
+                        enc_secret:
+                          type: string
+                          example: "AAAAAA="
         "401":
           description: Unauthorized
         "404":
