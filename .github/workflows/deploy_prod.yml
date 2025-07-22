@@ -185,23 +185,27 @@ jobs:
           run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
         - name: Add latest tag to Frontend image (ghcr.io)
           run: |
-            docker pull ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:${{ github.ref_name }}
-            docker tag ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:${{ github.ref_name }} ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:latest
+            current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
+            docker pull ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:$current_long_version
+            docker tag ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:$current_long_version ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:latest
             docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:latest
         - name: Add latest tag to Frontend image (Docker Hub)
           run: |
-            docker pull seaweedbrain/zero-totp-frontend:${{ github.ref_name }}
-            docker tag seaweedbrain/zero-totp-frontend:${{ github.ref_name }} seaweedbrain/zero-totp-frontend:latest
+            current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
+            docker pull seaweedbrain/zero-totp-frontend:$current_long_version
+            docker tag seaweedbrain/zero-totp-frontend:$current_long_version seaweedbrain/zero-totp-frontend:latest
             docker push seaweedbrain/zero-totp-frontend:latest
         - name: Add latest tag to API image
           run: |
-            docker pull ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:${{ github.ref_name }}
-            docker tag ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:${{ github.ref_name }} ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:latest
+            current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
+            docker pull ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:$current_long_version
+            docker tag ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:$current_long_version ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:latest
             docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:latest
         - name: Add latest tag to API image (Docker Hub)
           run: |
-            docker pull seaweedbrain/zero-totp-api:${{ github.ref_name }}
-            docker tag seaweedbrain/zero-totp-api:${{ github.ref_name }} seaweedbrain/zero-totp-api:latest
+            current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
+            docker pull seaweedbrain/zero-totp-api:$current_long_version
+            docker tag seaweedbrain/zero-totp-api:$current_long_version seaweedbrain/zero-totp-api:latest
             docker push seaweedbrain/zero-totp-api:latest
     deploy-production-sw:
        needs: [add-latest-tag-to-docker]
@@ -216,7 +220,7 @@ jobs:
            env:
              webhook_url: ${{ secrets.WEBHOOK_URL_SW }}
     deploy-production-ca:
-        needs: add-latest-tag-to-docker]
+        needs: [add-latest-tag-to-docker]
         name: Deploy on production server (CANADA)
         environment: 
            name: Production (CANADA)

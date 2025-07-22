@@ -14,6 +14,16 @@ export class ChangelogComponent {
   imageHash = environment.imageHash;
 
   changelogs = [
+        {
+      date: "17/07/2025",
+      version: "1.9",
+      added: [
+        "This version introduces necessary breaking changes in order to prepare Zero-TOTP for the self-hosted version.",
+      ],
+      fixed:[
+        "Upgrade various dependencies to fix CVE and improve the security of the application.",
+      ]
+    },
     {
       date: "06/07/2025",
       version: "1.8",
