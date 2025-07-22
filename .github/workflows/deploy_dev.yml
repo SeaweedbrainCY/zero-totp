@@ -61,8 +61,8 @@ jobs:
             context: ./frontend
             push: true
             tags: |
-              ghcr.io/$USERNAME/$REPO:dev
-              ghcr.io/$USERNAME/$REPO:$CURRENT_VERSION
+              ghcr.io/${{ env.USERNAME }}/${{ env.REPO }}:dev
+              ghcr.io/${{ env.USERNAME }}/${{ env.REPO }}:$CURRENT_VERSION
             labels: |
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
@@ -123,8 +123,8 @@ jobs:
             context: ./api
             push: true
             tags: |
-              ghcr.io/${{ secrets.USERNAME }}/$REPO:dev
-              ghcr.io/${{ secrets.USERNAME }}/$REPO:$CURRENT_VERSION
+              ghcr.io/${{ env.USERNAME }}/${{ env.REPO }}:dev
+              ghcr.io/${{ env.USERNAME }}/${{ env.REPO }}:$CURRENT_VERSION
             labels: |
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
