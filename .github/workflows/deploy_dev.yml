@@ -22,6 +22,7 @@ jobs:
       runs-on: ubuntu-latest
       env:
         REPO: zero-totp-frontend
+        USERNAME: seaweedbraincy
       steps:
         - uses: actions/checkout@v4
 
@@ -60,8 +61,8 @@ jobs:
             context: ./frontend
             push: true
             tags: |
-              ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:dev
-              ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$CURRENT_VERSION
+              ghcr.io/$USERNAME/$REPO:dev
+              ghcr.io/$USERNAME/$REPO:$CURRENT_VERSION
             labels: |
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
@@ -88,6 +89,7 @@ jobs:
       runs-on: ubuntu-latest
       env:
         REPO: zero-totp-api
+        USERNAME: seaweedbraincy
       steps:
         - uses: actions/checkout@v4
 
@@ -121,8 +123,8 @@ jobs:
             context: ./api
             push: true
             tags: |
-              ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:dev
-              ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$CURRENT_VERSION
+              ghcr.io/${{ secrets.USERNAME }}/$REPO:dev
+              ghcr.io/${{ secrets.USERNAME }}/$REPO:$CURRENT_VERSION
             labels: |
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
