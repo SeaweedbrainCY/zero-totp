@@ -6,7 +6,7 @@ WORKDIR /api
 RUN apt-get clean \
     && apt-get -y update
 
-RUN apt-get -y install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools gcc default-libmysqlclient-dev pkg-config jq curl gosu
+RUN apt-get -y install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools gcc default-libmysqlclient-dev pkg-config jq curl gosu git
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 EXPOSE 8080
