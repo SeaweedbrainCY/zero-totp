@@ -14,6 +14,40 @@ export class ChangelogComponent {
   imageHash = environment.imageHash;
 
   changelogs = [
+        {
+      date: "17/07/2025",
+      version: "1.9",
+      added: [
+        "This version introduces necessary breaking changes in order to prepare Zero-TOTP for the self-hosted version.",
+      ],
+      fixed:[
+        "Upgrade various dependencies to fix CVE and improve the security of the application.",
+      ]
+    },
+    {
+      date: "06/07/2025",
+      version: "1.8",
+      added: [
+        "This version continues to prepare Zero-TOTP for the self-hosted version. We are working hard to make it possible in the next releases.",
+        "A FAQ section dedicated to Zero-TOTP.",
+        "For self-hosted instances, signup can be disabled, as well as automatic backups with Google Drive."
+      ],
+      fixed:[
+       "When a user de-associated their google drive account not from Zero-TOTP, Zero-TOTP wasn't correctly unapproved in google drive, therefore creating issues when the user tried to re-associate the account. Now the API catch this kind of issue, and the frontend display to the user a way to fix this."
+      ]
+    },
+     {
+      date: "23/06/2025",
+      version: "1.7",
+      added: [
+        "When you refresh your tab or when your vaults autolocks, you are no longer logged out. You can now continue to access all your settings and preferences and you just have to re-type your passphrase to unlock your vault.",
+        "You can now easily add a new TOTP code from the little '+' button in the bottom left corner of your vault page.",
+
+      ],
+      fixed:[
+        "Dependencies upgraded and CVE fixed.",
+      ]
+    },
     {
       date: "09/06/2025",
       version: "1.6.0",

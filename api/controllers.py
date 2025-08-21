@@ -52,6 +52,8 @@ if conf.environment.type == "development":
 
 # POST /signup
 def signup():
+    if not conf.features.signup_enabled:
+        return {"message": "Signup is disabled", "code":"signup_disabled"}, 403
     try:
         data = request.get_json()
         username = utils.sanitize_input(data["username"].strip())
@@ -105,7 +107,7 @@ def signup():
                     send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
                 except Exception as e:
                     logging.error("Unknown error while sending verification email" + str(e))
-            response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created"}))
+            response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created", "email_verification_required":conf.features.emails.require_email_validation}))
             response.set_cookie("session-token", session_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
             return response
         else :
@@ -478,9 +480,9 @@ def get_role(user_id, *args, **kwargs):
 
 
     
-# GET /google-drive/oauth/authorization_flow
+# GET /google-drive/oauth/authorization-flow
 def get_authorization_flow():
-    if not conf.api.oauth:
+    if not conf.features.google_drive.enabled:
         return {"message": "Oauth is disabled on this tenant. Contact the tenant administrator to enable it."}, 403 
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
@@ -490,6 +492,8 @@ def get_authorization_flow():
 # GET /google-drive/oauth/callback
 @require_valid_user
 def oauth_callback(user_id):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Oauth is disabled on this tenant. Contact the tenant administrator to enable it."}, 403
     frontend_URI = conf.environment.frontend_URI
     try: 
         credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
@@ -524,6 +528,9 @@ def oauth_callback(user_id):
             response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state="+flask.session.get('state'),  code=302))
             flask.session.pop("state")
             return response
+    except oauth_flow.NoRefreshTokenError as e:
+        logging.warning(f"Oauth callback for user {user_id} failed because no refresh token was provided.")
+        return make_response(redirect(frontend_URI + "/oauth/callback?status=refresh-token-error&state=none",  code=302))
     except Exception as e:
         logging.error("Error while exchanging the authorization code " + str(e))
         logging.error(traceback.format_exc())
@@ -539,6 +546,8 @@ def oauth_callback(user_id):
 #GET /google-drive/option
 @require_valid_user
 def get_google_drive_option(user_id):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Google drive sync is not enabled on this tenant."}, 403
     google_drive_integrations = GoogleDriveIntegrationDB()
     status = google_drive_integrations.is_google_drive_enabled(user_id)
     if status:
@@ -549,6 +558,8 @@ def get_google_drive_option(user_id):
 #PUT /google-drive/backup
 @require_valid_user
 def backup_to_google_drive(user_id, *args, **kwargs):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Google drive sync is not enabled on this tenant."}, 403
     
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
@@ -572,8 +583,11 @@ def backup_to_google_drive(user_id, *args, **kwargs):
         return {"message": "Error while backing up to google drive"}, 500
 
 
+# GET /google-drive/last-backup/verify
 @require_valid_user
 def verify_last_backup(user_id):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Google drive sync is not enabled on this tenant."}, 403
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
     google_drive_integrations = GoogleDriveIntegrationDB()
@@ -587,6 +601,9 @@ def verify_last_backup(user_id):
     
     
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
+    if credentials.get("refresh_token") is None:
+        logging.warning(f"User {user_id} tried to verify last backup but no refresh token was found in the credentials. This is a blocking error.")
+        return {"message": "Error while connecting to the Google API", "error_id": "3c071611-744a-4c93-95c8-c87ee3fce00d"}, 400
     try:
         last_backup_checksum, last_backup_date = google_drive_api.get_last_backup_checksum(credentials)
     except utils.CorruptedFile as e:
@@ -605,8 +622,11 @@ def verify_last_backup(user_id):
         return {"status": "ok", "is_up_to_date": False, "last_backup_date": "" }, 200
 
 
+# DELETE /google-drive/option
 @require_valid_user
 def delete_google_drive_option(user_id):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Google drive sync is not enabled on this tenant."}, 403
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)
@@ -735,9 +755,11 @@ def set_preference(user_id, body):
     else: # pragma: no cover
         return {"message": "Invalid request"}, 400
 
-
+# DELETE /google-drive/backup
 @require_valid_user
 def delete_google_drive_backup(user_id):
+    if not conf.features.google_drive.enabled:
+        return {"message": "Google drive sync is not enabled on this tenant."}, 403
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_id)

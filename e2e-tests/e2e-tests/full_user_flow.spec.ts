@@ -28,9 +28,14 @@ test('Signup flow', async ({ page }) => {
   await page.getByRole('checkbox', { name: 'I agree to the Privacy Policy' }).check();
   await page.getByRole('button', { name: 'Start my zero-trip' }).click();
   await page.getByRole('button', { name: 'My passphrase is strong' }).click();
-  await page.waitForURL('**/login/**');
+  await page.waitForURL('**/vault');
   await page.getByLabel('Account created successfully').click();
-  await expect(page.getByText('It\'s time to open your vault !')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Your vault is locked' })).toBeVisible();
+  await expect(page.getByText(email)).toBeVisible();
+  await page.getByRole('textbox', { name: 'Passphrase' }).click();
+  await page.getByRole('textbox', { name: 'Passphrase' }).fill(passphrase);
+  await page.getByRole('button', { name: 'Decrypt my vault' }).click();
+  await expect(page.getByRole('heading', { name: 'Here is your TOTP vault' })).toBeVisible();
 });
 
 
@@ -210,6 +215,7 @@ test('Edit preferences', async ({ page }) => {
   await page.waitForURL('**/vault');
   await expect(page.getByLabel('Vault decrypted ✅')).toContainText('Vault decrypted ✅');
   await page.getByText('Preferences').click();
+  await page.waitForTimeout(1000); // waits for 1 seconds for all preferences to load
   await page.getByRole('combobox').selectOption('hour');
   await page.locator('div').filter({ hasText: /^minutehourUpdate$/ }).getByRole('button').click();
   await expect(page.locator('app-preferences')).toContainText('Success ! This new value will be applied at your next login');
@@ -248,7 +254,7 @@ test('Edit account', async ({ page }) => {
   await page.getByRole('button', { name: 'Open my vault' }).click();
   await page.waitForURL('**/vault');
   await expect(page.getByLabel('Vault decrypted ✅')).toContainText('Vault decrypted ✅');
-  await page.getByText('Account').click();
+  await page.getByText('Account', { exact: true }).click();
   await expect(page.locator('app-account')).toContainText('Your current username is: ' + username);
   await page.getByRole('textbox', { name: 'Username' }).click();
   await page.getByRole('textbox', { name: 'Username' }).fill(username2);
@@ -297,7 +303,7 @@ test('Delete account', async ({ page }) => {
   await page.getByRole('button', { name: 'Open my vault' }).click();
   await page.waitForURL('**/vault');
   await expect(page.getByLabel('Vault decrypted ✅')).toContainText('Vault decrypted ✅');
-  await page.getByText('Account').click();
+  await page.getByText('Account', { exact: true }).click();
   await page.getByRole('button', { name: 'Delete your account' }).click();
   await expect(page.locator('#confirmation')).toMatchAriaSnapshot(`
     - heading "Are you sure ?" [level=1]

@@ -22,20 +22,17 @@ api:
         # - 10.80.3.0/24
         # - 2606:4700:4700::1111
 
-    ## The secret that will be used to sign JWT tokens. CHANGE THIS VALUE !
-    ## A random 128 alphanumeric string is required.
-    jwt_secret: "unsafe_secret"
 
 
     ## Absolute path to the API private key used to sign the vault to guarantee its authenticity.
     ## This must be a PEM encoded RSA private key.
     ## If the file does not exist, it will be generated at startup.
-    private_key_path: ".secret/private.pem"
+    private_key_path: "/api/secret/private.pem"
 
     ## Absolute path to the API public key used to verify vault the vault signature before opening it in the frontend.
     ## This must be a PEM encoded RSA public key.
     ## If the file does not exist, it will be generated at startup.
-    public_key_path: ".secret/public.pem"
+    public_key_path: "/api/secret/public.pem"
 
     ## Secret used to encrypt flask session.
     ## A random 128 alphanumeric string is required.
@@ -162,5 +159,27 @@ features:
         # backup_minimum_count: 20
         ## The minimum age of backups to keep in days (older backups will be deleted if the number of backups is above the minimum count see above).
         #  max_age_in_days: 30
+
+
+    ## Optional
+    ## Signup enabled 
+    ## If set to false, the API will not allow new users to sign up. Existing users will still be able to log in.
+    ## Default: true
+    # signup_enabled: true
+
+    ## Optional
+    ## Google Drive automatic backup
+    ## Allow the users to link their Google Drive account to the API and automatically backup their vaults.
+    ## Follow the documentation to set up the Google Drive OAuth credentials.
+    # google_drive_backup:
+        ## Enable or disable the Google Drive automatic backup feature.
+        ## Default: false
+        # enabled: false
+
+        ## The path to the client secret file used to authenticate with Google Drive.
+        ## This file must be in JSON format and contain the OAuth credentials.
+        ## See https://developers.google.com/identity/protocols/oauth2 for more information.
+        # client_secret_file_path: ".secret/client_secret.json"
+
 
 

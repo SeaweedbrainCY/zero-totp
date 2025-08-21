@@ -30,9 +30,23 @@ class TestGetAuthFlow(unittest.TestCase):
                 _, self.session_token = self.session_repo.generate_session_token(user.id)
                 db.session.commit()
         
+        def tearDown(self):
+            patch.stopall()
+            with self.application.app.app_context():
+                db.session.remove()
+                db.drop_all()
+        
         
         def test_get_auth_flow(self):
             with self.application.app.app_context():
                 self.client.cookies = {"session-token": self.session_token}
                 response = self.client.get(self.endpoint)
                 self.assertEqual(response.status_code, 200)
+
+        def test_get_auth_flow_when_tenant_disabled(self):
+            with self.application.app.app_context():
+                with patch.object(conf.features.google_drive, 'enabled', False):
+                    self.client.cookies = {"session-token": self.session_token}
+                    response = self.client.get(self.endpoint)
+                    self.assertEqual(response.status_code, 403)
+                    self.assertEqual(response.json()["message"], "Oauth is disabled on this tenant. Contact the tenant administrator to enable it.")

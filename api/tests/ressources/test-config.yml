@@ -9,9 +9,6 @@ api:
     ## The port the API will listen on. Default is 8080.
     # port: 8080
 
-    ## The secret that will be used to sign JWT tokens. CHANGE THIS VALUE !
-    ## A random 128 alphanumeric string is required.
-    jwt_secret: "false_secret_Xt4PF5TYTCyxVz3xHa828MH2KBgMAeSfXQYcHf35ARuMu3sV42zvFVYjRRDU8bRH"
 
 
     ## Absolute path to the API private key used to sign the vault to guarantee its authenticity.
@@ -33,11 +30,6 @@ api:
     ## DO NOT COMPROMISE THIS KEY
     server_side_encryption_key: "/SMwC/kEZCXRwzoFas8HU2KggGUYRnHuxziuE6NN1aM=" 
 
-    ## Configuration of google drive Oauth. 
-    ## See https://developers.google.com/identity/protocols/oauth2 for more information.
-    oauth:
-          ## See https://developers.google.com/identity/protocols/oauth2 for more information.
-        client_secret_file_path: "./tests/ressources/fake_client_secret.json"
 
 
 
@@ -115,5 +107,11 @@ features:
         ## Sentry DSN
         ## See https://docs.sentry.io/platforms/python/flask/ for more information.
         #dsn: "not a dns"
+
+    google_drive_backup:
+
+        enabled: true
+
+        client_secret_file_path: "./tests/ressources/fake_client_secret.json"
 
 

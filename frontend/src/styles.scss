@@ -113,13 +113,33 @@ video {
   text-decoration: none;
 }
 
+#add-code-button {
+  width: 60px;
+  height: 60px;
+  padding: 10px;
+  background-color: #ffffff; /* Background color for the button */
+  border-radius: 50%;
+  
+  display: none;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+}
+
+#add-code-button img {
+  width: 30px; 
+  height: 30px;
+}
+
 .coffee-button img {
-  width: 30px; /* Adjust the size of the icon */
+  width: 30px;
   height: 30px;
 }
 
 
-.coffee-button:hover, .github-button:hover {
+.coffee-button:hover, .github-button:hover, #add-code-button:hover {
   transform: scale(1.1); /* Animation on hover */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }

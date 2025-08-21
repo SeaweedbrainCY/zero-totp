@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.0.4
 info:
   title: zero-totp API
   description: API for the zero-totp application
@@ -45,8 +45,21 @@ paths:
       responses:
         "201": # status code
           description: Sign up successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User created"
+                  email_verification_required:
+                    type: boolean
+                    example: true
         "400":
           description: Missing required parameters
+        "403":
+          description: Forbidden. Example, the user is blocked or signup is disabled
         "409":
           description: User already exists
   /login:
@@ -143,6 +156,14 @@ paths:
       responses:
         "200": # status code
           description: Return the user's ZKE key (encrypted)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  zke_encrypted_key:
+                    type: string
+                    example: "AAAAAA="
         "401":
           description: Unauthorized
         "403":
@@ -266,6 +287,22 @@ paths:
       responses:
         "200": # status code
           description: Return all the user's encrypted secrets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  secrets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uuid:
+                          type: string
+                          example: "5cb7f86f-afe9-4666-9728-47ea2f505957"
+                        enc_secret:
+                          type: string
+                          example: "AAAAAA="
         "401":
           description: Unauthorized
         "404":
@@ -766,7 +803,7 @@ paths:
   
   /privacy-policy:
     get:
-      operationId: endpoints_controllers.privacy_policy.get_privacy_policy
+      operationId: endpoints_controllers.general.get_privacy_policy
       tags:
         - General
       parameters:
@@ -789,6 +826,27 @@ paths:
                 example: "# Privacy Policy\n\nThis is the privacy policy in Markdown format."
         "404":
           description: No privacy policy defined for this Zero-TOTP instance
+        "500":
+          description: Internal server error
+
+  /configuration:
+    get:
+      operationId: endpoints_controllers.general.get_configuration
+      tags:
+        - General
+      summary: Get public information related to the API configuration
+      security: []
+      responses:
+        "200": 
+          description: Return the API configuration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  signup_enabled:
+                    type: boolean
+                    example: true
         "500":
           description: Internal server error
         
@@ -881,6 +939,47 @@ paths:
           "500":
             description: Internal server error
 
+  /backup/server/options:
+    get:
+      operationId: endpoints_controllers.backup.get_server_backup_options
+      tags:
+        - Backup
+      summary: Get the server backup options
+      responses:
+        "200": 
+          description: Return the server backup options
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  google_drive_enabled:
+                    type: boolean
+                    example: true
+        "500":
+          description: Internal server error
+  
+  /user/derived-key-salt:
+    get: 
+      operationId: endpoints_controllers.user.get_derived_key_salt
+      tags:
+        - User
+      summary: Return the user's derived key salt
+      responses:
+        "200": 
+          description: Return the user's derived key salt
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  derivedKeySalt:
+                    type: string
+                    example: "AAAAA="
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access denied
 
     
 components:

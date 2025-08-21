@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer} from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare} from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
@@ -13,6 +13,8 @@ import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr'; 
 import { TOTP } from "totp-generator"
+import { VaultService } from '../common/VaultService/vault.service';
+import { GlobalConfigurationService } from '../common/GlobalConfiguration/global-configuration.service';
 
 
 @Component({
@@ -25,7 +27,12 @@ export class VaultComponent implements OnInit, OnDestroy {
   faPen = faPen;
   faSquarePlus = faSquarePlus;
   faCopy = faCopy;
+  faArrowUpRightFromSquare = faArrowUpRightFromSquare;
+  faKey=faKey;
+  faEye=faEye;
+  faEyeSlash=faEyeSlash;
   faGoogleDrive=faGoogleDrive;
+  faLock = faLock;
   faServer=faServer;
   faCircleXmark= faCircleXmark;
   faCheckCircle = faCheckCircle;
@@ -66,6 +73,15 @@ export class VaultComponent implements OnInit, OnDestroy {
   totp_code_expiration = 0;
   generating_next_totp_code = false;
   totp_code_generation_interval:NodeJS.Timeout|undefined;
+  isPassphraseVisible=false;
+  passphrase = "";
+  isVaultEncrypted : boolean | undefined; 
+  isDecryptingLockedVaut = false;
+  vaultDecryptionErrorMessage = "";
+  google_drive_refresh_token_error_display_modal_active = false;
+  google_drive_refresh_token_error = false;
+  is_google_drive_enabled_on_this_tenant = false;
+  current_domain = "";
   constructor(
     public userService: UserService,
     private router: Router,
@@ -75,12 +91,22 @@ export class VaultComponent implements OnInit, OnDestroy {
     private utils: Utils,
     private translate: TranslateService,
     private toastr: ToastrService,
-    ) {}
+    private vaultService: VaultService,
+    public globalConfigurationService: GlobalConfigurationService
+    ) {
+       this.current_domain = window.location.host;
+    }
 
   ngOnInit() {
-    if(this.userService.getId() == null && !this.userService.getIsVaultLocal()){
-      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+    if(this.userService.get_zke_key() == null && !this.userService.getIsVaultLocal()){
+      this.userService.refresh_user_id().then((success) => {
+       this.isVaultEncrypted = true;
+      }, (error) => {
+        this.isVaultEncrypted = false;
+        this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+      });
     } else if(this.userService.getIsVaultLocal()){
+      this.isVaultEncrypted = false;
       this.local_vault_service = this.userService.getLocalVaultService();
       let vaultDate = "unknown"
       try{
@@ -95,7 +121,32 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.vault_date = vaultDate;
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
-      this.get_google_drive_option();
+      this.isVaultEncrypted = false;
+      this.get_and_decrypt_vault();
+    }    
+    // Display the add button 
+    document.getElementById("add-code-button")!.style.display = "flex";
+    document.getElementById("add-code-button")!.onclick = () => {this.isModalActive = true;};
+  }
+
+  ngOnDestroy() {
+    if(this.totp_code_generation_interval != undefined){
+      clearInterval(this.totp_code_generation_interval);
+    }
+    // Hide the add button
+    document.getElementById("add-code-button")!.style.display = "none";
+  }
+
+
+
+  startDisplayingCode(){
+    this.totp_code_generation_interval = setInterval(()=> { this.compute_totp_expiration() }, 100);
+       // setInterval(()=> { this.generateTime() }, 20);
+       // setInterval(()=> { this.generateCode() }, 100);
+  }
+
+  get_and_decrypt_vault(){
+    this.get_google_drive_option();
       this.get_preferences();
 
       this.reloadSpin = true
@@ -136,23 +187,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         });
         }
       });
-      
-    }    
-  }
-
-  ngOnDestroy() {
-    if(this.totp_code_generation_interval != undefined){
-      clearInterval(this.totp_code_generation_interval);
     }
-  }
-
-
-
-  startDisplayingCode(){
-    this.totp_code_generation_interval = setInterval(()=> { this.compute_totp_expiration() }, 100);
-       // setInterval(()=> { this.generateTime() }, 20);
-       // setInterval(()=> { this.generateCode() }, 100);
-  }
 
   get_preferences(){
     this.http.get("/api/v1/preferences?fields=favicon_policy", {withCredentials: true, observe: 'response'}).subscribe((response) => {
@@ -420,27 +455,34 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
 
+  
 
   get_google_drive_option(){
-    this.http.get("/api/v1/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe((response) => { 
-      const data = JSON.parse(JSON.stringify(response.body))
-      if(data.status == "enabled"){
-        this.isGoogleDriveEnabled = true;
-        this.check_last_backup();
-      } else {
-        this.isGoogleDriveEnabled = false;
-        this.isGoogleDriveSync = "false";
+    this.globalConfigurationService.is_google_drive_enabled_on_this_tenant().then((enabled) => {
+      this.is_google_drive_enabled_on_this_tenant = enabled;
+      if(enabled){
+        this.http.get("/api/v1/google-drive/option",  {withCredentials:true, observe: 'response'}).subscribe({
+          next : (response) => { 
+          const data = JSON.parse(JSON.stringify(response.body))
+          if(data.status == "enabled"){
+            this.isGoogleDriveEnabled = true;
+            this.check_last_backup();
+          } else {
+            this.isGoogleDriveEnabled = false;
+            this.isGoogleDriveSync = "false";
+          }
+        }, error: (error) => {
+            let errorMessage = "";
+            if(error.error.message != null){
+              errorMessage = error.error.message;
+            } else if(error.error.detail != null){
+              errorMessage = error.error.detail;
+            }
+            this.translate.get("vault.error.server").subscribe((translation: string) => {
+              this.utils.toastError(this.toastr,  translation + " "+ errorMessage,"");
+            });
+        }});
       }
-    }, (error) => {
-        let errorMessage = "";
-        if(error.error.message != null){
-          errorMessage = error.error.message;
-        } else if(error.error.detail != null){
-          errorMessage = error.error.detail;
-        }
-        this.translate.get("vault.error.server").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr,  translation + " "+ errorMessage,"");
-        });
     });
   }
 
@@ -463,7 +505,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   check_last_backup(){
-    this.http.get("/api/v1/google-drive/last-backup/verify",  {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+    this.http.get("/api/v1/google-drive/last-backup/verify",  {withCredentials:true, observe: 'response'}, ).subscribe({
+      next: (response) => {
       const data = JSON.parse(JSON.stringify(response.body))
       if(data.status == "ok"){
         if(data.is_up_to_date == true){
@@ -483,9 +526,19 @@ export class VaultComponent implements OnInit, OnDestroy {
           this.utils.toastError(this.toastr,  translation,"");
         });
       }
-    }, (error) => {
+    }, error: (error) => {
       if(error.status == 404){
         this.backup_vault_to_google_drive();
+      } else if(error.status == 400){
+        const error_info = error.error as { message: string, error_id: string | undefined };
+        if(error_info.error_id != undefined && error_info.error_id ==  "3c071611-744a-4c93-95c8-c87ee3fce00d"){
+          this.isGoogleDriveSync = 'error';
+          this.google_drive_error_message = this.translate.instant("vault.google_drive_refresh_token_error.title");
+          this.google_drive_refresh_token_error_display_modal_active = true;
+          this.google_drive_refresh_token_error = true;
+        } else {
+           this.google_drive_error_message = "An error occured while checking your backup. Got error " + error.status + ". " + error.error.message;
+        }
       } else {
       this.isGoogleDriveSync = 'error';
       let errorMessage = "";
@@ -498,7 +551,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       }
       this.google_drive_error_message = "An error occured while checking your backup. Got error " + error.status + ". " + errorMessage;
     }
-    });
+    }});
   }
 
   disable_google_drive(){
@@ -548,6 +601,73 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.selectedTags.push(tag);
     }
     this.filterVault();
+  }
+
+  unlockVault(){
+    this.isDecryptingLockedVaut = true;
+    this.vaultDecryptionErrorMessage = "";
+    this.http.get("/api/v1/user/derived-key-salt", { withCredentials: true, observe: 'response' }).subscribe({
+      next: (response) => {
+        if(response.status === 200){
+          const derived_key_salt_req_data = response.body as { derived_key_salt: string };
+          console.log("Derived key salt: " + derived_key_salt_req_data.derived_key_salt);
+          this.userService.setDerivedKeySalt(derived_key_salt_req_data.derived_key_salt);
+          this.http.get("/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe({
+            next: (response) => {
+              if(response.status === 200){
+                 const zke_req_data = response.body as { zke_encrypted_key: string };
+                 const zke_encrypted_key = zke_req_data.zke_encrypted_key;
+                 this.vaultService.derivePassphrase(this.userService.getDerivedKeySalt()!, this.passphrase).then((derivedKey) => {
+                  this.vaultService.decryptZKEKey(zke_encrypted_key, derivedKey, this.userService.getIsVaultLocal()!).then((zke_key) => {
+                    this.userService.set_zke_key(zke_key!);
+                    this.isVaultEncrypted = false;
+                    this.isDecryptingLockedVaut = false;
+                     this.get_and_decrypt_vault();
+                  }, (error) => {
+                    console.log(error);
+                    this.isDecryptingLockedVaut = false;
+                    this.vaultDecryptionErrorMessage = "generic_errors.invalid_creds";
+                  });
+                 }, (error) => {
+                  console.log(error);
+                  this.isDecryptingLockedVaut = false;
+                  this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+                    this.utils.toastError(this.toastr, translation + " " + "U5", "");
+                  });
+                 });
+
+              } else {
+                console.log(response);
+                this.isDecryptingLockedVaut = false;
+                this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation + " " + "U3-"+ response.statusText,"");
+        });
+              }
+
+            }, error: (error) => {
+              console.log(error);
+              this.isDecryptingLockedVaut = false;
+              this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation + " " + "U4","");
+        });
+
+          }
+        });
+        } else {
+          console.log(response)
+          this.isDecryptingLockedVaut = false;
+          this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation + " " + "U1-"+ response.statusText,"");
+        });
+        }
+      }, error: (error) => {
+        this.isDecryptingLockedVaut = false;
+        console.log(error);
+        this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation + " " + "U2","");
+        });
+      }  
+    })
   }
 
 

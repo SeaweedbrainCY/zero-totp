@@ -26,6 +26,7 @@ export const routes: Routes = [
   {path:'login', component: LoginComponent},
   {path: 'login/:error_param', component: LoginComponent},
   {path:'vault', component: VaultComponent},
+  {path:'vault/locked', component: VaultComponent},
   {path:'vault/edit/:id', component: EditTOTPComponent},
   {path:'vault/add', component: EditTOTPComponent},
   {path:'qrcode', component: QrcodeReaderComponent},
@@ -42,11 +43,12 @@ export const routes: Routes = [
   {path: "import/vault", component: ImportVaultComponent},
   {path: "import/vault/:type/:step", component: ImportVaultComponent},
   {path: "faq", component: FaqComponent},
+  {path: "faq/:id", component: FaqComponent},
   {path:'**', component: PagenotfoundComponent}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {enableViewTransitions: true})],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

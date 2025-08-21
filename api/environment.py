@@ -58,28 +58,15 @@ class EnvironmentConfig:
 
 
         
-class OauthConfig:
-    required_keys = ["client_secret_file_path"]
-
-    def __init__(self, data):
-        for key in self.required_keys:
-            if key not in data:
-                logging.error(f"[FATAL] Load config fail. Was expecting the key api.oauth.{key}")
-                exit(1)
-        self.client_secret_file_path = data["client_secret_file_path"]
 
 class APIConfig:
-    required_keys = [ "jwt_secret", "private_key_path", "public_key_path", "flask_secret_key", "server_side_encryption_key"]
-    option_config = ["oauth"]
+    required_keys = ["private_key_path", "public_key_path", "flask_secret_key", "server_side_encryption_key"]
 
     def __init__(self, data, config_version):
         for key in self.required_keys:
             if key not in data:
                 logging.error(f"[FATAL] Load config fail. Was expecting the key api.{key}")
                 exit(1)
-        for key in self.option_config:
-            if key not in data:
-                logging.warning(f"api.{key} is not set. Ignoring it ...")
         
         if "port" in data:
             try:
@@ -90,8 +77,7 @@ class APIConfig:
         else:
             logging.info("API will listen on port 8080")
             self.port = 8080
-        
-        self.jwt_secret = data["jwt_secret"]            
+                 
         self.private_key_path = data["private_key_path"]
         self.public_key_path = data["public_key_path"]
         self.flask_secret_key = data["flask_secret_key"]
@@ -104,10 +90,6 @@ class APIConfig:
         except Exception as e:
             logging.error(f"[FATAL] Load config fail. {e}")
             exit(1)
-        if "oauth" in data:
-            self.oauth = OauthConfig(data["oauth"])
-        else:
-            self.oauth = None
 
         self.trusted_proxy = None
         if "trusted_proxy" in data:
@@ -256,7 +238,14 @@ class PrivacyPolicyConfig:
                 self.privacy_policy_mk_file_path[lang] = f"./assets/privacy_policy/privacy_policy_{lang}.md"
         
 
-
+class GoogleDriveConfig:
+    def __init__(self, data):
+        self.enabled = data["enabled"] if "enabled" in data else False
+        if self.enabled:
+            if "client_secret_file_path" not in data:
+                logging.error("[FATAL] Load config fail. Was expecting the key features.google_drive.client_secret_file_path when google drive is enabled")
+                exit(1)
+            self.client_secret_file_path = data["client_secret_file_path"]
 
 class FeaturesConfig:
     def __init__(self, data):
@@ -266,6 +255,8 @@ class FeaturesConfig:
         self.sentry = SentryConfig(data["sentry"]) if "sentry" in data else None
         self.backup_config = BackupConfig(data["default_backup_configuration"] if "default_backup_configuration" in data else [])
         self.privacy_policy = PrivacyPolicyConfig()
+        self.signup_enabled = data["signup_enabled"] if "signup_enabled" in data else True
+        self.google_drive = GoogleDriveConfig(data["google_drive_backup"] if "google_drive_backup" in data else [])
 
 
 class Config:

@@ -10,7 +10,7 @@
         <a href="/privacy" class="button block m-2 is-dark">{{ 'privacy_policy' | translate }}</a>
         <a href="/changelog" class="button block m-2 is-dark">{{ 'changelog' | translate }}</a>
         <a href="https://github.com/SeaweedbrainCY/zero-totp/issues/new/choose" class="button block m-2 is-dark">{{ 'footer.bug' | translate }}</a>
-        <a href="https://status.zero-totp.com" class="button block m-2 is-dark">Zero-TOTP status</a>
+        <a href="https://status.zero-totp.com" class="button block m-2 is-dark" *ngIf="current_domain == 'zero-totp.com'">Zero-TOTP status</a>
         <a href="/opensource" class="button block m-2 is-dark">{{ 'footer.opensource' | translate }}</a>
     </div>
     <div class="is-flex is-justify-content-center is-flex-direction-column mt-4 is-hidden-desktop">
@@ -18,7 +18,7 @@
       <a href="/privacy" class="button block m-2 is-dark">{{ 'privacy_policy' | translate }}</a>
       <a href="/changelog" class="button block m-2 is-dark">{{ 'changelog' | translate }}</a>
       <a href="https://github.com/SeaweedbrainCY/zero-totp/issues/new/choose" class="button block m-2 is-dark">{{ 'footer.bug' | translate }}</a>
-      <a href="https://status.zero-totp.com" class="button block m-2 is-dark">Zero-TOTP status</a>
+      <a href="https://status.zero-totp.com" class="button block m-2 is-dark"  *ngIf="current_domain == 'zero-totp.com'">Zero-TOTP status</a>
       <a href="/opensource" class="button block m-2 is-dark">{{ 'footer.opensource' | translate }}</a>
   </div>
     <div class="is-flex is-justify-content-center is-flex-wrap-wrap mt-4 mb-4">

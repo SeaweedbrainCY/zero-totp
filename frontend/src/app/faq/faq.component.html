@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <article>
+    <article id="totp-codes"> 
         <h4 class="is-size-5  mb-2"> <fa-icon [icon]="faStopwatch" class="mr-1"></fa-icon> {{ 'faq.totp.title' |
             translate }}</h4>
         <div class="is-flex is-flex-direction-column is-align-items-center	">
@@ -155,7 +155,7 @@
         </div>
 
     </article>
-    <article>
+    <article id="zero-totp-project">
         <h4 class="is-size-5 mt-6"><fa-icon [icon]="faShieldHalved" class="mr-1"></fa-icon>{{ 'faq.zero-totp.title' | translate }}</h4>
         <div class="is-flex is-flex-direction-column is-align-items-center	">
 
@@ -228,7 +228,7 @@
         </div>
 
     </article>
-    <article>
+    <article id="vault">
         <h4 class="is-size-5  mt-6"><fa-icon [icon]="faVault" class="mr-1"></fa-icon> {{ 'faq.vault.title' | translate }}</h4>
         <div class="is-flex is-flex-direction-column is-align-items-center	">
 
@@ -314,5 +314,157 @@
 
     </article>
 
+<article  id="google-drive">
+        <h4 class="is-size-5  mt-6"><fa-icon [icon]="faGoogle" class="mr-1"></fa-icon> {{ 'faq.google_drive.title' | translate }}</h4>
+        <div class="is-flex is-flex-direction-column is-align-items-center	">
 
+
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q4_1')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.google_drive.q1' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q4_1')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q4_1')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q4_1')" class="p-3">
+                    {{ 'faq.google_drive.a1_1' | translate }}<br><br>
+                    {{ 'faq.google_drive.a1_2' | translate }}
+
+                    
+                    
+                </p>
+            </div>
+
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q4_2')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.google_drive.q2' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q4_2')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q4_2')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q4_2')" class="p-3">
+                    {{ 'faq.google_drive.a2_1' | translate }}<br><br>
+                    {{ 'faq.google_drive.a2_2' | translate }}<br><br>
+                    {{ 'faq.google_drive.a2_3' | translate }}<br><br>
+                    {{ 'faq.google_drive.a2_4' | translate }} <a class="" [routerLink]="['/preferences']"> preferences</a>. 
+
+                </p>
+            </div>
+
+            
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q4_3')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.google_drive.q3' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q4_3')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q4_3')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q4_3')" class="p-3">
+                {{ 'faq.google_drive.a3_1' | translate }}
+                 <strong> {{ 'faq.google_drive.a3_2' | translate }} </strong>
+                 <br><br>
+                {{ 'faq.google_drive.a3_3' | translate }}
+               
+                </p>
+            </div>
+
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q4_4')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.google_drive.q4' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q4_4')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q4_4')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q4_4')" class="p-3">
+                    {{ 'faq.google_drive.a4_1' | translate }}
+                 <strong>
+                    {{ 'faq.google_drive.a4_2' | translate }}
+                    
+                </strong>
+                <br><br>
+                {{ 'faq.google_drive.a4_3' | translate }} 
+                <a href="https://github.com/seaweedbraincy/zero-totp">GitHub</a>.
+                </p>
+            </div>
+
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q4_5')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.google_drive.q5' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q4_5')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q4_5')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q4_5')" class="p-3">
+                    {{ 'faq.google_drive.a5_1' | translate }}
+                <br><br>
+                {{ 'faq.google_drive.a5_2' | translate }}
+                
+                </p>
+            </div>
+            
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q4_6')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.google_drive.q6' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q4_6')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q4_6')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q4_6')" class="p-3">
+                {{ 'faq.google_drive.a6_1' | translate }}
+                <a href="https://rescue.zero-totp.com">rescue.zero-totp.com</a> {{ 'faq.google_drive.a6_2' | translate }}<br><br>
+                {{ 'faq.google_drive.a6_3' | translate }}
+
+               
+                </p>
+            </div>
+
+            <div class="box mb-1 mt-2 " style="width: 100%; cursor: pointer" (click)="toggle('q4_7')">
+                <div class="is-flex is-justify-content-space-between">
+                    <p class="has-text-weight-bold is-size-6">
+                        {{ 'faq.google_drive.q7' | translate }}
+                    </p>
+                    <div>
+                        <fa-icon [icon]="faChevronDown" *ngIf="!this.toggled_q_id.includes('q4_7')"></fa-icon>
+                        <fa-icon [icon]="faChevronUp" *ngIf="this.toggled_q_id.includes('q4_7')"></fa-icon>
+                    </div>
+
+                </div>
+                <p *ngIf="this.toggled_q_id.includes('q4_7')" class="p-3">
+                    {{ 'faq.google_drive.a7_1' | translate }}
+                
+                <a href="https://github.com/SeaweedbrainCY/zero-totp/issues">issue</a> {{ 'faq.google_drive.a7_2' | translate }}
+                </p>
+            </div>
+            
+
+
+           
+
+        </div>
+
+    </article>
 </section>

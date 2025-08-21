@@ -212,7 +212,7 @@ class TestRefreshAuthToken(unittest.TestCase):
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 401)
     
-    def test_refresh_token_with_no_jwt_token(self):
+    def test_refresh_token_with_no_session_token(self):
         with self.flask_application.app.app_context():
             self.client.cookies = {"refresh-token": self.refresh_token}
             response = self.client.put(self.endpoint)

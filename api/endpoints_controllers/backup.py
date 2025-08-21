@@ -58,3 +58,12 @@ def set_backup_configuration(user_id, option, body):
         "max_age_in_days":int(backup_conf.backup_max_age_days),
         "backup_minimum_count":int(backup_conf.backup_minimum_count)
         },200
+
+
+# GET /backup/server/options
+@require_valid_user
+def get_server_backup_options(user_id):
+    body = {
+        "google_drive_enabled": bool(conf.features.google_drive.enabled),
+    }
+    return body, 200

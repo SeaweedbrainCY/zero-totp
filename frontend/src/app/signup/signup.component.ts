@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash , faFlask, faCircleQuestion} from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faKey,  faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash , faFlask, faCircleQuestion, faArrowUpRightFromSquare, faDoorClosed} from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
@@ -20,8 +20,10 @@ import { UserService } from '../common/User/user.service';
 export class SignupComponent implements OnInit {
   faEnvelope=faEnvelope;
   faKey=faKey;
+  faDoorClosed=faDoorClosed;
   faCheck=faCheck;
   faUser=faUser;
+  faArrowUpRightFromSquare=faArrowUpRightFromSquare;
   faDiscord=faDiscord;
   faCircleQuestion=faCircleQuestion;
   faXmark=faXmark;
@@ -50,6 +52,7 @@ export class SignupComponent implements OnInit {
   isConfirmPasswordVisible=false;
   current_domain = "";
   instance_dropdown_active = false;
+  signup_enabled = true;
 
 
   constructor(
@@ -65,6 +68,7 @@ export class SignupComponent implements OnInit {
 
   ngOnInit(): void {
     this.current_domain = window.location.host;
+    this.get_api_configuration();
   }
 
   checkPassword(){
@@ -107,6 +111,16 @@ export class SignupComponent implements OnInit {
       this.emailErrorMessage = this.translate.instant("signup.email.error.forbidden");
       return;
     }
+  }
+
+
+  get_api_configuration(){
+    this.http.get("/api/v1/configuration", {withCredentials:true}).subscribe({
+      next: (response) => {
+        const response_data = response as { signup_enabled: boolean};
+        this.signup_enabled = response_data.signup_enabled;
+        console.log("Signup enabled: ", this.signup_enabled);
+      }});
   }
 
   checkUsername(){
@@ -153,7 +167,7 @@ export class SignupComponent implements OnInit {
         this.derivedKeySalt = randomSalt
         this.hashPassword()
       });
-    });   
+    });  
   }
 
   hashPassword(){
@@ -178,21 +192,35 @@ export class SignupComponent implements OnInit {
       passphraseSalt: this.passphraseSalt
     };
 
-    this.http.post("/api/v1/signup", data,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.post("/api/v1/signup", data,  {withCredentials:true, observe: 'response'}).subscribe({
+      next: (response) => {
       this.isLoading=false;
       this.utils.toastSuccess(this.toastr, this.translate.instant("signup.success"),"");
       this.userService.setEmail(this.email)
-      this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
+      const response_data = response.body as { message: string, email_verification_required: boolean };
+      if (response_data.email_verification_required){
+        this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});
+      } else {
+        this.router.navigate(["/vault"], {relativeTo:this.route.root});
+      }
+      
 
-    },
-    (error) => {
+    }, error: (error) => {
       console.log(error);
       this.isLoading=false;
-      if(error.error.message == undefined){
-        error.error.message = this.translate.instant("signup.errors.unknown");
+      if (error.status == 409){
+        this.utils.toastError(this.toastr,  this.translate.instant("signup.errors.already_exist") ,"");
+      } else if (error.status == 403 && error.error != null && error.error.code != null && error.error.code == "signup_disabled") {
+        this.utils.toastError(this.toastr,  this.translate.instant("signup.errors.disabled") ,"");
+      } else {
+        let error_message = this.translate.instant("signup.errors.unknown");
+        if(error.error != null && error.error.message != null){
+          error_message = error.error.message 
+        }
+        this.utils.toastError(this.toastr,  "Error : "+ error_message,"");
       }
-      this.utils.toastError(this.toastr,  "Error : "+ error.error.message,"");
-    });
+    }
+  });
   }
 
  openModal(){

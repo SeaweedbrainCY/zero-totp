@@ -26,6 +26,9 @@ fi
 
 chown -R $USER_UID:$USER_GID /api/logs
 
+mkdir -p /api/secret
+chown -R $USER_UID:$USER_GID /api/secret
+
 ###
 # Switch to user 1001 and execute the main script
 ###

@@ -140,6 +140,14 @@ class TestGoogleDriveBackup(unittest.TestCase):
             self.assertEqual(response.json()["error"], "Not verified")
     
 
+    def test_google_drive_backup_when_tenant_disabled(self):
+        with self.application.app.app_context():
+            with patch.object(conf.features.google_drive, 'enabled', False):
+                self.client.cookies = {'session-token': self.session_token_user_1}
+                response = self.client.put(self.endpoint)
+                self.assertEqual(response.status_code, 403)
+                self.assertEqual(response.json()["message"], "Google drive sync is not enabled on this tenant.")
+
     
 
 
@@ -213,6 +221,14 @@ class TestGoogleDriveBackup(unittest.TestCase):
             response = self.client.delete(self.endpoint)
             self.assertEqual(response.status_code, 403)
             self.assertEqual(response.json()["error"], "Not verified")
+
+    def test_google_drive_delete_all_backup_when_tenant_disabled(self):
+        with self.application.app.app_context():
+            with patch.object(conf.features.google_drive, 'enabled', False):
+                self.client.cookies = {'session-token': self.session_token_user_1}
+                response = self.client.delete(self.endpoint)
+                self.assertEqual(response.status_code, 403)
+                self.assertEqual(response.json()["message"], "Google drive sync is not enabled on this tenant.")
 
 
     

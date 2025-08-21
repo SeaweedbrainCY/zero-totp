@@ -49,6 +49,7 @@ import { ImportVaultComponent } from './import-vault/import-vault.component';
 import { FaqComponent } from './faq/faq.component';
 import { provideMarkdown } from 'ngx-markdown';
 import { MarkdownModule } from 'ngx-markdown';
+import { GlobalConfigurationService } from './common/GlobalConfiguration/global-configuration.service';
 
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -115,7 +116,7 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
           // Register the ServiceWorker as soon as the application is stable
           // or after 30 seconds (whichever comes first).
           registrationStrategy: 'registerWhenStable:30000'
-        })], providers: [UserService, Utils, Crypto, QrCodeTOTP, LocalVaultV1Service, provideMarkdown(), provideHttpClient(), provideMarkdown({ loader: HttpClient }),httpInterceptorProviders, provideHttpClient(withInterceptorsFromDi()),] })
+        })], providers: [UserService, Utils, Crypto, QrCodeTOTP, GlobalConfigurationService, LocalVaultV1Service, provideMarkdown(), provideHttpClient(), provideMarkdown({ loader: HttpClient }),httpInterceptorProviders, provideHttpClient(withInterceptorsFromDi()),] })
 export class AppModule { 
 
   constructor(translate: TranslateService) {

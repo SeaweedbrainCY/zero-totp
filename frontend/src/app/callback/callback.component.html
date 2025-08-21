@@ -11,3 +11,50 @@
     </div>
 
 </div>
+
+<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': google_drive_refresh_token_error_display_modal_active}" >
+    <div class="modal-background"></div>
+    <div class="modal-content mt-6 pt-6 pb-6">
+        <header class="modal-card-head">
+            <h1 class="is-size-4 has-text-info has-text-weight-bold">⚠️ {{ 'vault.google_drive_refresh_token_error.title' | translate }}</h1>
+        </header>
+        <section class="modal-card-body" >
+            <div class="mt-2 has-text-left">
+                <p>
+                    {{ 'vault.google_drive_refresh_token_error.p1' | translate }}
+                    
+                </p><br>
+
+                <p ><strong class="has-text-info">
+                    {{ 'vault.google_drive_refresh_token_error.p2' | translate }}
+                    
+                </strong></p>
+                <ol>
+                    <li> 
+                          {{ 'vault.google_drive_refresh_token_error.li1_p1' | translate }}
+                        <a href="https://myaccount.google.com/permissions" target="_blank">{{ 'vault.google_drive_refresh_token_error.li1_a1' | translate }} <fa-icon [icon]="faArrowUpRightFromSquare" class="ml-2"></fa-icon> </a> (https://myaccount.google.com/permissions).
+                    </li>
+                    <li>
+                         {{ 'vault.google_drive_refresh_token_error.li2' | translate }}
+                        
+                    </li>
+                    <li>
+                         {{ 'vault.google_drive_refresh_token_error.li3' | translate }}
+                        
+                    </li>
+                    <li>
+                         {{ 'vault.google_drive_refresh_token_error.li4' | translate }}
+                       
+                    </li>
+                </ol><br>
+                <p class="has-text-centered">
+                    <button class="button is-info" [routerLink]="['/vault']">  {{ 'callback.errors.refresh_token.vault_button' | translate }}</button>
+                </p>
+
+            </div>
+
+        </section>
+        <footer class="modal-card-foot is-flex is-justify-content-right">
+        </footer>
+    </div>
+</div>

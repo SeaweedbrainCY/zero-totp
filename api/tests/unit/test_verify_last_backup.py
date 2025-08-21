@@ -46,7 +46,7 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
         self.session_token_repo = SessionTokenRepo()
 
 
-        self.creds = {"creds": "creds", "expiry":datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
+        self.creds = {"creds": "creds","refresh_token":"fake_token", "expiry":datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
         creds_b64 = base64.b64encode(json.dumps(self.creds).encode("utf-8")).decode("utf-8")
         encrypted_creds = self.sse.encrypt(creds_b64)
         with self.application.app.app_context():
@@ -162,4 +162,12 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
             self.client.cookies = {"session-token": self.unverified_user_session}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 403)
+
+    def test_google_drive_verify_when_tenant_disabled(self):
+        with self.application.app.app_context():
+            with patch.object(conf.features.google_drive, 'enabled', False):
+                self.client.cookies = {"session-token": self.session_token}
+                response = self.client.get(self.endpoint)
+                self.assertEqual(response.status_code, 403)
+                self.assertEqual(response.json()["message"], "Google drive sync is not enabled on this tenant.")
    

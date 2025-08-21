@@ -1,24 +1,96 @@
-<section class="hero  is-halfheight mt-6 pb-6" style="min-height: 70vh;">
+<section class="hero is-fullheight mt-6 pt-6 has-background-dark"
+    style="position: fixed; z-index: 99 !important; width: 100%; top: 0; left: 0;"
+    *ngIf="isVaultEncrypted == undefined">
+    <article class="hero-body is-flex is-justify-content-center">
+        <div>
+            <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#FFFFFF;"
+                size="2xl"></fa-icon>
+
+        </div>
+    </article>
+</section>
+<section class="hero is-fullheight mt-6 pt-6 has-background-dark"
+    style="position: fixed; z-index: 99 !important; width: 100%; top: 0; left: 0;" *ngIf="isVaultEncrypted">
+    <article class="is-flex p-6 mb-6 has-text-centered w-100 is-justify-content-center "
+        style="width: 100%; height: 60vh;">
+        <div
+            class="is-flex is-flex-direction-column is-align-items-center has-text-centered is-justify-content-space-around">
+            <div>
+                <h1 class="is-size-1  has-text-weight-bold has-text-white">
+                    <fa-icon [icon]="faLock" class="pr-2" size="xl"></fa-icon>
+                </h1>
+                <br>
+                <h2 class="is-size-2 has-text-weight-bold has-text-white">
+                    {{ 'vault.locked.title' | translate }}
+
+                </h2>
+                <p class="has-text-weight-light has-text-grey-lighter">
+                    {{ 'vault.locked.subtitle' | translate }}
+
+                </p>
+            </div>
+            <div>
+                <p class="has-text-weight-bold mt-4 mb-2 has-text-grey-lighter">
+                    {{this.userService.getEmail()}}
+                </p>
+                <div class="field is-full is-flex is-justify-content-center has-addons ">
+
+
+                    <p class="control has-icons-left has-icons-right">
+                        <input class="input block" type="{{isPassphraseVisible ? 'text' : 'password'}}"
+                            placeholder="{{'passphrase' | translate}}" name="passphrase" [(ngModel)]="passphrase"
+                            (keyup.enter)="unlockVault()">
+                        <span class="icon is-small is-left">
+                            <fa-icon [icon]="faKey"></fa-icon>
+                        </span>
+                    </p>
+                    <div class="control">
+                        <a class="button" (click)="isPassphraseVisible = !isPassphraseVisible">
+                            <fa-icon [icon]="faEyeSlash" *ngIf="isPassphraseVisible" size="sm"></fa-icon><fa-icon
+                                [icon]="faEye" *ngIf="!isPassphraseVisible" size="sm"></fa-icon>
+                        </a>
+
+                    </div>
+                </div>
+                <p class="has-text-weight-light has-text-danger" *ngIf="vaultDecryptionErrorMessage != ''"
+                    style="margin-top:-20px">
+                    {{vaultDecryptionErrorMessage | translate}}
+                </p>
+                <button class="button is-info mt-4 has-text-white" (click)="unlockVault()">
+                    Decrypt my vault
+                </button>
+            </div>
+        </div>
+    </article>
+
+
+
+</section>
+
+<section class="hero  is-halfheight mt-6 pb-6" style="min-height: 70vh;" *ngIf="isVaultEncrypted == false">
     <div class="container  is-fluid ">
         <div>
-            <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">{{page_title | translate}} <span *ngIf="vault_date != undefined">{{vault_date}}</span></h1>
+            <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">{{page_title | translate}}
+                <span *ngIf="vault_date != undefined">{{vault_date}}</span></h1>
             <p class="has-text-centered has-text-grey pb-6">{{ 'vault.subtitle' | translate }} </p>
             <article class="message is-info" *ngIf="this.userService.getIsVaultLocal()">
                 <div class="message-body">
                     {{ 'vault.local.desc.part1' | translate }}<br>
                     <b>{{ 'vault.local.desc.part2' | translate }}
-                        <code>{{ 'vault.local.desc.code' | translate }}</code>{{ 'vault.local.desc.part3' | translate }}</b>.
+                        <code>{{ 'vault.local.desc.code' | translate }}</code>{{ 'vault.local.desc.part3' | translate
+                        }}</b>.
                 </div>
             </article>
             <div class="message is-success" *ngIf="!this.userService.getIsVaultLocal()">
                 <div class="message"
-                    [ngClass]="{'is-success': isGoogleDriveSync == 'uptodate' ||  isGoogleDriveSync == 'loading', 'is-warning': isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false' }">
+                    [ngClass]="{'is-success': isGoogleDriveSync == 'uptodate' || !is_google_drive_enabled_on_this_tenant ||  isGoogleDriveSync == 'loading', 'is-warning': isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false' }">
                     <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen"
                         style="cursor: pointer;">
                         <p>{{ 'vault.storage.title' | translate }} <span
-                                *ngIf="isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false'"
+                                *ngIf="(isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false') && is_google_drive_enabled_on_this_tenant"
                                 class="tag is-small is-danger has-text-weight-bold ml-3">1</span></p>
-                        <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">{{ 'less' | translate }}</span>
+                        <div class="has-text-weight-light"><span *ngIf="storageOptionOpen">{{ 'less' | translate
+                                }}</span>
                             <span *ngIf="!storageOptionOpen">{{ 'more' | translate }}</span>
                             <fa-icon [icon]="faChevronDown" class="pl-1" *ngIf="!storageOptionOpen"></fa-icon>
                             <fa-icon [icon]="faChevronUp" class="pl-1" *ngIf="storageOptionOpen"></fa-icon>
@@ -35,7 +107,8 @@
                                     <div class="tags has-addons mb-0" (click)="storageOptionOpen = true"
                                         style="align-items: normal;" aria-haspopup="true"
                                         aria-controls="dropdown-menu4">
-                                        <span class="tag is-medium is-dark has-text-weight-bold" id="totp-tag"><fa-icon [icon]="faServer" class="pr-1"></fa-icon>
+                                        <span class="tag is-medium is-dark has-text-weight-bold" id="totp-tag"><fa-icon
+                                                [icon]="faServer" class="pr-1"></fa-icon>
                                             {{ 'vault.storage.zero_totp.title' | translate }} </span>
                                         <span class="tag is-success is-medium" id="totp-status-tag"> <fa-icon
                                                 [icon]="faCheckCircle"></fa-icon></span>
@@ -44,11 +117,14 @@
                                 </div>
                                 <div [hidden]="!storageOptionOpen" class="mb-3">
                                     <div class="is-flex is-flex-wrap-wrap is-justify-content-center mb-1">
-                                    <p class="is-size-7 ">{{ 'vault.storage.zero_totp.location' | translate }}</p>
+                                        <p class="is-size-7 " *ngIf="current_domain == 'zero-totp.com'">{{ 'vault.storage.zero_totp.location' | translate }}</p>
+                                        <p class="is-size-7 " *ngIf="current_domain != 'zero-totp.com'"> {{current_domain}} {{ 'vault.storage.zero_totp.self-host.location' | translate }}</p>
+                                    </div>
                                     </div>
                                     <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
                                         <button class="button " (click)="reload()"><fa-icon [icon]="faRotateRight"
-                                                class="mr-3"></fa-icon> {{ 'vault.storage.zero_totp.reload' | translate }}</button>
+                                                class="mr-3"></fa-icon> {{ 'vault.storage.zero_totp.reload' | translate
+                                            }}</button>
                                     </div>
                                 </div>
                             </div>
@@ -56,7 +132,7 @@
                       is-four-fifths-tablet
                       is-one-third-desktop
                       is-one-third-widescreen
-                      is-one-quarter-fullhd">
+                      is-one-quarter-fullhd" *ngIf="is_google_drive_enabled_on_this_tenant">
                                 <div class="is-flex is-justify-content-center">
                                     <div class="tags has-addons mb-2" style="align-items: normal;"
                                         (click)="storageOptionOpen = true">
@@ -73,57 +149,72 @@
                                                 [icon]="faCheckCircle"></fa-icon>
                                             <fa-icon *ngIf="isGoogleDriveSync == 'error'" [icon]="faCircleExclamation"
                                                 animation="fade"></fa-icon>
-                                            <fa-icon *ngIf="isGoogleDriveSync== 'loading'" [animation]="true ? 'spin' : undefined"
+                                            <fa-icon *ngIf="isGoogleDriveSync== 'loading'"
+                                                [animation]="true ? 'spin' : undefined"
                                                 [icon]="faCircleNotch"></fa-icon></span>
                                     </div>
                                 </div>
                                 <div [hidden]="!storageOptionOpen" class="mb-3">
                                     <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
                                         [hidden]="!storageOptionOpen">
-                                        <button *ngIf="isGoogleDriveSync == 'false'"
-                                            class="button   mb-3 mr-2 ml-2"
+                                        <button *ngIf="isGoogleDriveSync == 'false'" class="button   mb-3 mr-2 ml-2"
                                             (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
-                                                class="mr-3"></fa-icon> {{ 'vault.storage.google.sync' | translate }} </button>
-                                        <button *ngIf="isGoogleDriveSync == 'false'"
-                                            class="button   mb-3 mr-2 ml-2" disabled><fa-icon
-                                                [icon]="faCircleInfo" class="mr-3"></fa-icon> {{ 'vault.storage.google.info' | translate }}</button>
+                                                class="mr-3"></fa-icon> {{ 'vault.storage.google.sync' | translate }}
+                                        </button>
+                                        <button *ngIf="isGoogleDriveSync == 'false'" class="button   mb-3 mr-2 ml-2" [routerLink]="['/faq/google-drive']"
+                                            ><fa-icon [icon]="faCircleInfo" class="mr-3"></fa-icon> {{
+                                            'vault.storage.google.info' | translate }}</button>
 
-                                       
-                                    
+
+
                                         <div *ngIf="isGoogleDriveSync == 'uptodate'" class="has-text-centered">
-                                            <div class="is-size-7 ">{{ 'vault.storage.google.last_backup' | translate }} {{lastBackupDate}} 
+                                            <div class="is-size-7 ">{{ 'vault.storage.google.last_backup' | translate }}
+                                                {{lastBackupDate}}
                                                 <div class="dropdown is-hoverable">
                                                     <div class="dropdown-trigger">
-                                                      <a  aria-haspopup="true" aria-controls="dropdown-menu4">
-                                                        <fa-icon
-                                                [icon]="faCircleQuestion"></fa-icon>
-                                                      </a>
+                                                        <a aria-haspopup="true" aria-controls="dropdown-menu4">
+                                                            <fa-icon [icon]="faCircleQuestion"></fa-icon>
+                                                        </a>
                                                     </div>
                                                     <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-                                                      <div class="dropdown-content">
-                                                        <div class="dropdown-item">
-                                                          <p class="has-text-left"><strong>{{ 'vault.storage.google.about.desc1' | translate }}</strong><br> {{ 'vault.storage.google.about.desc2' | translate }}</p>
+                                                        <div class="dropdown-content">
+                                                            <div class="dropdown-item">
+                                                                <p class="has-text-left"><strong>{{
+                                                                        'vault.storage.google.about.desc1' | translate
+                                                                        }}</strong><br> {{
+                                                                    'vault.storage.google.about.desc2' | translate }}
+                                                                </p>
+                                                            </div>
                                                         </div>
-                                                      </div>
                                                     </div>
-                                                  </div>
                                                 </div>
-                                            <p class="has-text-centered mt-1">
+                                            </div>
+                                             <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
                                                 <button class="button mb-3 mr-2 ml-2"
-                                                    (click)="disable_google_drive()"><fa-icon
-                                                        [icon]="faCircleXmark" class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' | translate }}
+                                                    (click)="disable_google_drive()"><fa-icon [icon]="faCircleXmark"
+                                                        class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' |
+                                                    translate }}
                                                 </button>
-                                            </p>
+                                                <button  class="button   mb-3 mr-2 ml-2" [routerLink]="['/faq/google-drive']"
+                                            ><fa-icon [icon]="faCircleInfo" class="mr-3"></fa-icon> {{
+                                            'vault.storage.google.info' | translate }}</button>
+                                            </div>
                                         </div>
                                         <div *ngIf="isGoogleDriveSync == 'error'" class="has-text-centered">
                                             <p class="has-text-danger is-size-7 ">{{google_drive_error_message}}</p>
                                             <p class="has-text-centered mt-1">
                                                 <button class="button   mb-3 mr-2 ml-2"
-                                                    (click)="resync_after_error()"><fa-icon [icon]="faLink"
-                                                        class="mr-3"></fa-icon> {{ 'vault.storage.google.resync' | translate }} </button>
-                                                        <button class="button  mb-3 mr-2 ml-2"
-                                                    (click)="disable_google_drive()"><fa-icon
-                                                        [icon]="faCircleXmark" class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' | translate }}
+                                                    (click)="resync_after_error()" *ngIf="!google_drive_refresh_token_error"><fa-icon [icon]="faLink"
+                                                        class="mr-3"></fa-icon> {{ 'vault.storage.google.resync' |
+                                                    translate }} </button>
+                                                    <button class="button   mb-3 mr-2 ml-2"
+                                                    (click)="google_drive_refresh_token_error_display_modal_active = true" *ngIf="google_drive_refresh_token_error"><fa-icon [icon]="faLink"
+                                                        class="mr-3"></fa-icon> {{ 'vault.storage.google.how_to_fix' |
+                                                    translate }} </button>
+                                                <button class="button  mb-3 mr-2 ml-2"
+                                                    (click)="disable_google_drive()"><fa-icon [icon]="faCircleXmark"
+                                                        class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' |
+                                                    translate }}
                                                 </button>
                                             </p>
                                         </div>
@@ -141,7 +232,8 @@
                                     <div class="tags has-addons mb-2" style="align-items: normal;"
                                         (click)="storageOptionOpen = true">
                                         <span class="tag is-medium is-dark has-text-weight-bold" id="download-tag">
-                                            <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>{{ 'vault.storage.local.title' | translate }}
+                                            <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>{{
+                                            'vault.storage.local.title' | translate }}
                                         </span>
                                         <span class="tag is-info is-medium" id="download-status-tag"> <fa-icon
                                                 [icon]="faDownload"></fa-icon></span>
@@ -150,15 +242,16 @@
                                 <div [hidden]="!storageOptionOpen" class="mb-3">
                                     <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
                                         [hidden]="!storageOptionOpen">
-                                        <button class="button   mb-3 mr-2 ml-2"
-                                            (click)="downloadVault()"><fa-icon [icon]="faDownload"
-                                                class="mr-3 "></fa-icon>{{ 'vault.storage.local.save' | translate }}</button>
+                                        <button class="button   mb-3 mr-2 ml-2" (click)="downloadVault()"><fa-icon
+                                                [icon]="faDownload" class="mr-3 "></fa-icon>{{
+                                            'vault.storage.local.save' | translate }}</button>
                                         <div class="dropdown" [ngClass]="{'is-active': isRestoreBackupModaleActive}">
                                             <div class="dropdown-trigger">
                                                 <button class="button  mr-2 ml-2 "
                                                     (click)="isRestoreBackupModaleActive = !isRestoreBackupModaleActive"
                                                     ria-haspopup="true" aria-controls="dropdown-menu"><fa-icon
-                                                        [icon]="faUpload" class="mr-3 "></fa-icon>{{ 'vault.storage.local.open' | translate }}</button>
+                                                        [icon]="faUpload" class="mr-3 "></fa-icon>{{
+                                                    'vault.storage.local.open' | translate }}</button>
                                             </div>
                                             <div class="dropdown-menu" id="dropdown-menu" role="menu">
                                                 <div class="dropdown-content">
@@ -180,34 +273,38 @@
             </div>
             <div class="field has-addons">
                 <div class="control  has-icons-left is-expanded">
-                  <input class="input" type="text" placeholder="Search" name="filter" [(ngModel)]="filter" (keyup)="filterVault()">
-                  <span class="icon is-left">
-                    <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
-                  </span>
+                    <input class="input" type="text" placeholder="Search" name="filter" [(ngModel)]="filter"
+                        (keyup)="filterVault()">
+                    <span class="icon is-left">
+                        <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+                    </span>
                 </div>
                 <div class="control ">
                     <a class="button" (click)="filter='';filterVault() ">
                         <fa-icon [icon]="faXmark"></fa-icon>
                     </a>
-                  </div>
-              </div>
-              <div *ngIf=" this.userService.getVaultTags().length != 0" class="mb-4">
+                </div>
+            </div>
+            <div *ngIf=" this.userService.getVaultTags().length != 0" class="mb-4">
                 <strong>{{'vault.filter.tag.title' | translate}} : </strong>
-                <span class="tag is-rounded ml-4" style="cursor:pointer" [ngClass]="{'is-info':selectedTags.length == 0}" (click)="selectedTags=[]; filterVault()">All</span>
+                <span class="tag is-rounded ml-4" style="cursor:pointer"
+                    [ngClass]="{'is-info':selectedTags.length == 0}" (click)="selectedTags=[]; filterVault()">All</span>
                 <span *ngFor="let tag of  this.userService.getVaultTags()">
-                  <span class="tag is-rounded ml-4 mt-2" style="cursor:pointer" [ngClass]="{'is-info':selectedTags.includes(tag)}" (click)="selectTag(tag)">{{tag}} </span>
+                    <span class="tag is-rounded ml-4 mt-2" style="cursor:pointer"
+                        [ngClass]="{'is-info':selectedTags.includes(tag)}" (click)="selectTag(tag)">{{tag}} </span>
                 </span>
-              </div>
+            </div>
             <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault"
-                *ngIf="!this.userService.getIsVaultLocal()">{{ 'vault.button.reload' | translate }} <fa-icon [icon]="faRotateRight" class="pl-1"
-                    [animation]="reloadSpin ? 'spin' : undefined"></fa-icon></span>
+                *ngIf="!this.userService.getIsVaultLocal()">{{ 'vault.button.reload' | translate }} <fa-icon
+                    [icon]="faRotateRight" class="pl-1" [animation]="reloadSpin ? 'spin' : undefined"></fa-icon></span>
             <article class="hero is-halfheight" *ngIf="reloadSpin" style="min-height: 40vh;">
-                <article class="hero-body is-flex is-justify-content-center" >
-                  <div>
-                      <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#000000;" size="2xl"></fa-icon >
-                  </div>
-              </article>
-              </article>
+                <article class="hero-body is-flex is-justify-content-center">
+                    <div>
+                        <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#000000;"
+                            size="2xl"></fa-icon>
+                    </div>
+                </article>
+            </article>
             <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop" *ngIf="!reloadSpin">
 
                 <div class="column is-full-mobile
@@ -239,7 +336,10 @@
                                                                     'has-background-warning': vault!.get(uuid)?.get('color') == 'warning',
                                                                 }">
                         <header class="card-header">
-                            <p class="card-header-title  has-text-white"><img src="{{get_favicon_url(vault!.get(uuid)?.get('domain'))}}" alt="" *ngIf="(vault!.get(uuid)?.get('favicon') == 'true' || faviconPolicy == 'always') && faviconPolicy != 'never'" width="25px" height="25px" style="margin-right: 6px;">
+                            <p class="card-header-title  has-text-white"><img
+                                    src="{{get_favicon_url(vault!.get(uuid)?.get('domain'))}}" alt=""
+                                    *ngIf="(vault!.get(uuid)?.get('favicon') == 'true' || faviconPolicy == 'always') && faviconPolicy != 'never'"
+                                    width="25px" height="25px" style="margin-right: 6px;">
                                 {{vault!.get(uuid)?.get('name')}}</p>
                             <button class="card-header-icon" aria-label="edit" (click)="edit(uuid)">
                                 <span class="icon">
@@ -288,4 +388,67 @@
         </footer>
         <button class="modal-close is-large" aria-label="close" (click)="isModalActive = !isModalActive"></button>
     </div>
+</div>
+
+
+<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': google_drive_refresh_token_error_display_modal_active}" >
+    <div class="modal-background" (click)="google_drive_refresh_token_error_display_modal_active = false"></div>
+    <div class="modal-content mt-6 pt-6 pb-6">
+        <header class="modal-card-head">
+            <h1 class="is-size-4 has-text-info has-text-weight-bold">⚠️ {{ 'vault.google_drive_refresh_token_error.title' | translate }}</h1>
+        </header>
+        <section class="modal-card-body" >
+            <div class="mt-2 has-text-left">
+                <p>
+                    {{ 'vault.google_drive_refresh_token_error.p1' | translate }}
+                    
+                </p><br>
+
+                <p ><strong class="has-text-info">
+                    {{ 'vault.google_drive_refresh_token_error.p2' | translate }}
+                    
+                </strong></p>
+                <ol>
+                    <li> 
+                          {{ 'vault.google_drive_refresh_token_error.li1_p1' | translate }}
+                        <a href="https://myaccount.google.com/permissions" target="_blank">{{ 'vault.google_drive_refresh_token_error.li1_a1' | translate }} <fa-icon [icon]="faArrowUpRightFromSquare" class="ml-2"></fa-icon> </a> (https://myaccount.google.com/permissions).
+                    </li>
+                    <li>
+                         {{ 'vault.google_drive_refresh_token_error.li2' | translate }}
+                        
+                    </li>
+                    <li>
+                         {{ 'vault.google_drive_refresh_token_error.li3' | translate }}
+                        
+                    </li>
+                    <li>
+                         {{ 'vault.google_drive_refresh_token_error.li4' | translate }}
+                       
+                    </li>
+                </ol><br>
+                <p class="has-text-centered">
+                    <button class="button is-info" (click)="resync_after_error()" [ngClass]="{'is-loading': isGoogleDriveSync == 'loading'}">{{ 'vault.storage.google.sync' | translate }}</button>
+                </p><br>
+                <p>
+                    {{ 'vault.google_drive_refresh_token_error.p3' | translate }}
+                    
+                </p>
+                <p class="has-text-centered">
+                     <button class="button  mb-3 mr-2 ml-2"
+                                                    (click)="disable_google_drive()"><fa-icon [icon]="faCircleXmark"
+                                                        class="mr-3"></fa-icon> {{ 'vault.storage.google.stop_sync' |
+                                                    translate }}
+                                                </button>
+                </p>
+
+
+            </div>
+
+        </section>
+
+        <footer class="modal-card-foot is-flex is-justify-content-right">
+            <button class="button mr-1" (click)="google_drive_refresh_token_error_display_modal_active = false" >{{ 'close' | translate }} </button>
+        </footer>
+    </div>
+    <button class="modal-close is-large" aria-label="close" (click)="google_drive_refresh_token_error_display_modal_active = false"></button>
 </div>
