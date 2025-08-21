@@ -81,6 +81,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   google_drive_refresh_token_error_display_modal_active = false;
   google_drive_refresh_token_error = false;
   is_google_drive_enabled_on_this_tenant = false;
+  current_domain = "";
   constructor(
     public userService: UserService,
     private router: Router,
@@ -93,6 +94,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     private vaultService: VaultService,
     public globalConfigurationService: GlobalConfigurationService
     ) {
+       this.current_domain = window.location.host;
     }
 
   ngOnInit() {
