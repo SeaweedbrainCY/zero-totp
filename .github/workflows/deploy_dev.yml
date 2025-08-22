@@ -62,11 +62,11 @@ jobs:
             push: true
             tags: |
               ghcr.io/${{ env.USERNAME }}/${{ env.REPO }}:dev
-              ghcr.io/${{ env.USERNAME }}/${{ env.REPO }}:$CURRENT_VERSION
+              ghcr.io/${{ env.USERNAME }}/${{ env.REPO }}:${{ env.CURRENT_VERSION }}
             labels: |
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
-              org.opencontainers.image.version=$CURRENT_VERSION
+              org.opencontainers.image.version=${{ env.CURRENT_VERSION }}
               org.opencontainers.image.title=Zero-TOTP frontend - Dev version
               org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes.
               org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
@@ -124,11 +124,11 @@ jobs:
             push: true
             tags: |
               ghcr.io/${{ env.USERNAME }}/${{ env.REPO }}:dev
-              ghcr.io/${{ env.USERNAME }}/${{ env.REPO }}:$CURRENT_VERSION
+              ghcr.io/${{ env.USERNAME }}/${{ env.REPO }}:${{ env.CURRENT_VERSION }}
             labels: |
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
-              org.opencontainers.image.version=$CURRENT_VERSION
+              org.opencontainers.image.version=${{ env.CURRENT_VERSION }}
               org.opencontainers.image.title=Zero-TOTP API - Dev version
               org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes.
               org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
@@ -156,7 +156,7 @@ jobs:
               working-directory: ./e2e-tests
               run: |
                 current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
-                echo "Current version: $current_version"
+                echo "Current version: ${{ env.CURRENT_VERSION }}"
                 sed -i "s|\(image: ghcr.io/seaweedbraincy/zero-totp-api:\).*|\1$current_version|" docker-compose.yml
                 sed -i "s|\(image: ghcr.io/seaweedbraincy/zero-totp-frontend:\).*|\1$current_version|" docker-compose.yml
 
