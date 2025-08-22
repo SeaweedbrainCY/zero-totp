@@ -120,7 +120,6 @@
                                         <p class="is-size-7 " *ngIf="current_domain == 'zero-totp.com'">{{ 'vault.storage.zero_totp.location' | translate }}</p>
                                         <p class="is-size-7 " *ngIf="current_domain != 'zero-totp.com'"> {{current_domain}} {{ 'vault.storage.zero_totp.self-host.location' | translate }}</p>
                                     </div>
-                                    </div>
                                     <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
                                         <button class="button " (click)="reload()"><fa-icon [icon]="faRotateRight"
                                                 class="mr-3"></fa-icon> {{ 'vault.storage.zero_totp.reload' | translate
