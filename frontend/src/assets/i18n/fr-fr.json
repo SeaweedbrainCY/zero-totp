@@ -927,7 +927,7 @@
         "location": "Serveurs Zero-TOTP au Canada 🇨🇦, en Suisse 🇨🇭 et en Europe 🇪🇺",
         "reload": "Rafraîchir le coffre",
         "self-host": {
-          "location": "serveurs (auto-hébergé)."
+          "location": "Auto-hébergé par "
         },
         "title": "Serveur Zero-TOTP"
       }
