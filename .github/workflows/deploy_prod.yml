@@ -19,70 +19,150 @@ jobs:
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }} 
 
-    docker-frontend:
+    build-frontend:
       needs: [tests_and_security]
-      name: Publish Frontend Docker image
+      name: Build and Publish Frontend Docker image
       runs-on: ubuntu-latest
-      env:
-        REPO: zero-totp-frontend
       steps:
-        - uses: actions/checkout@v3
-        - name: Login to Github
-          run : echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ secrets.USERNAME_GITHUB }} --password-stdin
+        - uses: actions/checkout@v4
+
+        - name: Extract Git commit
+          id: vars
+          run: |
+            echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+            echo "DATE=$(date)" >> $GITHUB_ENV
+            echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
+            echo "CURRENT_SHORT_VERSION=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
+        
+        - name: Set up Qemu 
+          uses: docker/setup-qemu-action@v3
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+        - name: Login to GHCR 
+          uses: docker/login-action@v3
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+
         - name: Login to Docker Hub
-          run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+          uses: docker/login-action@v3
+          with:
+            username: ${{ secrets.DOCKER_USER }}
+            password: ${{ secrets.DOCKER_PASS }}
+
+
         - name: Create frontend environment file
           working-directory: ./frontend
           run: bash generate-env.sh '${{ github.ref_name }}' '${{secrets.RSA_PUBLIC_KEY}}'
+
         - name: Generate sitemap.xml
           working-directory: ./frontend
           run: bash generate_sitemap.sh 
-        - name: Build Docker image
-          working-directory: ./frontend
-          run: |
-            current_short_version=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/') 
-            current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
-            docker build \
-              -t seaweedbrain/$REPO:$current_long_version \
-              -t seaweedbrain/$REPO:$current_short_version \
-              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_long_version \
-              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_short_version . 
-        - name: Publish Docker Image to DockerHub
-          run: docker push seaweedbrain/$REPO --all-tags
-        - name: Publish Docker Image to Github Registry
-          run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
-    docker-api:
+
+        - name: Build and push Docker images
+          uses: docker/build-push-action@v6
+          with:
+            context: ./frontend
+            push: true
+            tags: |
+              ghcr.io/${{ github.repository }}-frontend:latest
+              ghcr.io/${{ github.repository }}-frontend:${{ env.CURRENT_VERSION }}
+              ghcr.io/${{ github.repository }}-frontend:${{ env.CURRENT_SHORT_VERSION }}
+            labels: |
+              org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
+              org.opencontainers.image.created=${{ env.DATE }}
+              org.opencontainers.image.version=${{ env.CURRENT_VERSION }}
+              org.opencontainers.image.title=Zero-TOTP frontend 
+              org.opencontainers.image.description=
+              org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
+              org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
+              org.opencontainers.image.licenses=GPL-3.0
+              org.opencontainers.image.documentation=https://github.com/seaweedbraincy/zero-totp#readme
+            annotations: |
+              org.opencontainers.image.description=
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
+            cache-from: type=gha
+            cache-to: type=gha,mode=max
+            platforms: linux/amd64,linux/arm64
+            outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP
+
+            
+    build-api:
       needs: [tests_and_security]
-      name: Publish API Docker image
+      name: Build and Publish API Docker image
       runs-on: ubuntu-latest
       env:
         REPO: zero-totp-api
       steps:
-        - uses: actions/checkout@v3
-        - name: Login to Github
-          run : echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ secrets.USERNAME_GITHUB }} --password-stdin
+        - uses: actions/checkout@v4
+        - name: Extract Git commit
+          id: vars
+          run: |
+            echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+            echo "DATE=$(date)" >> $GITHUB_ENV
+            echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
+            echo "CURRENT_SHORT_VERSION=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
+        
+        - name: Set up Qemu 
+          uses: docker/setup-qemu-action@v3
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+        - name: Login to GHCR 
+          uses: docker/login-action@v3
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
         - name: Login to Docker Hub
-          run : docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+          uses: docker/login-action@v3
+          with:
+            username: ${{ secrets.DOCKER_USER }}
+            password: ${{ secrets.DOCKER_PASS }}
+
+
         - name: Populating API version
           working-directory: ./api
           run: echo ${{ github.ref_name }} > ./VERSION
+
         - name: Populating API version
           working-directory: ./api
           run: echo ${{ github.ref_name }} > ./VERSION && echo ${{ github.sha}} | cut -c1-7 >> ./VERSION
-        - name: Build Docker image
-          working-directory: ./api
-          run: |
-            current_short_version=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/') 
-            current_long_version=$(echo ${{ github.ref_name }} |  sed -E 's/^v//')
-            docker build \
-              -t seaweedbrain/$REPO:$current_long_version \
-              -t seaweedbrain/$REPO:$current_short_version \
-              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_long_version \
-              -t ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO:$current_short_version . 
-        - name: Publish Docker Image to DockerHub
-          run: docker push seaweedbrain/$REPO --all-tags
-        - name: Publish Docker Image to Github Registry
-          run: docker push ghcr.io/${{ secrets.USERNAME_GITHUB }}/$REPO --all-tags
+
+        - name: Build and push Docker images
+          uses: docker/build-push-action@v6
+          with:
+            context: ./api
+            push: true
+            tags: |
+              ghcr.io/${{ github.repository }}-api:latest
+              ghcr.io/${{ github.repository }}-api:${{ env.CURRENT_VERSION }}
+              ghcr.io/${{ github.repository }}-api:${{ env.CURRENT_SHORT_VERSION }}
+            labels: |
+              org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
+              org.opencontainers.image.created=${{ env.DATE }}
+              org.opencontainers.image.version=${{ env.CURRENT_VERSION }}
+              org.opencontainers.image.title=Zero-TOTP API
+              org.opencontainers.image.description=A complete, reliable, secure and open source webapp based on zero-knowledge encryption to deal with TOTP.
+              org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
+              org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
+              org.opencontainers.image.licenses=GPL-3.0
+              org.opencontainers.image.documentation=https://github.com/seaweedbraincy/zero-totp#readme
+            annotations: |
+              org.opencontainers.image.description=A complete, reliable, secure and open source webapp based on zero-knowledge encryption to deal with TOTP.
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
+            cache-from: type=gha
+            cache-to: type=gha,mode=max
+            platforms: linux/amd64,linux/arm64
+            outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP.
 
     e2e-tests:
         runs-on: ubuntu-latest
