@@ -69,9 +69,9 @@ jobs:
             context: ./frontend
             push: true
             tags: |
-              ghcr.io/${{ github.repository }}-frontend:latest
-              ghcr.io/${{ github.repository }}-frontend:${{ env.CURRENT_VERSION }}
-              ghcr.io/${{ github.repository }}-frontend:${{ env.CURRENT_SHORT_VERSION }}
+              ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:latest
+              ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ env.CURRENT_VERSION }}
+              ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ env.CURRENT_SHORT_VERSION }}
             labels: |
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
@@ -142,9 +142,9 @@ jobs:
             context: ./api
             push: true
             tags: |
-              ghcr.io/${{ github.repository }}-api:latest
-              ghcr.io/${{ github.repository }}-api:${{ env.CURRENT_VERSION }}
-              ghcr.io/${{ github.repository }}-api:${{ env.CURRENT_SHORT_VERSION }}
+              ghcr.io/${{ env.REPOSITORY_NAME }}-api:latest
+              ghcr.io/${{ env.REPOSITORY_NAME }}-api:${{ env.CURRENT_VERSION }}
+              ghcr.io/${{ env.REPOSITORY_NAME }}-api:${{ env.CURRENT_SHORT_VERSION }}
             labels: |
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}

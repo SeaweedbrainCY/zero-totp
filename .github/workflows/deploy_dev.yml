@@ -29,6 +29,8 @@ jobs:
             echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
             echo "DATE=$(date)" >> $GITHUB_ENV
             echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
+            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+
         
         - name: Set up Qemu 
           uses: docker/setup-qemu-action@v3
@@ -58,8 +60,8 @@ jobs:
             context: ./frontend
             push: true
             tags: |
-              ghcr.io/${{ github.repository }}-frontend:dev
-              ghcr.io/${{ github.repository }}-frontend:${{ env.CURRENT_VERSION }}
+              ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev
+              ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ env.CURRENT_VERSION }}
             labels: |
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
@@ -117,8 +119,8 @@ jobs:
             context: ./api
             push: true
             tags: |
-              ghcr.io/${{ github.repository }}-api:dev
-              ghcr.io/${{ github.repository }}-api:${{ env.CURRENT_VERSION }}
+              ghcr.io/${{ env.REPOSITORY_NAME }}-api:dev
+              ghcr.io/${{ env.REPOSITORY_NAME }}-api:${{ env.CURRENT_VERSION }}
             labels: |
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
