@@ -33,6 +33,8 @@ jobs:
             echo "DATE=$(date)" >> $GITHUB_ENV
             echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
             echo "CURRENT_SHORT_VERSION=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
+            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+
         
         - name: Set up Qemu 
           uses: docker/setup-qemu-action@v3
@@ -107,6 +109,8 @@ jobs:
             echo "DATE=$(date)" >> $GITHUB_ENV
             echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
             echo "CURRENT_SHORT_VERSION=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
+            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+
         
         - name: Set up Qemu 
           uses: docker/setup-qemu-action@v3
