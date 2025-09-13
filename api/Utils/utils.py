@@ -22,7 +22,7 @@ from Email import send as send_email
 import ipaddress
 from jsonschema import validate, ValidationError
 from environment import conf
-
+import geoip2
 
 
 class FileNotFound(Exception):
@@ -100,7 +100,10 @@ def generate_new_email_verification_token(user_id):
 def send_information_email(ip, email, reason):
     logging.info(str(reason)+ str(ip) + str(email))
     date = str(datetime.datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")) + " UTC"
-    ip_and_geo = get_geolocation(ip)
+    if conf.features.ip_geolocation.enabled == False:
+        ip_and_geo = str(ip)
+    else:
+        ip_and_geo = get_geolocation(ip)
     try:
         send_email.send_information_email(email, reason=reason, date=date, ip=ip_and_geo)
     except Exception as e:
@@ -109,18 +112,12 @@ def send_information_email(ip, email, reason):
 # Return format : ip (city region name zip country)
 # If the IP address is private it is set to unknow to not leak information
 def get_geolocation(ip):
-    try:
-        logging.info("Getting geolocation for ip " + str(ip))  
-        r = requests.get("http://ip-api.com/json/" + str(ip) )# nosemgrep
-        if r.status_code != 200:
-            return "unknown (unknown, unknown)"
-        json = r.json()
-        if json["status"] != "success":
-            return "unknown (unknown, unknown)"
-        return f"{ip} ({json['zip']} {json['city']}, {json['regionName']}, {json['country']})"
-    except Exception as e:
-        logging.error("Error while getting geolocation : " + str(e))
-        return "unknown (unknown, unknown)"
+    logging.info("Getting geolocation for ip " + str(ip))  
+    result = str(ip)
+    with geoip2.database.Reader(conf.features.ip_geolocation.geoip_database_path) as reader:
+        geo = reader.city(ip)
+        result = f"{result} ({geo.city.name}, {geo.subdivisions.most_specific.name}, {geo.postal.code}, {geo.country.name})"
+    return result
 
 def get_ip(request):
     def test_ip(ip):
