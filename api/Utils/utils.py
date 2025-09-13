@@ -22,7 +22,7 @@ from Email import send as send_email
 import ipaddress
 from jsonschema import validate, ValidationError
 from environment import conf
-import geoip2
+import geoip2.database
 
 
 class FileNotFound(Exception):
