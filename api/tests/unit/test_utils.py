@@ -248,7 +248,7 @@ class TestUtils(unittest.TestCase):
     def test_get_geolocation_with_private_ip(self):
         ip = "192.168.0.1"
         geolocation = get_geolocation(ip)
-        self.assertEqual(geolocation, f"unknown (unknown, unknown)")
+        self.assertEqual(geolocation, f"")
     
 
 #########################

@@ -108,9 +108,12 @@ def send_information_email(ip, email, reason):
         logging.error("Unknown error while sending information email" + str(e))
 
 # Return format : ip (city region name zip country)
-# If the geolocation is disabled or if IP address is private the function will return only the IP address
+# If the geolocation is disabled  the function will return only the IP address
+# If the IP is private, the function will return an empty string to avoid leaking private IPs
 def get_geolocation(ip):
-    if conf.features.ip_geolocation.enabled == False or ipaddress.ip_address(ip).is_private:
+    if ipaddress.ip_address(ip).is_private:
+        return ""
+    if conf.features.ip_geolocation.enabled == False:
         return str(ip) 
     logging.info("Getting geolocation for ip " + str(ip))  
     result = str(ip)
