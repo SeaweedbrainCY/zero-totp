@@ -100,18 +100,18 @@ def generate_new_email_verification_token(user_id):
 def send_information_email(ip, email, reason):
     logging.info(str(reason)+ str(ip) + str(email))
     date = str(datetime.datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")) + " UTC"
-    if conf.features.ip_geolocation.enabled == False:
-        ip_and_geo = str(ip)
-    else:
-        ip_and_geo = get_geolocation(ip)
+    
+    ip_and_geo = get_geolocation(ip)
     try:
         send_email.send_information_email(email, reason=reason, date=date, ip=ip_and_geo)
     except Exception as e:
         logging.error("Unknown error while sending information email" + str(e))
 
 # Return format : ip (city region name zip country)
-# If the IP address is private it is set to unknow to not leak information
+# If the geolocation is disabled or if IP address is private the function will return only the IP address
 def get_geolocation(ip):
+    if conf.features.ip_geolocation.enabled == False or ipaddress.ip_address(ip).is_private:
+        return str(ip) 
     logging.info("Getting geolocation for ip " + str(ip))  
     result = str(ip)
     with geoip2.database.Reader(conf.features.ip_geolocation.geoip_database_path) as reader:
