@@ -248,7 +248,7 @@ class TestUtils(unittest.TestCase):
     def test_get_rich_geolocation(self):
         ip = "157.159.40.44"
         geolocation = get_geolocation(ip)
-        self.assertEqual(geolocation, "157.159.40.44 (Évry, Essone, France)")
+        self.assertEqual(geolocation, "157.159.40.44 (Évry, Essonne, France)")
         
     
     def test_get_geolocation_with_private_ip(self):
