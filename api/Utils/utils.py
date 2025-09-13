@@ -107,7 +107,7 @@ def send_information_email(ip, email, reason):
     except Exception as e:
         logging.error("Unknown error while sending information email" + str(e))
 
-# Return format : ip (city region name zip country)
+# Return format : ip (city region country)
 # If the geolocation is disabled  the function will return only the IP address
 # If the IP is private, the function will return an empty string to avoid leaking private IPs
 def get_geolocation(ip):
@@ -117,9 +117,19 @@ def get_geolocation(ip):
         return str(ip) 
     logging.info("Getting geolocation for ip " + str(ip))  
     result = str(ip)
-    with geoip2.database.Reader(conf.features.ip_geolocation.geoip_database_path) as reader:
-        geo = reader.city(ip)
-        result = f"{result} ({geo.city.name}, {geo.subdivisions.most_specific.name}, {geo.postal.code}, {geo.country.name})"
+    try:
+        with geoip2.database.Reader(conf.features.ip_geolocation.geoip_database_path) as reader:
+            geo = reader.city(ip)
+            city = geo.city.name + ", " if geo.city.name != None else ""
+            region = geo.subdivisions.most_specific.name + ", " if geo.subdivisions.most_specific.name != None else ""
+            country = ""
+            if geo.country.name != None: 
+                country = geo.country.name 
+            elif geo.registered_country.name != None:
+                country = geo.registered_country.name 
+            result = f"{ip} ({city}{region}{country})"
+    except Exception as e:
+        logging.error("Error while getting geolocation for ip " + str(ip) + " : " + str(e))
     return result
 
 def get_ip(request):

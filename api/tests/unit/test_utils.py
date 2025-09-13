@@ -240,10 +240,16 @@ class TestUtils(unittest.TestCase):
 ## get_geolocation
 ##################
 
-    def test_get_geolocation(self):
+    def test_get_poor_geolocation(self):
         ip = "1.1.1.1"
         geolocation = get_geolocation(ip)
-        self.assertEqual(geolocation, "1.1.1.1 (4101 South Brisbane, Queensland, Australia)")
+        self.assertEqual(geolocation, "1.1.1.1 (Australia)")
+    
+    def test_get_rich_geolocation(self):
+        ip = "157.159.40.44"
+        geolocation = get_geolocation(ip)
+        self.assertEqual(geolocation, "157.159.40.44 (Évry, Essone, France)")
+        
     
     def test_get_geolocation_with_private_ip(self):
         ip = "192.168.0.1"
