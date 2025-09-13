@@ -268,7 +268,7 @@ class FeaturesConfig:
         self.privacy_policy = PrivacyPolicyConfig()
         self.signup_enabled = data["signup_enabled"] if "signup_enabled" in data else True
         self.google_drive = GoogleDriveConfig(data["google_drive_backup"] if "google_drive_backup" in data else [])
-        self.ip_geolocation = IPGeolocationConfig(data.get("ip_geolocation", []))
+        self.ip_geolocation = IPGeolocationConfig(data.get("ip_geolocation", {}))
 
 
 class Config:
