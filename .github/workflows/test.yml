@@ -60,7 +60,8 @@ jobs:
         mkdir -p ./api/geoip
         curl -L -o GeoLite2-City.tar.gz \
             "${MAXMIND_PERMALINK}"
-          tar --strip-components=1 -xzf GeoLite2-City.tar.gz */GeoLite2-City.mmdb -C ./api/geoip
+        tar -xzf GeoLite2-City.tar.gz --strip-components=1 -C ./api/geoip 
+        rm GeoLite2-City.tar.gz
       env:
         MAXMIND_PERMALINK: ${{ secrets.MAXMIND_PERMALINK }}
 
