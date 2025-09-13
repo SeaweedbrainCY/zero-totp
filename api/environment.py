@@ -247,6 +247,17 @@ class GoogleDriveConfig:
                 exit(1)
             self.client_secret_file_path = data["client_secret_file_path"]
 
+class IPGeolocationConfig:
+    def __init__(self, data):
+        self.enabled = data.get("enabled", False)
+        self.geoip_database_path = None
+        if self.enabled:
+            if "geoip_database_path" not in data:
+                logging.error("[FATAL] Load config fail. Was expecting the key features.ip_geolocation.geoip_database_path when ip geolocation is enabled")
+                exit(1)
+            self.geoip_database_path = data["geoip_database_path"]
+            
+
 class FeaturesConfig:
     def __init__(self, data):
                 
@@ -257,6 +268,7 @@ class FeaturesConfig:
         self.privacy_policy = PrivacyPolicyConfig()
         self.signup_enabled = data["signup_enabled"] if "signup_enabled" in data else True
         self.google_drive = GoogleDriveConfig(data["google_drive_backup"] if "google_drive_backup" in data else [])
+        self.ip_geolocation = IPGeolocationConfig(data.get("ip_geolocation", []))
 
 
 class Config:
