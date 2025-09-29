@@ -255,7 +255,29 @@ class TestUtils(unittest.TestCase):
         ip = "192.168.0.1"
         geolocation = get_geolocation(ip)
         self.assertEqual(geolocation, f"")
+
+    def test_disabled_ip_geolocation(self):
+        ip = "1.1.1.1"
+        conf.features.ip_geolocation.enabled = False
+        geolocation = get_geolocation(ip)
+        self.assertEqual(geolocation, "")
+        conf.features.ip_geolocation.enabled = True
+
+    def test_get_geolocation_with_invalid_ip(self):
+        ip = "invalid_ip"
+        geolocation = get_geolocation(ip)
+        self.assertEqual(geolocation, "")
+
+    def test_bad_maxminddb(self):
+        old_db_path = conf.features.ip_geolocation.geoip_database_path
+        conf.features.ip_geolocation.geoip_database_path = "bad_path"
+        ip = "1.1.1.1"
+        geolocation = get_geolocation(ip)
+        self.assertEqual(geolocation, "")
+        conf.features.ip_geolocation.geoip_database_path = old_db_path
+        
     
+
 
 #########################
 ## send_information_email
