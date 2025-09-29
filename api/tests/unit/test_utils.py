@@ -260,7 +260,7 @@ class TestUtils(unittest.TestCase):
         ip = "1.1.1.1"
         conf.features.ip_geolocation.enabled = False
         geolocation = get_geolocation(ip)
-        self.assertEqual(geolocation, "")
+        self.assertEqual(geolocation, "1.1.1.1")
         conf.features.ip_geolocation.enabled = True
 
     def test_get_geolocation_with_invalid_ip(self):
@@ -273,9 +273,9 @@ class TestUtils(unittest.TestCase):
         conf.features.ip_geolocation.geoip_database_path = "bad_path"
         ip = "1.1.1.1"
         geolocation = get_geolocation(ip)
-        self.assertEqual(geolocation, "")
+        self.assertEqual(geolocation, "1.1.1.1")
         conf.features.ip_geolocation.geoip_database_path = old_db_path
-        
+
     
 
 
