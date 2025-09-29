@@ -111,16 +111,18 @@ def send_information_email(ip, email, reason):
 # If the geolocation is disabled  the function will return only the IP address
 # If the IP is private, the function will return an empty string to avoid leaking private IPs
 def get_geolocation(ip):
+    logging.info("Getting geolocation for ip " + str(ip))
     try:
         ip = ipaddress.ip_address(ip)
     except Exception as e:
         logging.warning("Error while parsing ip address for geolocation : " + str(e))
         return ""
     if ipaddress.ip_address(ip).is_private:
+        logging.error("IP address is private, not getting geolocation to avoid leaking private IPs. This can happen if the server is behind a proxy that does not set the X-Forwarded-For header. Please refer to the documentation to configure a trusted proxy. IP : " + str(ip))
         return ""
     if conf.features.ip_geolocation.enabled == False:
+        logging.info("IP Geolocation is disabled. Aborting geolocation for ip " + str(ip))
         return str(ip) 
-    logging.info("Getting geolocation for ip " + str(ip))  
     result = str(ip)
     try:
         with geoip2.database.Reader(conf.features.ip_geolocation.geoip_database_path) as reader:

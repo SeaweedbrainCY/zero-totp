@@ -401,6 +401,8 @@ def update_vault(user_id, body):
         logging.warning("Uknown error occured while hashing password" + str(e))
         returnJson["hashing"]=0
         return returnJson, 500
+
+    logging.info(f"User {user_id} is updating their passphrase. Old passphrase is verified. Proceeding with vault update. IP : {utils.get_ip(request)}")
     
     old_vault = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id)
     if len(old_vault) != len(enc_vault):
@@ -442,6 +444,7 @@ def update_vault(user_id, body):
             thread.start()
         except Exception as e:
             logging.error("Unknown error while sending information email" + str(e))
+        logging.info(f"User {user_id} has successfully updated their vault and passphrase.")
         return {"message": "Vault updated"}, 201
     else:
         logging.warning("An error occured while updating passphrase of user " + str(user_id))

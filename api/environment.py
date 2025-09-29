@@ -256,6 +256,8 @@ class IPGeolocationConfig:
                 logging.error("[FATAL] Load config fail. Was expecting the key features.ip_geolocation.geoip_database_path when ip geolocation is enabled")
                 exit(1)
             self.geoip_database_path = data["geoip_database_path"]
+        else:
+            logging.info("IP Geolocation is disabled.")
             
 
 class FeaturesConfig:
