@@ -135,7 +135,6 @@ def get_geolocation(ip):
             result = f"{ip} ({city}{region}{country})"
     except Exception as e:
         logging.error("Error while getting geolocation for ip " + str(ip) + " : " + str(e))
-        return ""
     return result
 
 def get_ip(request):
