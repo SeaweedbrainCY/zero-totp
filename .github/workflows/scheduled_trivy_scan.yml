@@ -1,0 +1,50 @@
+# This is a schedules workflow to run trivy security scan on the Zero-TOTP's Docker images. 
+# This is not the workflow used on every image deployment, which also includes trivy scans.
+# This workflow runs weekly to ensure that any new vulnerabilities discovered in the base images are caught and addressed promptly.
+
+
+name: Trivy security scan 
+
+permissions:
+  contents: read
+
+on:
+    schedule:
+      - cron: '0 12 * * 1'  # Runs every Monday at 12:00 UTC
+    workflow_dispatch:
+
+jobs:
+    api-docker-security-scan:
+      name: Scan API Docker image for security vulnerabilities
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Install Trivy
+          run: |
+            sudo apt-get install wget apt-transport-https gnupg lsb-release
+            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+            echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+            sudo apt-get update
+            sudo apt-get install trivy
+
+        - name: Scan Docker image
+          run: |
+            current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+            trivy image --exit-code 1 --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:$current_version
+    frontend-docker-security-scan:
+      name: Scan Frontend Docker image for security vulnerabilities
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v3
+        - name: Install Trivy
+          run: |
+            sudo apt-get install wget apt-transport-https gnupg lsb-release
+            wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+            echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+            sudo apt-get update
+            sudo apt-get install trivy
+
+        - name: Scan Docker image
+          run: |
+            current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+            trivy image --exit-code 1 --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:$current_version
