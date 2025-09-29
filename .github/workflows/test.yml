@@ -17,6 +17,8 @@ on:
       secrets:
         GITGUARDIAN_API_KEY:
           required: true
+        MAXMIND_PERMALINK:
+          required: true
   
   
 
