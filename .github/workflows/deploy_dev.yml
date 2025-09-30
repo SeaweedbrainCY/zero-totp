@@ -268,8 +268,8 @@ jobs:
             platforms: linux/arm64
             outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes built for ARM64 architecture.   
             
-    merge-manifests:
-      needs: [build-frontend-amd64, build-frontend-arm64, build-api-amd64, build-api-arm64]
+    merge-frontend-manifests:
+      needs: [build-frontend-amd64, build-frontend-arm64]
       name: Merge and Publish multi-arch Docker images
       runs-on: ubuntu-latest
       steps:
@@ -297,6 +297,36 @@ jobs:
             docker manifest annotate ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev-arm64 --arch arm64
             docker manifest push ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev
 
+        - name: Retag and push frontend
+          run: |
+            docker pull ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev
+            docker tag ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ env.CURRENT_VERSION }}
+            docker push ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ env.CURRENT_VERSION }}
+      
+    
+    merge-api-manifests:
+      needs: [build-api-amd64, build-api-arm64]
+      name: Merge and Publish multi-arch Docker images
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Extract Git commit
+          id: vars
+          run: |
+            echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+            echo "DATE=$(date)" >> $GITHUB_ENV
+            echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
+            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+
+        - name: Login to GHCR 
+          uses: docker/login-action@v3
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+
         - name: Create and push multi-arch manifest for API
           run: |
             docker manifest create ghcr.io/${{ env.REPOSITORY_NAME }}-api:dev ghcr.io/${{ env.REPOSITORY_NAME }}-api:dev-amd64 ghcr.io/${{ env.REPOSITORY_NAME }}-api:dev-arm64
@@ -304,11 +334,6 @@ jobs:
             docker manifest annotate ghcr.io/${{ env.REPOSITORY_NAME }}-api:dev ghcr.io/${{ env.REPOSITORY_NAME }}-api:dev-arm64 --arch arm64
             docker manifest push ghcr.io/${{ env.REPOSITORY_NAME }}-api:dev
 
-        - name: Retag and push frontend
-          run: |
-            docker pull ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev
-            docker tag ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ env.CURRENT_VERSION }}
-            docker push ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ env.CURRENT_VERSION }}
         
         - name: Retag and push API
           run: |
@@ -318,7 +343,7 @@ jobs:
 
     e2e-tests:
         runs-on: ubuntu-latest
-        needs: [merge-manifests] 
+        needs: [merge-api-manifests, merge-frontend-manifests] 
         name: Run end-to-end tests
         steps:
             - uses: actions/checkout@v4
@@ -382,7 +407,7 @@ jobs:
                 retention-days: 30
     
     api-docker-security-scan:
-      needs: [build-api]
+      needs: [merge-api-manifests]
       name: Scan API Docker image for security vulnerabilities
       runs-on: ubuntu-latest
       steps:
@@ -402,7 +427,7 @@ jobs:
 
 
     frontend-docker-security-scan:
-      needs: [build-frontend]
+      needs: [merge-frontend-manifests]
       name: Scan Frontend Docker image for security vulnerabilities
       runs-on: ubuntu-latest
       steps:
