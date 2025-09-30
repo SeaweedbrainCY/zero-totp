@@ -11,7 +11,7 @@ bcrypt==4.3.0
 blinker==1.9.0
 cachetools==5.3.2
 certifi==2024.7.4
-cffi==1.16.0
+cffi==2.0.0
 cfgv==3.4.0
 charset-normalizer==3.3.2
 click==8.1.7
@@ -38,12 +38,12 @@ google-auth==2.23.4
 google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.2
 googleapis-common-protos==1.70.0
-greenlet==3.0.3
+greenlet==3.2.4
 gunicorn==23.0.0
 h11==0.16.0
 httpcore==1.0.9
 httplib2==0.22.0
-httptools==0.6.1
+httptools==0.6.4
 httpx==0.25.1
 identify==2.6.12
 idna==3.10
@@ -107,7 +107,7 @@ tzlocal==5.2
 uritemplate==4.1.1
 urllib3==2.5.0
 uvicorn==0.34.2
-uvloop==0.19.0
+uvloop==0.21.0
 virtualenv==20.30.0
 watchfiles==0.21.0
 websockets==12.0
