@@ -240,16 +240,44 @@ class TestUtils(unittest.TestCase):
 ## get_geolocation
 ##################
 
-    def test_get_geolocation(self):
+    def test_get_poor_geolocation(self):
         ip = "1.1.1.1"
         geolocation = get_geolocation(ip)
-        self.assertEqual(geolocation, "1.1.1.1 (4101 South Brisbane, Queensland, Australia)")
+        self.assertEqual(geolocation, "1.1.1.1 (Australia)")
+    
+    def test_get_rich_geolocation(self):
+        ip = "157.159.40.44"
+        geolocation = get_geolocation(ip)
+        self.assertEqual(geolocation, "157.159.40.44 (Évry, Essonne, France)")
+        
     
     def test_get_geolocation_with_private_ip(self):
         ip = "192.168.0.1"
         geolocation = get_geolocation(ip)
-        self.assertEqual(geolocation, f"unknown (unknown, unknown)")
+        self.assertEqual(geolocation, f"")
+
+    def test_disabled_ip_geolocation(self):
+        ip = "1.1.1.1"
+        conf.features.ip_geolocation.enabled = False
+        geolocation = get_geolocation(ip)
+        self.assertEqual(geolocation, "1.1.1.1")
+        conf.features.ip_geolocation.enabled = True
+
+    def test_get_geolocation_with_invalid_ip(self):
+        ip = "invalid_ip"
+        geolocation = get_geolocation(ip)
+        self.assertEqual(geolocation, "")
+
+    def test_bad_maxminddb(self):
+        old_db_path = conf.features.ip_geolocation.geoip_database_path
+        conf.features.ip_geolocation.geoip_database_path = "bad_path"
+        ip = "1.1.1.1"
+        geolocation = get_geolocation(ip)
+        self.assertEqual(geolocation, "1.1.1.1")
+        conf.features.ip_geolocation.geoip_database_path = old_db_path
+
     
+
 
 #########################
 ## send_information_email

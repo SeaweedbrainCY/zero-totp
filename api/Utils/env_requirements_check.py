@@ -53,10 +53,16 @@ def test_conf(conf) -> bool:
     assert isinstance(conf.features.emails.require_email_validation, bool), "features.emails.require_email_validation is not a boolean"
     if conf.features.emails.require_email_validation:
         assert isinstance(conf.features.emails.sender_address, str), "features.emails.sender_address is not a string"
+        assert conf.features.emails.sender_address != "", "features.emails.sender_address is empty"
         assert isinstance(conf.features.emails.sender_password , str), "features.emails.sender_password is not a string"
+        assert conf.features.emails.sender_password != "", "features.emails.sender_password is empty"
         assert isinstance(conf.features.emails.smtp_server , str), "features.emails.smtp_server is not a string"
+        assert conf.features.emails.smtp_server != "", "features.emails.smtp_server is empty"
         assert isinstance(conf.features.emails.smtp_port , int), "features.emails.smtp_port is not a integer"
+        assert conf.features.emails.smtp_port > 0 and conf.features.emails.smtp_port < 65536, "features.emails.smtp_port is not a valid port"
         assert isinstance(conf.features.emails.smtp_username , str), "features.emails.smtp_username is not a string"
+        assert conf.features.emails.smtp_username != "", "features.emails.smtp_username is empty"
+        
     
 
     ## Ratelimiting 
@@ -88,3 +94,16 @@ def test_conf(conf) -> bool:
             raise FileNotFoundError(f"features.google_drive.client_secret_file_path does not exist. Was expecting {conf.features.google_drive.client_secret_file_path}")
         except Exception as e:
             raise Exception(f"features.google_drive.client_secret_file_path is not a valid path. {e}")
+        
+    ## Ip geolocation
+    assert isinstance(conf.features.ip_geolocation.enabled, bool), "features.ip_geolocation.enabled is not a boolean"
+    if conf.features.ip_geolocation.enabled:
+        assert isinstance(conf.features.ip_geolocation.geoip_database_path, str), "features.ip_geolocation.geoip_database_path is not a string"
+        try:
+            open(conf.features.ip_geolocation.geoip_database_path, "r").close()
+        except FileNotFoundError:
+            logging.error(f"features.ip_geolocation.geoip_database_path does not exist. Was expecting {conf.features.ip_geolocation.geoip_database_path}")
+            raise FileNotFoundError(f"features.ip_geolocation.geoip_database_path does not exist. Was expecting {conf.features.ip_geolocation.geoip_database_path}")
+        except Exception as e:
+            raise Exception(f"features.ip_geolocation.geoip_database_path is not a valid path. {e}")
+        

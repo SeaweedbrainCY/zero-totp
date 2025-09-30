@@ -928,6 +928,9 @@
       "zero_totp": {
         "location": "Zero-TOTP servers in Canada 🇨🇦, Switzerland 🇨🇭 and Europe 🇪🇺",
         "reload": "Reload the vault ",
+        "self-host": {
+          "location": "Self-hosted by "
+        },
         "title": "Zero-TOTP servers"
       }
     },

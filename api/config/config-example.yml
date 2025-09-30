@@ -182,4 +182,18 @@ features:
         # client_secret_file_path: ".secret/client_secret.json"
 
 
+    ## Optional
+    #ip_geolocation:
+        ## Optional
+        ## Enable or disable the IP geolocation feature.
+        ## This feature is used to when sending email notification containing information about the login location.
+        ## Default: false
+        #enabled: false
+
+        ## The path to the GeoLite2 database file used to lookup IP addresses.
+        ## This file must be in MMDB format.
+        ## See https://dev.maxmind.com/geoip/geolite2-free-geolocation-data?lang=en for more information.
+        #geoip_database_path: "path/to/GeoLite2-City.mmdb"
+
+
 

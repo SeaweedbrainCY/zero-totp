@@ -25,6 +25,11 @@ COPY --from=builder /app/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /app/dist /usr/share/nginx/html/
 COPY --from=builder /app/docker-healthcheck.sh /docker-healthcheck.sh
 COPY --from=builder /app/entrypoint.sh /entrypoint.sh
+
+# Temporary fix for CVE-2025-59375
+RUN apk update --no-cache
+RUN apk upgrade --no-cache
+
 RUN chmod +x /docker-healthcheck.sh
 RUN chmod +x /entrypoint.sh
 RUN apk add --no-cache su-exec

@@ -41,6 +41,9 @@
         <a class="navbar-item" (click)="navigateToRoute('account')" [ngClass]="{'has-text-weight-bold':currentUrl == '/account'}">
           <fa-icon [icon]="faUser" class="mr-2"></fa-icon>  {{ 'navbar.account' | translate }}
         </a>
+        <a class="navbar-item" href="https://docs.zero-totp.com" target="_blank" rel="noopener">
+          <fa-icon [icon]="faBook"></fa-icon> Docs
+        </a>
         <a class="navbar-item" (click)="navigateToRoute('faq')" [ngClass]="{'has-text-weight-bold':currentUrl == '/faq'}">
           <fa-icon [icon]="faCircleQuestion"></fa-icon> FAQ
         </a>
@@ -51,6 +54,9 @@
         </a>
         <a class="navbar-item" (click)="navigateToRoute('login')">
           <fa-icon [icon]="faVault"></fa-icon> {{ 'my_vault' | translate }}
+        </a>
+        <a class="navbar-item" href="https://docs.zero-totp.com" target="_blank" rel="noopener">
+          <fa-icon [icon]="faBook"></fa-icon> Docs
         </a>
         <a class="navbar-item" (click)="navigateToRoute('faq')" [ngClass]="{'has-text-weight-bold':currentUrl == '/faq'}">
           <fa-icon [icon]="faCircleQuestion"></fa-icon> FAQ
