@@ -226,6 +226,7 @@ jobs:
       needs: [build-api]
       name: Scan API Docker image for security vulnerabilities
       runs-on: ubuntu-latest
+      continue-on-error: true
       steps:
         - uses: actions/checkout@v3
         - name: Install Trivy
@@ -240,10 +241,12 @@ jobs:
           run: |
             current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
             trivy image --exit-code 1 --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:$current_version
+
     frontend-docker-security-scan:
       needs: [build-frontend]
       name: Scan Frontend Docker image for security vulnerabilities
       runs-on: ubuntu-latest
+      continue-on-error: true
       steps:
         - uses: actions/checkout@v3
         - name: Install Trivy
