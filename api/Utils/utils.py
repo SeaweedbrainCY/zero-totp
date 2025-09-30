@@ -22,7 +22,7 @@ from Email import send as send_email
 import ipaddress
 from jsonschema import validate, ValidationError
 from environment import conf
-
+import geoip2.database
 
 
 class FileNotFound(Exception):
@@ -100,27 +100,44 @@ def generate_new_email_verification_token(user_id):
 def send_information_email(ip, email, reason):
     logging.info(str(reason)+ str(ip) + str(email))
     date = str(datetime.datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")) + " UTC"
+    
     ip_and_geo = get_geolocation(ip)
     try:
         send_email.send_information_email(email, reason=reason, date=date, ip=ip_and_geo)
     except Exception as e:
         logging.error("Unknown error while sending information email" + str(e))
 
-# Return format : ip (city region name zip country)
-# If the IP address is private it is set to unknow to not leak information
+# Return format : ip (city region country)
+# If the geolocation is disabled  the function will return only the IP address
+# If the IP is private, the function will return an empty string to avoid leaking private IPs
 def get_geolocation(ip):
+    logging.info("Getting geolocation for ip " + str(ip))
     try:
-        logging.info("Getting geolocation for ip " + str(ip))  
-        r = requests.get("http://ip-api.com/json/" + str(ip) )# nosemgrep
-        if r.status_code != 200:
-            return "unknown (unknown, unknown)"
-        json = r.json()
-        if json["status"] != "success":
-            return "unknown (unknown, unknown)"
-        return f"{ip} ({json['zip']} {json['city']}, {json['regionName']}, {json['country']})"
+        ip = ipaddress.ip_address(ip)
     except Exception as e:
-        logging.error("Error while getting geolocation : " + str(e))
-        return "unknown (unknown, unknown)"
+        logging.warning("Error while parsing ip address for geolocation : " + str(e))
+        return ""
+    if ipaddress.ip_address(ip).is_private:
+        logging.error("IP address is private, not getting geolocation to avoid leaking private IPs. This can happen if the server is behind a proxy that does not set the X-Forwarded-For header. Please refer to the documentation to configure a trusted proxy. IP : " + str(ip))
+        return ""
+    if conf.features.ip_geolocation.enabled == False:
+        logging.info("IP Geolocation is disabled. Aborting geolocation for ip " + str(ip))
+        return str(ip) 
+    result = str(ip)
+    try:
+        with geoip2.database.Reader(conf.features.ip_geolocation.geoip_database_path) as reader:
+            geo = reader.city(ip)
+            city = geo.city.name + ", " if geo.city.name != None else ""
+            region = geo.subdivisions.most_specific.name + ", " if geo.subdivisions.most_specific.name != None else ""
+            country = ""
+            if geo.country.name != None: 
+                country = geo.country.name 
+            elif geo.registered_country.name != None:
+                country = geo.registered_country.name 
+            result = f"{ip} ({city}{region}{country})"
+    except Exception as e:
+        logging.error("Error while getting geolocation for ip " + str(ip) + " : " + str(e))
+    return result
 
 def get_ip(request):
     def test_ip(ip):

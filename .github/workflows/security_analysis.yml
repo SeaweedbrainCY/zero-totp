@@ -16,12 +16,15 @@ on:
           required: true
         GITGUARDIAN_API_KEY:
           required: true
+        MAXMIND_PERMALINK:
+          required: true
 
 jobs:
   tests:
     uses: ./.github/workflows/test.yml  #
     secrets:
       GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+      MAXMIND_PERMALINK: ${{ secrets.MAXMIND_PERMALINK }}
   sonarqube:
     needs: [tests]
     name: SonarQube scan

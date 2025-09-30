@@ -88,3 +88,16 @@ def test_conf(conf) -> bool:
             raise FileNotFoundError(f"features.google_drive.client_secret_file_path does not exist. Was expecting {conf.features.google_drive.client_secret_file_path}")
         except Exception as e:
             raise Exception(f"features.google_drive.client_secret_file_path is not a valid path. {e}")
+        
+    ## Ip geolocation
+    assert isinstance(conf.features.ip_geolocation.enabled, bool), "features.ip_geolocation.enabled is not a boolean"
+    if conf.features.ip_geolocation.enabled:
+        assert isinstance(conf.features.ip_geolocation.geoip_database_path, str), "features.ip_geolocation.geoip_database_path is not a string"
+        try:
+            open(conf.features.ip_geolocation.geoip_database_path, "r").close()
+        except FileNotFoundError:
+            logging.error(f"features.ip_geolocation.geoip_database_path does not exist. Was expecting {conf.features.ip_geolocation.geoip_database_path}")
+            raise FileNotFoundError(f"features.ip_geolocation.geoip_database_path does not exist. Was expecting {conf.features.ip_geolocation.geoip_database_path}")
+        except Exception as e:
+            raise Exception(f"features.ip_geolocation.geoip_database_path is not a valid path. {e}")
+        

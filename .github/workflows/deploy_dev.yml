@@ -14,6 +14,7 @@ jobs:
         uses: ./.github/workflows/test.yml 
         secrets:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+          MAXMIND_PERMALINK: ${{ secrets.MAXMIND_PERMALINK }}
 
 
     build-frontend:

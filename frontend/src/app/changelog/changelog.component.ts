@@ -14,6 +14,16 @@ export class ChangelogComponent {
   imageHash = environment.imageHash;
 
   changelogs = [
+    {
+      date: "29/09/2025",
+      version: "1.10",
+      added: [
+        "Remove an external dependency to improve the privacy of the users.",
+      ],
+      fixed:[
+        "Improve the geolocation function for informational emails sent to the users."
+      ]
+    },
         {
       date: "17/07/2025",
       version: "1.9",

@@ -17,6 +17,8 @@ on:
       secrets:
         GITGUARDIAN_API_KEY:
           required: true
+        MAXMIND_PERMALINK:
+          required: true
   
   
 
@@ -46,6 +48,24 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+
+    - name: Cache GeoLite2 DB
+      id: cache-geolite2
+      uses: actions/cache@v4
+      with:
+        path: ./api/geoip/GeoLite2-City.mmdb
+        key: geolite2
+
+    - if: ${{ steps.cache-geolite2.outputs.cache-hit != 'true' }}
+      name: Download GeoLite2 DB if missing
+      run: |
+        mkdir -p ./api/geoip
+        curl -L -o GeoLite2-City.tar.gz \
+            "${MAXMIND_PERMALINK}"
+        tar -xzf GeoLite2-City.tar.gz --strip-components=1 -C ./api/geoip 
+        rm GeoLite2-City.tar.gz
+      env:
+        MAXMIND_PERMALINK: ${{ secrets.MAXMIND_PERMALINK }}
 
     - name: Set up Python
       uses: actions/setup-python@v4
