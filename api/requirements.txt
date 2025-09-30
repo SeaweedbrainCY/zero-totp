@@ -84,7 +84,7 @@ rpds-py==0.13.0
 rsa==4.9
 ruamel.yaml==0.18.14
 ruamel.yaml.clib==0.2.12
-safety==2.3.5
+safety==3.6.2
 sentry-sdk==2.8.0
 setuptools==78.1.1
 six==1.16.0
