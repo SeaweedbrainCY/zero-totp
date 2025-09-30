@@ -18,6 +18,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }} 
+        MAXMIND_PERMALINK: ${{ secrets.MAXMIND_PERMALINK }}
 
     build-frontend:
       needs: [tests_and_security]

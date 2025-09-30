@@ -5,8 +5,7 @@
     <img src="https://img.shields.io/uptimerobot/status/m798298078-655a23f7108eb3c8082c58ae?label=API&link=zero-totp.com"/>
     <img src="https://img.shields.io/uptimerobot/ratio/m798298078-655a23f7108eb3c8082c58ae?label=API%20uptime%20(30d)">
     <br>
-    <img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/deploy_prod.yml/badge.svg"/>
-     <a href="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml"><img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml/badge.svg" alt="Test and Coverage"/></a>
+    <img src="https://github.com/SeaweedbrainCY/zero-totp/actions/workflows/test.yml/badge.svg" alt="Test and Coverage"/></a>
     <a href='https://coveralls.io/github/SeaweedbrainCY/zero-totp'><img src='https://coveralls.io/repos/github/SeaweedbrainCY/zero-totp/badge.svg' alt='Coverage Status' /></a>
     <img src="https://img.shields.io/github/license/seaweedbraincy/zero-totp"/>
     <img src="https://img.shields.io/github/v/release/seaweedbraincy/zero-totp"/>
@@ -32,6 +31,8 @@ It's a **100% open source project**, based on a **zero-knowledge encryption**, w
 You are the only one able to decrypt these information, thanks to your strong and secure `passphrase` ;) 
 
 *Zero Knowledge Encryption (ZKE) refers to a robust security measure that ensures the utmost protection of your data. With ZKE, your information is encrypted locally on your device before being uploaded to the cloud, and only you hold the encryption keys, guaranteeing that no one, including the service provider, can access your data without your explicit permission. This empowers you with complete control over your sensitive information while enjoying the convenience and flexibility of cloud storage.*
+
+Learn more about the encryption or self-hosting in the [documentation](https://docs.zero-totp.com).
 
 ## Project progress
 *Updated 2025-09-29*

@@ -15,6 +15,7 @@ jobs:
         uses: ./.github/workflows/test.yml 
         secrets:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+          MAXMIND_PERMALINK: ${{ secrets.MAXMIND_PERMALINK }}
     docker-frontend:
       needs: [tests]
       name: Publish Frontend Docker image
