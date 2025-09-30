@@ -248,7 +248,7 @@ jobs:
             push: true
             tags: |
               ghcr.io/${{ env.REPOSITORY_NAME }}-api:dev-arm64
-              ghcr.io/${{ env.REPOSITORY_NAME }}-${{ env.CURRENT_VERSION }}:dev-arm64
+              ghcr.io/${{ env.REPOSITORY_NAME }}-api:${{ env.CURRENT_VERSION }}-arm64
             labels: |
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
@@ -292,7 +292,7 @@ jobs:
 
         - name: Create and push multi-arch manifest for frontend
           run: |
-            docker manifest create ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ env.CURRENT_VERSION }} ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev-amd64 ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev-arm64
+            docker manifest create ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev-amd64 ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev-arm64
             docker manifest annotate ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev-amd64 --arch amd64
             docker manifest annotate ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev-arm64 --arch arm64
             docker manifest push ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:dev
