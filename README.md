@@ -34,7 +34,7 @@ You are the only one able to decrypt these information, thanks to your strong an
 *Zero Knowledge Encryption (ZKE) refers to a robust security measure that ensures the utmost protection of your data. With ZKE, your information is encrypted locally on your device before being uploaded to the cloud, and only you hold the encryption keys, guaranteeing that no one, including the service provider, can access your data without your explicit permission. This empowers you with complete control over your sensitive information while enjoying the convenience and flexibility of cloud storage.*
 
 ## Project progress
-*Updated March 4th 2025*
+*Updated 2025-09-29*
 > [!TIP]
 > As of today, all focus is on the web app (main and Rescue) and their self-hosted version. The iOS app and the CLI app are not in development for the moment.
 
@@ -42,7 +42,7 @@ You are the only one able to decrypt these information, thanks to your strong an
 | --- | --- | --- | --- |
 | [Rescue Zero-TOTP](https://rescue.zero-totp.com) | ✅ | ✅ | ✅ |
 | [Zero-TOTP Web App](https://zero-totp.com) | ✅ | ✅ | ✅ |
-| Zero-TOTP web app self-host | ✅ | ✅ | ⏳ |
+| Zero-TOTP web app self-host | ✅ | ✅ | ✅  |
 | Rescue Zero-TOTP self-host | ✅ | ⏳ | ⏳ |
 | Zero-TOTP iOS App | ⏳ | ⏳ | ⏳ |
 | Zero-TOTP CLI App | ⏳ | ⏳ | ⏳ |
@@ -61,7 +61,12 @@ To be sure that you always have access to your TOTP codes, we use the benefits o
     - rescue.zero-totp.com (a simple, minimal and ULTRA stable frontend, hosted on github pages where you can upload your vault and decrypt it)
     - On your own machine, thanks to the zero-totp docker image
 
-In summary : Your data is safe, even if your vault leak. Your data is available even if zero-totp.com is unreachable. 
+In summary : Your data is safe, even if your vault leak. Your data is available even if zero-totp.com is unreachable.
+
+## Self-host it 
+
+You can easily self-host the web app by following the instructions in the [documentation](https://docs.zero-totp.com/latest/self-host/). 
+Just few containers to deploy, and you are ready to go !
 
 ## Contribution
 
