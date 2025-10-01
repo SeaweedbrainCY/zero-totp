@@ -12,3 +12,7 @@ tmp/
 
 # Dev 
 dev/
+
+# Python cache
+__pycache__/
+*.pyc
