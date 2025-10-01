@@ -75,13 +75,9 @@ jobs:
               org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
               org.opencontainers.image.licenses=GPL-3.0
               org.opencontainers.image.documentation=https://github.com/seaweedbraincy/zero-totp#readme
-            annotations: |
-              org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes built for AMD64 architecture.
-              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
             cache-from: type=gha
             cache-to: type=gha,mode=max
             platforms: linux/amd64
-            outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes built for AMD64 architecture.
 
     build-frontend-arm64:
       needs: [tests]
@@ -140,13 +136,9 @@ jobs:
               org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
               org.opencontainers.image.licenses=GPL-3.0
               org.opencontainers.image.documentation=https://github.com/seaweedbraincy/zero-totp#readme
-            annotations: |
-              org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes built for ARM64 architecture.
-              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
             cache-from: type=gha
             cache-to: type=gha,mode=max
             platforms: linux/arm64
-            outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes built for ARM64 architecture.
 
     build-api-amd64:
       needs: [tests]
@@ -200,13 +192,9 @@ jobs:
               org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
               org.opencontainers.image.licenses=GPL-3.0
               org.opencontainers.image.documentation=https://github.com/seaweedbraincy/zero-totp#readme
-            annotations: |
-              org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes built for AMD64 architecture.
-              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
             cache-from: type=gha
             cache-to: type=gha,mode=max
             platforms: linux/amd64
-            outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes built for AMD64 architecture.
 
     build-api-arm64:
       needs: [tests]
@@ -260,13 +248,9 @@ jobs:
               org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
               org.opencontainers.image.licenses=GPL-3.0
               org.opencontainers.image.documentation=https://github.com/seaweedbraincy/zero-totp#readme
-            annotations: |
-              org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes built for ARM64 architecture.
-              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
             cache-from: type=gha
             cache-to: type=gha,mode=max
             platforms: linux/arm64
-            outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes built for ARM64 architecture.   
             
     merge-frontend-manifests:
       needs: [build-frontend-amd64, build-frontend-arm64]
