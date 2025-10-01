@@ -241,12 +241,15 @@ jobs:
             tags: |
               type=semver,pattern={{version}}
               type=raw,value=dev
+            annotations: |
+              org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes.
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
 
         - name: Create manifest list and push
           working-directory: ${{ runner.temp }}/digests
           run: |
             docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<<   "$DOCKER_METADATA_OUTPUT_JSON") \
-              $(printf 'ghcr.io/${{ env.REPOSITORY_NAME }}-frontend@sha256:%s ' *)
+              $(printf 'ghcr.io/${{ env.REPOSITORY_NAME }}-frontend@sha256:%s ' *) 
 
         - name: Inspect image
           run: |
@@ -288,6 +291,9 @@ jobs:
             tags: |
               type=semver,pattern={{version}}
               type=raw,value=dev
+            annotations: |
+              org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes.
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
 
         - name: Create manifest list and push
           working-directory: ${{ runner.temp }}/digests
