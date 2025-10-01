@@ -21,13 +21,14 @@ jobs:
     build-frontend:
       needs: [tests]
       name: Build and Publish multi-arch Frontend Docker image
-      runs-on: ubuntu-latest
       strategy:
         fail-fast: false
         matrix:
-          platform:
-            - linux/amd64
-            - linux/arm64
+          os:
+            - ubuntu-24.04
+            - ubuntu-24.04-arm
+      runs-on: ${{ matrix.os }}
+      
       steps:
         - uses: actions/checkout@v4
 
@@ -37,8 +38,10 @@ jobs:
             echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
             echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
             echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
-            platform=${{ matrix.platform }}
+            platform=${{ matrix.os == 'ubuntu-24.04' && 'linux/amd64' || 'linux/arm64' }}
+            echo "PLATFORM=${platform}" >> $GITHUB_ENV
             echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+
         
         - name: Create environment file
           working-directory: ./frontend
@@ -91,7 +94,7 @@ jobs:
               org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
             cache-from: type=gha
             cache-to: type=gha,mode=max
-            platforms: ${{ matrix.platform }}
+            platforms: ${{ env.PLATFORM }}
             outputs: type=image,push-by-digest=true,name-canonical=true,push=true
         
         - name: Export digest
@@ -114,13 +117,13 @@ jobs:
     build-api:
       needs: [tests]
       name: Build and Publish API Docker image
-      runs-on: ubuntu-latest
       strategy:
         fail-fast: false
         matrix:
-          platform:
-            - linux/amd64
-            - linux/arm64
+          os:
+            - ubuntu-24.04
+            - ubuntu-24.04-arm
+      runs-on: ${{ matrix.os }}
       steps:
         - uses: actions/checkout@v4
 
@@ -130,7 +133,8 @@ jobs:
             echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
             echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
             echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
-            platform=${{ matrix.platform }}
+            platform=${{ matrix.os == 'ubuntu-24.04' && 'linux/amd64' || 'linux/arm64' }}
+            echo "PLATFORM=${platform}" >> $GITHUB_ENV
             echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
         
         - name: Set up Qemu 
@@ -179,7 +183,7 @@ jobs:
               org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
             cache-from: type=gha
             cache-to: type=gha,mode=max
-            platforms: linux/amd64
+            platforms: ${{ env.PLATFORM }}
             outputs: type=image,push-by-digest=true,name-canonical=true,push=true
         
         - name: Export digest
