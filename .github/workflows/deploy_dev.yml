@@ -35,9 +35,10 @@ jobs:
           id: vars
           run: |
             echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-            echo "DATE=$(date)" >> $GITHUB_ENV
             echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
             echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+            platform=${{ matrix.platform }}
+            echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
         
         - name: Create environment file
           working-directory: ./frontend
@@ -69,14 +70,11 @@ jobs:
             tags: |
               type=semver,pattern={{raw}}
               type=raw,value=dev
-                    
-        - name: Prepare
-          run: |
-            platform=${{ matrix.platform }}
-            echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+
 
         - name: Build and push Docker images
           uses: docker/build-push-action@v6
+          id: build
           with:
             context: ./frontend
  
@@ -132,7 +130,8 @@ jobs:
             echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
             echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
             echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
-
+            platform=${{ matrix.platform }}
+            echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
         
         - name: Set up Qemu 
           uses: docker/setup-qemu-action@v3
@@ -156,15 +155,12 @@ jobs:
               type=semver,pattern={{raw}}
               type=raw,value=dev
         
-        - name: Prepare
-          run: |
-            platform=${{ matrix.platform }}
-            echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
         - name: Populating API version
           working-directory: ./api
           run: echo ${{ github.ref_name }} > ./VERSION && echo ${{ github.sha}} | cut -c1-7 >> ./VERSION
 
         - name: Build and push Docker images
+          id: build
           uses: docker/build-push-action@v6
           env:
             BUILDX_NO_DEFAULT_ATTESTATIONS: 1
