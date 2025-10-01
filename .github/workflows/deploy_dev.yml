@@ -20,7 +20,7 @@ jobs:
 
     build-frontend-amd64:
       needs: [tests]
-      name: Build and Publish Frontend AMD64 Docker image
+      name: Build and Publish amd64 Frontend Docker image
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
@@ -58,6 +58,8 @@ jobs:
 
         - name: Build and push Docker images
           uses: docker/build-push-action@v6
+          env:
+            BUILDX_NO_DEFAULT_ATTESTATIONS: 1
           with:
             context: ./frontend
             push: true
@@ -68,8 +70,8 @@ jobs:
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
               org.opencontainers.image.version=${{ env.CURRENT_VERSION }}-amd64
-              org.opencontainers.image.title=Zero-TOTP frontend - AMD64 dev version
-              org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes built for AMD64 architecture.
+              org.opencontainers.image.title=Zero-TOTP frontend - amd64 dev version
+              org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes built for amd64 architecture.
               org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
               org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
               org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
@@ -81,7 +83,7 @@ jobs:
 
     build-frontend-arm64:
       needs: [tests]
-      name: Build and Publish Frontend AMD64 Docker image
+      name: Build and Publish arm64 Frontend Docker image
       runs-on: ubuntu-24.04-arm
       steps:
         - uses: actions/checkout@v4
@@ -119,6 +121,8 @@ jobs:
 
         - name: Build and push Docker images
           uses: docker/build-push-action@v6
+          env:
+            BUILDX_NO_DEFAULT_ATTESTATIONS: 1
           with:
             context: ./frontend
             push: true
@@ -129,8 +133,8 @@ jobs:
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
               org.opencontainers.image.version=${{ env.CURRENT_VERSION }}-arm64
-              org.opencontainers.image.title=Zero-TOTP frontend - ARM64 dev version
-              org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes built for ARM64 architecture.
+              org.opencontainers.image.title=Zero-TOTP frontend - arm64 dev version
+              org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes built for arm64 architecture.
               org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
               org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
               org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
@@ -142,7 +146,7 @@ jobs:
 
     build-api-amd64:
       needs: [tests]
-      name: Build and Publish AMD64 API Docker image
+      name: Build and Publish amd64 API Docker image
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
@@ -175,6 +179,8 @@ jobs:
 
         - name: Build and push Docker images
           uses: docker/build-push-action@v6
+          env:
+            BUILDX_NO_DEFAULT_ATTESTATIONS: 1
           with:
             context: ./api
             push: true
@@ -185,8 +191,8 @@ jobs:
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
               org.opencontainers.image.version=${{ env.CURRENT_VERSION }}
-              org.opencontainers.image.title=Zero-TOTP API - AMD64 dev version 
-              org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes built for AMD64 architecture.
+              org.opencontainers.image.title=Zero-TOTP API - amd64 dev version 
+              org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes built for amd64 architecture.
               org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
               org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
               org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
@@ -198,7 +204,7 @@ jobs:
 
     build-api-arm64:
       needs: [tests]
-      name: Build and Publish ARM 64 API Docker image
+      name: Build and Publish arm64 API Docker image
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
@@ -231,6 +237,8 @@ jobs:
 
         - name: Build and push Docker images
           uses: docker/build-push-action@v6
+          env:
+            BUILDX_NO_DEFAULT_ATTESTATIONS: 1
           with:
             context: ./api
             push: true
@@ -241,8 +249,8 @@ jobs:
               org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
               org.opencontainers.image.created=${{ env.DATE }}
               org.opencontainers.image.version=${{ env.CURRENT_VERSION }}
-              org.opencontainers.image.title=Zero-TOTP API - ARM64 dev version 
-              org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes built for ARM64 architecture.
+              org.opencontainers.image.title=Zero-TOTP API - arm64 dev version 
+              org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes built for arm64 architecture.
               org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
               org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
               org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
@@ -254,7 +262,7 @@ jobs:
             
     merge-frontend-manifests:
       needs: [build-frontend-amd64, build-frontend-arm64]
-      name: Merge and Publish multi-arch Docker images
+      name: Merge and Publish multi-arch frontend Docker images
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
@@ -290,7 +298,7 @@ jobs:
     
     merge-api-manifests:
       needs: [build-api-amd64, build-api-arm64]
-      name: Merge and Publish multi-arch Docker images
+      name: Merge and Publish multi-arch API Docker images
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v4
