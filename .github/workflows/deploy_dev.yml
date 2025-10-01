@@ -82,16 +82,11 @@ jobs:
  
             tags: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
             labels: |
-              org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
-              org.opencontainers.image.created=${{ env.DATE }}
-              org.opencontainers.image.version=${{ env.CURRENT_VERSION }}
-              org.opencontainers.image.title=Zero-TOTP frontend - dev version
+              org.opencontainers.image.title=Zero-TOTP frontend - dev version 
               org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes.
               org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
               org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
-              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
-              org.opencontainers.image.licenses=GPL-3.0
-              org.opencontainers.image.documentation=https://github.com/seaweedbraincy/zero-totp#readme
+              org.opencontainers.image.documentation=https://docs.zero-totp.com
               maintainer=SeaweedbrainCY <contact@seaweedbrain.xyz>
             annotations: |
               org.opencontainers.image.description=The development version of Zero-TOTP frontend used for testing and development purposes.
@@ -110,8 +105,8 @@ jobs:
         - name: Upload digest
           uses: actions/upload-artifact@v4
           with:
-            name: digests-${{ env.PLATFORM_PAIR }}
-            path: ${{ runner.temp }}/digests/frontend/*
+            name: frontend-digests-${{ env.PLATFORM_PAIR }}
+            path: ${{ runner.temp }}/digests/*
             if-no-files-found: error
             retention-days: 1
 
@@ -135,7 +130,6 @@ jobs:
           id: vars
           run: |
             echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-            echo "DATE=$(date)" >> $GITHUB_ENV
             echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
             echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
 
@@ -178,16 +172,11 @@ jobs:
             context: ./api
             tags: ghcr.io/${{ env.REPOSITORY_NAME }}-api
             labels: |
-              org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
-              org.opencontainers.image.created=${{ env.DATE }}
-              org.opencontainers.image.version=${{ env.CURRENT_VERSION }}
               org.opencontainers.image.title=Zero-TOTP API - dev version 
               org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes.
               org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
               org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
-              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
-              org.opencontainers.image.licenses=GPL-3.0
-              org.opencontainers.image.documentation=https://github.com/seaweedbraincy/zero-totp#readme
+              org.opencontainers.image.documentation=https://docs.zero-totp.com
               maintainer=SeaweedbrainCY <contact@seaweedbrain.xyz>
             annotations: |
               org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes.
@@ -206,8 +195,8 @@ jobs:
         - name: Upload digest
           uses: actions/upload-artifact@v4
           with:
-            name: digests-${{ env.PLATFORM_PAIR }}
-            path: ${{ runner.temp }}/digests/api/*
+            name: api-digests-${{ env.PLATFORM_PAIR }}
+            path: ${{ runner.temp }}/digests/*
             if-no-files-found: error
             retention-days: 1
 
@@ -225,8 +214,8 @@ jobs:
         - name: Download digests
           uses: actions/download-artifact@v4
           with:
-            path: ${{ runner.temp }}/digests/frontend
-            pattern: digests-*
+            path: ${{ runner.temp }}/digests
+            pattern: frontend-digests-*
             merge-multiple: true
 
         - name: Login to GHCR 
@@ -271,8 +260,8 @@ jobs:
         - name: Download digests
           uses: actions/download-artifact@v4
           with:
-            path: ${{ runner.temp }}/digests/api
-            pattern: digests-*
+            path: ${{ runner.temp }}/digests
+            pattern: api-digests-*
             merge-multiple: true
 
         - name: Login to GHCR 
