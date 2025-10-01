@@ -92,7 +92,7 @@ jobs:
           id: build
           with:
             context: ./frontend
-            tags: ghcr.io/${{ env.REPOSITORY_NAME }}-api
+            tags: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
             labels: ${{ steps.meta.outputs.labels }}
             annotations: ${{ steps.meta.outputs.annotations }}
             cache-from: type=gha
