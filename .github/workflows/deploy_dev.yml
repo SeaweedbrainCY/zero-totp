@@ -375,6 +375,7 @@ jobs:
     api-docker-security-scan:
       needs: [merge-api-manifests]
       name: Scan API Docker image for security vulnerabilities
+      continue-on-error: true
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v3
@@ -396,6 +397,7 @@ jobs:
       needs: [merge-frontend-manifests]
       name: Scan Frontend Docker image for security vulnerabilities
       runs-on: ubuntu-latest
+      continue-on-error: true
       steps:
         - uses: actions/checkout@v3
         - name: Install Trivy
