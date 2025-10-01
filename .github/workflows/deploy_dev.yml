@@ -66,6 +66,9 @@ jobs:
           uses: docker/metadata-action@v5
           with:
             images: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
+            tags: |
+              type=semver,pattern={{raw}}
+              type=raw,value=dev
                     
         - name: Prepare
           run: |
@@ -155,6 +158,9 @@ jobs:
           uses: docker/metadata-action@v5
           with:
             images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
+            tags: |
+              type=semver,pattern={{raw}}
+              type=raw,value=dev
         
         - name: Prepare
           run: |
