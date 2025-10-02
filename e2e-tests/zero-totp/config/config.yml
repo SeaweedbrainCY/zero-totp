@@ -109,4 +109,5 @@ features:
         #dsn: "not a dns"
 
     google_drive_backup:
-        enabled: false 
+        enabled: enabled 
+        client_secret_file_path: "/zero-totp/config/fake_client_secret.json"
