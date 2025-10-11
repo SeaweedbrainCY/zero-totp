@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 
 # This script generates a sitemap.xml file for the frontend.
 
