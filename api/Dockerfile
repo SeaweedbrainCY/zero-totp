@@ -3,14 +3,11 @@ FROM python:3.13-alpine
 COPY requirements.txt /api/requirements.txt
 WORKDIR /api
 
-RUN apk add --no-cache mysql-client 
+RUN apk update && apk add --no-cache mariadb-dev  gcc g++ libffi-dev openssl-dev musl-dev linux-headers make jq curl gosu && apk add --no-cache mariadb-connector-c-dev 
 
-RUN apt-get -y install build-essential libssl-dev libffi-dev gcc default-libmysqlclient-dev pkg-config jq curl gosu
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-RUN apt-get clean 
 RUN pip cache purge
-
 RUN rm requirements.txt
 
 COPY assets/ /api/assets/
