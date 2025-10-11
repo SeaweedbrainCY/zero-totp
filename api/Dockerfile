@@ -1,10 +1,9 @@
-FROM python:3.13-slim
+FROM python:3.13-alpine
 
 COPY requirements.txt /api/requirements.txt
 WORKDIR /api
 
-RUN apt-get clean \
-    && apt-get -y update
+RUN apk add --no-cache mysql-client 
 
 RUN apt-get -y install build-essential libssl-dev libffi-dev gcc default-libmysqlclient-dev pkg-config jq curl gosu
 RUN pip install --upgrade pip
