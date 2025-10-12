@@ -1,14 +1,27 @@
-FROM python:3.13-alpine
+FROM python:3.13-alpine AS builder
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 COPY requirements.txt /api/requirements.txt
 WORKDIR /api
+RUN python -m venv /api/venv
+ENV PATH="/api/venv/bin:$PATH"
 
-RUN apk update && apk add --no-cache mariadb-dev  gcc g++ libffi-dev openssl-dev musl-dev linux-headers make jq curl gosu && apk add --no-cache mariadb-connector-c-dev 
+RUN apk update && apk upgrade && apk add --no-cache mariadb-dev  gcc g++ libffi-dev openssl-dev musl-dev linux-headers make jq curl gosu && apk add --no-cache mariadb-connector-c-dev 
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-RUN pip cache purge
-RUN rm requirements.txt
+
+
+FROM python:3.13-alpine
+
+COPY --from=builder /api/venv /api/venv
+ENV PATH="/api/venv/bin:$PATH"
+
+RUN apk update && apk upgrade && apk add --no-cache jq curl gosu mariadb-connector-c-dev
+
+WORKDIR /api
 
 COPY assets/ /api/assets/
 COPY CryptoClasses/ /api/CryptoClasses/
