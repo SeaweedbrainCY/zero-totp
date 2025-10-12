@@ -82,7 +82,7 @@ elif [ "$1" = "rotate-sse-key" ]; then
 elif [ "$1" = "db-migrate" ]; then
     echo "###### Database migration loading ... ######"
     echo ""
-    bash ./toolbox_scripts/migrate_db.sh
+    sh ./toolbox_scripts/migrate_db.sh
     
 
 elif [ "$1" = "decrypt-db-entry" ]; then
