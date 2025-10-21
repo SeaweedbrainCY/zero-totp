@@ -19,7 +19,7 @@ FROM python:3.13-alpine
 COPY --from=builder /api/venv /api/venv
 ENV PATH="/api/venv/bin:$PATH"
 
-RUN apk update && apk upgrade && apk add --no-cache jq curl gosu mariadb-connector-c-dev
+RUN apk update && apk upgrade && apk add --no-cache jq curl gosu mariadb-connector-c-dev  gcc g++
 
 WORKDIR /api
 
