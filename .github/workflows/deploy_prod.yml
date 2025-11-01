@@ -22,8 +22,14 @@ jobs:
 
     build-frontend:
       needs: [tests_and_security]
-      name: Build and Publish Frontend Docker image
-      runs-on: ubuntu-latest
+      name: Build and Publish multi-arch Frontend Docker image
+      strategy:
+        fail-fast: false
+        matrix:
+          os:
+            - ubuntu-24.04
+            - ubuntu-24.04-arm
+      runs-on: ${{ matrix.os }}
       steps:
         - uses: actions/checkout@v4
 
@@ -35,7 +41,20 @@ jobs:
             echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
             echo "CURRENT_SHORT_VERSION=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
             echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+            platform=${{ matrix.os == 'ubuntu-24.04' && 'linux/amd64' || 'linux/arm64' }}
+            arch=${{ matrix.os == 'ubuntu-24.04' && 'amd64' || 'arm64' }}
+            echo "PLATFORM=${platform}" >> $GITHUB_ENV
+            echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
 
+
+        - name: Create frontend environment file
+          working-directory: ./frontend
+          run: bash generate-env.sh '${{ github.ref_name }}' '${{secrets.RSA_PUBLIC_KEY}}'
+
+        
+        - name: Generate sitemap.xml
+          working-directory: ./frontend
+          run: bash generate_sitemap.sh 
         
         - name: Set up Qemu 
           uses: docker/setup-qemu-action@v3
@@ -57,48 +76,65 @@ jobs:
             username: ${{ secrets.DOCKER_USER }}
             password: ${{ secrets.DOCKER_PASS }}
 
+        - name: Docker meta
+          id: meta
+          uses: docker/metadata-action@v5
+          with:
+            images: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
+            tags: |
+              type=raw,value=${{ env.CURRENT_VERSION }}-${{ env.ARCH }}
+              type=raw,value=${{ env.ARCH }}
+            labels: |
+              org.opencontainers.image.title=Zero-TOTP frontend
+              org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP
+              org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
+              org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
+              org.opencontainers.image.documentation=https://docs.zero-totp.com
+              maintainer=SeaweedbrainCY <contact@seaweedbrain.xyz>
+            annotations: |
+              org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
 
-        - name: Create frontend environment file
-          working-directory: ./frontend
-          run: bash generate-env.sh '${{ github.ref_name }}' '${{secrets.RSA_PUBLIC_KEY}}'
-
-        - name: Generate sitemap.xml
-          working-directory: ./frontend
-          run: bash generate_sitemap.sh 
 
         - name: Build and push Docker images
           uses: docker/build-push-action@v6
+          id: build
           with:
             context: ./frontend
-            push: true
-            tags: |
-              ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:latest
-              ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ env.CURRENT_VERSION }}
-              ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ env.CURRENT_SHORT_VERSION }}
-            labels: |
-              org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
-              org.opencontainers.image.created=${{ env.DATE }}
-              org.opencontainers.image.version=${{ env.CURRENT_VERSION }}
-              org.opencontainers.image.title=Zero-TOTP frontend 
-              org.opencontainers.image.description=
-              org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
-              org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
-              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
-              org.opencontainers.image.licenses=GPL-3.0
-              org.opencontainers.image.documentation=https://github.com/seaweedbraincy/zero-totp#readme
-            annotations: |
-              org.opencontainers.image.description=
-              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
+            tags: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
+            labels: ${{ steps.meta.outputs.labels }}
+            annotations: ${{ steps.meta.outputs.annotations }}
             cache-from: type=gha
             cache-to: type=gha,mode=max
-            platforms: linux/amd64,linux/arm64
-            outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP
+            platforms: ${{ env.PLATFORM }}
+            outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+        
+        - name: Export digest
+          run: |
+            mkdir -p ${{ runner.temp }}/digests
+            digest="${{ steps.build.outputs.digest }}"
+            touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+        - name: Upload digest
+          uses: actions/upload-artifact@v4
+          with:
+            name: frontend-digests-${{ env.PLATFORM_PAIR }}
+            path: ${{ runner.temp }}/digests/*
+            if-no-files-found: error
+            retention-days: 1
+
 
             
     build-api:
       needs: [tests_and_security]
       name: Build and Publish API Docker image
-      runs-on: ubuntu-latest
+      strategy:
+        fail-fast: false
+        matrix:
+          os:
+            - ubuntu-24.04
+            - ubuntu-24.04-arm
+      runs-on: ${{ matrix.os }}
       env:
         REPO: zero-totp-api
       steps:
@@ -111,7 +147,11 @@ jobs:
             echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
             echo "CURRENT_SHORT_VERSION=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
             echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
-
+            platform=${{ matrix.os == 'ubuntu-24.04' && 'linux/amd64' || 'linux/arm64' }}
+            arch=${{ matrix.os == 'ubuntu-24.04' && 'amd64' || 'arm64' }}
+            echo "ARCH=${arch}" >> $GITHUB_ENV
+            echo "PLATFORM=${platform}" >> $GITHUB_ENV
+            echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
         
         - name: Set up Qemu 
           uses: docker/setup-qemu-action@v3
@@ -141,37 +181,159 @@ jobs:
           working-directory: ./api
           run: echo ${{ github.ref_name }} > ./VERSION && echo ${{ github.sha}} | cut -c1-7 >> ./VERSION
 
+
+        - name: Docker meta
+          id: meta
+          uses: docker/metadata-action@v5
+          with:
+            images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
+            tags: |
+              type=raw,value=${{ env.CURRENT_VERSION }}-${{ env.ARCH }}
+              type=raw,value=${{ env.ARCH }}
+            labels: |
+              org.opencontainers.image.title=Zero-TOTP API
+              org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP
+              org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
+              org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
+              org.opencontainers.image.documentation=https://docs.zero-totp.com
+              maintainer=SeaweedbrainCY <contact@seaweedbrain.xyz>
+            annotations: |
+              org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
+
         - name: Build and push Docker images
+          id: build
           uses: docker/build-push-action@v6
           with:
             context: ./api
-            push: true
-            tags: |
-              ghcr.io/${{ env.REPOSITORY_NAME }}-api:latest
-              ghcr.io/${{ env.REPOSITORY_NAME }}-api:${{ env.CURRENT_VERSION }}
-              ghcr.io/${{ env.REPOSITORY_NAME }}-api:${{ env.CURRENT_SHORT_VERSION }}
-            labels: |
-              org.opencontainers.image.revision=${{ env.GIT_COMMIT }}
-              org.opencontainers.image.created=${{ env.DATE }}
-              org.opencontainers.image.version=${{ env.CURRENT_VERSION }}
-              org.opencontainers.image.title=Zero-TOTP API
-              org.opencontainers.image.description=A complete, reliable, secure and open source webapp based on zero-knowledge encryption to deal with TOTP.
-              org.opencontainers.image.authors=SeaweedbrainCY <contact@seaweedbrain.xyz>
-              org.opencontainers.image.url=https://github.com/seaweedbraincy/zero-totp
-              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
-              org.opencontainers.image.licenses=GPL-3.0
-              org.opencontainers.image.documentation=https://github.com/seaweedbraincy/zero-totp#readme
-            annotations: |
-              org.opencontainers.image.description=A complete, reliable, secure and open source webapp based on zero-knowledge encryption to deal with TOTP.
-              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
+            tags: ghcr.io/${{ env.REPOSITORY_NAME }}-api
+            labels: ${{ steps.meta.outputs.labels }}
+            annotations: ${{ steps.meta.outputs.annotations }}
             cache-from: type=gha
             cache-to: type=gha,mode=max
-            platforms: linux/amd64,linux/arm64
-            outputs: type=image,name=target,annotation-index.org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP.
+            platforms: ${{ env.PLATFORM }}
+            outputs: type=image,push-by-digest=true,name-canonical=true,push=true
+        
+        - name: Export digest
+          run: |
+            mkdir -p ${{ runner.temp }}/digests
+            digest="${{ steps.build.outputs.digest }}"
+            touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+        - name: Upload digest
+          uses: actions/upload-artifact@v4
+          with:
+            name: api-digests-${{ env.PLATFORM_PAIR }}
+            path: ${{ runner.temp }}/digests/*
+            if-no-files-found: error
+            retention-days: 1
+
+    merge-frontend-manifests:
+      runs-on: ubuntu-latest
+      needs:
+        - build-frontend
+      steps:
+        - name: Extract Git commit
+          id: vars
+          run: |
+            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+            echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
+
+        - name: Download digests
+          uses: actions/download-artifact@v4
+          with:
+            path: ${{ runner.temp }}/digests
+            pattern: frontend-digests-*
+            merge-multiple: true
+
+        - name: Login to GHCR 
+          uses: docker/login-action@v3
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+        - name: Docker meta
+          id: meta
+          uses: docker/metadata-action@v5
+          with:
+            images: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
+            tags: |
+              type=semver,pattern={{version}}
+              type=semver,pattern={{major}}.{{minor}}
+              type=raw,value=latest
+            annotations: |
+              org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
+
+        - name: Create manifest list and push
+          working-directory: ${{ runner.temp }}/digests
+          run: |
+            docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<<   "$DOCKER_METADATA_OUTPUT_JSON") \
+              $(printf 'ghcr.io/${{ env.REPOSITORY_NAME }}-frontend@sha256:%s ' *) 
+
+        - name: Inspect image
+          run: |
+            docker buildx imagetools inspect ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ steps.meta.outputs.version }}
+
+    merge-api-manifests:
+      runs-on: ubuntu-latest
+      needs:
+        - build-api
+      steps:
+        - name: Extract Git commit
+          id: vars
+          run: |
+            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+            echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
+
+        - name: Download digests
+          uses: actions/download-artifact@v4
+          with:
+            path: ${{ runner.temp }}/digests
+            pattern: api-digests-*
+            merge-multiple: true
+
+        - name: Login to GHCR 
+          uses: docker/login-action@v3
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+        - name: Docker meta
+          id: meta
+          uses: docker/metadata-action@v5
+          with:
+            images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
+            tags: |
+              type=semver,pattern={{version}}
+              type=semver,pattern={{major}}.{{minor}}
+              type=raw,value=latest
+            annotations: |
+              org.opencontainers.image.description=The development version of Zero-TOTP API used for testing and development purposes.
+              org.opencontainers.image.source=https://github.com/seaweedbraincy/zero-totp
+
+        - name: Create manifest list and push
+          working-directory: ${{ runner.temp }}/digests
+          run: |
+            docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<<   "$DOCKER_METADATA_OUTPUT_JSON") \
+              $(printf 'ghcr.io/${{ env.REPOSITORY_NAME }}-api@sha256:%s ' *)
+
+        - name: Inspect image
+          run: |
+            docker buildx imagetools inspect ghcr.io/${{ env.REPOSITORY_NAME }}-api:${{ steps.meta.outputs.version }}
+
 
     e2e-tests:
         runs-on: ubuntu-latest
-        needs: [build-frontend, build-api] 
+        needs: [merge-api-manifests, merge-frontend-manifests] 
         name: Run end-to-end tests
         steps:
             - uses: actions/checkout@v4
@@ -223,10 +385,9 @@ jobs:
                 path: ./e2e-tests/playwright-report/
                 retention-days: 30
     api-docker-security-scan:
-      needs: [build-api]
+      needs: [merge-api-manifests]
       name: Scan API Docker image for security vulnerabilities
       runs-on: ubuntu-latest
-      continue-on-error: true
       steps:
         - uses: actions/checkout@v3
         - name: Install Trivy
@@ -243,10 +404,9 @@ jobs:
             trivy image --exit-code 1 --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:$current_version
 
     frontend-docker-security-scan:
-      needs: [build-frontend]
+      needs: [merge-frontend-manifests]
       name: Scan Frontend Docker image for security vulnerabilities
       runs-on: ubuntu-latest
-      continue-on-error: true
       steps:
         - uses: actions/checkout@v3
         - name: Install Trivy
