@@ -15,6 +15,17 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "01/11/2025",
+      version: "1.11",
+      added: [
+        "Divide by 3 the size of the API docker image to improve the deployment time and reduce the attack surface.",
+        "Optimize and improve the docker image build process to be more secure and reliable.",
+      ],
+      fixed:[
+        "Fix a non-impacting high CVE in one of the API dependencies."
+      ]
+    },
+    {
       date: "29/09/2025",
       version: "1.10",
       added: [
