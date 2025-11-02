@@ -326,7 +326,7 @@ jobs:
 
         - name: Inspect image
           run: |
-            docker buildx imagetools inspect ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.tags || steps.meta-prod.outputs.tags }}
+            docker buildx imagetools inspect ${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.tags || steps.meta-prod.outputs.tags }}
 
     merge-api-manifests:
       runs-on: ubuntu-latest
@@ -391,7 +391,7 @@ jobs:
 
         - name: Inspect image
           run: |
-            docker buildx imagetools inspect ghcr.io/${{ env.REPOSITORY_NAME }}-api:${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.tags || steps.meta-prod.outputs.tags }}
+            docker buildx imagetools inspect ${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.tags || steps.meta-prod.outputs.tags }}
 
 
     e2e-tests:
