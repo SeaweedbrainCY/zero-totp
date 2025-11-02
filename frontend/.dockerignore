@@ -1,0 +1,17 @@
+# Ignore Git-related files and directories
+.git
+.gitignore
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+tmp/
+*.tmp
+
+
+# Dev 
+dev/
+
+# Node modules
+node_modules/

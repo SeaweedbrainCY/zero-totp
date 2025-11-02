@@ -110,4 +110,4 @@ features:
 
     google_drive_backup:
         enabled: true 
-        client_secret_file_path: "./tests/ressources/fake_client_secret.json"
+        client_secret_file_path: "./config/fake_client_secret.json"

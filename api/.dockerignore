@@ -1,0 +1,18 @@
+# Ignore Git-related files and directories
+.git
+.gitignore
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+tmp/
+*.tmp
+
+
+# Dev 
+dev/
+
+# Python cache
+__pycache__/
+*.pyc

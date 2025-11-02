@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 cd ..
 FLASK_EXECUTABLE="./venv/bin/flask --app app:flask"
 
