@@ -399,9 +399,50 @@ paths:
         "401":
           description: Unauthorized
         "403":
+          description: The old passphrase is incorrect or access denied
+        "500":
+          description: Internal server error. 
+
+  /vault/passphrase:
+    put:
+      operationId: endpoints_controllers.user.update_passphrase
+      tags:
+        - User
+      summary: Update the user's passphrase and re-encrypt the ZKE key.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - old_passphrase_hash
+                - new_passphrase_hash
+                - zke_enc
+                - passphrase_salt
+                - derived_key_salt
+              properties:
+                old_passphrase:
+                  type: string
+                new_passphrase:
+                  type: string
+                zke_enc:
+                  type: string
+                passphrase_salt:
+                  type: string
+                derived_key_salt:
+                  type: string
+      responses:
+        "201": # status code
+          description: passphrase and zke key updated
+        "400":
+          description: Missing required parameters
+        "401":
+          description: Unauthorized
+        "403":
           description: Access denied
         "500":
-          description: Internal server error
+          description: Internal server error. In case of a 500 error, a parameter 'modified' is provided. If modified is true, the zke key or the passphrase failed has been updated but not both.
 
   /vault/export:
     get:
