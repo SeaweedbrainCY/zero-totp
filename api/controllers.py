@@ -433,7 +433,7 @@ def update_vault(user_id, body):
                     logging.warning("User " + str(user_id) + " tried to update secret " + str(secret) + " but an error occurred server side while storing your  encrypted secret")
                     errors = 1
     zke = zke_db.update(user_id, zke_key)
-    userUpdated = userDb.update(user_id=user_id, passphrase=hashedpw, passphrase_salt=passphrase_salt, derivedKeySalt=derivedKeySalt)
+    userUpdated = userDb.update_passphrase(user_id=user_id, passphrase=hashedpw, passphrase_salt=passphrase_salt, derivedKeySalt=derivedKeySalt)
     returnJson["totp"]=1 if errors == 0 else 0
     returnJson["user"]=1 if userUpdated else 0
     returnJson["zke"]=1 if zke else 0
