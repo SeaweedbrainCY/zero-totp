@@ -114,5 +114,5 @@ websockets==12.0
 Werkzeug==3.1.3
 wrapt==1.16.0
 yarl==1.20.1
-zero_totp_db_model==1.13
+zero_totp_db_model==2.2.1
 zipp==3.19.1
