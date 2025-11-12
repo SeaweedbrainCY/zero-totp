@@ -12,6 +12,7 @@ from database.notif_repo import Notifications as Notifications_db
 from database.refresh_token_repo import RefreshTokenRepo as RefreshToken_db
 from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
 from database.session_token_repo import SessionTokenRepo 
+from database.session_repo import SessionRepo
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging, conf
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
@@ -101,14 +102,17 @@ def signup():
         except Exception as e:
            zke_key = None
         if zke_key:
-            _,session_token = SessionTokenRepo().generate_session_token(user.id)
+            ip = utils.get_ip(request)
+            session = SessionRepo().create_new_session(user_id=user.id, ip_address=ip)
+            session_token_id, session_token = SessionTokenRepo().generate_session_token(user.id, session=session)
+            refresh_token = refresh_token_func.generate_refresh_token(user.id, session_token_id, session=session)
             if conf.features.emails.require_email_validation:
                 try:
                     send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
                 except Exception as e:
                     logging.error("Unknown error while sending verification email" + str(e))
             response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created", "email_verification_required":conf.features.emails.require_email_validation}))
-            response.set_cookie("session-token", session_token, httponly=True, secure=True, samesite="Lax", max_age=3600)
+            response.set_auth_cookies(session_token, refresh_token)
             return response
         else :
             userDB.delete(user.id)
@@ -149,8 +153,10 @@ def login(ip, body):
         return {"message": "blocked"}, 403
     
     rate_limiting_db.flush_login_limit(ip)
-    session_id, session_token = SessionTokenRepo().generate_session_token(user.id)
-    refresh_token = refresh_token_func.generate_refresh_token(user.id, session_id)
+
+    session = SessionRepo().create_new_session(user_id=user.id, ip_address=ip)
+    session_token_id, session_token = SessionTokenRepo().generate_session_token(user.id, session=session)
+    refresh_token = refresh_token_func.generate_refresh_token(user.id, session_token_id, session=session)
     if not conf.features.emails.require_email_validation: # we fake the isVerified status if email validation is not required
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True}))
     elif user.isVerified:
@@ -901,23 +907,23 @@ def get_internal_notification(user_id):
 # PUT /auth/refresh
 @ip_rate_limit
 def auth_refresh_token(ip, *args, **kwargs):
-    session_token = request.cookies.get("session-token")
-    refresh_token = request.cookies.get("refresh-token")
+    session_token_cookie = request.cookies.get("session-token")
+    refresh_token_cookie = request.cookies.get("refresh-token")
     rate_limiting = Rate_Limiting_DB()
-    if not session_token or not refresh_token:
+    if not session_token_cookie or not refresh_token_cookie:
         rate_limiting.add_failed_login(ip)
         return {"message": "Missing token"}, 401
-    session = SessionTokenRepo().get_session_token(session_token)
-    if not session:
+    session_token = SessionTokenRepo().get_session_token(session_token_cookie)
+    if not session_token:
         rate_limiting.add_failed_login(ip)
         return {"message": "Invalid token"}, 401
-    if session.revoke_timestamp is not None:
+    if session_token.revoke_timestamp is not None:
         rate_limiting.add_failed_login(ip)
         return {"message": "Token revoked"}, 401
-    refresh = RefreshToken_db().get_refresh_token_by_hash(sha256(refresh_token.encode("utf-8")).hexdigest())
-    if not refresh:
-        rate_limiting.add_failed_login(ip, user_id=session.user_id)
-        logging.warning(f"Session of user {session.user_id} tried to be refreshed with an refresh token (not present in the db)")
+    refresh_token = RefreshToken_db().get_refresh_token_by_hash(sha256(refresh_token_cookie.encode("utf-8")).hexdigest())
+    if not refresh_token:
+        rate_limiting.add_failed_login(ip, user_id=session_token.user_id)
+        logging.warning(f"Session of user {session_token.user_id} tried to be refreshed with an refresh token (not present in the db)")
         return {"message": "Access denied"}, 403
     new_session_token, new_refresh_token = refresh_token_func.refresh_token_flow(refresh=refresh, session=session, ip=ip)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
