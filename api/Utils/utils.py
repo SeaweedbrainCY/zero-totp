@@ -14,6 +14,7 @@ from database.rate_limiting_repo import RateLimitingRepo
 from database.refresh_token_repo import RefreshTokenRepo
 from database.session_token_repo import SessionTokenRepo
 from database.backup_configuration_repo import BackupConfigurationRepo
+from database.session_repo import SessionRepo
 import os
 from hashlib import sha256
 from base64 import b64encode
@@ -211,8 +212,8 @@ def unsafe_json_vault_validation(json:str) -> (bool, str):
         return False, "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support."
 
 
-def revoke_session(session_id=None, refresh_id=None):
-    logging.info(f"Revoking session {session_id} and refresh {refresh_id}")
+def revoke_session_and_refresh_tokens(session_id=None, refresh_id=None):
+    logging.info(f"Revoking session {session_id} and refresh {refresh_id} tokens")
     session_repo = SessionTokenRepo()
     refresh_repo = RefreshTokenRepo()
     session = session_repo.get_session_token_by_id(session_id)
@@ -231,4 +232,21 @@ def revoke_session(session_id=None, refresh_id=None):
             associated_session = session_repo.get_session_token_by_id(refresh.session_token_id)
             session_repo.revoke(associated_session.id) if  associated_session != None else None
             logging.info(f"Revoked session {associated_session.id} because the associated refresh {refresh.id} was revoked")
+    return True
+
+def revoke_session(session_id):
+    logging.info(f"Revoking session {session_id}")
+    session_repo = SessionRepo()
+    session = session_repo.get_session_by_id(session_id)
+    if session != None:
+        session_repo.revoke(session.id)
+        logging.info(f"Revoked session {session.id}")
+        for refresh_token in session.refresh_tokens:
+            refresh_token_repo = RefreshTokenRepo()
+            refresh_token_repo.revoke(refresh_token.id)
+            logging.info(f"Revoked refresh {refresh_token.id} because the associated session {session.id} was revoked")
+        for session_token in session.session_tokens:
+            session_token_repo = SessionTokenRepo()
+            session_token_repo.revoke(session_token.id)
+            logging.info(f"Revoked session token {session_token.id} because the associated session {session.id} was revoked")
     return True
