@@ -53,12 +53,21 @@ api:
 
     ## Token validity in seconds.
     ## The access token is used to authenticate the user.
+    ## Recommended value is between 5 minutes (300 seconds) and 15 minutes (900 seconds).
     ## Default: 10 minutes
     # session_token_validity: 600 # 10 minutes
 
     ## The refresh token is used to generate new access tokens.
+    ## Recommended value is between 1 day (86400 seconds) and 7 days (604800 seconds).
     ## Default: 1day 
     # refresh_token_validity: 86400 
+
+    ## Session validity in seconds 
+    ## The session validity is used to determine how long a user session is valid.
+    ## Even if the user renews the access token using the refresh token, once the session validity is expired, the user will have to login again.
+    ## Recommended value is between 24h (86400 seconds) and 30 days (2592000 seconds).
+    ## Default: 7 days
+    # session_validity: 604800 
 
      ## Health check endpoint used to check if the API is running correctly.
     # health_check:
