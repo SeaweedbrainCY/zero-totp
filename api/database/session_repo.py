@@ -18,7 +18,7 @@ class SessionRepo:
             ip_address=ip_address,
             created_at=dt.datetime.now(dt.UTC).timestamp(),
             last_active_at=dt.datetime.now(dt.UTC).timestamp(),
-            expiration=expiration_timestamp
+            expiration_timestamp=expiration_timestamp
         )
         return session
 
