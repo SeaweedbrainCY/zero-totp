@@ -16,6 +16,7 @@ from database.session_token_repo import SessionTokenRepo
 from CryptoClasses import refresh_token as refresh_token_crypto_utility
 from uuid import uuid4
 from environment import conf
+from Utils import utils
 
 
 class TestDeleteAccount(unittest.TestCase):
@@ -56,13 +57,13 @@ class TestDeleteAccount(unittest.TestCase):
 
         with self.flask_application.app.app_context():
             db.create_all()
-            self.user_repo.create("user1", "user1@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
-            self.user_repo.create("user2", "user2@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
-            self.user_repo.create("user3", "user3@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
-            self.user_repo.create("user4", "user4@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
-            self.user_repo.create("user5", "user5@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=True)
-            self.user_repo.create("user6", "user6@test.com", "password", "salt", "salt", "01/01/2001", isVerified=False, isBlocked=False)
-            self.user_repo.create("user7", "user7@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False, role="admin")
+            full_user = self.user_repo.create("user1", "user1@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
+            user_without_google_drive = self.user_repo.create("user2", "user2@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
+            user3 = self.user_repo.create("user3", "user3@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
+            user4 = self.user_repo.create("user4", "user4@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False)
+            blocked_user = self.user_repo.create("user5", "user5@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=True)
+            not_verified_user = self.user_repo.create("user6", "user6@test.com", "password", "salt", "salt", "01/01/2001", isVerified=False, isBlocked=False)
+            admin_user = self.user_repo.create("user7", "user7@test.com", "password", "salt", "salt", "01/01/2001", isVerified=True, isBlocked=False, role="admin")
 
             # User 1 :
             self.totp_secret_repo.add(self.full_user_id, "secret1", str(uuid4()))
@@ -80,21 +81,16 @@ class TestDeleteAccount(unittest.TestCase):
             self.totp_secret_repo.add(self.user_without_google_drive, "secret3", str(uuid4()))
             self.totp_secret_repo.add(self.user_without_google_drive, "secret4", str(uuid4()))
             self.zke_encryption_key_repo.create(self.full_user_id, "zke1")
-
-            _, self.full_user_session_token = self.session_token_repo.generate_session_token(self.full_user_id)
-            _, self.user_without_google_drive_session_token = self.session_token_repo.generate_session_token(self.user_without_google_drive)
-            _, self.user_blocked_session_token = self.session_token_repo.generate_session_token(self.user_blocked)
-            _, self.user_not_verified_session_token = self.session_token_repo.generate_session_token(self.user_not_verified)
-            _, self.user_admin_session_token = self.session_token_repo.generate_session_token(self.user_admin_id)
-
-            refresh_token_crypto_utility.generate_refresh_token(self.full_user_id, self.full_user_session_token)
-            refresh_token_crypto_utility.generate_refresh_token(self.user_without_google_drive, self.user_without_google_drive_session_token)
-            refresh_token_crypto_utility.generate_refresh_token(self.user_blocked, self.user_blocked_session_token)
-            refresh_token_crypto_utility.generate_refresh_token(self.user_not_verified, self.user_not_verified_session_token)
-            refresh_token_crypto_utility.generate_refresh_token(self.user_admin_id, self.user_admin_session_token)
-            
             
             db.session.commit()
+
+            self.full_user_session_token, _ = utils.generate_new_session(user=full_user, ip_address=None)
+            self.user_without_google_drive_session_token, _ = utils.generate_new_session(user=user_without_google_drive, ip_address=None)
+            self.user_blocked_session_token, _ = utils.generate_new_session(user=blocked_user, ip_address=None)
+            self.user_not_verified_session_token, _ = utils.generate_new_session(user=not_verified_user, ip_address=None)
+            self.user_admin_session_token, _ = utils.generate_new_session(user=admin_user, ip_address=None)
+
+
     
 
     def tearDown(self):

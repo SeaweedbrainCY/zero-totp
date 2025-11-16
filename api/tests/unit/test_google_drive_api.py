@@ -64,14 +64,16 @@ class TestGoogleDriveAPI(unittest.TestCase):
 
             with self.application.app.app_context():
                     db.create_all()
-                    user_repo.create(username="user", email="user@test.test", password="password", 
+                    user = user_repo.create(username="user", email="user@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
                     zke_repo.create(user_id=self.user_id, encrypted_key="key")
                     for i in range(10):
                         totp_repo.add(user_id=self.user_id, enc_secret="secret" + str(i), uuid=str(uuid4()))
                     self.google_integration_db.create(1, True)
-                    _, self.session_token = self.session_token_repo.generate_session_token(1)
                     db.session.commit()
+
+
+                    self.session_token,_ = utils.generate_new_session(user=user, ip_address=None)
 
 
         def tearDown(self):

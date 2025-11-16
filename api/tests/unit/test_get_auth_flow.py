@@ -8,6 +8,7 @@ from uuid import uuid4
 from database.user_repo import User as UserRepo
 from database.session_token_repo import SessionTokenRepo
 import datetime
+from Utils import utils
 
 
 class TestGetAuthFlow(unittest.TestCase):
@@ -27,8 +28,10 @@ class TestGetAuthFlow(unittest.TestCase):
             with self.application.app.app_context():
                 db.create_all()
                 user = self.user_repo.create(username='user1', email='user1@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
-                _, self.session_token = self.session_repo.generate_session_token(user.id)
                 db.session.commit()
+
+                self.session_token,_ = utils.generate_new_session(user=user, ip_address=None)
+                
         
         def tearDown(self):
             patch.stopall()

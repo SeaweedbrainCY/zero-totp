@@ -7,6 +7,7 @@ from database.session_token_repo import SessionTokenRepo
 from environment import conf, logging
 import datetime
 from unittest.mock import patch
+from Utils import utils
 
 
 
@@ -24,12 +25,12 @@ class TestGetDerivedKeySalt(unittest.TestCase):
 
         with self.application.app.app_context():
             db.create_all()
-            self.user_id = self.user_repo.create(username="user1", email="user1@test.test", password="password", 
-                    randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now()).id
-            self.other_user_id = self.user_repo.create(username="user2", email="user2@mail.com", password="password",randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now()).id 
-            
-            _, self.session_token_user = self.session_token_repo.generate_session_token(self.user_id)
-            _, self.session_token_other_user = self.session_token_repo.generate_session_token(self.other_user_id)
+            user = self.user_repo.create(username="user1", email="user1@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+            self.user_id = user.id
+            sother_user = self.user_repo.create(username="user2", email="user2@mail.com", password="password",randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+
+            self.session_token_user,_ = utils.generate_new_session(user=user, ip_address=None)
+
            
 
 

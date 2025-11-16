@@ -8,6 +8,7 @@ import datetime
 from uuid import uuid4
 from database.session_token_repo import SessionTokenRepo
 from database.user_repo import User as UserRepo
+from Utils import utils
 
 
 class TestGetInternalNotification(unittest.TestCase):
@@ -23,8 +24,10 @@ class TestGetInternalNotification(unittest.TestCase):
         with self.flask_application.app.app_context():
             db.create_all()
             db.session.add(user1)
-            _, self.session_token = SessionTokenRepo().generate_session_token(self.user_id)
             db.session.commit()
+
+            self.session_token,_ = utils.generate_new_session(user=user1, ip_address=None)
+
             
     
        

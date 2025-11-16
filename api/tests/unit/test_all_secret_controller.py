@@ -6,6 +6,7 @@ from zero_totp_db_model.model import User, TOTP_secret, SessionToken, RefreshTok
 from environment import conf
 import datetime
 from uuid import uuid4
+from Utils import utils
 
 class TestAllSecret(unittest.TestCase):
 
@@ -16,20 +17,18 @@ class TestAllSecret(unittest.TestCase):
         self.client = self.flask_application.test_client()
         self.endpoint = "/api/v1/all_secrets"
         self.user_id = 1
-        self.session_token = str(uuid4())
         self.secret1_id = str(uuid4())
         self.secret2_id = str(uuid4())
         with self.flask_application.app.app_context():
             user = User(id=self.user_id, isBlocked=False, isVerified=True, mail="mail", password="password",  role="user", username="username", createdAt="01/01/2001", derivedKeySalt="salt", passphraseSalt="salt")
             totp_secret = TOTP_secret(uuid=self.secret1_id, user_id=1, secret_enc = "enc_secret")
             totp_secret2 = TOTP_secret(uuid=self.secret2_id, user_id=1, secret_enc = "enc_secret2")
-            session = SessionToken(id=str(uuid4()), token=self.session_token, user_id=self.user_id, expiration=(datetime.datetime.now() + datetime.timedelta(hours=1)).timestamp())
             db.create_all()
             db.session.add(user)
             db.session.add(totp_secret)
             db.session.add(totp_secret2)
-            db.session.add(session)
             db.session.commit()
+            self.session_token, _ = utils.generate_new_session(user=user, ip_address=None)
 
 
     def tearDown(self):

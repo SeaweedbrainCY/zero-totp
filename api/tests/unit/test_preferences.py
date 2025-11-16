@@ -12,6 +12,7 @@ from database.db import db
 import base64
 import json
 import random
+from Utils import utils
 
 class TestPreferences(unittest.TestCase):
 
@@ -43,21 +44,24 @@ class TestPreferences(unittest.TestCase):
         self.session_token_repo = SessionTokenRepo()
         with self.application.app.app_context():
             db.create_all()
-            self.user_repo.create(username="user1", email="user1@test.test", password="password", 
+            user = self.user_repo.create(username="user1", email="user1@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
-            self.user_repo.create(username="user2", email="user2@test.test", password="password", 
+            new_user = self.user_repo.create(username="user2", email="user2@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
-            self.user_repo.create(username="user3", email="user3@test.test", password="password", 
+            blocked_user = self.user_repo.create(username="user3", email="user3@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(), isBlocked=True)
-            self.user_repo.create(username="user4", email="user4@test.test", password="password", 
+            unverified_user = self.user_repo.create(username="user4", email="user4@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.now())
             
             self.preferences_repo.create_default_preferences(user_id=1)
 
-            _, self.session_token_user = self.session_token_repo.generate_session_token(self.user_id)
-            _, self.session_token_new_user = self.session_token_repo.generate_session_token(self.new_user_id)
-            _, self.session_token_user_blocked = self.session_token_repo.generate_session_token(self.blocked_user_id)
-            _, self.session_token_user_unverified = self.session_token_repo.generate_session_token(self.unverified_user_id)
+
+
+            
+            self.session_token_user,_ = utils.generate_new_session(user=user, ip_address=None)
+            self.session_token_new_user,_ = utils.generate_new_session(user=new_user, ip_address=None)
+            self.session_token_user_blocked,_ = utils.generate_new_session(user=blocked_user, ip_address=None)
+            self.session_token_user_unverified,_ = utils.generate_new_session(user=unverified_user, ip_address=None)
 
             
             

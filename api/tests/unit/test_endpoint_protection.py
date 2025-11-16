@@ -7,6 +7,7 @@ from environment import conf
 from database.session_token_repo import SessionTokenRepo
 from database.user_repo import User as UserRepo
 from zero_totp_db_model.model import SessionToken
+from Utils import utils
 
 
 
@@ -30,8 +31,10 @@ class TestEndpointProtection(unittest.TestCase):
             db.create_all()
             user = UserRepo().create(username='username', email='username@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
             self.user_id = user.id
-            self.session_id, self.session_token = SessionTokenRepo().generate_session_token(self.user_id)
+            
             db.session.commit()
+            self.session_token, _ = utils.generate_new_session(user=user, ip_address=None)
+            self.session_id = SessionTokenRepo().get_session_token(self.session_token).id
     
     def tearDown(self):
         with self.flask_application.app.app_context():
