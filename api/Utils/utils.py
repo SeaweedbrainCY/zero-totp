@@ -15,6 +15,8 @@ from database.refresh_token_repo import RefreshTokenRepo
 from database.session_token_repo import SessionTokenRepo
 from database.backup_configuration_repo import BackupConfigurationRepo
 from database.session_repo import SessionRepo
+from CryptoClasses import refresh_token as refresh_token_func
+from zero_totp_db_model.model import User as UserModel
 import os
 from hashlib import sha256
 from base64 import b64encode
@@ -210,6 +212,17 @@ def unsafe_json_vault_validation(json:str) -> (bool, str):
         logging.error("Error while validating vault json : " + str(e))
         print(e)
         return False, "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support."
+
+def generate_new_session(user:UserModel, ip_address:str|None) -> tuple[str, str]:
+    """Generate a new session and return the session  and the refresh token cookie.
+
+    Returns:
+        tuple[str, str]: Return the session and the refresh token
+    """
+    session = SessionRepo().create_new_session(user_id=user.id, ip_address=ip_address)
+    session_token_id, session_token = SessionTokenRepo().generate_session_token(user.id, session=session)
+    refresh_token = refresh_token_func.generate_refresh_token(user.id, session_token_id, session=session)
+    return session_token, refresh_token
 
 
 def revoke_session_and_refresh_tokens(session_id=None, refresh_id=None):
