@@ -103,9 +103,7 @@ def signup():
            zke_key = None
         if zke_key:
             ip = utils.get_ip(request)
-            session = SessionRepo().create_new_session(user_id=user.id, ip_address=ip)
-            session_token_id, session_token = SessionTokenRepo().generate_session_token(user.id, session=session)
-            refresh_token = refresh_token_func.generate_refresh_token(user.id, session_token_id, session=session)
+            session_token, refresh_token = utils.generate_new_session(user=user, ip_address=ip)
             if conf.features.emails.require_email_validation:
                 try:
                     send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
@@ -154,9 +152,7 @@ def login(ip, body):
     
     rate_limiting_db.flush_login_limit(ip)
 
-    session = SessionRepo().create_new_session(user_id=user.id, ip_address=ip)
-    session_token_id, session_token = SessionTokenRepo().generate_session_token(user.id, session=session)
-    refresh_token = refresh_token_func.generate_refresh_token(user.id, session_token_id, session=session)
+    session_token, refresh_token = utils.generate_new_session(user=user, ip_address=ip)
     if not conf.features.emails.require_email_validation: # we fake the isVerified status if email validation is not required
         response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True}))
     elif user.isVerified:
