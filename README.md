@@ -1,6 +1,6 @@
 # 🚨 ABOUT ONGOING CLOUDFLARE OUTAGE : use [rescue.zero-totp.com](https://rescue.zero-totp.com)
 *Last Update : 2025-11-18 15:10 UTC*
-> [!Danger]
+> [!WARNING]
 > Cloudflare is currently experiencing a major outage affecting multiple services, including zero-totp.com. 
 >
 > **During this period, you can use [rescue.zero-totp.com](https://rescue.zero-totp.com) to access your TOTP codes. This platform is 100% independent from Cloudflare and zero-totp.com infrastructure.**
