@@ -3,7 +3,6 @@ from app import app
 from database.db import db
 from database.user_repo import User as UserRepo
 from zero_totp_db_model.model import User as UserModel
-from database.session_token_repo import SessionTokenRepo
 from environment import conf, logging
 import datetime
 from unittest.mock import patch
@@ -21,7 +20,6 @@ class TestGetDerivedKeySalt(unittest.TestCase):
 
 
         self.user_repo = UserRepo()
-        self.session_token_repo = SessionTokenRepo()
 
         with self.application.app.app_context():
             db.create_all()

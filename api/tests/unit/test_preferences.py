@@ -4,7 +4,6 @@ import controllers
 from unittest.mock import patch
 from database.user_repo import User as UserRepo
 from database.preferences_repo import Preferences as PreferencesRepo
-from database.session_token_repo import SessionTokenRepo
 from environment import conf
 import datetime
 from zero_totp_db_model.model import User
@@ -41,7 +40,6 @@ class TestPreferences(unittest.TestCase):
 
         self.user_repo = UserRepo()
         self.preferences_repo = PreferencesRepo()
-        self.session_token_repo = SessionTokenRepo()
         with self.application.app.app_context():
             db.create_all()
             user = self.user_repo.create(username="user1", email="user1@test.test", password="password", 

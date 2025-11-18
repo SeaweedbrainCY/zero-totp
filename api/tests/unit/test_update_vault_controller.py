@@ -4,12 +4,11 @@ import unittest
 import controllers
 from unittest.mock import patch
 from zero_totp_db_model.model import User, TOTP_secret, ZKE_encryption_key
-from database.session_token_repo  import SessionTokenRepo
 from environment import conf
 from uuid import uuid4
 import json
-import datetime
 from CryptoClasses import hash_func
+from Uti
 
 class TestUpdateVault(unittest.TestCase):
 
@@ -29,7 +28,6 @@ class TestUpdateVault(unittest.TestCase):
         self.totp_codes = {}
         zke = ZKE_encryption_key(user_id=self.user_id, ZKE_key="zke_enc")
 
-        self.session_token_repo = SessionTokenRepo()
 
         with self.flask_application.app.app_context():
             db.create_all()

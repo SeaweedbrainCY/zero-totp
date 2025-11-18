@@ -12,8 +12,6 @@ from database.google_drive_integration_repo import GoogleDriveIntegration as Goo
 from database.preferences_repo import Preferences as Preferences_repo
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_repo
 from zero_totp_db_model.model  import Preferences as PreferencesModel
-from database.session_token_repo import SessionTokenRepo 
-from CryptoClasses import refresh_token as refresh_token_crypto_utility
 from uuid import uuid4
 from environment import conf
 from Utils import utils
@@ -41,7 +39,6 @@ class TestDeleteAccount(unittest.TestCase):
         self.google_drive_integration_repo = GoogleDriveIntegration_repo()
         self.preferences_repo = Preferences_repo()
         self.oauth_tokens_repo = Oauth_tokens_repo()
-        self.session_token_repo = SessionTokenRepo()
 
         self.delete_google_drive_option = patch("controllers.delete_google_drive_option").start()
         self.delete_google_drive_option.return_value = True

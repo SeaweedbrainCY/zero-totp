@@ -8,7 +8,6 @@ from database.user_repo import User as UserRepo
 from database.zke_repo import ZKE as ZKE_encryption_key_repo
 from database.totp_secret_repo import TOTP_secret as TOTP_secret_repo
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
-from database.session_token_repo import SessionTokenRepo
 from database.backup_configuration_repo import BackupConfigurationRepo
 from database.db import db
 from uuid import uuid4
@@ -59,7 +58,6 @@ class TestGoogleDriveAPI(unittest.TestCase):
             zke_repo = ZKE_encryption_key_repo()
             totp_repo = TOTP_secret_repo()
             self.google_integration_db = GoogleDriveIntegration_repo()
-            self.session_token_repo = SessionTokenRepo()
 
 
             with self.application.app.app_context():
