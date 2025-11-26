@@ -8,7 +8,7 @@ from environment import conf
 from uuid import uuid4
 import json
 from CryptoClasses import hash_func
-from Uti
+from Utils import utils
 
 class TestUpdateVault(unittest.TestCase):
 
@@ -41,7 +41,7 @@ class TestUpdateVault(unittest.TestCase):
             self.foreign_totp = TOTP_secret(uuid=self.foreign_totp_id, user_id=self.other_user_id, secret_enc = "enc")
             db.session.add(self.foreign_totp)
             db.session.commit()
-            _, self.session_token = self.session_token_repo.generate_session_token(self.user_id)
+            self.session_token,_ = utils.generate_new_session(user=user, ip_address=None)
 
             
        
