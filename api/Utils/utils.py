@@ -219,6 +219,14 @@ def generate_new_session(user:UserModel, ip_address:str|None) -> tuple[str, str]
     Returns:
         tuple[str, str]: Return the session and the refresh token
     """
+    try:
+        ip_obj = ipaddress.ip_address(ip_address)
+        if ip_obj.is_private:
+            ip_address = None
+            logging.warning(f"Private IP ({ip_address}) address provided while generating new session. Setting ip_address to None for user id  {user.id}")
+    except Exception as e:
+        ip_address = None
+        logging.warning(f"Invalid IP ({ip_address}) address provided while generating new session : {e}. Setting ip_address to None for user id {user.id}")
     session = SessionRepo().create_new_session(user_id=user.id, ip_address=ip_address)
     session_token_id, session_token = SessionTokenRepo().generate_session_token(user.id, session=session)
     refresh_token = refresh_token_func.generate_refresh_token(user.id, session_token_id, session=session)
