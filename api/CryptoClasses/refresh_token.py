@@ -7,6 +7,7 @@ from connexion.exceptions import Forbidden, Unauthorized
 from database.rate_limiting_repo import RateLimitingRepo
 from database.session_token_repo import SessionTokenRepo
 import Utils.utils as utils
+from zero_totp_db_model.model import SessionToken as SessionTokenModel, RefreshToken as RefreshTokenModel
 
 
 
@@ -18,7 +19,7 @@ def generate_refresh_token(user_id, session_token_id, session, expiration=-1):
     return token if rt else None
     
     
-def refresh_token_flow(refresh_token, session_token, ip):
+def refresh_token_flow(refresh_token:RefreshTokenModel, session_token:SessionTokenModel, ip:str):
     logging.info(f"Refreshing token for user {session_token.user_id}")
     rate_limiting = RateLimitingRepo()
     session_repo = SessionTokenRepo()
