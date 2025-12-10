@@ -8,7 +8,16 @@ from hashlib import sha256
 
 class SessionTokenRepo:
 
-    def generate_session_token(self, user_id:int, session:Session):
+    def generate_session_token(self, user_id:int, session:Session) -> tuple[str, str]:
+        """ Generates a new session token for a user
+
+        Args:
+            user_id (int): User ID to generate the session token for
+            session (Session): Session object to associate the token with
+
+        Returns:
+            tuple[str, str]: Returns the session token ID and the session token string
+        """
         id = str(uuid4()) 
         token = str(uuid4())
         expiration_timestamp = (datetime.datetime.now(datetime.UTC) + datetime.timedelta(seconds=conf.api.session_token_validity)).timestamp()
