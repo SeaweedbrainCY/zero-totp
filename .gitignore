@@ -9,7 +9,8 @@ __pycache__/
 # C extensions
 *.so
 
-
+# act related files 
+act/
 
 
 # Distribution / packaging
