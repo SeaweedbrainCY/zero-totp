@@ -921,7 +921,7 @@ def auth_refresh_token(ip, *args, **kwargs):
         rate_limiting.add_failed_login(ip, user_id=session_token.user_id)
         logging.warning(f"Session of user {session_token.user_id} tried to be refreshed with an refresh token (not present in the db)")
         return {"message": "Access denied"}, 403
-    new_session_token, new_refresh_token = refresh_token_func.refresh_token_flow(refresh=refresh, session=session, ip=ip)
+    new_session_token, new_refresh_token = refresh_token_func.refresh_token_flow(refresh_token=refresh_token, session_token=session_token, ip=ip)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
     response.set_auth_cookies(new_session_token, new_refresh_token)
     return response
