@@ -51,8 +51,9 @@ def refresh_token_flow(refresh_token:RefreshTokenModel, session_token:SessionTok
             raise Forbidden("Access denied")
     else:
         rate_limiting.add_failed_login(ip, session_token.user_id)
-        logging.warning(f"A refresh token has been asked, but invalid context for refresh token {refresh_token.id}. Session : Id : {session_token.id}, User {session_token.user_id}. Refresh : Id : {refresh_token.id}, User: {refresh_token.user_id}, Association session id : {refresh_token.session_token_id}. Refresh flow aborted.")
-        utils.revoke_session_and_refresh_tokens(session_id=session_token.id, refresh_id=refresh_token.id)
+        logging.warning(f"A refresh token has been asked, but invalid context for refresh token {refresh_token.id}. Session : Id : {session_token.id}, User {session_token.user_id}. Refresh : Id : {refresh_token.id}, User: {refresh_token.user_id}, Association session id : {refresh_token.session_token_id}. Refresh flow aborted. Revoking all related tokens and their session.")
+        utils.revoke_session(session_id=session_token.session.id)
+        utils.revoke_session(session_id=refresh_token.session.id)
         raise Forbidden("Access denied")
 
 
