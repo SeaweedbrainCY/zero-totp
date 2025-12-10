@@ -233,7 +233,16 @@ def generate_new_session(user:UserModel, ip_address:str|None) -> tuple[str, str]
     return session_token, refresh_token
 
 
-def revoke_session_and_refresh_tokens(session_id=None, refresh_id=None):
+def revoke_session_and_refresh_tokens(session_id=None, refresh_id=None) -> bool | None:
+    """[DEPRECATED] This method should not be used anymore. Use revoke_session instead. Revoke a session token and a refresh token entries. 
+
+    Args:
+        session_id (str, optional): Session token id to revoke. Defaults to None.
+        refresh_id (str, optional): Refresh token id to revoke. Defaults to None.
+
+    Returns:
+        bool | None: _True if the tokens were revoked, None otherwise._
+    """
     logging.info(f"Revoking session {session_id} and refresh {refresh_id} tokens")
     session_repo = SessionTokenRepo()
     refresh_repo = RefreshTokenRepo()
@@ -255,7 +264,15 @@ def revoke_session_and_refresh_tokens(session_id=None, refresh_id=None):
             logging.info(f"Revoked session {associated_session.id} because the associated refresh {refresh.id} was revoked")
     return True
 
-def revoke_session(session_id):
+def revoke_session(session_id) -> bool | None:
+    """Revoke a session and all associated refresh tokens and session tokens.
+
+    Args:
+        session_id (str): _session id to revoke_
+
+    Returns:
+        bool | None: _True if the session was revoked, None otherwise._
+    """
     logging.info(f"Revoking session {session_id}")
     session_repo = SessionRepo()
     session = session_repo.get_session_by_id(session_id)
