@@ -610,7 +610,6 @@ export class VaultComponent implements OnInit, OnDestroy {
       next: (response) => {
         if(response.status === 200){
           const derived_key_salt_req_data = response.body as { derived_key_salt: string };
-          console.log("Derived key salt: " + derived_key_salt_req_data.derived_key_salt);
           this.userService.setDerivedKeySalt(derived_key_salt_req_data.derived_key_salt);
           this.http.get("/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe({
             next: (response) => {
