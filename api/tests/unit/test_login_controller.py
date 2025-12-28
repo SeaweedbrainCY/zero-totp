@@ -86,10 +86,10 @@ class TestLoginController(unittest.TestCase):
             self.assertIn("Expires", refresh_token)
             self.assertIn("Path=/api/v1/auth/refresh", refresh_token)
 
-            hashed_refresh_token = sha256(refresh_token.encode()).hexdigest()
+            hashed_refresh_token = sha256(refresh_token.split(";")[0].encode()).hexdigest()
 
-            session_token_obj = db.session.query(SessionToken).filter_by(token=session_token).first()
-            refresh_token_obj = db.session.query(RefreshToken).filter_by(hashed_token=refresh_token).first()
+            session_token_obj = db.session.query(SessionToken).filter_by(token=session_token.split(";")[0]).first()
+            refresh_token_obj = db.session.query(RefreshToken).filter_by(hashed_token=hashed_refresh_token).first()
             self.assertIsNotNone(session_token_obj)
             self.assertIsNotNone(refresh_token_obj)
             
