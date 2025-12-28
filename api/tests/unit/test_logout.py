@@ -51,8 +51,9 @@ class TestLogout(unittest.TestCase):
             refresh_token_obj = RefreshTokenRepo().get_refresh_token_by_hash(sha256(self.refresh_token.encode('utf-8')).hexdigest())
             self.assertIsNotNone(session_token_obj.revoke_timestamp)
             self.assertIsNotNone(refresh_token_obj.revoke_timestamp)
+            self.assertIsNotNone(session_token_obj.session.revoke_timestamp)
             self.assertLessEqual(float(session_token_obj.revoke_timestamp), datetime.datetime.now(datetime.UTC).timestamp())
-            self.assertLessEqual(float(session_token_obj.revoke_timestamp), datetime.datetime.now(datetime.UTC).timestamp())
+            self.assertLessEqual(float(session_token_obj.session.revoke_timestamp), datetime.datetime.now(datetime.UTC).timestamp())
             self.assertLessEqual(float(refresh_token_obj.revoke_timestamp), datetime.datetime.now(datetime.UTC).timestamp())
 
             

@@ -171,7 +171,7 @@ def logout(_):
     session = session_repo.get_session_token(session_token)
     if not session:
         return {"message": "Session not found"}, 404
-    utils.revoke_session(session_id=session.id)
+    utils.revoke_session(session_id=session.session.id)
     response = Response(status=200, mimetype="application/json", response=json.dumps({"message": "Logged out"}))
     response.delete_cookie("session-token")
     response.delete_cookie("refresh-token")

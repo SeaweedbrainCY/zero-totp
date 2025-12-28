@@ -287,4 +287,6 @@ def revoke_session(session_id) -> bool | None:
             session_token_repo = SessionTokenRepo()
             session_token_repo.revoke(session_token.id)
             logging.info(f"Revoked session token {session_token.id} because the associated session {session.id} was revoked")
+    else:
+        logging.warning(f"Session {session_id} not found while trying to revoke it")
     return True
