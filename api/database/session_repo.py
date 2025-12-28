@@ -34,5 +34,7 @@ class SessionRepo:
         return False
 
     def delete_by_user_id(self, user_id:int) -> None:
-        db.session.query(Session).filter(Session.user_id == user_id).delete()
+        sessions = db.session.query(Session).filter(Session.user_id == user_id).all()
+        for session in sessions:
+            db.session.delete(session)
         db.session.commit()

@@ -804,7 +804,8 @@ def delete_account(user_id):
     except Exception as e:
         logging.warning("Error while deleting backups for user " + str(user_id) + ". Exception : " + str(e))
     try:
-        utils.delete_user_from_database(user_id)
+        UserDB().delete(user_id)
+        logging.info("Account deleted for user " + str(user_id))
         return {"message": "Account deleted"}, 200
     except Exception as e:
         logging.warning("Error while deleting user from database for user " + str(user_id) + ". Exception : " + str(e))

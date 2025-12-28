@@ -77,19 +77,7 @@ def extract_last_backup_from_list(files_list) -> (any, datetime):
     return last_backup_file,last_backup_file_date
 
  
-def delete_user_from_database(user_id):
-    Oauth_tokens_repo().delete(user_id)
-    GoogleDriveIntegration_repo().delete(user_id)
-    Preferences_repo().delete(user_id)
-    TOTP_secret_repo().delete_all(user_id)
-    BackupConfigurationRepo().delete(user_id)
-    ZKE_encryption_key_repo().delete(user_id)
-    EmailVerificationToken().delete(user_id)
-    RateLimitingRepo().flush_by_user_id(user_id)
-    SessionTokenRepo().delete_by_user_id(user_id)
-    RefreshTokenRepo().delete_by_user_id(user_id)
-    User_repo().delete(user_id)
-    logging.info("User " + str(user_id) + " deleted from database")
+
 
 
 def generate_new_email_verification_token(user_id):
