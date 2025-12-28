@@ -25,6 +25,8 @@ class TestUpdateVault(unittest.TestCase):
         self.nb_totp = 10
         self.password =  hash_func.Bcrypt("HelloWorld!")
         user = User(id=self.user_id,username='user1', mail="user1@test.com", password=self.password.hashpw().decode('utf-8'), derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAA", createdAt="01/01/2001", isBlocked=False)
+        other_user = User(id=self.other_user_id,username='user2', mail="user2@test.com", password=self.password.hashpw().decode('utf-8'), derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAA", createdAt="01/01/2001", isBlocked=False)
+
         self.totp_codes = {}
         zke = ZKE_encryption_key(user_id=self.user_id, ZKE_key="zke_enc")
 
@@ -32,6 +34,7 @@ class TestUpdateVault(unittest.TestCase):
         with self.flask_application.app.app_context():
             db.create_all()
             db.session.add(user)
+            db.session.add(other_user)
             db.session.add(zke)
             for i in range(self.nb_totp):
                 id = str(uuid4())
