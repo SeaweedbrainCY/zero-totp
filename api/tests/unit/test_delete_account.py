@@ -15,6 +15,7 @@ from zero_totp_db_model.model  import Preferences as PreferencesModel
 from uuid import uuid4
 from environment import conf
 from Utils import utils
+from time import sleep
 
 
 class TestDeleteAccount(unittest.TestCase):
@@ -187,7 +188,7 @@ class TestDeleteAccount(unittest.TestCase):
         with self.flask_application.app.app_context():
             self.client.cookies= {"session-token" :self.full_user_session_token}
             self.client.headers = {"x-hash-passphrase": "passphrase"}
-            self.secrets_delete_all = patch("database.totp_secret_repo.TOTP_secret.delete_all").start()
+            self.secrets_delete_all = patch("database.user_repo.User.delete").start()
             self.secrets_delete_all.side_effect = Exception("error")
             response = self.client.delete(self.deleteEndpoint)
             self.assertEqual(response.status_code, 500)
