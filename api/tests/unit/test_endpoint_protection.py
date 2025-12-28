@@ -79,7 +79,7 @@ class TestEndpointProtection(unittest.TestCase):
                     self.client.cookies = {'session-token': self.session_token}
                     response = self.client.get(get_endpoint)
                     self.assertEqual(response.status_code, 403, f"GET {get_endpoint} should return 403. Got {response.status_code}")
-                    self.assertEqual(response.json()['detail'], 'API key expired', f"GET {get_endpoint} got {response.json()}")
+                    self.assertEqual(response.json()['detail'], 'Session expired', f"GET {get_endpoint} got {response.json()}")
     
     
 ########
@@ -120,7 +120,7 @@ class TestEndpointProtection(unittest.TestCase):
                     self.client.cookies = {'session-token': self.session_token}
                     response = self.client.post(post_endpoint)
                     self.assertEqual(response.status_code, 403, f"POST {post_endpoint} should return 403. Got {response.status_code}")
-                    self.assertEqual(response.json()['detail'], 'API key expired', f"POST {post_endpoint} got {response.json()}")                    
+                    self.assertEqual(response.json()['detail'], 'Session expired', f"POST {post_endpoint} got {response.json()}")                    
 
 ########
 ## PUT
@@ -160,7 +160,7 @@ class TestEndpointProtection(unittest.TestCase):
                     self.client.cookies = {'session-token': self.session_token}
                     response = self.client.put(put_endpoint)
                     self.assertEqual(response.status_code, 403, f"PUT {put_endpoint} should return 403. Got {response.status_code}")
-                    self.assertEqual(response.json()['detail'], 'API key expired', f"PUT {put_endpoint} got {response.json()}")
+                    self.assertEqual(response.json()['detail'], 'Session expired', f"PUT {put_endpoint} got {response.json()}")
 
 
 #########
@@ -201,4 +201,4 @@ class TestEndpointProtection(unittest.TestCase):
                     self.client.cookies = {'session-token': self.session_token}
                     response = self.client.delete(delete_endpoint)
                     self.assertEqual(response.status_code, 403, f"DELETE {delete_endpoint} should return 403. Got {response.status_code}")
-                    self.assertEqual(response.json()['detail'], 'API key expired', f"DELETE {delete_endpoint} got {response.json()}")
+                    self.assertEqual(response.json()['detail'], 'Session expired', f"DELETE {delete_endpoint} got {response.json()}")
