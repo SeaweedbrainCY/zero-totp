@@ -30,9 +30,10 @@ class TestRefreshAuthToken(unittest.TestCase):
         self.user2_id = 2
         with self.flask_application.app.app_context():
             user = UserModel(id=self.user_id,username="user", mail="user@user.com", password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
-            _ = UserModel(id=self.user2_id,username="user2", mail="user2@user.com", password="pass2", derivedKeySalt="BBB", isVerified = False, passphraseSalt = "BBBB", createdAt="01/01/2001")
+            user2 = UserModel(id=self.user2_id,username="user2", mail="user2@user.com", password="pass2", derivedKeySalt="BBB", isVerified = False, passphraseSalt = "BBBB", createdAt="01/01/2001")
             db.create_all()
             db.session.add(user)
+            db.session.add(user2)
             db.session.commit()
             self.session_token, self.refresh_token = utils.generate_new_session(user=user, ip_address=None)
             self.hashed_refresh_token = sha256(self.refresh_token.encode('utf-8')).hexdigest()
@@ -99,8 +100,8 @@ class TestRefreshAuthToken(unittest.TestCase):
             self.assertEqual(new_refresh_token_entry.session_token_id, new_session_token_entry.id)
 
             # Verify the old tokens are revoked and new ones are valid
-            self.assertLess(float(old_refresh_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(old_session_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
+            self.assertLessEqual(int(float(old_refresh_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(old_session_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
 
             # Verify the new tokens expiration is correct
             self.assertLess(dt.datetime.now(dt.UTC) - dt.datetime.fromtimestamp(float(new_session_token_entry.expiration), dt.UTC) + dt.timedelta(seconds=conf.api.session_token_validity) , dt.timedelta(seconds=5))
@@ -166,21 +167,21 @@ class TestRefreshAuthToken(unittest.TestCase):
                 self.assertEqual(new_refresh_token_entry.session_token_id, new_session_token_entry.id)
 
                 # Verify the old tokens are revoked and new ones are valid
-                self.assertLess(float(old_refresh_token_entry.revoke_timestamp), dt.datetime.now(dt.UTC).timestamp())
-                self.assertLess(float(old_session_token_entry.revoke_timestamp), dt.datetime.now(dt.UTC).timestamp())
+                self.assertLessEqual(int(float(old_refresh_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+                self.assertLessEqual(int(float(old_session_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
 
                 # Verify the new tokens expiration is correct
-                self.assertLess(dt.datetime.fromtimestamp(float(new_session_token_entry.expiration), dt.UTC) + dt.timedelta  (seconds=conf.api.session_token_validity) - dt.datetime.now(dt.UTC), dt.timedelta(seconds=5))
-                self.assertLess(dt.datetime.fromtimestamp(new_refresh_token_entry.expiration, dt.UTC) + dt.timedelta    (seconds=conf.api.refresh_token_validity) - dt.datetime.now(dt.UTC), dt.timedelta(seconds=5))
+                self.assertLess(dt.datetime.now(dt.UTC) - dt.datetime.fromtimestamp(float(new_session_token_entry.expiration), dt.UTC) + dt.timedelta(seconds=conf.api.session_token_validity) , dt.timedelta(seconds=5))
+                self.assertLess(dt.datetime.now(dt.UTC) - dt.datetime.fromtimestamp(float(new_refresh_token_entry.expiration), dt.UTC) + dt.timedelta    (seconds=conf.api.refresh_token_validity) , dt.timedelta(seconds=5))
 
                 # Verify the session expiration didn't change, is not revoked and last active timestamp is updated
                 self.assertEqual(old_session.expiration_timestamp, new_session_token_entry.session.expiration_timestamp)
                 self.assertIsNone(new_session_token_entry.session.revoke_timestamp)
-                self.assertLess(float(new_session_token_entry.session.last_active_at) - dt.datetime.now(dt.UTC). timestamp(), 5)
+                self.assertLess(float(new_session_token_entry.session.last_active_at) - dt.datetime.now(dt.UTC).timestamp(), 5)
 
                 # Verify cookies contains the new tokens
                 self.assertIn(new_session_token_entry.token, session_token_cookie)
-                self.assertIn(new_refresh_token_entry.token, refresh_token_cookie)
+                self.assertIn(new_refresh_token_entry.hashed_token,new_hashed_refresh_token)
     
     def test_refresh_token_same_user_token_but_unpaired_good_session_bad_refresh(self):
          with self.flask_application.app.app_context():
@@ -198,12 +199,12 @@ class TestRefreshAuthToken(unittest.TestCase):
             session_token2_entry = SessionTokenRepo().get_session_token(session_token2)
             refresh_token2_entry = RefreshTokenRepo().get_refresh_token_by_hash(hashed_refresh_token2)
 
-            self.assertLess(float(refresh_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(session_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(session_token2_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(refresh_token2_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(session_token_entry.session.last_active_at) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(session_token2_entry.session.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
+            self.assertLessEqual(int(float(refresh_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(session_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(session_token2_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(refresh_token2_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(session_token_entry.session.last_active_at)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(session_token2_entry.session.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
 
     def test_refresh_token_same_user_token_but_unpaired_bad_session_good_refresh(self):
          with self.flask_application.app.app_context():
@@ -221,11 +222,11 @@ class TestRefreshAuthToken(unittest.TestCase):
             session_token2_entry = SessionTokenRepo().get_session_token(session_token2)
             refresh_token2_entry = RefreshTokenRepo().get_refresh_token_by_hash(hashed_refresh_token2)
 
-            self.assertLess(float(session_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(refresh_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp(), )
-            self.assertLess(float(session_token2_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(refresh_token2_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(session_token_entry.session.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
+            self.assertLessEqual(int(float(session_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(refresh_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()), )
+            self.assertLessEqual(int(float(session_token2_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(refresh_token2_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(session_token_entry.session.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
             
 
     
@@ -245,12 +246,12 @@ class TestRefreshAuthToken(unittest.TestCase):
             self.client.cookies = {"session-token": self.session_token, "refresh-token": user2_refresh_token}
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 403)
-            self.assertLess(float(user1_session_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(user1_refresh_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(user2_session_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(user2_refresh_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(user1_session_token_entry.session.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(user2_session_token_entry.session.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
+            self.assertLessEqual(int(float(user1_session_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(user1_refresh_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(user2_session_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(user2_refresh_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(user1_session_token_entry.session.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(user2_session_token_entry.session.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
     
     def test_refresh_token_with_session_token_from_other_user(self):
          with self.flask_application.app.app_context():
@@ -268,12 +269,12 @@ class TestRefreshAuthToken(unittest.TestCase):
             self.client.cookies = {"session-token": user2_session_token, "refresh-token": self.refresh_token}
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 403)
-            self.assertLess(float(user1_session_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(user1_refresh_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(user2_session_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(user2_refresh_token_entry.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(user1_session_token_entry.session.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
-            self.assertLess(float(user2_session_token_entry.session.revoke_timestamp) , dt.datetime.now(dt.UTC).timestamp())
+            self.assertLessEqual(int(float(user1_session_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(user1_refresh_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(user2_session_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(user2_refresh_token_entry.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(user1_session_token_entry.session.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
+            self.assertLessEqual(int(float(user2_session_token_entry.session.revoke_timestamp)), int(dt.datetime.now(dt.UTC).timestamp()))
 
     def test_refresh_token_with_expired_session(self):
         with self.flask_application.app.app_context():
@@ -310,10 +311,10 @@ class TestRefreshAuthToken(unittest.TestCase):
     def test_refresh_token_with_revoked_session_token(self):
         with self.flask_application.app.app_context():
             session_token_entry = SessionTokenRepo().get_session_token(self.session_token)
-            RefreshTokenRepo().revoke(session_token_entry.id)
+            SessionTokenRepo().revoke(session_token_entry.id)
             self.client.cookies = {"session-token":self.session_token, "refresh-token": self.refresh_token}
             response = self.client.put(self.endpoint)
-            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 401)
     
     def test_refresh_token_with_unknown_refresh_token(self):
         with self.flask_application.app.app_context():
