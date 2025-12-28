@@ -20,9 +20,8 @@ class TestUpdateEmail(unittest.TestCase):
         self.endpoint = "/api/v1/update/email"
         
         self.user_id =1
-        self.user2_id = 2
-        self.blocked_user_id = 3
-        self.unverified_user_id = 4
+        self.blocked_user_id = 2
+        self.unverified_user_id = 3
 
         self.user_email = "user1@test.test"
         self.user2_email = "user2@test.test"
@@ -33,8 +32,8 @@ class TestUpdateEmail(unittest.TestCase):
         with self.application.app.app_context():
             db.create_all()
             user = self.user_repo.create(username="user1", email=self.user_email, password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
-            blocked_user = self.user_repo.create(username="user2", email=self.user2_email, password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
-            unverified_user = self.user_repo.create(username="user3", email="user3@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(), isBlocked=True)
+            blocked_user = self.user_repo.create(username="user2", email=self.user2_email, password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(), isBlocked=True)
+            unverified_user = self.user_repo.create(username="user3", email="user3@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.now())
             self.user_repo.create(username="user4", email="user4@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.now())
             
             self.preferences_repo.create_default_preferences(user_id=1)
