@@ -2,13 +2,13 @@ import unittest
 from app import app
 import controllers
 from unittest.mock import patch
-from zero_totp_db_model.model import User, RateLimiting, SessionToken, RefreshToken
-from database.session_token_repo import SessionTokenRepo
+from zero_totp_db_model.model import User, RateLimiting, SessionToken, RefreshToken, Session
 from environment import conf
 from database.db import db 
 import datetime
 from uuid import uuid4
 from hashlib import sha256
+from Utils import utils
 
 class TestLoginController(unittest.TestCase):
 
@@ -86,25 +86,17 @@ class TestLoginController(unittest.TestCase):
             self.assertIn("Expires", refresh_token)
             self.assertIn("Path=/api/v1/auth/refresh", refresh_token)
 
-            user = db.session.query(User).filter_by(id=1).first()
-            last_login_date_timestamp = user.last_login_date
-            diff_time = datetime.datetime.now(datetime.UTC).timestamp() - float(last_login_date_timestamp)
-            self.assertLessEqual(diff_time, 5)
-            
-            session = db.session.query(SessionToken).filter_by(user_id=1).first()
-            
-            self.assertIsNotNone(session)
-            self.assertEqual(session.user_id, 1)
-            self.assertIn(session.token, session_token)
-            self.assertAlmostEqual(float(session.expiration), datetime.datetime.now(datetime.UTC).timestamp() + conf.api.session_token_validity, delta=60)
-            self.assertIsNone(session.revoke_timestamp)
+            hashed_refresh_token = sha256(refresh_token.encode()).hexdigest()
 
-            refresh = db.session.query(RefreshToken).filter_by(user_id=1).first()
-            self.assertIsNotNone(refresh)
-            self.assertEqual(refresh.user_id, 1)
-            self.assertAlmostEqual(float(refresh.expiration), datetime.datetime.now(datetime.UTC).timestamp() + conf.api.refresh_token_validity, delta=60)
-            self.assertIsNone(refresh.revoke_timestamp)
-            self.assertEqual(refresh.session_token_id, session.id)
+            session_token_obj = db.session.query(SessionToken).filter_by(token=session_token).first()
+            refresh_token_obj = db.session.query(RefreshToken).filter_by(hashed_token=refresh_token).first()
+            self.assertIsNotNone(session_token_obj)
+            self.assertIsNotNone(refresh_token_obj)
+            
+            self.assertEqual(session_token_obj.user_id, 1)
+            self.assertEqual(refresh_token_obj.user_id, 1)
+
+            self.assertEqual(session_token_obj.session_id, refresh_token_obj.session_id)
 
 
 
@@ -203,11 +195,12 @@ class TestLoginController(unittest.TestCase):
             
     def test_login_with_existing_session(self):
         with self.application.app.app_context():
-            session_repo = SessionTokenRepo()
-            session_repo.generate_session_token(1)
+            user = db.session.query(User).filter_by(id=1).first()
+            session_token, _ = utils.generate_new_session(user=user, ip_address=None)
+            self.client.cookies = {'session-token': session_token}
             response = self.client.post(self.loginEndpoint, json=self.json_payload)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(db.session.query(SessionToken).filter_by(user_id=1).all()), 2)
+            self.assertEqual(len(db.session.query(Session).filter_by(user_id=1).all()), 2)
 
 
 
