@@ -26,12 +26,22 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.secret_key = conf.api.flask_secret_key
+
     
 
     
     db.init_app(app)
     sentry_configuration() #optional
     init_db(db)
+
+    if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
+        def _fk_pragma_on_connect(dbapi_con, con_record):  # noqa
+            dbapi_con.execute('pragma foreign_keys=ON')
+
+        with app.app_context():
+            from sqlalchemy import event
+            event.listen(db.engine, 'connect', _fk_pragma_on_connect)
+
     
     
     
