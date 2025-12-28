@@ -8,6 +8,7 @@ from database.rate_limiting_repo import RateLimitingRepo
 from database.session_token_repo import SessionTokenRepo
 from database.session_repo import SessionRepo
 from database.user_repo import User as UserRepo
+from CryptoClasses.refresh_token import generate_refresh_token
 from unittest.mock import patch
 import datetime
 from uuid import uuid4
@@ -182,6 +183,79 @@ class TestRefreshAuthToken(unittest.TestCase):
                 # Verify cookies contains the new tokens
                 self.assertIn(new_session_token_entry.token, session_token_cookie)
                 self.assertIn(new_refresh_token_entry.hashed_token,new_hashed_refresh_token)
+
+
+    def test_refresh_token_with_session_expiring_before_new_session_token(self):
+        """
+            Try to refresh a tokens, when the whole session expiration is before the new session token expiration (and refresh token expiration).
+        """
+        
+        with self.flask_application.app.app_context():
+            with freeze_time((self.session_expiration_date - dt.timedelta(seconds=conf.api.session_token_validity - 10))):
+                old_session = SessionTokenRepo().get_session_token(self.session_token).session
+                old_session_token_id, old_session_token = SessionTokenRepo().generate_session_token(user_id=self.user_id, session=old_session)
+                old_refresh_token = generate_refresh_token(user_id=self.user_id, session_token_id=old_session_token_id, session=old_session)
+                self.client.cookies = {"session-token": old_session_token, "refresh-token": old_refresh_token}
+                response = self.client.put(self.endpoint)
+                self.assertEqual(response.status_code, 200)
+                self.assertIn("Set-Cookie", response.headers)
+                self.assertIn("session-token", response.headers["Set-Cookie"])
+                self.assertIn("refresh-token", response.headers["Set-Cookie"])
+                cookies = response.headers["Set-Cookie"].split("session-token=")
+                self.assertEqual(len(cookies), 2, "Session-token found multiple times in the response")
+                if "refresh-token" in cookies[1]:
+                    cookies = cookies[1].split("refresh-token=")
+                    session_token_cookie = cookies[0]
+                    refresh_token_cookie = cookies[1]
+                else:
+                    refresh_token_cookie = cookies[0]
+                    session_token_cookie = cookies[1]
+
+
+                new_session_token_entry = SessionTokenRepo().get_session_token(session_token_cookie.split(";")[0])
+                new_refresh_token_entry = RefreshTokenRepo().get_refresh_token_by_hash(sha256(refresh_token_cookie.split(";")[0].encode('utf-8')).hexdigest())
+
+                # Check the session token and refresh token expiration didn't exceed the session expiration
+                self.assertAlmostEqual(float(new_session_token_entry.expiration), float(old_session.expiration_timestamp), 0, f"New session token expiration: {new_session_token_entry.expiration} ({dt.datetime.fromtimestamp(float(new_session_token_entry.expiration))}), old session expiration: {old_session.expiration_timestamp}  ({dt.datetime.fromtimestamp(float(old_session.expiration_timestamp))}). Should be almost alike. Current datetime: {dt.datetime.now(dt.UTC).timestamp()} ({dt.datetime.now(dt.UTC)}). Pre-computed session expiration : {self.session_expiration_date}")
+                self.assertAlmostEqual(float(new_refresh_token_entry.expiration), float(old_session.expiration_timestamp), 0, f"New refresh token expiration: {new_refresh_token_entry.expiration} ({dt.datetime.fromtimestamp(float(new_refresh_token_entry.expiration))}), old session expiration: {old_session.expiration_timestamp} ({dt.datetime.fromtimestamp(float(old_session.expiration_timestamp))}). Should be almost alike. Current datetime: {dt.datetime.now(dt.UTC).timestamp()} ({dt.datetime.now(dt.UTC)}). Pre-computed session expiration : {self.session_expiration_date}")
+                self.assertEqual(new_session_token_entry.session.expiration_timestamp, old_session.expiration_timestamp)
+
+
+    def test_refresh_token_with_session_expiring_before_new_refresh_token(self):
+        """
+            Try to refresh a tokens, when the whole session expiration is before the new refresh token expiration.
+        """
+        with freeze_time((self.session_expiration_date - dt.timedelta(seconds=conf.api.refresh_token_validity - 10))):
+            with self.flask_application.app.app_context():
+                old_session = SessionTokenRepo().get_session_token(self.session_token).session
+                old_session_token_id, old_session_token = SessionTokenRepo().generate_session_token(user_id=self.user_id, session=old_session)
+                old_refresh_token = generate_refresh_token(user_id=self.user_id, session_token_id=old_session_token_id, session=old_session)
+                self.client.cookies = {"session-token": old_session_token, "refresh-token": old_refresh_token}
+                response = self.client.put(self.endpoint)
+                self.assertEqual(response.status_code, 200)
+                self.assertIn("Set-Cookie", response.headers)
+                self.assertIn("session-token", response.headers["Set-Cookie"])
+                self.assertIn("refresh-token", response.headers["Set-Cookie"])
+                cookies = response.headers["Set-Cookie"].split("session-token=")
+                self.assertEqual(len(cookies), 2, "Session-token found multiple times in the response")
+                if "refresh-token" in cookies[1]:
+                    cookies = cookies[1].split("refresh-token=")
+                    session_token_cookie = cookies[0]
+                    refresh_token_cookie = cookies[1]
+                else:
+                    refresh_token_cookie = cookies[0]
+                    session_token_cookie = cookies[1]
+
+
+                new_session_token_entry = SessionTokenRepo().get_session_token(session_token_cookie.split(";")[0])
+                new_refresh_token_entry = RefreshTokenRepo().get_refresh_token_by_hash(sha256(refresh_token_cookie.split(";")[0].encode('utf-8')).hexdigest())
+
+                # Check the session token and refresh token expiration didn't exceed the session expiration
+                self.assertLess(dt.datetime.now(dt.UTC) - dt.datetime.fromtimestamp(float(new_session_token_entry.expiration), dt.UTC) + dt.timedelta(seconds=conf.api.session_token_validity) , dt.timedelta(seconds=5))
+                self.assertAlmostEqual(float(new_refresh_token_entry.expiration), float(old_session.expiration_timestamp), 0)  
+                self.assertEqual(new_session_token_entry.session.expiration_timestamp, old_session.expiration_timestamp)
+
+
     
     def test_refresh_token_same_user_token_but_unpaired_good_session_bad_refresh(self):
          with self.flask_application.app.app_context():
