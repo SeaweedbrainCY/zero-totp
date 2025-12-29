@@ -6,6 +6,7 @@ import datetime as dt
 from connexion.exceptions import Forbidden, Unauthorized
 from database.rate_limiting_repo import RateLimitingRepo
 from database.session_token_repo import SessionTokenRepo
+from database.session_repo import SessionRepo
 import Utils.utils as utils
 from zero_totp_db_model.model import SessionToken as SessionTokenModel, RefreshToken as RefreshTokenModel
 from environment import conf
@@ -23,7 +24,8 @@ def generate_refresh_token(user_id, session_token_id, session, expiration=-1):
 def refresh_token_flow(refresh_token:RefreshTokenModel, session_token:SessionTokenModel, ip:str):
     logging.info(f"Refreshing token for user {session_token.user_id}")
     rate_limiting = RateLimitingRepo()
-    session_repo = SessionTokenRepo()
+    session_token_repo = SessionTokenRepo()
+    session_repo = SessionRepo()
     if refresh_token.session_token_id == session_token.id and refresh_token.user_id == session_token.user_id:
         if refresh_token.revoke_timestamp == None:
             if float(refresh_token.expiration) > dt.datetime.now(dt.UTC).timestamp():
@@ -36,9 +38,10 @@ def refresh_token_flow(refresh_token:RefreshTokenModel, session_token:SessionTok
                             custom_session_token_expiration = session.expiration_timestamp
                         if float(session.expiration_timestamp) < (dt.datetime.now(dt.UTC) + dt.timedelta(seconds=conf.api.refresh_token_validity)).timestamp():
                             custom_refresh_token_expiration = session.expiration_timestamp
-                        new_session_id, new_session_token = session_repo.generate_session_token(session_token.user_id, session=session, expiration=custom_session_token_expiration)
+                        new_session_id, new_session_token = session_token_repo.generate_session_token(session_token.user_id, session=session, expiration=custom_session_token_expiration)
                         new_refresh_token = generate_refresh_token(session_token.user_id, new_session_id, session=session, expiration=custom_refresh_token_expiration)
                         utils.revoke_session_and_refresh_tokens(session_id=session_token.id, refresh_id=refresh_token.id)
+                        session_repo.update_last_active(session_id=session.id, timestamp=dt.datetime.now(dt.UTC).timestamp())
                         return new_session_token, new_refresh_token
                     else:
                         logging.info(f"Session {session.id} has expired. Refresh flow aborted.")
