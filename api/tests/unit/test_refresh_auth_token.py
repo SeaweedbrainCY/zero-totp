@@ -112,10 +112,14 @@ class TestRefreshAuthToken(unittest.TestCase):
             self.assertEqual(old_session.expiration_timestamp, new_session_token_entry.session.expiration_timestamp)
             self.assertIsNone(new_session_token_entry.session.revoke_timestamp)
             self.assertLess(float(new_session_token_entry.session.last_active_at) - dt.datetime.now(dt.UTC).timestamp(), 5)
+            self.assertNotEqual(new_session_token_entry.session.last_active_at, old_session.last_active_at)
+
 
             # Verify cookies contains the new tokens
             self.assertIn(new_session_token_entry.token, session_token_cookie)
             self.assertIn(new_refresh_token_entry.hashed_token, new_hashed_refresh_token)
+
+            # Verify the last active timestamp of the session is updated
 
             
     def test_refresh_token_with_expired_session_token(self):
