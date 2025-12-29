@@ -55,6 +55,7 @@ class TestRefreshAuthToken(unittest.TestCase):
     def test_refresh_token(self):
         with self.flask_application.app.app_context():
             old_session = SessionTokenRepo().get_session_token(self.session_token).session
+            old_last_active = old_session.last_active_at
             self.client.cookies = {"session-token": self.session_token, "refresh-token": self.refresh_token}
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 200)
@@ -112,7 +113,7 @@ class TestRefreshAuthToken(unittest.TestCase):
             self.assertEqual(old_session.expiration_timestamp, new_session_token_entry.session.expiration_timestamp)
             self.assertIsNone(new_session_token_entry.session.revoke_timestamp)
             self.assertLess(float(new_session_token_entry.session.last_active_at) - dt.datetime.now(dt.UTC).timestamp(), 5)
-            self.assertNotEqual(new_session_token_entry.session.last_active_at, old_session.last_active_at)
+            self.assertNotEqual(new_session_token_entry.session.last_active_at, old_last_active)
 
 
             # Verify cookies contains the new tokens
