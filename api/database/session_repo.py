@@ -21,6 +21,15 @@ class SessionRepo:
             expiration_timestamp=expiration_timestamp
         )
         return session
+    
+    def update_last_active(self, session_id:str, timestamp:float) -> bool:
+        session = db.session.query(Session).filter(Session.id == session_id).first()
+        if session != None:
+            session.last_active_at = timestamp
+            db.session.commit()
+            return True
+        return False
+
 
     def get_session_by_id(self, session_id:str) -> Session|None:
         return db.session.query(Session).filter(Session.id == session_id).first()
