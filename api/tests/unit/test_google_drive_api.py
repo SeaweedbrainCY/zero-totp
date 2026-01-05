@@ -8,7 +8,6 @@ from database.user_repo import User as UserRepo
 from database.zke_repo import ZKE as ZKE_encryption_key_repo
 from database.totp_secret_repo import TOTP_secret as TOTP_secret_repo
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
-from database.session_token_repo import SessionTokenRepo
 from database.backup_configuration_repo import BackupConfigurationRepo
 from database.db import db
 from uuid import uuid4
@@ -59,19 +58,20 @@ class TestGoogleDriveAPI(unittest.TestCase):
             zke_repo = ZKE_encryption_key_repo()
             totp_repo = TOTP_secret_repo()
             self.google_integration_db = GoogleDriveIntegration_repo()
-            self.session_token_repo = SessionTokenRepo()
 
 
             with self.application.app.app_context():
                     db.create_all()
-                    user_repo.create(username="user", email="user@test.test", password="password", 
+                    user = user_repo.create(username="user", email="user@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
                     zke_repo.create(user_id=self.user_id, encrypted_key="key")
                     for i in range(10):
                         totp_repo.add(user_id=self.user_id, enc_secret="secret" + str(i), uuid=str(uuid4()))
                     self.google_integration_db.create(1, True)
-                    _, self.session_token = self.session_token_repo.generate_session_token(1)
                     db.session.commit()
+
+
+                    self.session_token,_ = utils.generate_new_session(user=user, ip_address=None)
 
 
         def tearDown(self):

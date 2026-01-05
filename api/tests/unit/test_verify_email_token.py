@@ -5,7 +5,7 @@ from environment import conf
 from zero_totp_db_model.model import User as UserModel, EmailVerificationToken as EmailVerificationToken_model, RateLimiting
 from unittest.mock import patch
 import datetime
-from database.session_token_repo import SessionTokenRepo
+from Utils import utils
 
 
 class TestVerifyEmailToken(unittest.TestCase):
@@ -36,7 +36,6 @@ class TestVerifyEmailToken(unittest.TestCase):
         expired_token = EmailVerificationToken_model(user_id=self.user_expired_token_id, token="token", expiration=(datetime.datetime.utcnow() - datetime.timedelta(minutes=1)).timestamp())
         wrongToken = EmailVerificationToken_model(user_id=self.user_wrong_token_id, token="wrongToken", expiration=(datetime.datetime.utcnow() + datetime.timedelta(minutes=10)).timestamp())
 
-        self.session_token_repo = SessionTokenRepo()
 
        
 
@@ -53,12 +52,15 @@ class TestVerifyEmailToken(unittest.TestCase):
             db.session.add(blocked_user)
             db.session.commit()
 
-            _, self.user_session = self.session_token_repo.generate_session_token(self.user_id)
-            _, self.already_verified_user_session = self.session_token_repo.generate_session_token(self.already_verified_user_id)
-            _, self.user_without_token_session = self.session_token_repo.generate_session_token(self.user_without_token_id)
-            _, self.user_expired_token_session = self.session_token_repo.generate_session_token(self.user_expired_token_id)
-            _, self.user_wrong_token_session = self.session_token_repo.generate_session_token(self.user_wrong_token_id)
-            _, self.blocked_user_session = self.session_token_repo.generate_session_token(self.blocked_user_id)
+
+            self.user_session, _ = utils.generate_new_session(user=user, ip_address=None)
+            self.already_verified_user_session, _ = utils.generate_new_session(user=user_already_verified, ip_address=None)
+            self.user_without_token_session, _ = utils.generate_new_session(user=user_without_token, ip_address=None)
+            self.user_expired_token_session, _ = utils.generate_new_session(user=user_expired_token, ip_address=None)
+            self.user_wrong_token_session, _ = utils.generate_new_session(user=user_wrong_token, ip_address=None)
+            self.blocked_user_session, _ = utils.generate_new_session(user=blocked_user, ip_address=None)
+
+            
 
     
        

@@ -6,6 +6,7 @@ from zero_totp_db_model.model import User as UserModel
 from unittest.mock import patch
 import datetime
 from database.session_token_repo import SessionTokenRepo
+from Utils import utils
 
 
 class TestGetRole(unittest.TestCase):
@@ -39,11 +40,11 @@ class TestGetRole(unittest.TestCase):
             db.session.add(user_unverified)
             db.session.commit()
 
-            _, self.session_token_admin = self.session_repo.generate_session_token(self.admin_user_id)
-            _, self.session_token_not_admin = self.session_repo.generate_session_token(self.not_admin_user_id)
-            _, self.session_token_user_without_role = self.session_repo.generate_session_token(self.user_without_role_id)
-            _, self.session_token_user_blocked = self.session_repo.generate_session_token(self.user_blocked_id)
-            _, self.session_token_user_unverified = self.session_repo.generate_session_token(self.user_unverified_id)
+            self.session_token_admin,_ = utils.generate_new_session(user=admin_user, ip_address=None)
+            self.session_token_not_admin,_ = utils.generate_new_session(user=not_admin_user, ip_address=None)
+            self.session_token_user_without_role,_ = utils.generate_new_session(user=user_without_role, ip_address=None)
+            self.session_token_user_blocked,_ = utils.generate_new_session(user=user_blocked, ip_address=None)
+            self.session_token_user_unverified,_ = utils.generate_new_session(user=user_unverified, ip_address=None)
 
             
     

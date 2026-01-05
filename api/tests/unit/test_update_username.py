@@ -5,7 +5,7 @@ from environment import conf
 from unittest.mock import patch
 import datetime
 from zero_totp_db_model.model import User as UserModel
-from database.session_token_repo import SessionTokenRepo
+from  Utils import utils
 
 
 class TestUpdateUsername(unittest.TestCase):
@@ -27,7 +27,6 @@ class TestUpdateUsername(unittest.TestCase):
         user_blocked = UserModel(id=self.blocked_user_id,username='user3', mail="user3@test.com",password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", isBlocked=True)
         unverified_user = UserModel(id=self.unverified_user_id,username='user4', mail="user4@test.com",password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
 
-        self.session_token_repo = SessionTokenRepo()
 
         with self.flask_application.app.app_context():
             db.create_all()
@@ -36,10 +35,11 @@ class TestUpdateUsername(unittest.TestCase):
             db.session.add(user_blocked)
             db.session.add(unverified_user)
             db.session.commit()
-            _, self.user1_session = self.session_token_repo.generate_session_token(self.user1_id)
-            _, self.user2_session = self.session_token_repo.generate_session_token(self.user2_id)
-            _, self.blocked_user_session = self.session_token_repo.generate_session_token(self.blocked_user_id)
-            _, self.unverified_user_session = self.session_token_repo.generate_session_token(self.unverified_user_id)
+
+            self.user1_session,_ = utils.generate_new_session(user=user1, ip_address=None)
+            self.user2_session,_ = utils.generate_new_session(user=user2, ip_address=None)
+            self.blocked_user_session,_ = utils.generate_new_session(user=user_blocked, ip_address=None)
+            self.unverified_user_session,_ = utils.generate_new_session(user=unverified_user, ip_address=None)
             
 
     

@@ -115,6 +115,14 @@ class APIConfig:
             except Exception as e:
                 logging.error(f"[FATAL] Load config fail. api.refresh_token_validity is not valid. {e}")
                 exit(1)
+
+        self.session_validity = 604800
+        if "session_validity" in data:
+            try:
+                self.session_validity = int(data["session_validity"])
+            except Exception as e:
+                logging.error(f"[FATAL] Load config fail. api.session_validity is not valid. {e}")
+                exit(1)
         
         if "health_check" in data:
             if 'node_check_enabled':

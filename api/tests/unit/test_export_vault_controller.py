@@ -14,6 +14,7 @@ import datetime
 import base64
 import json
 from uuid import uuid4
+from Utils import utils
 
 class TestAllSecret(unittest.TestCase):
 
@@ -39,11 +40,14 @@ class TestAllSecret(unittest.TestCase):
             self.user_id = user.id
             user2 = self.user_repo.create(username='user2', email='user2@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
             self.user_id2 = user2.id
-            _, self.session_token = self.session_repo.generate_session_token(self.user_id)
+            
             for secret_id in self.secret_ids:
                 self.totp_secret_repo.add(user_id=self.user_id, enc_secret="secret", uuid=secret_id)
             self.totp_secret_repo.add(user_id=self.user_id2, enc_secret="secret", uuid=self.secret_id_user2)
             db.session.commit()
+
+
+            self.session_token,_ = utils.generate_new_session(user=user, ip_address=None)
 
 
         

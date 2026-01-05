@@ -17,7 +17,7 @@ def verify_session(token):
             raise Forbidden("Invalid session token")
         if float(session_token.expiration) < dt.datetime.now(dt.UTC).timestamp():
             logging.info(f"Rejected session token {session_token.id} because it has expired. User {session_token.user_id}")
-            raise Forbidden("API key expired")
+            raise Forbidden("Session expired")
         if session_token.revoke_timestamp is not None:
             logging.info(f"Rejected session token {session_token.id} because it was revoked. User {session_token.user_id}")
             raise Forbidden("Invalid session token")

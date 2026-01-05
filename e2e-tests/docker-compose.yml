@@ -23,7 +23,7 @@ services:
       MYSQL_DATABASE: zero_totp
       MYSQL_USER: api
       MYSQL_PASSWORD: tmppassword
-    image:  mariadb:latest
+    image:  mariadb:11
     container_name: database
 
 

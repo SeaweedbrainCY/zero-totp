@@ -4,12 +4,11 @@ import unittest
 import controllers
 from unittest.mock import patch
 from zero_totp_db_model.model import User, TOTP_secret, ZKE_encryption_key
-from database.session_token_repo  import SessionTokenRepo
 from environment import conf
 from uuid import uuid4
 import json
-import datetime
 from CryptoClasses import hash_func
+from Utils import utils
 
 class TestUpdateVault(unittest.TestCase):
 
@@ -26,14 +25,16 @@ class TestUpdateVault(unittest.TestCase):
         self.nb_totp = 10
         self.password =  hash_func.Bcrypt("HelloWorld!")
         user = User(id=self.user_id,username='user1', mail="user1@test.com", password=self.password.hashpw().decode('utf-8'), derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAA", createdAt="01/01/2001", isBlocked=False)
+        other_user = User(id=self.other_user_id,username='user2', mail="user2@test.com", password=self.password.hashpw().decode('utf-8'), derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAA", createdAt="01/01/2001", isBlocked=False)
+
         self.totp_codes = {}
         zke = ZKE_encryption_key(user_id=self.user_id, ZKE_key="zke_enc")
 
-        self.session_token_repo = SessionTokenRepo()
 
         with self.flask_application.app.app_context():
             db.create_all()
             db.session.add(user)
+            db.session.add(other_user)
             db.session.add(zke)
             for i in range(self.nb_totp):
                 id = str(uuid4())
@@ -43,7 +44,7 @@ class TestUpdateVault(unittest.TestCase):
             self.foreign_totp = TOTP_secret(uuid=self.foreign_totp_id, user_id=self.other_user_id, secret_enc = "enc")
             db.session.add(self.foreign_totp)
             db.session.commit()
-            _, self.session_token = self.session_token_repo.generate_session_token(self.user_id)
+            self.session_token,_ = utils.generate_new_session(user=user, ip_address=None)
 
             
        

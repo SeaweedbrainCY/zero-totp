@@ -5,8 +5,7 @@ from environment import conf
 from zero_totp_db_model.model import User as UserModel, RateLimiting
 from unittest.mock import patch
 import datetime
-from database.session_token_repo import SessionTokenRepo
-
+from Utils import utils
 
 class TestSendVerificationController(unittest.TestCase):
 
@@ -23,13 +22,12 @@ class TestSendVerificationController(unittest.TestCase):
         
         self.send_verification_email = patch("Email.send.send_verification_email", return_value=True).start()
         
-        self.session_token_repo = SessionTokenRepo()
-
         with self.flask_application.app.app_context():
             db.create_all()
             db.session.add(user)
-            _, self.session_token = self.session_token_repo.generate_session_token(user.id)
             db.session.commit()
+
+            self.session_token, _ = utils.generate_new_session(user=user, ip_address=None)
     
        
     def tearDown(self):

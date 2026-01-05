@@ -12,6 +12,7 @@ from CryptoClasses.encryption import ServiceSideEncryption
 from database.session_token_repo import SessionTokenRepo
 from base64 import b64decode
 import json
+from Utils import utils
 
 class TestOauthCallback(unittest.TestCase):
 
@@ -42,17 +43,18 @@ class TestOauthCallback(unittest.TestCase):
 
         with self.application.app.app_context():
             db.create_all()
-            self.user_repo.create(username="user1", email="user1@test.test", password="password", 
+            user = self.user_repo.create(username="user1", email="user1@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(datetime.UTC))
-            self.user_repo.create(username="user2", email="user2@test.test", password="password", 
+            blocked_user = self.user_repo.create(username="user2", email="user2@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(datetime.UTC),isBlocked=True)
-            self.user_repo.create(username="user3", email="user3@test.test", password="password", 
+            unverified_user = self.user_repo.create(username="user3", email="user3@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.now(datetime.UTC))
             db.session.commit()
             
-            _, self.session_token_user_1 = self.session_repo.generate_session_token(1)
-            _, self.session_token_user_blocked = self.session_repo.generate_session_token(self.blocked_user_id)
-            _, self.session_token_user_unverified = self.session_repo.generate_session_token(self.unverified_user_id)
+            
+            self.session_token_user_1,_ = utils.generate_new_session(user=user, ip_address=None)
+            self.session_token_user_blocked,_ = utils.generate_new_session(user=blocked_user, ip_address=None)
+            self.session_token_user_unverified,_ = utils.generate_new_session(user=unverified_user, ip_address=None)
             
 
 

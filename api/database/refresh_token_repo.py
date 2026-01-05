@@ -1,5 +1,6 @@
 from database.db import db 
 from zero_totp_db_model.model import RefreshToken
+from zero_totp_db_model.model import Session
 import datetime
 from environment import conf
 from uuid import uuid4
@@ -7,10 +8,17 @@ from uuid import uuid4
 
 class RefreshTokenRepo:
 
-    def create_refresh_token(self, user_id, session_id, hashed_token, expiration=-1) -> RefreshToken:
+    def create_refresh_token(self, user_id, session_id, hashed_token, session:Session, expiration=-1) -> RefreshToken:
         expiration_timestamp = (datetime.datetime.now(datetime.UTC) + datetime.timedelta(seconds=conf.api.refresh_token_validity)).timestamp() if expiration == -1 else expiration
         id = str(uuid4()) 
-        rt = RefreshToken(id=id, user_id=user_id, session_token_id=session_id, hashed_token=hashed_token, expiration=expiration_timestamp)
+        rt = RefreshToken(
+            id=id, 
+            user_id=user_id, 
+            session_token_id=session_id, 
+            hashed_token=hashed_token, 
+            expiration=expiration_timestamp,
+            session=session
+            )
         db.session.add(rt)
         db.session.commit()
         return rt

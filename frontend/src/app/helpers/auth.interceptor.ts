@@ -25,9 +25,10 @@ export class HttpRequestInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       catchError((error) => {
         console.log(error);
-        if (error.status === 403 && error.error.detail === "API key expired") {
+        if (error.status === 403 && error.error.detail === "Session expired") {
           return this.handleExpiration(req, next) || throwError(() => error);
         }
+
         return throwError(() => error);
       })
     );

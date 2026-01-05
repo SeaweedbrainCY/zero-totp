@@ -5,7 +5,7 @@ import controllers
 from unittest.mock import patch
 from database.user_repo import User as UserRepo
 from database.totp_secret_repo import TOTP_secret as TOTPRepo
-from database.session_token_repo import SessionTokenRepo
+from Utils import utils
 from zero_totp_db_model.model  import TOTP_secret 
 from environment import conf
 import datetime
@@ -26,7 +26,6 @@ class TestEncryptedSecretController(unittest.TestCase):
         
         self.user_repo = UserRepo()
         self.totp_secret_repo = TOTPRepo()
-        self.session_repo = SessionTokenRepo()
 
         with self.flask_application.app.app_context():
             db.create_all()
@@ -34,12 +33,13 @@ class TestEncryptedSecretController(unittest.TestCase):
             self.user_id = user.id
             user2 = self.user_repo.create(username='user2', email='user2@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
             self.user_id2 = user2.id
-            _, self.session_token = self.session_repo.generate_session_token(self.user_id)
+
             for secret_id in self.secret_ids:
                 self.totp_secret_repo.add(user_id=self.user_id, enc_secret="secret", uuid=secret_id)
             self.totp_secret_repo.add(user_id=self.user_id2, enc_secret="secret", uuid=self.secret_id_user2)
             db.session.commit()
 
+            self.session_token, _ = utils.generate_new_session(user=user, ip_address=None)
 
 
 

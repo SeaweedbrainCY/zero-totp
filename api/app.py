@@ -26,12 +26,22 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True
     app.secret_key = conf.api.flask_secret_key
+
     
 
     
     db.init_app(app)
     sentry_configuration() #optional
     init_db(db)
+
+    if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
+        def _fk_pragma_on_connect(dbapi_con, con_record):  # noqa
+            dbapi_con.execute('pragma foreign_keys=ON')
+
+        with app.app_context():
+            from sqlalchemy import event
+            event.listen(db.engine, 'connect', _fk_pragma_on_connect)
+
     
     
     
@@ -70,36 +80,37 @@ def clean_rate_limiting_from_db():
         logging.info(f"Rate limits cleaned at {dt.datetime.now(dt.UTC).isoformat()}")
 
 
-@scheduler.task('interval', id='clean_expired_refresh_token', hours=12, misfire_grace_time=900)
+@scheduler.task('interval', id='clean_expired_session_and_token', hours=12, misfire_grace_time=900)
 def clean_expired_refresh_token():
     with flask.app_context():
-        logging.info("Cleaning expired refresh tokens from database ...")
-        from zero_totp_db_model.model import RefreshToken
+        logging.info("Cleaning expired sessions and tokens from database ...")
+        from zero_totp_db_model.model import RefreshToken, SessionToken, Session
+        # Clean expired sessions
+        sessions = db.session.query(Session).all()
+        count=0
+        minimum_retention_time = 24*60*60 # 24 hours
+        for session in sessions:
+            if float(session.expiration_timestamp) + minimum_retention_time < dt.datetime.now(dt.UTC).timestamp() or (session.revoke_timestamp is not None and float(session.revoke_timestamp or 0) + minimum_retention_time < dt.datetime.now(dt.UTC).timestamp()):
+                db.session.delete(session)
+                db.session.commit()
+                count += 1
+        logging.info(f"Deleted {count} expired sessions at {dt.datetime.now(dt.UTC).isoformat()}")
+
         tokens = db.session.query(RefreshToken).all()
         count=0
         minimum_retention_time = 24*60*60 # 24 hours
         for token in tokens:
             if float(token.expiration) + minimum_retention_time < dt.datetime.now(dt.UTC).timestamp():
+                session_token = db.session.query(SessionToken).filter(SessionToken.id == token.session_token_id).first()
                 db.session.delete(token)
+                if session_token is not None:
+                    count += 1
+                    db.session.delete(session_token)
                 db.session.commit()
                 count += 1
-        logging.info(f"Deleted {count} expired refresh tokens at {dt.datetime.now(dt.UTC).isoformat()}")
+        logging.info(f"Deleted {count} expired tokens at {dt.datetime.now(dt.UTC).isoformat()}")
 
 
-@scheduler.task('interval', id='clean_rate_limiting_from_db', hours=12, misfire_grace_time=900)
-def clean_rate_limiting_from_db():
-    with flask.app_context():
-        logging.info("Cleaning expired session tokens from database ...")
-        from zero_totp_db_model.model import SessionToken
-        tokens = db.session.query(SessionToken).all()
-        count=0
-        minimum_retention_time = 24*60*60 # 24 hours
-        for token in tokens:
-            if float(token.expiration) + minimum_retention_time < dt.datetime.now(dt.UTC).timestamp():
-                db.session.delete(token)
-                db.session.commit()
-                count += 1
-        logging.info(f"Deleted {count} expired session tokens at {dt.datetime.now(dt.UTC).isoformat()}")
 
 
 
