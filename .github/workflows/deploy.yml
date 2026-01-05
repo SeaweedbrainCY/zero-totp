@@ -440,6 +440,7 @@ jobs:
             - name: Run Playwright tests
               working-directory: ./e2e-tests
               run: npx playwright test 
+
             - uses: actions/upload-artifact@v4
             
               if: ${{ !cancelled() }}
@@ -447,6 +448,14 @@ jobs:
                 name: playwright-report
                 path: ./e2e-tests/playwright-report/
                 retention-days: 30
+
+            - uses: actions/upload-artifact@v4
+            
+              if: ${{ !cancelled() }}
+              with:
+                name: zero-totp-api-logs
+                path: ./e2e-tests/zero-totp-logs/
+                retention-days: 3
 
 
 
