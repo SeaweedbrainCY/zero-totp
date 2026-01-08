@@ -105,7 +105,7 @@ tomli==2.2.1
 typing_extensions==4.12.2
 tzlocal==5.2
 uritemplate==4.1.1
-urllib3==2.6.0
+urllib3==2.6.3
 uvicorn==0.34.2
 uvloop==0.21.0
 virtualenv==20.30.0
