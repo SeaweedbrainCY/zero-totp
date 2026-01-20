@@ -45,11 +45,6 @@ api:
     ## DO NOT COMPROMISE THIS KEY
     server_side_encryption_key: "unsafe_secret" 
 
-    ## Configuration of google drive Oauth. 
-    ## See https://developers.google.com/identity/protocols/oauth2 for more information.
-    # oauth:
-          ## See https://developers.google.com/identity/protocols/oauth2 for more information.
-        # client_secret_file_path: "path/to/client_secret.json"
 
     ## Token validity in seconds.
     ## The access token is used to authenticate the user.
