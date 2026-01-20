@@ -10,6 +10,7 @@ from database.session_repo import SessionRepo
 import Utils.utils as utils
 from zero_totp_db_model.model import SessionToken as SessionTokenModel, RefreshToken as RefreshTokenModel
 from environment import conf
+import ipaddress
 
 
 
@@ -21,7 +22,12 @@ def generate_refresh_token(user_id, session_token_id, session, expiration=-1):
     return token if rt else None
     
     
-def refresh_token_flow(refresh_token:RefreshTokenModel, session_token:SessionTokenModel, ip:str):
+def refresh_token_flow(refresh_token:RefreshTokenModel, session_token:SessionTokenModel, ip:str|None):
+    try: 
+        if ip is not None and ipaddress.ip_address(ip).is_private:
+            ip = None 
+    except :
+        ip = None
     logging.info(f"Refreshing token for user {session_token.user_id}")
     rate_limiting = RateLimitingRepo()
     session_token_repo = SessionTokenRepo()
@@ -41,7 +47,7 @@ def refresh_token_flow(refresh_token:RefreshTokenModel, session_token:SessionTok
                         new_session_id, new_session_token = session_token_repo.generate_session_token(session_token.user_id, session=session, expiration=custom_session_token_expiration)
                         new_refresh_token = generate_refresh_token(session_token.user_id, new_session_id, session=session, expiration=custom_refresh_token_expiration)
                         utils.revoke_session_and_refresh_tokens(session_id=session_token.id, refresh_id=refresh_token.id)
-                        session_repo.update_last_active(session_id=session.id, timestamp=dt.datetime.now(dt.UTC).timestamp())
+                        session_repo.update_last_active(session_id=session.id, timestamp=dt.datetime.now(dt.UTC).timestamp(), ip=ip)
                         return new_session_token, new_refresh_token
                     else:
                         logging.info(f"Session {session.id} has expired. Refresh flow aborted.")
