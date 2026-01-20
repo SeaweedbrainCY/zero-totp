@@ -7,6 +7,7 @@ from environment import conf
 from database.session_token_repo import SessionTokenRepo
 from database.user_repo import User as UserRepo
 from zero_totp_db_model.model import SessionToken
+from Utils import utils
 
 
 
@@ -30,8 +31,10 @@ class TestEndpointProtection(unittest.TestCase):
             db.create_all()
             user = UserRepo().create(username='username', email='username@test.com', password='test', randomSalt='salt', passphraseSalt='salt', today=datetime.datetime.now(), isVerified=True)
             self.user_id = user.id
-            self.session_id, self.session_token = SessionTokenRepo().generate_session_token(self.user_id)
+            
             db.session.commit()
+            self.session_token, _ = utils.generate_new_session(user=user, ip_address=None)
+            self.session_id = SessionTokenRepo().get_session_token(self.session_token).id
     
     def tearDown(self):
         with self.flask_application.app.app_context():
@@ -76,7 +79,7 @@ class TestEndpointProtection(unittest.TestCase):
                     self.client.cookies = {'session-token': self.session_token}
                     response = self.client.get(get_endpoint)
                     self.assertEqual(response.status_code, 403, f"GET {get_endpoint} should return 403. Got {response.status_code}")
-                    self.assertEqual(response.json()['detail'], 'API key expired', f"GET {get_endpoint} got {response.json()}")
+                    self.assertEqual(response.json()['detail'], 'Session expired', f"GET {get_endpoint} got {response.json()}")
     
     
 ########
@@ -117,7 +120,7 @@ class TestEndpointProtection(unittest.TestCase):
                     self.client.cookies = {'session-token': self.session_token}
                     response = self.client.post(post_endpoint)
                     self.assertEqual(response.status_code, 403, f"POST {post_endpoint} should return 403. Got {response.status_code}")
-                    self.assertEqual(response.json()['detail'], 'API key expired', f"POST {post_endpoint} got {response.json()}")                    
+                    self.assertEqual(response.json()['detail'], 'Session expired', f"POST {post_endpoint} got {response.json()}")                    
 
 ########
 ## PUT
@@ -157,7 +160,7 @@ class TestEndpointProtection(unittest.TestCase):
                     self.client.cookies = {'session-token': self.session_token}
                     response = self.client.put(put_endpoint)
                     self.assertEqual(response.status_code, 403, f"PUT {put_endpoint} should return 403. Got {response.status_code}")
-                    self.assertEqual(response.json()['detail'], 'API key expired', f"PUT {put_endpoint} got {response.json()}")
+                    self.assertEqual(response.json()['detail'], 'Session expired', f"PUT {put_endpoint} got {response.json()}")
 
 
 #########
@@ -198,4 +201,4 @@ class TestEndpointProtection(unittest.TestCase):
                     self.client.cookies = {'session-token': self.session_token}
                     response = self.client.delete(delete_endpoint)
                     self.assertEqual(response.status_code, 403, f"DELETE {delete_endpoint} should return 403. Got {response.status_code}")
-                    self.assertEqual(response.json()['detail'], 'API key expired', f"DELETE {delete_endpoint} got {response.json()}")
+                    self.assertEqual(response.json()['detail'], 'Session expired', f"DELETE {delete_endpoint} got {response.json()}")

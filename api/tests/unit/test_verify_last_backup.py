@@ -8,7 +8,6 @@ from database.google_drive_integration_repo import GoogleDriveIntegration as Goo
 from database.zke_repo import ZKE as ZKERepo
 from database.totp_secret_repo import TOTP_secret as TotpSecretRepo
 from environment import conf
-from database.session_token_repo import SessionTokenRepo
 import datetime
 from database.db import db
 from CryptoClasses.encryption import ServiceSideEncryption
@@ -43,7 +42,6 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
         self.sse = ServiceSideEncryption()
         self.zke_key = ZKERepo()
         self.secrets_repo = TotpSecretRepo()
-        self.session_token_repo = SessionTokenRepo()
 
 
         self.creds = {"creds": "creds","refresh_token":"fake_token", "expiry":datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")}
@@ -51,11 +49,11 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
         encrypted_creds = self.sse.encrypt(creds_b64)
         with self.application.app.app_context():
             db.create_all()
-            self.user_repo.create(username="user1", email="user1@test.test", password="password", 
+            user = self.user_repo.create(username="user1", email="user1@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow())
-            self.user_repo.create(username="user2", email="user2@test.test", password="password", 
+            blocked_user = self.user_repo.create(username="user2", email="user2@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.utcnow(), isBlocked=True)
-            self.user_repo.create(username="user3", email="user3@test.test", password="password", 
+            unverified_user = self.user_repo.create(username="user3", email="user3@test.test", password="password", 
                     randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.utcnow())
             self.zke_key.create(user_id=1, encrypted_key="encrypted_key")
             self.google_integration.create(user_id=1, google_drive_sync=True)
@@ -63,10 +61,11 @@ class TestGoogleDriveVerifyLastBackup(unittest.TestCase):
 
             for i in range(20):
                 self.secrets_repo.add(user_id=1, enc_secret=f"enc_secret{i}", uuid=str(uuid4()))
-                
-            _, self.session_token = self.session_token_repo.generate_session_token(self.user_id)
-            _, self.blocked_user_session = self.session_token_repo.generate_session_token(self.blocked_user_id)
-            _, self.unverified_user_session = self.session_token_repo.generate_session_token(self.unverified_user_id)
+        
+
+            self.session_token, _ = utils.generate_new_session(user=user, ip_address=None)
+            self.blocked_user_session, _ = utils.generate_new_session(user=blocked_user, ip_address=None)
+            self.unverified_user_session, _ = utils.generate_new_session(user=unverified_user, ip_address=None)
 
 
             tmp_client = self.application.test_client()

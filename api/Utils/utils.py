@@ -14,6 +14,9 @@ from database.rate_limiting_repo import RateLimitingRepo
 from database.refresh_token_repo import RefreshTokenRepo
 from database.session_token_repo import SessionTokenRepo
 from database.backup_configuration_repo import BackupConfigurationRepo
+from database.session_repo import SessionRepo
+from CryptoClasses import refresh_token as refresh_token_func
+from zero_totp_db_model.model import User as UserModel
 import os
 from hashlib import sha256
 from base64 import b64encode
@@ -74,19 +77,7 @@ def extract_last_backup_from_list(files_list) -> (any, datetime):
     return last_backup_file,last_backup_file_date
 
  
-def delete_user_from_database(user_id):
-    Oauth_tokens_repo().delete(user_id)
-    GoogleDriveIntegration_repo().delete(user_id)
-    Preferences_repo().delete(user_id)
-    TOTP_secret_repo().delete_all(user_id)
-    BackupConfigurationRepo().delete(user_id)
-    ZKE_encryption_key_repo().delete(user_id)
-    EmailVerificationToken().delete(user_id)
-    RateLimitingRepo().flush_by_user_id(user_id)
-    SessionTokenRepo().delete_by_user_id(user_id)
-    RefreshTokenRepo().delete_by_user_id(user_id)
-    User_repo().delete(user_id)
-    logging.info("User " + str(user_id) + " deleted from database")
+
 
 
 def generate_new_email_verification_token(user_id):
@@ -210,9 +201,37 @@ def unsafe_json_vault_validation(json:str) -> (bool, str):
         print(e)
         return False, "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support."
 
+def generate_new_session(user:UserModel, ip_address:str|None) -> tuple[str, str]:
+    """Generate a new session and return the session  and the refresh token cookie.
 
-def revoke_session(session_id=None, refresh_id=None):
-    logging.info(f"Revoking session {session_id} and refresh {refresh_id}")
+    Returns:
+        tuple[str, str]: Return the session and the refresh token
+    """
+    try:
+        ip_obj = ipaddress.ip_address(ip_address)
+        if ip_obj.is_private:
+            ip_address = None
+            logging.warning(f"Private IP ({ip_address}) address provided while generating new session. Setting ip_address to None for user id  {user.id}")
+    except Exception as e:
+        ip_address = None
+        logging.warning(f"Invalid IP ({ip_address}) address provided while generating new session : {e}. Setting ip_address to None for user id {user.id}")
+    session = SessionRepo().create_new_session(user_id=user.id, ip_address=ip_address)
+    session_token_id, session_token = SessionTokenRepo().generate_session_token(user.id, session=session)
+    refresh_token = refresh_token_func.generate_refresh_token(user.id, session_token_id, session=session)
+    return session_token, refresh_token
+
+
+def revoke_session_and_refresh_tokens(session_id=None, refresh_id=None) -> bool | None:
+    """[DEPRECATED] This method should not be used anymore. Use revoke_session instead. Revoke a session token and a refresh token entries. 
+
+    Args:
+        session_id (str, optional): Session token id to revoke. Defaults to None.
+        refresh_id (str, optional): Refresh token id to revoke. Defaults to None.
+
+    Returns:
+        bool | None: _True if the tokens were revoked, None otherwise._
+    """
+    logging.info(f"Revoking session {session_id} and refresh {refresh_id} tokens")
     session_repo = SessionTokenRepo()
     refresh_repo = RefreshTokenRepo()
     session = session_repo.get_session_token_by_id(session_id)
@@ -231,4 +250,31 @@ def revoke_session(session_id=None, refresh_id=None):
             associated_session = session_repo.get_session_token_by_id(refresh.session_token_id)
             session_repo.revoke(associated_session.id) if  associated_session != None else None
             logging.info(f"Revoked session {associated_session.id} because the associated refresh {refresh.id} was revoked")
+    return True
+
+def revoke_session(session_id) -> bool | None:
+    """Revoke a session and all associated refresh tokens and session tokens.
+
+    Args:
+        session_id (str): _session id to revoke_
+
+    Returns:
+        bool | None: _True if the session was revoked, None otherwise._
+    """
+    logging.info(f"Revoking session {session_id}")
+    session_repo = SessionRepo()
+    session = session_repo.get_session_by_id(session_id)
+    if session != None:
+        session_repo.revoke(session.id)
+        logging.info(f"Revoked session {session.id}")
+        for refresh_token in session.refresh_tokens:
+            refresh_token_repo = RefreshTokenRepo()
+            refresh_token_repo.revoke(refresh_token.id)
+            logging.info(f"Revoked refresh {refresh_token.id} because the associated session {session.id} was revoked")
+        for session_token in session.session_tokens:
+            session_token_repo = SessionTokenRepo()
+            session_token_repo.revoke(session_token.id)
+            logging.info(f"Revoked session token {session_token.id} because the associated session {session.id} was revoked")
+    else:
+        logging.warning(f"Session {session_id} not found while trying to revoke it")
     return True
