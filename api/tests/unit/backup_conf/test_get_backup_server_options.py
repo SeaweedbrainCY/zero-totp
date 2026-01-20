@@ -4,8 +4,8 @@ from database.db import db
 from zero_totp_db_model.model import User as UserModel
 from unittest.mock import patch
 from database.backup_configuration_repo import BackupConfigurationRepo
-from database.session_token_repo import SessionTokenRepo
 from environment import conf
+from Utils import utils
 
 
 class TestGetBackupServerOption(unittest.TestCase):
@@ -17,19 +17,16 @@ class TestGetBackupServerOption(unittest.TestCase):
         self.client = self.flask_application.test_client()
         self.get_backup_endpoint = "/api/v1/backup/server/options"
 
-        self.session_repo = SessionTokenRepo()
-
         self.user1_id = 1
 
-        self.user1 = UserModel(id=self.user1_id, username="user1", mail="user1@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="user")
+        user1 = UserModel(id=self.user1_id, username="user1", mail="user1@user.com", password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001", role="user")
 
         with self.flask_application.app.app_context():
             db.create_all()
-            db.session.add(self.user1)
+            db.session.add(user1)
             db.session.commit()
 
-            _, self.session_token_user1 = self.session_repo.generate_session_token(self.user1_id)
-
+            self.session_token_user1, _ = utils.generate_new_session(user=user1, ip_address=None)
     
 
     def tearDown(self):

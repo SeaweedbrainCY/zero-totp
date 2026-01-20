@@ -9,6 +9,7 @@ from database.session_token_repo import SessionTokenRepo
 from database.user_repo import User as UserRepo
 from database.zke_repo import ZKE as ZKERepo
 import datetime
+from Utils import utils
 
 
 class TestZKEEncryptedKey(unittest.TestCase):
@@ -36,17 +37,17 @@ class TestZKEEncryptedKey(unittest.TestCase):
         with self.application.app.app_context():
             db.create_all()
             db.session.commit()
-            self.user_repo.create(username="user1", email="user1@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
-            self.user_repo.create(username="user3", email="user3@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(), isBlocked=True)
-            self.user_repo.create(username="user4", email="user4@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.now())
+            user = self.user_repo.create(username="user1", email="user1@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now())
+            blocker_user = self.user_repo.create(username="user3", email="user3@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=True, today=datetime.datetime.now(), isBlocked=True)
+            unverified_user = self.user_repo.create(username="user4", email="user4@test.test", password="password", randomSalt="salt",passphraseSalt="salt", isVerified=False, today=datetime.datetime.now())
 
             self.zke_repo.create(user_id=self.user_id, encrypted_key=self.user_zke)
             self.zke_repo.create(user_id=self.blocked_user_id, encrypted_key=self.blocked_user_zke)
             self.zke_repo.create(user_id=self.unverified_user_id, encrypted_key=self.unverified_user_zke)
 
-            _, self.session_token_user = self.session_token_repo.generate_session_token(self.user_id)
-            _, self.session_token_user_blocked = self.session_token_repo.generate_session_token(self.blocked_user_id)
-            _, self.session_token_user_unverified = self.session_token_repo.generate_session_token(self.unverified_user_id)
+            self.session_token_user, _ = utils.generate_new_session(user=user, ip_address="1.1.1.1")
+            self.session_token_user_blocked, _ = utils.generate_new_session(user=blocker_user, ip_address=None)
+            self.session_token_user_unverified, _ = utils.generate_new_session(user=unverified_user, ip_address=None)
             
         
 

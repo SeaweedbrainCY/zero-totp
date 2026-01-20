@@ -476,7 +476,7 @@ jobs:
         - name: Scan Docker image
           run: |
             current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
-            trivy image --exit-code 1 --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:$current_version
+            trivy image --exit-code 1 --ignorefile ./.trivyignore.yaml --show-suppressed --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:$current_version
 
     frontend-docker-security-scan:
       needs: [merge-frontend-manifests]
@@ -495,7 +495,7 @@ jobs:
         - name: Scan Docker image
           run: |
             current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
-            trivy image --exit-code 1 --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:$current_version
+            trivy image --exit-code 1 --severity CRITICAL,HIGH --ignorefile ./.trivyignore.yaml --show-suppressed --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:$current_version
 
 
     deploy-production-sw:

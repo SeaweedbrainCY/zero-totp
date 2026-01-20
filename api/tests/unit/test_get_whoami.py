@@ -6,6 +6,7 @@ from unittest.mock import patch
 import datetime
 from zero_totp_db_model.model import User as UserModel
 from database.session_token_repo import SessionTokenRepo
+from Utils import utils
 
 
 class TestGetWhoami(unittest.TestCase):
@@ -28,7 +29,7 @@ class TestGetWhoami(unittest.TestCase):
             db.session.add(user1)
             db.session.commit()
 
-            _, self.session_token = self.session_repo.generate_session_token(self.user_id)
+            self.session_token, _ = utils.generate_new_session(user=user1, ip_address=None)
     
     def tearDown(self):
         with self.flask_application.app.app_context():

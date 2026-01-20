@@ -14,6 +14,17 @@ export class ChangelogComponent {
   imageHash = environment.imageHash;
 
   changelogs = [
+        {
+      date: "20/01/2025",
+      version: "1.12",
+      added: [
+       "This version brings very important changes on how users session are managed. Since this version you will see your session being extended. While you connects to your Zero-TOTP vault at least 1 time every 3 days, you won't have to re-authenticate yourself for a maximum of 1 month. You still may have to re-enter your passphrase to decrypt your vault."
+      ],
+      fixed:[
+        "Update API dependencies to fix non-impacting 3 CVEs.",
+        "Fix an issue causing the account deletion to be impossible in some scenarios."
+      ]
+    },
     {
       date: "01/11/2025",
       version: "1.11",

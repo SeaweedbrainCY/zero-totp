@@ -20,6 +20,7 @@ alembic upgrade head > /tmp/alembic_upgrade.log 2>&1
 if [ $? -eq 0 ]; then 
     echo ""
     echo "🎉  Database migration completed successfully."
+    echo "You can restart the API now."
     echo ""
 
 else

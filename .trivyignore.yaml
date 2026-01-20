@@ -1,0 +1,6 @@
+vulnerabilities:
+  - id:  GHSA-58pv-8j8x-9vj2 
+    expired_at: 2026-02-01
+    paths:
+      - "api/venv/lib/python3.13/site-packages/setuptools/_vendor/jaraco.context-5.3.0.dist-info/METADATA"
+    statement: Setuptools is not affected. https://github.com/pypa/setuptools/issues/5138
