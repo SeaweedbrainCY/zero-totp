@@ -90,7 +90,7 @@ ruamel.yaml==0.18.14
 ruamel.yaml.clib==0.2.12
 safety==2.3.5
 sentry-sdk==2.8.0
-setuptools==80.9.0
+setuptools==80.10.2
 six==1.16.0
 sniffio==1.3.0
 SQLAlchemy==2.0.40
