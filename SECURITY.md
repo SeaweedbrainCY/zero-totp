@@ -9,9 +9,9 @@ You can find the version in the release section of each project's repository.
 ## Reporting a Vulnerability
 ### Report process
 
-If you believe you have discovered a security vulnerability in Zero-TOTP, please report it to us by emailing developer@zero-totp.com. We ask that you do not report security vulnerabilities directly on GitHub, public forums, or any other public channel.
+If you believe you have discovered a security vulnerability in Zero-TOTP, please report it using the [repository's private vulnerability report feature](https://github.com/SeaweedbrainCY/zero-totp/security/advisories/new).
 
-**Please, encrypt all the sensitve information with the following [PGP key](https://keybase.io/devnath)**
+**Please, encrypt all the sensitve information with the following [PGP key](https://pgp.stchepinsky.net)**
 
 ### Vulnerability evaluation
 We evaluate reported vulnerabilities based on the following criteria:
