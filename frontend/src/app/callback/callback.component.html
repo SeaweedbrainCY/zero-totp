@@ -1,60 +1,64 @@
 <div class="hero is-fullheight">
-    <div class="hero-body is-flex is-justify-content-center">
-        <div class="notification is-danger" *ngIf="errorMessage !=''">
-            <p class="has-text-weight-bold is-size-5">{{errorMessage}}</p>
-          </div>
-          <div *ngIf="errorMessage ==''">
-            <p class=" has-text-centered"><fa-icon [icon]="faCircleNotch" size="2xl" [animation]="true ? 'spin' : undefined" ></fa-icon></p>
-            <p class="has-text-centered">Redirecting...</p>
-          </div>
-          
-    </div>
+  <div class="hero-body is-flex is-justify-content-center">
+    @if (errorMessage !='') {
+      <div class="notification is-danger">
+        <p class="has-text-weight-bold is-size-5">{{errorMessage}}</p>
+      </div>
+    }
+    @if (errorMessage =='') {
+      <div>
+        <p class=" has-text-centered"><fa-icon [icon]="faCircleNotch" size="2xl" [animation]="true ? 'spin' : undefined" ></fa-icon></p>
+        <p class="has-text-centered">Redirecting...</p>
+      </div>
+    }
+
+  </div>
 
 </div>
 
 <div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': google_drive_refresh_token_error_display_modal_active}" >
-    <div class="modal-background"></div>
-    <div class="modal-content mt-6 pt-6 pb-6">
-        <header class="modal-card-head">
-            <h1 class="is-size-4 has-text-info has-text-weight-bold">⚠️ {{ 'vault.google_drive_refresh_token_error.title' | translate }}</h1>
-        </header>
-        <section class="modal-card-body" >
-            <div class="mt-2 has-text-left">
-                <p>
-                    {{ 'vault.google_drive_refresh_token_error.p1' | translate }}
-                    
-                </p><br>
+  <div class="modal-background"></div>
+  <div class="modal-content mt-6 pt-6 pb-6">
+    <header class="modal-card-head">
+      <h1 class="is-size-4 has-text-info has-text-weight-bold">⚠️ {{ 'vault.google_drive_refresh_token_error.title' | translate }}</h1>
+    </header>
+    <section class="modal-card-body" >
+      <div class="mt-2 has-text-left">
+        <p>
+          {{ 'vault.google_drive_refresh_token_error.p1' | translate }}
 
-                <p ><strong class="has-text-info">
-                    {{ 'vault.google_drive_refresh_token_error.p2' | translate }}
-                    
-                </strong></p>
-                <ol>
-                    <li> 
-                          {{ 'vault.google_drive_refresh_token_error.li1_p1' | translate }}
-                        <a href="https://myaccount.google.com/permissions" target="_blank">{{ 'vault.google_drive_refresh_token_error.li1_a1' | translate }} <fa-icon [icon]="faArrowUpRightFromSquare" class="ml-2"></fa-icon> </a> (https://myaccount.google.com/permissions).
-                    </li>
-                    <li>
-                         {{ 'vault.google_drive_refresh_token_error.li2' | translate }}
-                        
-                    </li>
-                    <li>
-                         {{ 'vault.google_drive_refresh_token_error.li3' | translate }}
-                        
-                    </li>
-                    <li>
-                         {{ 'vault.google_drive_refresh_token_error.li4' | translate }}
-                       
-                    </li>
-                </ol><br>
-                <p class="has-text-centered">
-                    <button class="button is-info" [routerLink]="['/vault']">  {{ 'callback.errors.refresh_token.vault_button' | translate }}</button>
-                </p>
+        </p><br>
 
-            </div>
+        <p ><strong class="has-text-info">
+          {{ 'vault.google_drive_refresh_token_error.p2' | translate }}
 
-        </section>
-        <footer class="modal-card-foot is-flex is-justify-content-right">
-        </footer>
-    </div>
+        </strong></p>
+        <ol>
+          <li>
+            {{ 'vault.google_drive_refresh_token_error.li1_p1' | translate }}
+            <a href="https://myaccount.google.com/permissions" target="_blank">{{ 'vault.google_drive_refresh_token_error.li1_a1' | translate }} <fa-icon [icon]="faArrowUpRightFromSquare" class="ml-2"></fa-icon> </a> (https://myaccount.google.com/permissions).
+          </li>
+          <li>
+            {{ 'vault.google_drive_refresh_token_error.li2' | translate }}
+
+          </li>
+          <li>
+            {{ 'vault.google_drive_refresh_token_error.li3' | translate }}
+
+          </li>
+          <li>
+            {{ 'vault.google_drive_refresh_token_error.li4' | translate }}
+
+          </li>
+        </ol><br>
+        <p class="has-text-centered">
+          <button class="button is-info" [routerLink]="['/vault']">  {{ 'callback.errors.refresh_token.vault_button' | translate }}</button>
+        </p>
+
+      </div>
+
+    </section>
+    <footer class="modal-card-foot is-flex is-justify-content-right">
+    </footer>
+  </div>
 </div>
