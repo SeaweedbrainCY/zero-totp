@@ -1,4 +1,4 @@
-import { NgModule, isDevMode, provideZoneChangeDetection } from "@angular/core";
+import { NgModule, isDevMode, provideZonelessChangeDetection, provideCheckNoChangesConfig } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { FormsModule } from "@angular/forms";
 
@@ -137,7 +137,8 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
     provideMarkdown({ loader: HttpClient }),
     httpInterceptorProviders,
     provideHttpClient(withInterceptorsFromDi()),
-    provideZoneChangeDetection(),
+    provideZonelessChangeDetection(),
+    provideCheckNoChangesConfig({ exhaustive: true, interval: 1000 })
   ],
 })
 export class AppModule {
