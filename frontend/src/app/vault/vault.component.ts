@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, WritableSignal } from '@angular/core';
 import { UserService } from '../common/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare} from '@fortawesome/free-solid-svg-icons';
@@ -75,7 +75,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   totp_code_generation_interval:NodeJS.Timeout|undefined;
   isPassphraseVisible=false;
   passphrase = "";
-  isVaultEncrypted : boolean | undefined; 
+  isVaultEncrypted : WritableSignal<boolean | undefined> = signal(undefined); 
   isDecryptingLockedVaut = false;
   vaultDecryptionErrorMessage = "";
   google_drive_refresh_token_error_display_modal_active = false;
@@ -100,13 +100,13 @@ export class VaultComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if(this.userService.get_zke_key() == null && !this.userService.getIsVaultLocal()){
       this.userService.refresh_user_id().then((success) => {
-       this.isVaultEncrypted = true;
+       this.isVaultEncrypted.set(true);
       }, (error) => {
-        this.isVaultEncrypted = false;
+        this.isVaultEncrypted.set(false);
         this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
       });
     } else if(this.userService.getIsVaultLocal()){
-      this.isVaultEncrypted = false;
+      this.isVaultEncrypted.set(false);
       this.local_vault_service = this.userService.getLocalVaultService();
       let vaultDate = "unknown"
       try{
@@ -121,7 +121,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.vault_date = vaultDate;
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
     } else {
-      this.isVaultEncrypted = false;
+      this.isVaultEncrypted.set(false);
       this.get_and_decrypt_vault();
     }    
     // Display the add button 
@@ -619,7 +619,7 @@ export class VaultComponent implements OnInit, OnDestroy {
                  this.vaultService.derivePassphrase(this.userService.getDerivedKeySalt()!, this.passphrase).then((derivedKey) => {
                   this.vaultService.decryptZKEKey(zke_encrypted_key, derivedKey, this.userService.getIsVaultLocal()!).then((zke_key) => {
                     this.userService.set_zke_key(zke_key!);
-                    this.isVaultEncrypted = false;
+                    this.isVaultEncrypted.set(false);
                     this.isDecryptingLockedVaut = false;
                      this.get_and_decrypt_vault();
                   }, (error) => {

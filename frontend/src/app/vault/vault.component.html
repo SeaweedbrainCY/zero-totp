@@ -1,4 +1,4 @@
-@if (isVaultEncrypted == undefined) {
+@if (isVaultEncrypted() == undefined) {
   <section class="hero is-fullheight mt-6 pt-6 has-background-dark"
     style="position: fixed; z-index: 99 !important; width: 100%; top: 0; left: 0;"
     >
@@ -10,7 +10,7 @@
     </article>
   </section>
 }
-@if (isVaultEncrypted) {
+@if (isVaultEncrypted()) {
   <section class="hero is-fullheight mt-6 pt-6 has-background-dark"
     style="position: fixed; z-index: 99 !important; width: 100%; top: 0; left: 0;">
     <article class="is-flex p-6 mb-6 has-text-centered w-100 is-justify-content-center "
@@ -68,7 +68,7 @@
     </section>
   }
 
-  @if (isVaultEncrypted == false) {
+  @if (isVaultEncrypted() == false) {
     <section class="hero  is-halfheight mt-6 pb-6" style="min-height: 70vh;">
       <div class="container  is-fluid ">
         <div>
