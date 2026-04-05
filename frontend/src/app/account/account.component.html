@@ -1,4 +1,4 @@
-@if (loadingAccount) {
+@if (loadingAccount()) {
   <section class="hero is-halfheight mt-6 " style="min-height: 70vh;">
     <article class="hero-body is-flex is-justify-content-center">
       <div>
@@ -10,11 +10,11 @@
     </article>
   </section>
 }
-@if (accountLoadingError && !loadingAccount) {
+@if (accountLoadingError() && !loadingAccount()) {
   <section class="hero is-halfheight mt-6" style="min-height: 70vh;">
     <article class="hero-body is-flex is-justify-content-center">
       <div>
-        <p class="is-light has-text-centered has-text-danger">{{ accountLoadingError| translate }}<br><fa-icon
+        <p class="is-light has-text-centered has-text-danger">{{ accountLoadingError()| translate }}<br><fa-icon
         [icon]="faCircleExclamation" style="color:#ff0000;" size="2xl" animation="fade"></fa-icon> </p>
       </div>
     </article>
@@ -22,7 +22,7 @@
 }
 
 
-@if (!accountLoadingError && !loadingAccount) {
+@if (!accountLoadingError() && !loadingAccount()) {
   <section class="hero is-halfheight mt-6 pb-6 " style="min-height: 70vh;">
     <div class="container is-fluid ">
       <div>
@@ -30,7 +30,7 @@
           style="line-height: normal;">{{ 'account.title' | translate }}
         </h1>
         <div class="is-flex is-justify-content-center">
-          @if (notification_message != undefined) {
+          @if (notification_message() != undefined) {
             <div class="notification is-link is-light  m-4 is-flex is-justify-content-space-between"
               style="max-width: 70vw;">
               <div class="is-flex is-justify-content-center is-flex-direction-column">
@@ -38,7 +38,7 @@
                   <div class="is-flex is-justify-content-center is-flex-direction-column mr">
                     <fa-icon [icon]="faLightbulb" class="mr-4"></fa-icon>
                   </div>
-                  <strong>{{notification_message}}</strong>
+                  <strong>{{notification_message()}}</strong>
                 </div>
               </div>
             </div>
@@ -60,17 +60,17 @@
                 {{ 'account.username.title' | translate }}
               </h1>
               <div style="border-bottom: 1px solid silver"></div>
-              <p class="has-text-grey pb-3">{{ 'account.username.current' | translate }} {{current_username}}
+              <p class="has-text-grey pb-3">{{ 'account.username.current' | translate }} {{current_username()}}
               </p>
               <label class="label">{{ 'account.username.new.label' | translate }}</label>
               <div class="field is-flex-tablet mb-3">
                 <div class="control has-icons-left ">
                   <input class="input" type="text" placeholder="{{ 'username' | translate }}"
                     name="username" [(ngModel)]="username"
-                    [ngClass]="{'is-danger' : usernameErrorMessage != ''}">
-                  @if (usernameErrorMessage != '') {
+                    [ngClass]="{'is-danger' : usernameErrorMessage() != ''}">
+                  @if (usernameErrorMessage() != '') {
                     <span class="help has-text-left is-danger"
-                    >{{usernameErrorMessage | translate}}</span>
+                    >{{usernameErrorMessage() | translate}}</span>
                   }
                   <span class="icon is-small is-left">
                     <fa-icon [icon]="faUser"></fa-icon>
@@ -78,7 +78,7 @@
                 </div>
                 <div class="has-text-centered">
                   <button class="button is-info is-outlined is-centered ml-3" (click)="updateUsername()"
-                    [ngClass]="{'is-loading': this.buttonLoading['username']}">{{"update" |
+                    [ngClass]="{'is-loading': this.buttonLoading.username()}">{{"update" |
                   translate}}</button>
                 </div>
               </div>
@@ -88,16 +88,16 @@
                 {{ 'account.email.title' | translate }}
               </h1>
               <div style="border-bottom: 1px solid silver"></div>
-              <p class="has-text-grey pb-3">{{ 'account.email.current' | translate }} : {{current_email}}</p>
+              <p class="has-text-grey pb-3">{{ 'account.email.current' | translate }} : {{current_email()}}</p>
               <label class="label">{{ 'account.email.update.label' | translate }}</label>
               <div class="field is-flex-tablet">
                 <div class="control has-icons-left">
                   <input class="input" type="email" placeholder="{{'email' | translate}}" name="email"
                     [(ngModel)]="email" (keyup)="checkEmail()"
-                    [ngClass]="{'is-danger' : emailErrorMessage != '' || emailConfirmErrorMessage != ''}">
-                  @if (emailErrorMessage != '') {
+                    [ngClass]="{'is-danger' : emailErrorMessage() != '' || emailConfirmErrorMessage() != ''}">
+                  @if (emailErrorMessage() != '') {
                     <span class="help has-text-left is-danger"
-                    >{{emailErrorMessage | translate}}</span>
+                    >{{emailErrorMessage() | translate}}</span>
                   }
                   <span class="icon is-small is-left">
                     <fa-icon [icon]="faEnvelope"></fa-icon>
@@ -109,10 +109,10 @@
                   <input class="input" type="email"
                     placeholder="{{ 'account.email.update.confirm' | translate }}" name="confirmEmail"
                     [(ngModel)]="confirmEmail" (keyup)="checkEmail()"
-                    [ngClass]="{'is-danger' : emailConfirmErrorMessage != ''}">
-                  @if (emailConfirmErrorMessage != '') {
+                    [ngClass]="{'is-danger' : emailConfirmErrorMessage() != ''}">
+                  @if (emailConfirmErrorMessage() != '') {
                     <span class="help has-text-left is-danger"
-                      >{{emailConfirmErrorMessage |
+                      >{{emailConfirmErrorMessage() |
                     translate}}</span>
                   }
                   <span class="icon is-small is-left">
@@ -121,7 +121,7 @@
                 </div>
                 <div class="has-text-centered">
                   <button class="button is-info is-outlined ml-3" (click)="updateEmail()"
-                    [ngClass]="{'is-loading': this.buttonLoading['email']}">{{"update" |
+                    [ngClass]="{'is-loading': this.buttonLoading.email()}">{{"update" |
                   translate}}</button>
                 </div>
               </div>
@@ -134,18 +134,18 @@
               <label class="label mt-3">{{ 'account.passphrase.current' | translate }}</label>
               <div class="field is-flex-tablet has-addons">
                 <div class="control has-icons-left ">
-                  <input class="input" type="{{isPassphraseVisible ? 'text' : 'password'}}"
+                  <input class="input" type="{{isPassphraseVisible() ? 'text' : 'password'}}"
                     placeholder="{{'passphrase' | translate}}" name="password" [(ngModel)]="password">
                   <span class="icon is-small is-left">
                     <fa-icon [icon]="faLock"></fa-icon>
                   </span>
                 </div>
                 <p class="control">
-                  <a class="button" (click)="isPassphraseVisible = !isPassphraseVisible">
-                    @if (isPassphraseVisible) {
+                  <a class="button" (click)="isPassphraseVisible.update(current => !current) ">
+                    @if (isPassphraseVisible()) {
                       <fa-icon [icon]="faEyeSlash"
                       size="sm"></fa-icon>
-                      }@if (!isPassphraseVisible) {
+                      }@if (!isPassphraseVisible()) {
                       <fa-icon [icon]="faEye"
                       size="sm"></fa-icon>
                     }
@@ -155,13 +155,13 @@
               <label class="label mt-3">{{ 'account.passphrase.new' | translate }}</label>
               <div class="field is-flex-tablet has-addons">
                 <div class="control has-icons-left">
-                  <input class="input" type="{{isNewPassphraseVisible ? 'text' : 'password'}}"
+                  <input class="input" type="{{isNewPassphraseVisible() ? 'text' : 'password'}}"
                     placeholder="{{ 'account.passphrase.new' | translate }}" name="newPassword"
                     [(ngModel)]="newPassword" (keyup)="checkNewPassword()"
-                    [ngClass]="{'is-danger' : newPasswordErrorMessage.length >1 || newPasswordConfirmErrorMessage.length >1 }">
-                  @if (newPasswordErrorMessage.length >1) {
+                    [ngClass]="{'is-danger' : newPasswordErrorMessage().length >1 || newPasswordConfirmErrorMessage().length >1 }">
+                  @if (newPasswordErrorMessage().length >1) {
                     <span class="help has-text-left is-danger">
-                      @for (error of newPasswordErrorMessage; track error) {
+                      @for (error of newPasswordErrorMessage(); track error) {
                         <span>
                           @if (error!='') {
                             <span>{{error | translate}}<br></span>
@@ -175,11 +175,11 @@
                   </span>
                 </div>
                 <p class="control">
-                  <a class="button" (click)="isNewPassphraseVisible = !isNewPassphraseVisible">
-                    @if (isNewPassphraseVisible) {
+                  <a class="button" (click)="isNewPassphraseVisible.update(current => !current)">
+                    @if (isNewPassphraseVisible()) {
                       <fa-icon [icon]="faEyeSlash"
                       size="sm"></fa-icon>
-                      }@if (!isNewPassphraseVisible) {
+                      }@if (!isNewPassphraseVisible()) {
                       <fa-icon [icon]="faEye"
                       size="sm"></fa-icon>
                     }
@@ -188,15 +188,15 @@
               </div>
               <div class="field is-flex-tablet has-addons">
                 <div class="control has-icons-left mb-3">
-                  <input class="input" type="{{isNewConfirmPassphraseVisible ? 'text' : 'password'}}"
+                  <input class="input" type="{{isNewConfirmPassphraseVisible() ? 'text' : 'password'}}"
                     placeholder="{{ 'account.passphrase.confirm' | translate }}"
                     name="confirmNewPassword" [(ngModel)]="confirmNewPassword"
-                    [ngClass]="{'is-danger' : newPasswordConfirmErrorMessage.length >1}"
+                    [ngClass]="{'is-danger' : newPasswordConfirmErrorMessage().length >1}"
                     (keyup)="checkNewPassword()">
-                  @if (newPasswordConfirmErrorMessage.length >1) {
+                  @if (newPasswordConfirmErrorMessage().length >1) {
                     <span class="help has-text-left is-danger"
                       >
-                      @for (error of newPasswordConfirmErrorMessage; track error) {
+                      @for (error of newPasswordConfirmErrorMessage(); track error) {
                         <span>
                           @if (error!='') {
                             <span>{{error | translate}}<br></span>
@@ -211,11 +211,11 @@
                 </div>
                 <p class="control">
                   <a class="button"
-                    (click)="isNewConfirmPassphraseVisible = !isNewConfirmPassphraseVisible">
-                    @if (isNewConfirmPassphraseVisible) {
+                    (click)="isNewConfirmPassphraseVisible.update(current => !current)">
+                    @if (isNewConfirmPassphraseVisible()) {
                       <fa-icon [icon]="faEyeSlash"
                       size="sm"></fa-icon>
-                      }@if (!isNewConfirmPassphraseVisible) {
+                      }@if (!isNewConfirmPassphraseVisible()) {
                       <fa-icon [icon]="faEye"
                       size="sm"></fa-icon>
                     }
@@ -244,7 +244,7 @@
     </div>
   </section>
 }
-<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isDeletionModalActive}">
+<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isDeletionModalActive()}">
   <div class="modal-background" (click)="deletionModal()"></div>
   <div class="modal-content">
     <section class="modal-card-body">
@@ -262,8 +262,8 @@
     <div class="control has-icons-left">
       <input class="input" type="password" placeholder="Passphrase" name="password"
         [(ngModel)]="password">
-      @if (deletionErrorMessage != '') {
-        <span class="help has-text-left is-danger">{{deletionErrorMessage
+      @if (deletionErrorMessage() != '') {
+        <span class="help has-text-left is-danger">{{deletionErrorMessage()
         | translate }}</span>
       }
       <span class="icon is-small is-left">
@@ -273,26 +273,26 @@
   </div>
 </section>
 <footer class="modal-card-foot is-flex is-justify-content-right">
-  <button class="button is-success mr-1" (click)="deletionModal()" [disabled]="buttonLoading['deletion']">{{
+  <button class="button is-success mr-1" (click)="deletionModal()" [disabled]="buttonLoading.deletion()">{{
   'account.delete.popup.button.return' | translate }}</button>
   <button class="button is-danger ml-1" (click)="deleteAccount()"
-    [ngClass]="{'is-loading': buttonLoading['deletion']}"
-    [disabled]="deleteAccountConfirmationCountdown >0">{{ 'account.delete.popup.button.destroy' | translate
-    }}@if (deleteAccountConfirmationCountdown >0) {
-    <span> ({{deleteAccountConfirmationCountdown}}
+    [ngClass]="{'is-loading': buttonLoading.deletion()}"
+    [disabled]="deleteAccountConfirmationCountdown() >0">{{ 'account.delete.popup.button.destroy' | translate
+    }}@if (deleteAccountConfirmationCountdown() >0) {
+    <span> ({{deleteAccountConfirmationCountdown()}}
     s)</span>
   }</button>
 
 </footer>
 </div>
-@if (!buttonLoading['deletion']) {
+@if (!buttonLoading.deletion()) {
   <button class="modal-close is-large" aria-label="close" (click)="deletionModal()"
   ></button>
 }
 </div>
 
 
-<div id="passphraseConfirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isPassphraseModalActive}">
+<div id="passphraseConfirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isPassphraseModalActive()}">
   <div class="modal-background" (click)="passphraseModal()"></div>
   <div class="modal-content">
     <section class="modal-card-body">
@@ -309,19 +309,19 @@
       </div>
     </section>
     <footer class="modal-card-foot is-flex is-justify-content-right">
-      <button class="button" (click)="passphraseModal()" [disabled]="buttonLoading['passphrase']">{{"cancel" |
+      <button class="button" (click)="passphraseModal()" [disabled]="buttonLoading.passphrase()">{{"cancel" |
       translate}}</button>
-      <button class="button is-info" (click)="updatePassphraseConfirm()"
-        [ngClass]="{'is-loading': buttonLoading['passphrase']}">{{ 'account.passphrase.popup.warning.continue' |
+      <button class="button is-info ml-2" (click)="updatePassphraseConfirm()"
+        [ngClass]="{'is-loading': buttonLoading.passphrase()}">{{ 'account.passphrase.popup.warning.continue' |
       translate }}</button>
     </footer>
   </div>
-  @if (!buttonLoading['passphrase']) {
+  @if (!buttonLoading.passphrase()) {
     <button class="modal-close is-large" aria-label="close" (click)="passphraseModal()"
     ></button>
   }
 </div>
-<div id="passphraseUpdate" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': buttonLoading['passphrase']}">
+<div id="passphraseUpdate" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': buttonLoading.passphrase()}">
   <div class="modal-background"></div>
   <div class="modal-content">
     <section class="modal-card-body">
@@ -329,102 +329,102 @@
       <strong>{{ 'account.passphrase.popup.updating.subititle' | translate }}</strong> <br><br>
       <progress class="progress is-small is-success" max="100"></progress>
       <p class="">
-        @if (stepsDone.includes('verifyOldPassword')) {
+        @if (stepsDone().includes('verifyOldPassword')) {
           <fa-icon [icon]="faCheck" class="has-text-success"
           class="has-text-success"></fa-icon>
         }
-        @if (!stepsDone.includes('verifyOldPassword')) {
+        @if (!stepsDone().includes('verifyOldPassword')) {
           <fa-icon [icon]="faCog" [animation]="true ? 'spin' : undefined"
           ></fa-icon>
         }
-        <span [ngClass]="{'has-text-success': stepsDone.includes('verifyOldPassword')}"> {{
+        <span [ngClass]="{'has-text-success': stepsDone().includes('verifyOldPassword')}"> {{
         'account.passphrase.popup.updating.verif' | translate }}</span><br>
 
-        @if (stepsDone.includes('getVault')) {
+        @if (stepsDone().includes('getVault')) {
           <fa-icon [icon]="faCheck" class="has-text-success"></fa-icon>
         }
-        @if (!stepsDone.includes('getVault')) {
+        @if (!stepsDone().includes('getVault')) {
           <fa-icon [icon]="faCog"
           [animation]="true ? 'spin' : undefined"></fa-icon>
         }
-        <span [ngClass]="{'has-text-success': stepsDone.includes('getVault')}"> {{
+        <span [ngClass]="{'has-text-success': stepsDone().includes('getVault')}"> {{
         'account.passphrase.popup.updating.download' | translate }}</span><br>
 
-        @if (stepsDone.includes('getVault')) {
+        @if (stepsDone().includes('getVault')) {
           <fa-icon [icon]="faCheck" class="has-text-success"></fa-icon>
         }
-        @if (!stepsDone.includes('getVault')) {
+        @if (!stepsDone().includes('getVault')) {
           <fa-icon [icon]="faCog"
           [animation]="true ? 'spin' : undefined"></fa-icon>
         }
-        <span [ngClass]="{'has-text-success': stepsDone.includes('getVault')}"> {{
+        <span [ngClass]="{'has-text-success': stepsDone().includes('getVault')}"> {{
         'account.passphrase.popup.updating.descryption' | translate }}</span><br>
 
-        @if (stepsDone.includes('derivation')) {
+        @if (stepsDone().includes('derivation')) {
           <fa-icon [icon]="faCheck" class="has-text-success"></fa-icon>
         }
-        @if (!stepsDone.includes('derivation')) {
+        @if (!stepsDone().includes('derivation')) {
           <fa-icon [icon]="faCog"
           [animation]="true ? 'spin' : undefined"></fa-icon>
         }
-        <span [ngClass]="{'has-text-success': stepsDone.includes('derivation')}"> {{
+        <span [ngClass]="{'has-text-success': stepsDone().includes('derivation')}"> {{
         'account.passphrase.popup.updating.derivation' | translate }}</span><br>
 
-        @if (stepsDone.includes('encryption')) {
+        @if (stepsDone().includes('encryption')) {
           <fa-icon [icon]="faCheck" class="has-text-success"></fa-icon>
         }
-        @if (!stepsDone.includes('encryption')) {
+        @if (!stepsDone().includes('encryption')) {
           <fa-icon [icon]="faCog"
           [animation]="true ? 'spin' : undefined"></fa-icon>
         }
-        <span [ngClass]="{'has-text-success': stepsDone.includes('encryption')}"> {{
+        <span [ngClass]="{'has-text-success': stepsDone().includes('encryption')}"> {{
         'account.passphrase.popup.updating.encryption' | translate }}</span><br>
 
-        @if (stepsDone.includes('verification')) {
+        @if (stepsDone().includes('verification')) {
           <fa-icon [icon]="faCheck" class="has-text-success"></fa-icon>
         }
-        @if (!stepsDone.includes('verification')) {
+        @if (!stepsDone().includes('verification')) {
           <fa-icon [icon]="faCog" [animation]="true ? 'spin' : undefined"
           ></fa-icon>
         }
-        <span [ngClass]="{'has-text-success': stepsDone.includes('verification')}"> {{
+        <span [ngClass]="{'has-text-success': stepsDone().includes('verification')}"> {{
         'account.passphrase.popup.updating.verif_new' | translate }}</span><br>
 
-        @if (stepsDone.includes('upload')) {
+        @if (stepsDone().includes('upload')) {
           <fa-icon [icon]="faCheck" class="has-text-success"></fa-icon>
         }
-        @if (!stepsDone.includes('upload')) {
+        @if (!stepsDone().includes('upload')) {
           <fa-icon [icon]="faCog" [animation]="true ? 'spin' : undefined"
           ></fa-icon>
         }
-        <span [ngClass]="{'has-text-success': stepsDone.includes('upload')}"> {{
+        <span [ngClass]="{'has-text-success': stepsDone().includes('upload')}"> {{
         'account.passphrase.popup.updating.upload' | translate }}</span><br>
 
-        @if (stepsDone.includes('deleteBackup')) {
+        @if (stepsDone().includes('deleteBackup')) {
           <fa-icon [icon]="faCheck" class="has-text-success"></fa-icon>
         }
-        @if (!stepsDone.includes('deleteBackup') && deleteGoogleDriveBackup) {
+        @if (!stepsDone().includes('deleteBackup') && deleteGoogleDriveBackup()) {
           <fa-icon [icon]="faCog" [animation]="true ? 'spin' : undefined"
           ></fa-icon>
         }
-        @if (deleteGoogleDriveBackup) {
-          <span [ngClass]="{'has-text-success': stepsDone.includes('deleteBackup')}"
+        @if (deleteGoogleDriveBackup()) {
+          <span [ngClass]="{'has-text-success': stepsDone().includes('deleteBackup')}"
             > {{ 'account.passphrase.popup.updating.destroy' | translate
           }}</span>
-          }@if (deleteGoogleDriveBackup) {
+          }@if (deleteGoogleDriveBackup()) {
           <br>
           }
 
 
-          @if (stepsDone.includes('backup')) {
+          @if (stepsDone().includes('backup')) {
             <fa-icon [icon]="faCheck" class="has-text-success"></fa-icon>
           }
-          @if (!stepsDone.includes('backup') && isGoogleDriveBackupEnabled) {
+          @if (!stepsDone().includes('backup') && (isGoogleDriveBackupEnabled())) {
             <fa-icon [icon]="faCog" [animation]="true ? 'spin' : undefined"
             ></fa-icon>
           }
-          @if (isGoogleDriveBackupEnabled) {
-            <span [ngClass]="{'has-text-success': stepsDone.includes('backup')}">
+          @if (isGoogleDriveBackupEnabled()) {
+            <span [ngClass]="{'has-text-success': stepsDone().includes('backup')}">
               {{ "account.passphrase.popup.updating.upload_google" | translate}}
             </span>
             }<br>
@@ -436,7 +436,7 @@
 
 
     <div id="passphraseConfirmation" class="modal modal-fx-fadeInScale"
-      [ngClass]="{'is-active': googleDriveBackupModaleActive}">
+      [ngClass]="{'is-active': googleDriveBackupModaleActive()}">
       <div class="modal-background" (click)="passphraseModal()"></div>
       <div class="modal-content">
         <section class="modal-card-body">
@@ -444,38 +444,38 @@
           translate }}</h1>
           <div class="content">
             <div class="box is-flex" style="cursor: pointer;"
-              (click)="deleteGoogleDriveBackup=!deleteGoogleDriveBackup;"
-              [ngClass]='{"has-background-danger-light	":deleteGoogleDriveBackup}'>
+              (click)="deleteGoogleDriveBackup.set(true);"
+              [ngClass]='{"has-background-danger-light	":deleteGoogleDriveBackup()}'>
               <div class="is-flex is-flex-direction-column is-justify-content-center mr-4">
-                @if (deleteGoogleDriveBackup) {
+                @if (deleteGoogleDriveBackup()) {
                   <fa-icon [icon]="faTrash" style="color:red;"></fa-icon>
                 }
-                @if (!deleteGoogleDriveBackup) {
+                @if (!deleteGoogleDriveBackup()) {
                   <fa-icon [icon]="faTrash"></fa-icon>
                 }
               </div>
               <div>
-                <strong for="deleteGoogleDriveBackup" [ngClass]="{'has-text-danger':deleteGoogleDriveBackup}">{{
+                <strong for="deleteGoogleDriveBackup" [ngClass]="{'has-text-danger':deleteGoogleDriveBackup()}">{{
                 'account.passphrase.popup.google.option.delete.strong' | translate }}</strong> <span
                 class="has-text-danger"> {{ 'account.passphrase.popup.google.option.delete.info' | translate
               }}</span>
             </div>
           </div>
           <div class="box is-flex" style="cursor: pointer;"
-            (click)="deleteGoogleDriveBackup=deleteGoogleDriveBackup == false;"
-            [ngClass]='{"has-background-success-light":deleteGoogleDriveBackup == false }'>
+            (click)="deleteGoogleDriveBackup.set(false);"
+            [ngClass]='{"has-background-success-light":deleteGoogleDriveBackup() == false }'>
             <div class="is-flex is-flex-direction-column is-justify-content-center mr-4">
-              @if (deleteGoogleDriveBackup == false) {
+              @if (deleteGoogleDriveBackup() == false) {
                 <fa-icon [icon]="faVault" style="color:green;"
                 ></fa-icon>
               }
-              @if (deleteGoogleDriveBackup != false) {
+              @if (deleteGoogleDriveBackup() != false) {
                 <fa-icon [icon]="faVault"></fa-icon>
               }
             </div>
             <div>
               <strong for="deleteGoogleDriveBackup"
-                [ngClass]="{'has-text-success':deleteGoogleDriveBackup == false}">{{
+                [ngClass]="{'has-text-success':deleteGoogleDriveBackup() == false}">{{
               'account.passphrase.popup.google.option.keep.strong' | translate }}</strong>
             </div>
           </div>
@@ -483,9 +483,9 @@
       </section>
       <footer class="modal-card-foot is-flex is-justify-content-right">
         <button class="button"
-          (click)="googleDriveBackupModaleActive = false; isPassphraseModalActive=false; isDeletionModalActive=false; deleteGoogleDriveBackup=undefined">{{
+          (click)="googleDriveBackupModaleActive.set(false); isPassphraseModalActive.set(false); isDeletionModalActive.set(false); deleteGoogleDriveBackup.set(undefined)">{{
         'abort' | translate }}</button>
-        <button class="button is-info" (click)=" googleDriveBackupModaleActive=false; updatePassphraseConfirm()"
-        [disabled]="deleteGoogleDriveBackup == undefined">{{ 'continue' | translate }}</button>
+        <button class="button is-info ml-2" (click)=" googleDriveBackupModaleActive.set(false); updatePassphraseConfirm()"
+        [disabled]="deleteGoogleDriveBackup() == undefined">{{ 'continue' | translate }}</button>
       </footer>
     </div>
