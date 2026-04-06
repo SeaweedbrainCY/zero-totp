@@ -1,11 +1,11 @@
 <div class="hero is-fullheight">
   <div class="hero-body is-flex is-justify-content-center">
-    @if (errorMessage !='') {
+    @if (errorMessage() !='') {
       <div class="notification is-danger">
-        <p class="has-text-weight-bold is-size-5">{{errorMessage}}</p>
+        <p class="has-text-weight-bold is-size-5">{{errorMessage()}}</p>
       </div>
     }
-    @if (errorMessage =='') {
+    @if (errorMessage() =='') {
       <div>
         <p class=" has-text-centered"><fa-icon [icon]="faCircleNotch" size="2xl" [animation]="true ? 'spin' : undefined" ></fa-icon></p>
         <p class="has-text-centered">Redirecting...</p>
@@ -16,7 +16,7 @@
 
 </div>
 
-<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': google_drive_refresh_token_error_display_modal_active}" >
+<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': google_drive_refresh_token_error_display_modal_active()}" >
   <div class="modal-background"></div>
   <div class="modal-content mt-6 pt-6 pb-6">
     <header class="modal-card-head">

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../common/User/user.service';
 import { HttpClient } from '@angular/common/http';
@@ -18,7 +18,8 @@ import { TOTP } from 'totp-generator'
     selector: 'app-edit-totp',
     templateUrl: './edit-totp.component.html',
     styleUrls: ['./edit-totp.component.css'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditTOTPComponent implements OnInit, OnDestroy{
   faChevronCircleLeft = faChevronCircleLeft;
@@ -32,32 +33,32 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   faXmark=faXmark;
   faEye=faEye;
   faCircleQuestion = faCircleQuestion;
-  faviconURL = "";
-  name = "";
-  uri="";
-  favicon=false;
+  faviconURL = signal("");
+  name = signal("");
+  uri = signal("");
+  favicon = signal(false);
   uuid="";
-  secret = "";
-  nameError = "";
-  uriError = "";
-  secretError = "";
-  color="info";
-  selected_color="";
+  secret = signal("");
+  nameError = signal("");
+  uriError = signal("");
+  secretError = signal("");
+  color = signal("info");
+  selected_color = signal("");
   animationFrameId: number=0;
-  code = "";
-  progress_bar_percent=80;
+  code = signal("");
+  progress_bar_percent = signal(80);
   currentUrl:string = "";
   secret_uuid:string|null = null;
-  isModalActive = false;  
-  isDestroying = false;
-  faviconPolicy=""; // never, always, enabledOnly
-  tags:string[] = [];
-  isTagModalActive = false;
-  addTagName="";
-  isEditing = false; // true if editing, false if adding
-  isSaving = false;
-  remainingTags:string[] = [];
-  isSecretVisible=true;
+  isModalActive = signal(false);
+  isDestroying = signal(false);
+  faviconPolicy = signal(""); // never, always, enabledOnly
+  tags = signal<string[]>([]);
+  isTagModalActive = signal(false);
+  addTagName = signal("");
+  isEditing = signal(false); // true if editing, false if adding
+  isSaving = signal(false);
+  remainingTags = signal<string[]>([]);
+  isSecretVisible = signal(true);
   totp_code_expiration = 0;
   generating_next_totp_code = false;
   totp_code_generation_interval:NodeJS.Timeout|undefined;
@@ -90,24 +91,24 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
     } 
     this.secret_uuid = this.route.snapshot.paramMap.get('id');
     if(this.secret_uuid == null){
-        this.isEditing = false;
+        this.isEditing.set(false);
         if(this.currentUrl != "/vault/add"){
           this.router.navigate(["/vault"], {relativeTo:this.route.root});
           return;
         }
         if(this.QRCodeService.getLabel() != undefined && this.QRCodeService != undefined){
-          this.name = this.QRCodeService.getLabel()!
-          this.secret = this.QRCodeService.getSecret()!
+          this.name.set(this.QRCodeService.getLabel()!);
+          this.secret.set(this.QRCodeService.getSecret()!);
         }
         this.get_preferences()
         this.translate.get("blue").subscribe((default_color: string) => {
-        this.selected_color = default_color;
+          this.selected_color.set(default_color);
         });
-        this.remainingTags = this.userService.getVaultTags();
+        this.remainingTags.set(this.userService.getVaultTags());
         
     } else {
-      this.isEditing = true;
-      this.isSecretVisible = false;
+      this.isEditing.set(true);
+      this.isSecretVisible.set(false);
       console.log("is editing")
       if(!this.userService.getIsVaultLocal()){
         this.getSecretTOTP()
@@ -116,20 +117,20 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
         const vault = this.userService.getVault()!;
         const property = vault.get(this.secret_uuid);
         this.uuid = this.secret_uuid!;
-        this.name = property!.get("name")!;
-        this.secret = property!.get("secret")!;
-        this.color = property!.get("color")!;
+        this.name.set(property!.get("name")!);
+        this.secret.set(property!.get("secret")!);
+        this.color.set(property!.get("color")!);
         if(property!.has("uri")){
-          this.uri = property!.get("uri")!;
+          this.uri.set(property!.get("uri")!);
         }
         if(property!.has("favicon")){
-          this.favicon = property!.get("favicon")! == "true";
-          if(this.favicon){
+          this.favicon.set(property!.get("favicon")! == "true");
+          if(this.favicon()){
             this.loadFavicon()
           }
         }
         if(property!.has("tags")){
-          this.tags = this.utils.parseTags(property!.get("tags")!); // no remaining tags because the vault is local
+          this.tags.set(this.utils.parseTags(property!.get("tags")!)); // no remaining tags because the vault is local
         }
 
       }
@@ -146,31 +147,31 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   }
 
   checkName(){
-    this.nameError = "";
-    if(this.name == ""){
-      this.nameError = "totp.error.name_empty";
+    this.nameError.set("");
+    if(this.name() == ""){
+      this.nameError.set("totp.error.name_empty");
       return;
     }
-    if(this.utils.sanitize(this.name) != this.name){
-      this.nameError = "totp.error.char";
+    if(this.utils.sanitize(this.name()) != this.name()){
+      this.nameError.set("totp.error.char");
       return;
     }
   }
 
   checkURI(){
-    this.uriError = "";
-    if(this.utils.sanitize(this.uri) != this.uri){
-      this.uriError =  "totp.error.char";
+    this.uriError.set("");
+    if(this.utils.sanitize(this.uri()) != this.uri()){
+      this.uriError.set("totp.error.char");
       return;
     }
-    if(this.uri != "") {
-      if(!this.uri.startsWith("http://") && !this.uri.startsWith("https://")){
-        this.uri = "https://" + this.uri;
+    if(this.uri() != "") {
+      if(!this.uri().startsWith("http://") && !this.uri().startsWith("https://")){
+        this.uri.set("https://" + this.uri());
       }
     }
-    if(this.favicon == true){
-      if(this.uri == ""){
-        this.uriError = "totp.error.fav_empty";
+    if(this.favicon() == true){
+      if(this.uri() == ""){
+        this.uriError.set("totp.error.fav_empty");
         return;
       } else {
         this.loadFavicon()
@@ -184,7 +185,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   compute_totp_expiration(){
       const now = Date.now();
       const remaining = this.totp_code_expiration - now;
-      this.progress_bar_percent = (remaining/300);
+      this.progress_bar_percent.set(remaining/300);
       if(remaining < 0 && !this.generating_next_totp_code) {
         this.generating_next_totp_code = true;
         this.generateCode();
@@ -193,29 +194,29 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
 
   generateCode(){
   try {
-    if(this.secret == ""){ return;}
-    this.secret = this.secret.replace(/\s/g, "");
-      this.code=TOTP.generate(this.secret).otp;
-      this.totp_code_expiration = TOTP.generate(this.secret).expires;
+    if(this.secret() == ""){ return;}
+    this.secret.set(this.secret().replace(/\s/g, ""));
+      this.code.set(TOTP.generate(this.secret()).otp);
+      this.totp_code_expiration = TOTP.generate(this.secret()).expires;
       this.generating_next_totp_code = false
       } catch(e) {
         console.log(e)
-        this.code = this.translate.instant("totp.error.code");
+        this.code.set(this.translate.instant("totp.error.code"));
         this.generating_next_totp_code = false
     }
    }
    
 
   checkSecret(){
-    this.secretError = "";
-    this.secret = this.secret.replace(/\s/g, "");
-    if(this.secret == ""){
-      this.secretError = "totp.error.secret_empty" ;
+    this.secretError.set("");
+    this.secret.set(this.secret().replace(/\s/g, ""));
+    if(this.secret() == ""){
+      this.secretError.set("totp.error.secret_empty");
       return;
     }
 
-    if(this.secret != this.utils.sanitize(this.secret)){
-      this.secretError = "totp.error.char";
+    if(this.secret() != this.utils.sanitize(this.secret())){
+      this.secretError.set("totp.error.char");
       return;
     }
     this.generateCode();
@@ -225,23 +226,23 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
     this.translate.get("blue").subscribe((translation: string) => {
     switch(colorSelected){
       case translation:{
-        this.color = "info";
+        this.color.set("info");
         break;
       }
       case this.translate.instant("green"):{
-        this.color = "success";
+        this.color.set("success");
         break;
       }
       case this.translate.instant("orange"):{
-        this.color = "warning";
+        this.color.set("warning");
         break;
       }
       case this.translate.instant("red"):{
-        this.color = "danger";
+        this.color.set("danger");
         break;
       }
       default:{
-        this.color = "info";
+        this.color.set("info");
         break;
       }
     }
@@ -257,12 +258,12 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
       if(response.body != null){
         const data = JSON.parse(JSON.stringify(response.body));
         if(data.favicon_policy != null){
-          this.faviconPolicy = data.favicon_policy;
-          if (this.faviconPolicy == "always"){
-            this.favicon = true;
+          this.faviconPolicy.set(data.favicon_policy);
+          if (this.faviconPolicy() == "always"){
+            this.favicon.set(true);
           }
         } else {
-          this.faviconPolicy = "enabledOnly";
+          this.faviconPolicy.set("enabledOnly");
           this.translate.get("totp.favicon_policy.enabledOnly").subscribe((translation: string) => {
             this.utils.toastError(this.toastr,translation,"")
         });
@@ -296,52 +297,52 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
           } else {
             const property = this.utils.mapFromJson(decrypted_secret);
             this.uuid = this.secret_uuid!;
-            this.name = property.get("name")!;
-            this.secret = property.get("secret")!;
+            this.name.set(property.get("name")!);
+            this.secret.set(property.get("secret")!);
             this.generateCode();
-            this.color = property.get("color")!;
+            this.color.set(property.get("color")!);
             this.translate.get("blue").subscribe((blue: string) => {
-            switch(this.color){
+            switch(this.color()){
               case "info":{
-                this.selected_color = blue;
+                this.selected_color.set(blue);
                 break;
               }
               case "success":{
-                this.selected_color = this.translate.instant("green");
+                this.selected_color.set(this.translate.instant("green"));
                 break;
               }
               case "warning":{
-                this.selected_color = this.translate.instant("orange");
+                this.selected_color.set(this.translate.instant("orange"));
                 break;
               }
               case "danger":{
-                this.selected_color = this.translate.instant("red");
+                this.selected_color.set(this.translate.instant("red"));
                 break;
               }
               default:{
-                this.selected_color = blue;
+                this.selected_color.set(blue);
                 break;
               }
             }
           });
             if(property!.has("uri")){
-              this.uri = property!.get("uri")!;
+              this.uri.set(property!.get("uri")!);
             }
             if(property!.has("favicon")){
-              this.favicon = property!.get("favicon")! == "true";
-              if(this.favicon){
+              this.favicon.set(property!.get("favicon")! == "true");
+              if(this.favicon()){
                 this.loadFavicon()
               }
             }
             if(property!.has("tags")){
-              this.tags = this.utils.parseTags(property!.get("tags")!);
+              this.tags.set(this.utils.parseTags(property!.get("tags")!));
             }
           if(property!.has("tags")){
-            this.tags = this.utils.parseTags(property!.get("tags")!);
+            this.tags.set(this.utils.parseTags(property!.get("tags")!));
           }
           for(let tag of this.userService.getVaultTags()){
-            if(!this.tags.includes(tag)){
-              this.remainingTags.push(tag);
+            if(!this.tags().includes(tag)){
+              this.remainingTags.update(rt => [...rt, tag]);
             }
           }
     
@@ -374,7 +375,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   }
 
   save(){
-    this.isSaving = true;
+    this.isSaving.set(true);
     if(this.userService.getId() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
@@ -382,27 +383,27 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
     this.checkName();
     this.checkSecret();
     this.checkURI();
-    if(this.nameError != "" || this.secretError != "" ){
-      this.isSaving = false;
+    if(this.nameError() != "" || this.secretError() != "" ){
+      this.isSaving.set(false);
       return;
     }
-    if(this.code == this.translate.instant("totp.error.code")){
+    if(this.code() == this.translate.instant("totp.error.code")){
       this.utils.toastError(this.toastr, this.translate.instant("totp.error.code"),"");
-      this.isSaving = false;
+      this.isSaving.set(false);
       return;
     }
    
     
     const property = new Map<string,string>();
-    property.set("secret", this.secret);
-    property.set("color", this.color);
-    property.set("name", this.name);
-    property.set("uri", this.uri);
-    property.set("favicon", this.favicon.toString());
-    property.set("tags", JSON.stringify(this.tags));
-    if(this.uri != ""){
-      if(this.uri.startsWith("http://") || this.uri.startsWith("https://")){
-        const parsedUrl = new URLParse(this.uri);
+    property.set("secret", this.secret());
+    property.set("color", this.color());
+    property.set("name", this.name());
+    property.set("uri", this.uri());
+    property.set("favicon", this.favicon().toString());
+    property.set("tags", JSON.stringify(this.tags()));
+    if(this.uri() != ""){
+      if(this.uri().startsWith("http://") || this.uri().startsWith("https://")){
+        const parsedUrl = new URLParse(this.uri());
       const domain = parsedUrl.hostname;
       property.set("domain", domain)
       }
@@ -416,15 +417,15 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
         } else { 
           this.addNewSecret(enc_jsonProperty, property);
         }
-        this.isSaving = false;
+        this.isSaving.set(false);
       });
     } catch {
       this.translate.get("totp.error.encryption").subscribe((translation: string) => {
         this.utils.toastWarning(this.toastr,  translation ,"");
-        this.isSaving = false;
+        this.isSaving.set(false);
     });
     }
-    this.isSaving = false;
+    this.isSaving.set(false);
   }
 
   addNewSecret(enc_property:string, property: Map<string,string>){
@@ -482,19 +483,19 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   }
 
   delete(){
-    this.isDestroying = true;
+    this.isDestroying.set(true);
     this.http.delete("/api/v1/encrypted_secret/"+this.secret_uuid, {withCredentials:true, observe: 'response'}).subscribe((response) => {
       if(response.status == 201){
-      this.isDestroying = false;
+      this.isDestroying.set(false);
       this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.delete.success"),"");
       this.router.navigate(["/vault"], {relativeTo:this.route.root});
     } else {
-      this.isDestroying = false;
+      this.isDestroying.set(false);
       this.utils.toastWarning(this.toastr,  this.translate.instant("totp.error.deleting"),"");
     }
      
     } , (error) => {
-      this.isDestroying = false;
+      this.isDestroying.set(false);
       let errorMessage = "";
       if(error.error.message != null){
         errorMessage = error.error.message;
@@ -507,62 +508,62 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   }
 
   loadFavicon(){
-    this.uriError = "";
-    if(this.favicon == true){
-      if(this.uri != ""){
-        if(!this.uri.startsWith("http://") && !this.uri.startsWith("https://")){
-          this.uriError = "totp.error.missing_https";
+    this.uriError.set("");
+    if(this.favicon() == true){
+      if(this.uri() != ""){
+        if(!this.uri().startsWith("http://") && !this.uri().startsWith("https://")){
+          this.uriError.set("totp.error.missing_https");
             return;
         }
         try{
-          const parsedUrl = new URLParse(this.uri);
+          const parsedUrl = new URLParse(this.uri());
            const domain = parsedUrl.hostname;
            if(domain != null && domain != ""){
             if (this.utils.domain_name_validator(domain)){
-              this.faviconURL = "https://icons.duckduckgo.com/ip3/" +domain + ".ico";
+              this.faviconURL.set("https://icons.duckduckgo.com/ip3/" +domain + ".ico");
             } else {
-              this.uriError = "totp.error.invalid_domain";
+              this.uriError.set("totp.error.invalid_domain");
               return;
             }
            } else {
-            this.uriError ="totp.error.invalid_uri" ;
+            this.uriError.set("totp.error.invalid_uri");
             return;
            }
         } catch{
-          this.uriError = "totp.error.invalid_uri";
+          this.uriError.set("totp.error.invalid_uri");
           return;
         }
         
        
       } else {
-        this.uriError = "totp.error.no_fav";
+        this.uriError.set("totp.error.no_fav");
       }
     }
   }
 
   modal(){
-    if(!this.isDestroying){
-      this.isModalActive = !this.isModalActive;
+    if(!this.isDestroying()){
+      this.isModalActive.update(v => !v);
     }
   }
 
   tagModal(){
-    this.addTagName = "";
-      this.isTagModalActive = !this.isTagModalActive;
+    this.addTagName.set("");
+    this.isTagModalActive.update(v => !v);
   }
 
   addTag(){
-    if(this.addTagName != ""){
-      if(this.tags.includes(this.addTagName)){
+    if(this.addTagName() != ""){
+      if(this.tags().includes(this.addTagName())){
         this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.tag_exists"),"")
-      } else if (this.addTagName.length > 30){
+      } else if (this.addTagName().length > 30){
         this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.tag_length"),"")
       } else {
-       this.tags.push(this.addTagName);
-       if(this.remainingTags.includes(this.addTagName)){
-        this.remainingTags = this.remainingTags.filter(item => item !== this.addTagName);
+       this.tags.update(t => [...t, this.addTagName()]);
+       if(this.remainingTags().includes(this.addTagName())){
+        this.remainingTags.update(rt => rt.filter(item => item !== this.addTagName()));
        }
-       this.addTagName = "";
+       this.addTagName.set("");
        this.toastr.clear()
        this.tagModal()
       }
@@ -573,17 +574,17 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   }
 
   selectTag(tag:string){
-    this.tags.push(tag);
-    this.addTagName = "";
-       this.toastr.clear()
-       this.tagModal()
-       this.remainingTags = this.remainingTags.filter(item => item !== tag);
+    this.tags.update(t => [...t, tag]);
+    this.addTagName.set("");
+    this.toastr.clear()
+    this.tagModal()
+    this.remainingTags.update(rt => rt.filter(item => item !== tag));
   }
 
   deleteTag(tag:string){
-    this.tags = this.tags.filter(item => item !== tag);
+    this.tags.update(t => t.filter(item => item !== tag));
     if(this.userService.getVaultTags().includes(tag)){
-      this.remainingTags.push(tag);
+      this.remainingTags.update(rt => [...rt, tag]);
     }
   }
 
