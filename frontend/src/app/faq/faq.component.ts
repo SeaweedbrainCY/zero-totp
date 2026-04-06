@@ -1,4 +1,4 @@
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, WritableSignal, signal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import {faChevronUp, faChevronDown, faMagnifyingGlass, faStopwatch, faShieldHalved, faVault} from '@fortawesome/free-solid-svg-icons';
@@ -20,7 +20,7 @@ export class FaqComponent  implements AfterViewInit {
   faShieldHalved = faShieldHalved;
   faStopwatch=faStopwatch;
   theme: string | null = "light";
-  toggled_q_id : string[] = [];
+  toggled_q_id : WritableSignal<string[]> = signal([]);
 
   constructor(
     private translate: TranslateService, 
@@ -46,10 +46,10 @@ export class FaqComponent  implements AfterViewInit {
 
 
   toggle(id:string){
-    if(this.toggled_q_id.includes(id)){
-      this.toggled_q_id = this.toggled_q_id.filter((value) => value !== id);
+    if(this.toggled_q_id().includes(id)){
+      this.toggled_q_id.update(current => current.filter((value) => value !== id));
     }else{
-      this.toggled_q_id.push(id);
+      this.toggled_q_id.update(current => [...current, id])
     }
     console.log(this.toggled_q_id);
   }

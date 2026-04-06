@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { faGlobe, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { on } from 'events';
@@ -18,11 +18,11 @@ export class FooterComponent {
   faEnvelope = faEnvelope;
   imageHash = environment.imageHash;
   today_year = new Date().getFullYear();
-  current_domain = ""
+  current_domain = signal("")
 
   
       constructor() { 
-        this.current_domain = window.location.host;
+        this.current_domain.set(window.location.host);
       }
 
 }

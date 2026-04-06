@@ -1,8 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import {Crypto} from '../common/Crypto/crypto';
-import {UserService} from '../common/User/user.service';
-import { DomSanitizer } from '@angular/platform-browser';
-import { SecurityContext } from '@angular/core';
 import { Utils } from '../common/Utils/utils';
 import { faLock, faEyeSlash, faFingerprint, faUserLock, faHouse, faMobileScreenButton, faCode, faKitMedical, faAngleDown, faPen, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -12,7 +9,8 @@ import { ToastrService } from 'ngx-toastr';
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 
@@ -29,27 +27,20 @@ export class HomeComponent implements OnInit {
   faCode = faCode;
   faKitMedical = faKitMedical;
   faAngleDown = faAngleDown;
-  is_dropdown_active=false;
+  is_dropdown_active = signal(false);
 
 
-  password: string = "";
-  encrypted = "";
-  plaintext = "";
-  decrypted="";
-  code = "";
-  duration=0;
-  example_domain=""
-  example_code=""
-  example_title=""
-  remainingTime=0;
-  example_color=""
-  example_ico=""
+  example_domain = signal("");
+  example_code = signal("");
+  example_title = signal("");
+  remainingTime = signal(0);
+  example_color = signal("");
+  example_ico = signal("");
+
   last_random_i = 0;
   current_color_index = 0;
 
   constructor(
-    private userService:UserService, 
-    private _sanitizer: DomSanitizer,
     private utils: Utils,
     private toastr:ToastrService
     ){
@@ -74,18 +65,18 @@ export class HomeComponent implements OnInit {
       this.generateExample();
       return;
     }
-    this.example_domain = domains[random_i];
-    this.example_title = titles[random_i];
-    this.example_code = (Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000).toString();
-    this.example_ico = icos[random_i];
+    this.example_domain.set(domains[random_i]);
+    this.example_title.set(titles[random_i]);
+    this.example_code.set((Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000).toString());
+    this.example_ico.set(icos[random_i]);
     this.current_color_index = (this.current_color_index+1)%colors.length;
-    this.example_color = colors[this.current_color_index];
+    this.example_color.set(colors[this.current_color_index]);
   }
 
   generateTime(){
     const duration = 30 - Math.floor(Date.now() / 10 % 3000)/100;
-    this.remainingTime = (duration/30)*100  
-    if(this.remainingTime >= 99.99){
+    this.remainingTime.set((duration/30)*100);
+    if(this.remainingTime() >= 99.99){
       this.generateExample();
     }
   }
@@ -94,24 +85,6 @@ export class HomeComponent implements OnInit {
     this.utils.toastSuccess(this.toastr, "Copied !", "");
   }
 
- login(){
-    const crypto = new Crypto();
-    const salt = crypto.generateRandomSalt();
-    crypto.deriveKey(salt, this.password).then(key=>{
-      crypto.encrypt(this.plaintext, key).then(encrypted=>{
-        this.encrypted = encrypted;
-        crypto.decrypt(this.encrypted, key).then(decrypted=>{
-          if(decrypted == null){
-            this.decrypted = "Wrong key"
-          } else {
-            this.decrypted = decrypted;
-          }
-        
-        })
-      });
-    });
-    
- }
 
  scrollTo(element: HTMLElement) {
   element.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
@@ -119,4 +92,3 @@ export class HomeComponent implements OnInit {
 
 
 }
-
