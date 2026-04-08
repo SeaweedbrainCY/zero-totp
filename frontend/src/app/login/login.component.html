@@ -1,6 +1,6 @@
 <section class="hero is-halfheight mt-6 pb-6" style="min-height: 70vh;">
   <div class="hero-body is-flex is-flex-direction-column	is-fullheight">
-    @if (!is_oauth_flow) {
+    @if (!is_oauth_flow()) {
       <div class="has-text-centered	is-full is-flex is-justify-content-center block">
         <p class="block"><span class="title is-1 is-full has-text-centered has-text-info has-text-weight-bold">
         {{ 'login.title' | translate }}</span><br />
@@ -8,18 +8,18 @@
       </p>
     </div>
   }
-  @if (warning_message != '') {
+  @if (warning_message() != '') {
     <div class="has-text-centered columns p-5">
-      <div class="notification {{warning_message_color}} column is-6 is-offset-3 ">
-        <strong class="block">{{warning_message | translate}}</strong>
+      <div class="notification {{warning_message_color()}} column is-6 is-offset-3 ">
+        <strong class="block">{{warning_message() | translate}}</strong>
       </div>
     </div>
   }
   <div class="has-text-centered	is-full ">
-    @if (!is_oauth_flow) {
+    @if (!is_oauth_flow()) {
       <div class="field block">
         <p class="control has-icons-left has-icons-right">
-          <input class="input " type="email" placeholder="{{'email' | translate}}" name="email" [(ngModel)]="email" />
+          <input class="input " type="email" placeholder="{{'email' | translate}}" name="email" [ngModel]="email()" (ngModelChange)="email.set($event)" />
           <span class="icon is-small is-left">
             <fa-icon [icon]="faEnvelope"></fa-icon>
           </span>
@@ -31,17 +31,17 @@
     }
     <div class="field is-full is-flex is-justify-content-center has-addons">
       <p class="control has-icons-left has-icons-right">
-        <input class="input block" type="{{isPassphraseVisible ? 'text' : 'password'}}"
-          placeholder="{{'passphrase' | translate}}" name="password" [(ngModel)]="password" (keyup.enter)="login()">
+        <input class="input block" type="{{isPassphraseVisible() ? 'text' : 'password'}}"
+          placeholder="{{'passphrase' | translate}}" name="password" [ngModel]="password()" (ngModelChange)="password.set($event)" (keyup.enter)="login()">
         <span class="icon is-small is-left">
           <fa-icon [icon]="faKey"></fa-icon>
         </span>
       </p>
       <div class="control">
-        <a class="button" (click)="isPassphraseVisible = !isPassphraseVisible">
-          @if (isPassphraseVisible) {
+        <a class="button" (click)="isPassphraseVisible.update(v => !v)">
+          @if (isPassphraseVisible()) {
             <fa-icon [icon]="faEyeSlash" size="sm"></fa-icon>
-            }@if (!isPassphraseVisible) {
+            }@if (!isPassphraseVisible()) {
             <fa-icon [icon]="faEye"
             size="sm"></fa-icon>
           }
@@ -49,10 +49,10 @@
 
       </div>
     </div>
-    @if (!is_oauth_flow) {
+    @if (!is_oauth_flow()) {
       <div class="control has-text-left mb-4" style="margin-top: -20px;">
         <label class="checkbox">
-          <input type="checkbox" name="remember" [(ngModel)]="remember">
+          <input type="checkbox" name="remember" [ngModel]="remember()" (ngModelChange)="remember.set($event)">
           {{ 'login.remember' | translate }}
         </label>
       </div>
@@ -61,14 +61,14 @@
   <div class="has-text-centered mt-4 mb-4 is-flex is-justify-content-center is-align-items-center is-flex-wrap-wrap">
     <span> {{'login.instance.you_are_using' | translate}} </span>
     <div class="is-flex is-justify-content-center is-align-items-center">
-      <div class="dropdown " [ngClass]="{'is-active': instance_dropdown_active, 'is-hoverable': !this.utils.isDeviceMobile()}">
+      <div class="dropdown " [ngClass]="{'is-active': instance_dropdown_active(), 'is-hoverable': !this.utils.isDeviceMobile()}">
         <div class="dropdown-trigger">
-          <button class="button is-ghost pl-1" aria-haspopup="true" aria-controls="dropdown-menu" (click)="zero_totp_instance_button_click()"> {{current_domain}}
-            @if (current_domain == 'zero-totp.com') {
+          <button class="button is-ghost pl-1" aria-haspopup="true" aria-controls="dropdown-menu" (click)="zero_totp_instance_button_click()"> {{current_domain()}}
+            @if (current_domain() == 'zero-totp.com') {
               <span class="tag is-success is-rounded  has-text-white ml-2" style="text-decoration: none !important;"
               >{{'official' | translate}} </span>
             }
-            @if (current_domain != 'zero-totp.com') {
+            @if (current_domain() != 'zero-totp.com') {
               <span class="tag is-info is-rounded  has-text-white ml-2" style="text-decoration: none !important;"
               >{{'self_hosted' | translate}}</span>
             }
@@ -83,14 +83,14 @@
             </p>
             <hr class="dropdown-divider" />
             <a href="https://zero-totp.com/login" class="dropdown-item has-text-centered"
-              [ngClass]="{'is-active': current_domain == 'zero-totp.com'}"
+              [ngClass]="{'is-active': current_domain() == 'zero-totp.com'}"
               style="padding-left: 16px; padding-right: 16px;">zero-totp.com <span
               class="tag is-success is-rounded  has-text-white ml-2"
             style="text-decoration: none !important;">{{'official' | translate}}</span> </a>
-            @if (current_domain != 'zero-totp.com') {
+            @if (current_domain() != 'zero-totp.com') {
               <a class="dropdown-item"
                 style="padding-left: 16px; padding-right: 16px;"
-                [ngClass]="{'is-active': current_domain != 'zero-totp.com'}" (click)="instance_dropdown_active=false"> {{current_domain}}<span
+                [ngClass]="{'is-active': current_domain() != 'zero-totp.com'}" (click)="instance_dropdown_active.set(false)"> {{current_domain()}}<span
                 class="tag is-white is-rounded  has-text-black ml-2"
               style="text-decoration: none !important;">{{'self_hosted' | translate}}</span> </a>
             }
@@ -129,13 +129,13 @@
 
     <div class="field mt-5">
       <div class="control">
-        <button class="button is-info is-medium block " (click)="login()" [ngClass]="{'is-loading': isLoading}"
-          [disabled]="isLoading">{{login_button | translate }}
+        <button class="button is-info is-medium block " (click)="login()" [ngClass]="{'is-loading': isLoading()}"
+          [disabled]="isLoading()">{{login_button() | translate }}
         </button>
       </div>
     </div>
   </div>
-  @if (!is_oauth_flow) {
+  @if (!is_oauth_flow()) {
     <div>
       <p class=" is-italic	">{{ 'login.rescue.part1' | translate }}<span class="has-text-danger has-text-weight-bold">{{
       'login.rescue.strong' | translate }}</span> {{ 'login.rescue.part2' | translate }} : </p>
@@ -150,7 +150,7 @@
   <div class="m-6" style="border-top: 1px lightgray solid; width: 50vw;"></div>
 </div>
 
-@if (!is_oauth_flow) {
+@if (!is_oauth_flow()) {
   <div class="is-flex is-flex-direction-column">
     <div class="is-flex is-justify-content-center has-text-centered">
       <p class="block"><span class="title is-1 is-full  has-text-info has-text-weight-bold" id="openVault">
@@ -165,14 +165,14 @@
           <input class="file-input" type="file" name="resume" accept=".zero-totp, .txt" (change)="openFile($event)">
           <span class="file-cta">
             <span class="file-icon">
-              @if (!loading_file) {
+              @if (!loading_file()) {
                 <fa-icon [icon]="faCloudArrowUp"></fa-icon>
               }
-              @if (loading_file) {
+              @if (loading_file()) {
                 <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined"></fa-icon>
               }
             </span>
-            @if (!loading_file) {
+            @if (!loading_file()) {
               <span class="file-label">
                 {{ 'login.backup.vault_backup' | translate }}
               </span>
@@ -188,8 +188,8 @@
 
 </section>
 
-<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isUnsecureVaultModaleActive}">
-  <div class="modal-background" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive"></div>
+<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isUnsecureVaultModaleActive()}">
+  <div class="modal-background" (click)="isUnsecureVaultModaleActive.update(v => !v)"></div>
   <div class="modal-content">
     <section class="modal-card-body">
       <h1 class="is-size-2 has-text-danger">{{ 'login.backup.unsecure.popup.title' | translate }}</h1>
@@ -199,37 +199,37 @@
       <br><br>
     </section>
     <footer class="modal-card-foot is-flex is-justify-content-right">
-      <button class="button is-success mr-2" (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive">{{
+      <button class="button is-success mr-2" (click)="isUnsecureVaultModaleActive.update(v => !v)">{{
       'login.backup.unsecure.popup.button.cancel' | translate }}</button>
       <button class="button is-danger ml-2"
-        (click)="local_vault_service!.set_is_signature_valid(true); isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive; this.isPassphraseModalActive = true;">{{
+        (click)="local_vault_service!.set_is_signature_valid(true); isUnsecureVaultModaleActive.update(v => !v); isPassphraseModalActive.set(true);">{{
       'login.backup.unsecure.popup.continue' | translate }}</button>
     </footer>
   </div>
   <button class="modal-close is-large" aria-label="close"
-  (click)="isUnsecureVaultModaleActive = !isUnsecureVaultModaleActive"></button>
+  (click)="isUnsecureVaultModaleActive.update(v => !v)"></button>
 </div>
 
 
-<div id="local_vault_passphrase" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isPassphraseModalActive}">
-  <div class="modal-background" (click)="isPassphraseModalActive = !isPassphraseModalActive"></div>
+<div id="local_vault_passphrase" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isPassphraseModalActive()}">
+  <div class="modal-background" (click)="isPassphraseModalActive.update(v => !v)"></div>
   <div class="modal-content">
     <section class="modal-card-body">
       <h1 class="is-size-2 has-text-info">{{ 'login.backup.open.popup.title' | translate }}</h1>
       <div class="field is-flex-tablet has-addons  mt-3">
         <div class="control has-icons-left" style="width:90%">
-          <input class="input" type="{{isLocalVaultPassphraseVisible ? 'text' : 'password'}}"
-            placeholder="{{'passphrase' | translate}}" name="password" [(ngModel)]="password"
+          <input class="input" type="{{isLocalVaultPassphraseVisible() ? 'text' : 'password'}}"
+            placeholder="{{'passphrase' | translate}}" name="password" [ngModel]="password()" (ngModelChange)="password.set($event)"
             (keyup.enter)="openLocalVault()">
           <span class="icon is-small is-left">
             <fa-icon [icon]="faKey"></fa-icon>
           </span>
         </div>
         <p class="control">
-          <a class="button" (click)="isLocalVaultPassphraseVisible = !isLocalVaultPassphraseVisible">
-            @if (isLocalVaultPassphraseVisible) {
+          <a class="button" (click)="isLocalVaultPassphraseVisible.update(v => !v)">
+            @if (isLocalVaultPassphraseVisible()) {
               <fa-icon [icon]="faEyeSlash" size="sm"></fa-icon>
-              }@if (!isLocalVaultPassphraseVisible) {
+              }@if (!isLocalVaultPassphraseVisible()) {
               <fa-icon
               [icon]="faEye" size="sm"></fa-icon>
             }
@@ -238,13 +238,13 @@
       </div>
     </section>
     <footer class="modal-card-foot is-flex is-justify-content-right">
-      <button class="button" (click)="isPassphraseModalActive = !isPassphraseModalActive">{{'cancel' |
+      <button class="button" (click)="isPassphraseModalActive.update(v => !v)">{{'cancel' |
       translate}}</button>
       <button class="button is-info"
-        (click)="local_vault_service!.set_is_signature_valid(true); isPassphraseModalActive = !isUnsecureVaultModaleActive; openLocalVault();">{{
+        (click)="local_vault_service!.set_is_signature_valid(true); isPassphraseModalActive.update(v => !isUnsecureVaultModaleActive()); openLocalVault();">{{
       'unlock' | translate }}</button>
     </footer>
   </div>
   <button class="modal-close is-large" aria-label="close"
-  (click)="isPassphraseModalActive = !isPassphraseModalActive"></button>
+  (click)="isPassphraseModalActive.update(v => !v)"></button>
 </div>

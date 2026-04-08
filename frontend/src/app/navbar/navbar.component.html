@@ -1,14 +1,14 @@
 <nav style="position: sticky; top: 0; z-index: 1000;">
-  @if (notification_message != undefined) {
+  @if (notification_message() != undefined) {
     <div class="notification is-link is-light mb-0 is-flex is-justify-content-space-between">
       <div class="is-flex is-justify-content-center is-flex-direction-column">
         <div class="is-flex">
           <div class="is-flex is-justify-content-center is-flex-direction-column mr">
             <fa-icon [icon]="faLightbulb" class="mr-4"></fa-icon>
           </div>
-          <strong>{{notification_message}}</strong></div>
+          <strong>{{notification_message()}}</strong></div>
         </div>
-        <div class="is-flex is-justify-content-center is-flex-direction-column" [ngClass]='{"is-fixed-top":notification_message == undefined}'>
+        <div class="is-flex is-justify-content-center is-flex-direction-column" [ngClass]='{"is-fixed-top":notification_message() == undefined}'>
           <button class="button is-ghost has-text-grey-light" (click)="hide_notification()"> <fa-icon [icon]="faXmark" size="xl" ></fa-icon></button>
         </div>
       </div>
@@ -26,39 +26,39 @@
           </a>
         }
 
-        <a role="button" class="navbar-burger"  id="navbarBurger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" (click)="isNavbarExpanded = !isNavbarExpanded" [ngClass]="{'is-active': isNavbarExpanded}" >
+        <a role="button" class="navbar-burger"  id="navbarBurger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" (click)="isNavbarExpanded.update(v => !v)" [ngClass]="{'is-active': isNavbarExpanded()}" >
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
           <span aria-hidden="true"></span>
         </a>
       </div>
 
-      <div id="navbarBasicExample" class="navbar-menu" [ngClass]="{'is-active': isNavbarExpanded}" >
+      <div id="navbarBasicExample" class="navbar-menu" [ngClass]="{'is-active': isNavbarExpanded()}" >
         @if (userService.getId()!=null) {
           <div class="navbar-start" >
-            <a class="navbar-item" (click)="navigateToRoute('vault')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault'}">
+            <a class="navbar-item" (click)="navigateToRoute('vault')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/vault'}">
               <fa-icon [icon]="faVault" class="mr-2"></fa-icon> {{ 'my_vault' | translate }}
             </a>
-            <a class="navbar-item" (click)="navigateToRoute('vault/add')" [ngClass]="{'has-text-weight-bold':currentUrl == '/vault/add'}">
+            <a class="navbar-item" (click)="navigateToRoute('vault/add')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/vault/add'}">
               <fa-icon [icon]="faKey" class="mr-2"></fa-icon>  {{ 'navbar.add' | translate }}
             </a>
-            <a class="navbar-item" (click)="navigateToRoute('preferences')" [ngClass]="{'has-text-weight-bold':currentUrl == '/preferences'}">
+            <a class="navbar-item" (click)="navigateToRoute('preferences')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/preferences'}">
               <fa-icon [icon]="faGears" class="mr-2"></fa-icon>  {{ 'navbar.preferences' | translate }}
             </a>
-            <a class="navbar-item" (click)="navigateToRoute('account')" [ngClass]="{'has-text-weight-bold':currentUrl == '/account'}">
+            <a class="navbar-item" (click)="navigateToRoute('account')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/account'}">
               <fa-icon [icon]="faUser" class="mr-2"></fa-icon>  {{ 'navbar.account' | translate }}
             </a>
             <a class="navbar-item" href="https://docs.zero-totp.com" target="_blank" rel="noopener">
               <fa-icon [icon]="faBook"></fa-icon> Docs
             </a>
-            <a class="navbar-item" (click)="navigateToRoute('faq')" [ngClass]="{'has-text-weight-bold':currentUrl == '/faq'}">
+            <a class="navbar-item" (click)="navigateToRoute('faq')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/faq'}">
               <fa-icon [icon]="faCircleQuestion"></fa-icon> FAQ
             </a>
           </div>
         }
         @if (userService.getId()==null && !this.userService.getIsVaultLocal()) {
           <div class="navbar-start" >
-            <a class="navbar-item" (click)="navigateToRoute('')" [ngClass]="{'has-text-weight-bold':currentUrl == '/'}">
+            <a class="navbar-item" (click)="navigateToRoute('')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/'}">
               <fa-icon [icon]="faHome"></fa-icon> {{ 'Home' | translate }}
             </a>
             <a class="navbar-item" (click)="navigateToRoute('login')">
@@ -67,7 +67,7 @@
             <a class="navbar-item" href="https://docs.zero-totp.com" target="_blank" rel="noopener">
               <fa-icon [icon]="faBook"></fa-icon> Docs
             </a>
-            <a class="navbar-item" (click)="navigateToRoute('faq')" [ngClass]="{'has-text-weight-bold':currentUrl == '/faq'}">
+            <a class="navbar-item" (click)="navigateToRoute('faq')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/faq'}">
               <fa-icon [icon]="faCircleQuestion"></fa-icon> FAQ
             </a>
           </div>
@@ -81,22 +81,22 @@
         }
 
         <div class="navbar-end">
-          <div class="navbar-item" [ngClass]="{'is-active': isLangDropdownExpanded}">
+          <div class="navbar-item" [ngClass]="{'is-active': isLangDropdownExpanded()}">
             <button class="button is-ghost has-text-white" style="padding-left: 0px; padding-right: 0px;" (click)="toggleThemeButton()">
-              @if (current_theme == 'dark') {
+              @if (current_theme() == 'dark') {
                 <fa-icon [icon]="faSun" class="has-text-warning" size="2xl"></fa-icon>
               }
-              @if (current_theme == 'light') {
+              @if (current_theme() == 'light') {
                 <fa-icon [icon]="faMoon"  size="2xl"></fa-icon>
               }
             </button>
           </div>
-          <div class="navbar-item has-dropdown lang-dropdown" [ngClass]="{'is-active': isLangDropdownExpanded}">
-            <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded = !isLangDropdownExpanded">
+          <div class="navbar-item has-dropdown lang-dropdown" [ngClass]="{'is-active': isLangDropdownExpanded()}">
+            <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded.update(v => !v)">
               <img src="{{get_current_language_info().image}}" alt="{{get_current_language_info().name}}">
             </a>
 
-            <div class="navbar-dropdown is-boxed is-right" [ngClass]="{'is-active': isLangDropdownExpanded}">
+            <div class="navbar-dropdown is-boxed is-right" [ngClass]="{'is-active': isLangDropdownExpanded()}">
               @for (lang of languages; track lang) {
                 <a class="navbar-item" (click)="changeLanguage(lang.code)">
                   <img src="{{lang.image}}" alt="{{lang.name}}">
@@ -113,12 +113,12 @@
             <div class="buttons">
               @if (userService.getId() == null) {
                 <a class="button is-info" (click)="navigateToRoute('signup')">
-                  <span [ngClass]="{'has-text-weight-bold':currentUrl == '/signup'}">{{ 'sign_up' | translate }}</span>
+                  <span [ngClass]="{'has-text-weight-bold':currentUrl() == '/signup'}">{{ 'sign_up' | translate }}</span>
                 </a>
               }
               @if (userService.getId()== null) {
                 <a class="button is-light" (click)="navigateToRoute('login')">
-                  <span [ngClass]="{'has-text-weight-bold':currentUrl == '/login'}">{{ 'log_in' | translate }}</span>
+                  <span [ngClass]="{'has-text-weight-bold':currentUrl() == '/login'}">{{ 'log_in' | translate }}</span>
                 </a>
               }
 
