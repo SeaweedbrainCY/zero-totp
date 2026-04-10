@@ -63,8 +63,9 @@ export class NavbarComponent implements OnInit{
       this.check_notification()
       if (url instanceof NavigationEnd){
       this.currentUrl.set(url.url);
-      if(this.userService.getVault() && !this.userService.getIsVaultLocal() && !this.idle.isRunning()){
-        this.get_autolock_delay().subscribe((response) => {
+      if(this.userService.vault() && !this.userService.isVaultLocal() && !this.idle.isRunning()){
+        this.get_autolock_delay().subscribe({
+          next: (response) => {
           const data = JSON.parse(JSON.stringify(response.body))
           let autolock_delay = 600;
           if(data.autolock_delay != null){
@@ -75,7 +76,7 @@ export class NavbarComponent implements OnInit{
           this.idle.setTimeout(20);
           this.idle.onTimeout.subscribe(() => {
           // As idle.stop() doesn't work (issue #167, we need to check if the user is still logged in before redirecting to the login page)
-            if(this.userService.getId() && !this.userService.getIsVaultLocal()){ 
+            if(this.userService.id() && !this.userService.isVaultLocal()){ 
               console.log("Idle timeout " +  this.currentUrl() )
               this.userService.clearVault();
               this.router.navigate(["/vault/locked"], {relativeTo:this.route.root});
@@ -84,9 +85,10 @@ export class NavbarComponent implements OnInit{
           if(!this.idle.isRunning()){
           this.idle.watch();
           }
-        }, (error) => {
+        }, 
+        error:(error) => {
           console.log(error);
-        });
+      }});
       }
     }
     translate.use(this.current_language)
@@ -96,14 +98,14 @@ export class NavbarComponent implements OnInit{
   ngOnInit(): void {
     this.get_global_notification();
     this.last_notification_check_date = Math.floor(Date.now()/1000);
-    if(this.userService.get_zke_key() == null){
+    if(this.userService.zke_key() == null){
           this.userService.refresh_user_id()
     }
   }
 
   check_notification(){
     if(this.last_notification_check_date !=0){ // first notif not even been checked yet
-      if(this.is_waiting_for_internal_notif && this.userService.getId() !=null){
+      if(this.is_waiting_for_internal_notif && this.userService.id() !=null){
         this.get_internal_notification()
         this.is_waiting_for_internal_notif = false
         this.last_notification_check_date = Math.floor(Date.now()/1000);
@@ -111,7 +113,7 @@ export class NavbarComponent implements OnInit{
       } else if (this.last_notification_check_date + 60*2 < Math.floor(Date.now()/1000)){
         console.info("check again")
         this.last_notification_check_date = Math.floor(Date.now()/1000);
-        if (this.userService.getId() != null){
+        if (this.userService.id() != null){
           this.get_internal_notification()
         } else {
           this.get_global_notification()

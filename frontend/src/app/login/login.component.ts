@@ -79,25 +79,25 @@ export class LoginComponent implements OnInit {
       }
       case 'sessionKilled': {
         this.warning_message.set('login.errors.session_killed');
-        this.email.set(this.userService.getEmail() || "");
+        this.email.set(this.userService.email() || "");
         this.userService.clear();
         break;
       }
       case 'sessionTimeout': {
         this.warning_message.set('login.errors.session_timeout');
-        this.email.set(this.userService.getEmail() || "");
+        this.email.set(this.userService.email() || "");
         this.userService.clear();
         break;
       }
 
       case 'sessionEnd': {
         this.warning_message.set('login.errors.session_end');
-        this.email.set(this.userService.getEmail() || "");
+        this.email.set(this.userService.email() || "");
         break;
       }
       case 'oauth': {
         this.warning_message.set('login.errors.oauth');
-        this.email.set(this.userService.getEmail() || "");
+        this.email.set(this.userService.email() || "");
         this.warning_message_color.set("is-success");
         this.userService.clear();
         this.is_oauth_flow.set(true);
@@ -107,7 +107,7 @@ export class LoginComponent implements OnInit {
       }
       case 'confirmPassphrase': {
         this.warning_message.set('login.errors.confirm_passphrase');
-        this.email.set(this.userService.getEmail() || "");
+        this.email.set(this.userService.email() || "");
         this.warning_message_color.set("is-success");
         this.userService.clear();
         this.is_oauth_flow.set(true);
@@ -293,12 +293,12 @@ export class LoginComponent implements OnInit {
 
   openLocalVault() {
     this.userService.clear();
-    this.userService.setVaultLocal(true);
-    this.userService.setLocalVaultService(this.local_vault_service!);
-    this.userService.setDerivedKeySalt(this.local_vault_service!.get_derived_key_salt()!);
-    this.vaultService.derivePassphrase(this.userService.getDerivedKeySalt()!, this.password()).then((derivedKey) => {
-      this.vaultService.decryptZKEKey(this.local_vault_service!.get_zke_key_enc()!, derivedKey, this.userService.getIsVaultLocal()!).then((zke_key) => {
-        this.userService.set_zke_key(zke_key!);
+    this.userService.isVaultLocal.set(true);
+    this.userService.local_vault_service.set(this.local_vault_service!);
+    this.userService.derivedKeySalt.set(this.local_vault_service!.get_derived_key_salt()!);
+    this.vaultService.derivePassphrase(this.userService.derivedKeySalt()!, this.password()).then((derivedKey) => {
+      this.vaultService.decryptZKEKey(this.local_vault_service!.get_zke_key_enc()!, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
+        this.userService.zke_key.set(zke_key!);
         this.router.navigate(["/vault"], { relativeTo: this.route.root });
       }, (error) => {
         this.utils.toastError(this.toastr, error, "")
@@ -320,7 +320,7 @@ export class LoginComponent implements OnInit {
         this.crypto.hashPassphrase(this.password(), salt).then(hashed => {
           if (hashed != null) {
             this.hashedPassword = hashed;
-            this.userService.setPassphraseSalt(salt);
+            this.userService.passphraseSalt.set(salt);
             this.postLoginRequest();
           } else {
             this.translate.get("login.errors.hashing").subscribe((translation) => {
@@ -360,14 +360,14 @@ export class LoginComponent implements OnInit {
       next: (response) => {
       try {
         const data = JSON.parse(JSON.stringify(response.body))
-        this.userService.setId(data.id);
-        this.userService.setEmail(this.email());
-        this.userService.setDerivedKeySalt(data.derivedKeySalt);
+        this.userService.id.set(data.id);
+        this.userService.email.set(this.email());
+        this.userService.derivedKeySalt.set(data.derivedKeySalt);
         if (data.isVerified == false) {
           this.router.navigate(["/emailVerification"], { relativeTo: this.route.root });
         } else {
 
-          this.userService.setGoogleDriveSync(data.isGoogleDriveSync);
+          this.userService.googleDriveSync.set(data.isGoogleDriveSync);
           this.final_zke_flow();
         }
       } catch (e) {
@@ -407,10 +407,10 @@ export class LoginComponent implements OnInit {
   }
 
   final_zke_flow() {
-    this.vaultService.derivePassphrase(this.userService.getDerivedKeySalt()!, this.password()).then((derivedKey) => {
+    this.vaultService.derivePassphrase(this.userService.derivedKeySalt()!, this.password()).then((derivedKey) => {
       this.getZKEKey().then((zke_key_encrypted) => {
-        this.vaultService.decryptZKEKey(zke_key_encrypted, derivedKey, this.userService.getIsVaultLocal()!).then((zke_key) => {
-          this.userService.set_zke_key(zke_key!);
+        this.vaultService.decryptZKEKey(zke_key_encrypted, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
+          this.userService.zke_key.set(zke_key!);
           if (this.is_oauth_flow()) {
             this.router.navigate(["/oauth/synchronize"], { relativeTo: this.route.root });
           } else {

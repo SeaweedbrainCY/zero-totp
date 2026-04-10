@@ -90,7 +90,7 @@ export class AccountComponent implements OnInit {
 
 
   ngOnInit(): void {
-    if (this.userService.get_zke_key() == null) {
+    if (this.userService.id() == null) {
       this.userService.refresh_user_id().then((success) => {
         console.log("User refreshed successfully.");
       }, (error) => {
@@ -200,7 +200,7 @@ export class AccountComponent implements OnInit {
       next: (response) => {
         this.buttonLoading.email.set(false)
         this.utils.toastSuccess(this.toastr, this.translate.instant('account.email.success'), "");
-        this.userService.setEmail(JSON.parse(JSON.stringify(response.body))["message"])
+        this.userService.email.set(JSON.parse(JSON.stringify(response.body))["message"])
         this.get_whoami();
       },
       error: error => {
@@ -451,7 +451,7 @@ export class AccountComponent implements OnInit {
 
   hashPassword(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      const salt = this.userService.getPassphraseSalt();
+      const salt = this.userService.passphraseSalt();
       if (salt == null) {
         this.router.navigate(["/login/sessionKilled"], { relativeTo: this.route.root });
       } else {
@@ -470,7 +470,7 @@ export class AccountComponent implements OnInit {
   verifyPassword(hashedPassword: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const data = {
-        email: this.userService.getEmail()!,
+        email: this.userService.email(),
         password: hashedPassword
       }
       this.http.post("/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
@@ -491,10 +491,11 @@ export class AccountComponent implements OnInit {
       this.http.get("/api/v1/all_secrets", { withCredentials: true, observe: 'response' }).subscribe((response) => {
         try {
           const data = JSON.parse(JSON.stringify(response.body))
-          if (this.userService.get_zke_key() != null) {
+          const zke_key = this.userService.zke_key()
+          if (zke_key != null) {
             try {
               for (let secret of data.enc_secrets) {
-                this.crypto.decrypt(secret.enc_secret, this.userService.get_zke_key()!).then((dec_secret) => {
+                this.crypto.decrypt(secret.enc_secret, zke_key!).then((dec_secret) => {
                   if (dec_secret == null) {
                     this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.wrong_key"), "");
                     reject("dec_secret is null");

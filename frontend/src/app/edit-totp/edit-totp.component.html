@@ -56,7 +56,7 @@
                   <input class="input" type="text" placeholder="GitHub" name="name" [ngModel]="name()" (ngModelChange)="name.set($event)"
                     (keyup)="checkName()"
                     [ngClass]="{'is-danger':nameError() != '',  'is-success' : name() != '' && nameError() == '' }"
-                    [disabled]="this.userService.getIsVaultLocal()!">
+                    [disabled]="this.userService.isVaultLocal()!">
                   <span class="icon is-small is-left">
                     <fa-icon [icon]="faPassport"></fa-icon>
                   </span>
@@ -82,7 +82,7 @@
                   <input class="input" type="text" placeholder="https://github.com" name="uri" [ngModel]="uri()" (ngModelChange)="uri.set($event)"
                     (change)="checkURI()"
                     [ngClass]="{'is-warning':uriError() != '',  'is-success' : uriError() == '' && uri() != '' }"
-                    [disabled]="this.userService.getIsVaultLocal()!">
+                    [disabled]="this.userService.isVaultLocal()!">
                   <span class="icon is-small is-left">
                     <fa-icon [icon]="faGlobe"></fa-icon>
                   </span>
@@ -109,7 +109,7 @@
                     (change)="checkSecret()"
                     (keyup)="checkSecret()"
                     [ngClass]="{'is-danger':secretError() != '', 'is-success' : secret() != '' && secretError() == '' }"
-                    [disabled]="this.userService.getIsVaultLocal()!">
+                    [disabled]="this.userService.isVaultLocal()!">
                   <span class="icon is-small is-left">
                     <fa-icon [icon]="faKey"></fa-icon>
                   </span>
@@ -129,7 +129,7 @@
               }
             </div>
           </div>
-          @if (this.userService.getIsVaultLocal()!) {
+          @if (this.userService.isVaultLocal()!) {
             <div class="notification is-warning has-text-centered">
               {{ 'totp.error.ro' | translate }}
             </div>
@@ -162,7 +162,7 @@
                 </div>
               </label>
             </div>
-            @if (!this.userService.getIsVaultLocal()!) {
+            @if (!this.userService.isVaultLocal()!) {
               <div class="field pt-5 is-flex is-justify-content-center">
                 <div class=" select is-{{color()}}">
                   <select #colorSelected name="selected_color" [ngModel]="selected_color()" value="Change color"
@@ -179,12 +179,12 @@
               <div class="p-2"><strong>Tag :</strong></div>
               @for (tag of tags(); track tag) {
                 <div class="p-2">
-                  <span class="tag is-rounded is-info">{{tag}} @if (!this.userService.getIsVaultLocal()!) {
+                  <span class="tag is-rounded is-info">{{tag}} @if (!this.userService.isVaultLocal()!) {
                     <button class="delete is-small" (click)="deleteTag(tag)" ></button>
                   }</span>
                 </div>
               }
-              @if (!this.userService.getIsVaultLocal()!) {
+              @if (!this.userService.isVaultLocal()!) {
                 <div class="p-2" style="cursor: pointer ;" (click)="tagModal()">
                   <span class="tag is-rounded is-info"><fa-icon [icon]="faPlus" size="xs"></fa-icon></span>
                 </div>
@@ -197,12 +197,12 @@
               @if (secret_uuid != '' && secret_uuid != null ) {
                 <div class="control">
                   <button class="button is-danger block" (click)="modal()" data-target="confirmation" [ngClass]="{'is-loading': isDestroying()}"
-                  [disabled]="this.userService.getIsVaultLocal()! || isSaving()">{{ 'delete' | translate }}</button>
+                  [disabled]="this.userService.isVaultLocal()! || isSaving()">{{ 'delete' | translate }}</button>
                 </div>
               }
               <div class="control">
                 <button class="button is-info block" (click)="save()" [ngClass]="{'is-loading': isSaving()}"
-                [disabled]="this.userService.getIsVaultLocal()! || secretError() !='' || nameError() != ''  || isDestroying()">{{ 'save' | translate }}</button>
+                [disabled]="this.userService.isVaultLocal()! || secretError() !='' || nameError() != ''  || isDestroying()">{{ 'save' | translate }}</button>
               </div>
             </div>
           </div>

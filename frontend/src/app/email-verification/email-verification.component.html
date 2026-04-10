@@ -19,7 +19,7 @@
           {{ 'email_verif.desc1.text' | translate }} <a class="has-text-info" (click)="resend()" >{{ 'email_verif.desc1.link' | translate }} <fa-icon [icon]="faArrowRotateLeft"></fa-icon></a>
         </p><br>
         <p class="has-text-grey has-text-centered">
-          {{ 'email_verif.desc2.text.part1' | translate }} <span class="has-text-weight-bold">{{emailAddress()}}</span>. {{ 'email_verif.desc2.part2' | translate }} <a class="has-text-info" (click)="isEmailModalActive.set(true)">{{ 'email_verif.desc2.link' | translate }} <fa-icon [icon]="faPen"></fa-icon></a>
+          {{ 'email_verif.desc2.text.part1' | translate }} <span class="has-text-weight-bold">{{this.user.email()}}</span>. {{ 'email_verif.desc2.part2' | translate }} <a class="has-text-info" (click)="isEmailModalActive.set(true)">{{ 'email_verif.desc2.link' | translate }} <fa-icon [icon]="faPen"></fa-icon></a>
         </p>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, signal, WritableSignal } from '@angular/core';
-import { UserService } from '../common/User/user.service';
+import { UserService } from '../services/User/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare} from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
@@ -7,13 +7,12 @@ import { HttpClient } from '@angular/common/http';
 
 import { Crypto } from '../common/Crypto/crypto';
 import { Utils } from '../common/Utils/utils';
-import { error } from 'console';
 import { formatDate } from '@angular/common';
-import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
+import { LocalVaultV1Service } from '../services/upload-vault/LocalVaultv1Service.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr'; 
 import { TOTP } from "totp-generator"
-import { VaultService } from '../common/VaultService/vault.service';
+import { VaultService } from '../services/VaultService/vault.service';
 import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
 
 
@@ -72,7 +71,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   progress_bar_percent=0;
   totp_code_expiration = 0;
   generating_next_totp_code = false;
-  totp_code_generation_interval:NodeJS.Timeout|undefined;
+  totp_code_generation_interval:number|undefined;
   isPassphraseVisible=false;
   passphrase = "";
   isVaultEncrypted : WritableSignal<boolean | undefined> = signal(undefined); 
@@ -98,16 +97,16 @@ export class VaultComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit() {
-    if(this.userService.get_zke_key() == null && !this.userService.getIsVaultLocal()){
-      this.userService.refresh_user_id().then((success) => {
+    if(!this.userService.isVaultLoadedAndDecryptable()){
+      this.userService.refresh_user_id().then(() => {
        this.isVaultEncrypted.set(true);
-      }, (error) => {
+      }, () => {
         this.isVaultEncrypted.set(false);
         this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
       });
-    } else if(this.userService.getIsVaultLocal()){
+    } else if(this.userService.isVaultLocal()){
       this.isVaultEncrypted.set(false);
-      this.local_vault_service = this.userService.getLocalVaultService();
+      this.local_vault_service = this.userService.local_vault_service();
       let vaultDate = "unknown"
       try{
         const vaultDateStr = this.local_vault_service!.get_date()!.split(".")[0];
@@ -140,7 +139,7 @@ export class VaultComponent implements OnInit, OnDestroy {
 
 
   startDisplayingCode(){
-    this.totp_code_generation_interval = setInterval(()=> { this.compute_totp_expiration() }, 100);
+    this.totp_code_generation_interval = window.setInterval(()=> { this.compute_totp_expiration() }, 100);
        // setInterval(()=> { this.generateTime() }, 20);
        // setInterval(()=> { this.generateCode() }, 100);
   }
@@ -152,7 +151,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.reloadSpin = true
       this.vault = new Map<string, Map<string,string>>();
       this.vaultUUIDs = [];
-      this.userService.setVaultTags([]);
+      this.userService.vault_tags.set([]);
       this.http.get("/api/v1/all_secrets",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         let encrypted_secret_vault = new Array<Map<string, string>>();
@@ -166,7 +165,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       }, (error) => {
         this.reloadSpin = true
         if(error.status == 404){
-          this.userService.setVault(new Map<string, Map<string,string>>());
+          this.userService.vault.set(new Map<string, Map<string,string>>());
           this.reloadSpin = false
         } else {
           let errorMessage = "";
@@ -224,14 +223,14 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.vault = new Map<string, Map<string,string>>();
       this.vaultUUIDs = [];
     try{
-     if(this.userService.get_zke_key() != null){
+     if(this.userService.zke_key() != null){
       try{
         this.startDisplayingCode()
         for (let secret of encrypted_vault){
           const uuid = secret.get("uuid");
           const enc_secret = secret.get("enc_secret");
           if(uuid != null && enc_secret != null){
-          this.crypto.decrypt(enc_secret, this.userService.get_zke_key()!).then((dec_secret)=>{
+          this.crypto.decrypt(enc_secret, this.userService.zke_key()!).then((dec_secret)=>{
             if(dec_secret == null){
               this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
                 this.utils.toastError(this.toastr, translation,"");
@@ -245,7 +244,7 @@ export class VaultComponent implements OnInit, OnDestroy {
             } else {
                 try{
                   this.vault?.set(uuid, this.utils.mapFromJson(dec_secret));
-                  this.userService.setVault(this.vault!);
+                  this.userService.vault.set(this.vault!);
 
                   this.filterVault(); // to display all the vault
                   for (let uuid of this.vaultUUIDs){
@@ -253,8 +252,8 @@ export class VaultComponent implements OnInit, OnDestroy {
                     if(this.vault!.get(uuid)!.has("tags")){
                       const secret_tags = this.utils.parseTags(this.vault!.get(uuid)!.get("tags")!);
                       for (const tag of secret_tags){
-                        if(!this.userService.getVaultTags().includes(tag)){
-                        this.userService.getVaultTags().push(tag);
+                        if(!this.userService.vault_tags().includes(tag)){
+                        this.userService.vault_tags().push(tag);
                         }
                       }
                     }
@@ -610,15 +609,15 @@ export class VaultComponent implements OnInit, OnDestroy {
       next: (response) => {
         if(response.status === 200){
           const derived_key_salt_req_data = response.body as { derived_key_salt: string };
-          this.userService.setDerivedKeySalt(derived_key_salt_req_data.derived_key_salt);
+          this.userService.derivedKeySalt.set(derived_key_salt_req_data.derived_key_salt);
           this.http.get("/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe({
             next: (response) => {
               if(response.status === 200){
                  const zke_req_data = response.body as { zke_encrypted_key: string };
                  const zke_encrypted_key = zke_req_data.zke_encrypted_key;
-                 this.vaultService.derivePassphrase(this.userService.getDerivedKeySalt()!, this.passphrase).then((derivedKey) => {
-                  this.vaultService.decryptZKEKey(zke_encrypted_key, derivedKey, this.userService.getIsVaultLocal()!).then((zke_key) => {
-                    this.userService.set_zke_key(zke_key!);
+                 this.vaultService.derivePassphrase(this.userService.derivedKeySalt()!, this.passphrase).then((derivedKey) => {
+                  this.vaultService.decryptZKEKey(zke_encrypted_key, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
+                    this.userService.zke_key.set(zke_key!);
                     this.isVaultEncrypted.set(false);
                     this.isDecryptingLockedVaut = false;
                      this.get_and_decrypt_vault();

@@ -8,7 +8,7 @@ import { Crypto } from '../common/Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { UserService } from '../common/User/user.service';
+import { UserService } from '../services/User/user.service';
 
 
 @Component({
@@ -196,7 +196,7 @@ export class SignupComponent implements OnInit {
       next: (response) => {
       this.isLoading=false;
       this.utils.toastSuccess(this.toastr, this.translate.instant("signup.success"),"");
-      this.userService.setEmail(this.email)
+      this.userService.email.set(this.email)
       const response_data = response.body as { message: string, email_verification_required: boolean };
       if (response_data.email_verification_required){
         this.router.navigate(["/emailVerification"], {relativeTo:this.route.root});

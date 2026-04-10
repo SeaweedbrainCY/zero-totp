@@ -6,12 +6,12 @@ import { Router, ActivatedRoute, RouterStateSnapshot, NavigationEnd } from '@ang
 import { ViewportRuler } from '@angular/cdk/scrolling';
 import { NgZone } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { LocalVaultV1Service, UploadVaultStatus } from '../common/upload-vault/LocalVaultv1Service.service';
+import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
 import { Utils } from '../common/Utils/utils';
-import { VaultService } from '../common/VaultService/vault.service';
+import { VaultService } from '../services/VaultService/vault.service';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { formatDate } from '@angular/common';
-import { UserService } from '../common/User/user.service';
+import { UserService } from '../services/User/user.service';
 import { Crypto } from '../common/Crypto/crypto';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
@@ -103,12 +103,8 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if(this.userService.get_zke_key() == null){
-      this.userService.refresh_user_id().then((success) => {
+    if(!this.userService.isVaultLoadedAndDecryptable()){
         this.router.navigate(["/vault"], {relativeTo:this.route.root});
-      }, (error) => {
-        this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
-      });
     }
 
     this.init_component()
@@ -523,7 +519,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     return new Promise((resolve, reject) => {
       const jsonProperty = this.utils.mapToJson(secret_properties);
       try {
-        this.crypto.encrypt(jsonProperty, this.userService.get_zke_key()!).then((enc_jsonProperty) => {
+        this.crypto.encrypt(jsonProperty, this.userService.zke_key()!).then((enc_jsonProperty) => {
           resolve(enc_jsonProperty);
         });
       } catch (e) {

@@ -19,7 +19,6 @@ export class EmailVerificationComponent implements OnInit {
   faPaperPlane = faPaperPlane;
   faArrowRotateLeft = faArrowRotateLeft;
   faPen = faPen;
-  emailAddress = signal<string | null>(null);
   code = signal("");
   errorMessage = signal("");
   emailErrorMessage = signal("");
@@ -29,7 +28,7 @@ export class EmailVerificationComponent implements OnInit {
   emailLoading = signal(false);
   left_attempts = signal("");
   constructor(
-    private userService: UserService,
+    public user: UserService,
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
@@ -37,8 +36,7 @@ export class EmailVerificationComponent implements OnInit {
     private utils: Utils,
     private toastr: ToastrService
   ) { 
-    this.emailAddress.set(this.userService.getEmail());
-    if (this.emailAddress() == null) {
+    if (this.user.email() == null) {
       this.translate.get("session_expired").subscribe((translation: string) => {
         this.toastr.error(translation)
         this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
@@ -52,7 +50,7 @@ export class EmailVerificationComponent implements OnInit {
       try{
         const user  = JSON.parse(JSON.stringify(response.body));
         if(user.role != "not_verified"){
-          if(this.userService.getEmail() == null){
+          if(this.user.email() == null){
             this.utils.toastError(this.toastr,this.translate.instant("email_verif.error.no_email") ,"");
             this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
           } else {
@@ -157,8 +155,7 @@ export class EmailVerificationComponent implements OnInit {
         this.translate.get("email_verif.popup.success").subscribe((translation:string) => {
           this.utils.toastSuccess(this.toastr,translation,"");
       });
-        this.userService.setEmail(JSON.parse(JSON.stringify(response.body))["message"])
-        this.emailAddress.set(this.userService.getEmail());
+        this.user.email.set(JSON.parse(JSON.stringify(response.body))["message"])
         this.isEmailModalActive.set(false);
         
       },

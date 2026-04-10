@@ -15,12 +15,12 @@
     }
     <div class="navbar is-dark " role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
-        @if (userService.getId()!=null) {
+        @if (userService.id()!=null) {
           <a class="navbar-item" (click)="navigateToRoute('/')">
             <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
           </a>
         }
-        @if (userService.getId()==null) {
+        @if (userService.id()==null) {
           <a class="navbar-item"  href="#">
             <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
           </a>
@@ -34,7 +34,7 @@
       </div>
 
       <div id="navbarBasicExample" class="navbar-menu" [ngClass]="{'is-active': isNavbarExpanded()}" >
-        @if (userService.getId()!=null) {
+        @if (userService.id()!=null) {
           <div class="navbar-start" >
             <a class="navbar-item" (click)="navigateToRoute('vault')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/vault'}">
               <fa-icon [icon]="faVault" class="mr-2"></fa-icon> {{ 'my_vault' | translate }}
@@ -56,7 +56,7 @@
             </a>
           </div>
         }
-        @if (userService.getId()==null && !this.userService.getIsVaultLocal()) {
+        @if (userService.id()==null && !this.userService.isVaultLocal()) {
           <div class="navbar-start" >
             <a class="navbar-item" (click)="navigateToRoute('')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/'}">
               <fa-icon [icon]="faHome"></fa-icon> {{ 'Home' | translate }}
@@ -72,7 +72,7 @@
             </a>
           </div>
         }
-        @if (this.userService.getIsVaultLocal()) {
+        @if (this.userService.isVaultLocal()) {
           <div class="navbar-start" >
             <a class="navbar-item"  (click)="navigateToRoute('vault')">
               {{ 'navbar.vault_backup' | translate }}
@@ -111,23 +111,23 @@
           </div>
           <div class="navbar-item">
             <div class="buttons">
-              @if (userService.getId() == null) {
+              @if (userService.id() == null) {
                 <a class="button is-info" (click)="navigateToRoute('signup')">
                   <span [ngClass]="{'has-text-weight-bold':currentUrl() == '/signup'}">{{ 'sign_up' | translate }}</span>
                 </a>
               }
-              @if (userService.getId()== null) {
+              @if (userService.id()== null) {
                 <a class="button is-light" (click)="navigateToRoute('login')">
                   <span [ngClass]="{'has-text-weight-bold':currentUrl() == '/login'}">{{ 'log_in' | translate }}</span>
                 </a>
               }
 
-              @if (userService.getId() != null) {
+              @if (userService.id() != null) {
                 <a class="button is-light" href="/logout">
                   <span>{{ 'logout' | translate }}</span>
                 </a>
               }
-              @if (this.userService.getIsVaultLocal()) {
+              @if (this.userService.isVaultLocal()) {
                 <a class="button is-light" href="/login">
                   <span>{{ 'close' | translate }}</span>
                 </a>

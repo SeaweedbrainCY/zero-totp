@@ -31,7 +31,7 @@
           </div>
           <div>
             <p class="has-text-weight-bold mt-4 mb-2 has-text-grey-lighter">
-              {{this.userService.getEmail()}}
+              {{this.userService.email()}}
             </p>
             <div class="field is-full is-flex is-justify-content-center has-addons ">
               <p class="control has-icons-left has-icons-right">
@@ -77,7 +77,7 @@
               <span>{{vault_date}}</span>
             }</h1>
             <p class="has-text-centered has-text-grey pb-6">{{ 'vault.subtitle' | translate }} </p>
-            @if (this.userService.getIsVaultLocal()) {
+            @if (this.userService.isVaultLocal()) {
               <article class="message is-info">
                 <div class="message-body">
                   {{ 'vault.local.desc.part1' | translate }}<br>
@@ -87,7 +87,7 @@
                 </div>
               </article>
             }
-            @if (!this.userService.getIsVaultLocal()) {
+            @if (!this.userService.isVaultLocal()) {
               <div class="message is-success">
                 <div class="message"
                   [ngClass]="{'is-success': isGoogleDriveSync == 'uptodate' || !is_google_drive_enabled_on_this_tenant ||  isGoogleDriveSync == 'loading', 'is-warning': isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false' }">
@@ -329,12 +329,12 @@
     </a>
   </div>
 </div>
-@if ( this.userService.getVaultTags().length != 0) {
+@if ( this.userService.vault_tags().length != 0) {
   <div class="mb-4">
     <strong>{{'vault.filter.tag.title' | translate}} : </strong>
     <span class="tag is-rounded ml-4" style="cursor:pointer"
     [ngClass]="{'is-info':selectedTags.length == 0}" (click)="selectedTags=[]; filterVault()">All</span>
-    @for (tag of  this.userService.getVaultTags(); track tag) {
+    @for (tag of  this.userService.vault_tags(); track tag) {
       <span>
         <span class="tag is-rounded ml-4 mt-2" style="cursor:pointer"
         [ngClass]="{'is-info':selectedTags.includes(tag)}" (click)="selectTag(tag)">{{tag}} </span>
@@ -342,7 +342,7 @@
     }
   </div>
 }
-@if (!this.userService.getIsVaultLocal()) {
+@if (!this.userService.isVaultLocal()) {
   <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault"
     >{{ 'vault.button.reload' | translate }} <fa-icon
   [icon]="faRotateRight" class="pl-1" [animation]="reloadSpin ? 'spin' : undefined"></fa-icon></span>
@@ -359,7 +359,7 @@
 }
 @if (!reloadSpin) {
   <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
-    @if (!this.userService.getIsVaultLocal()) {
+    @if (!this.userService.isVaultLocal()) {
 <div class="column is-full-mobile
             is-one-third-tablet
             is-one-third-desktop

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb, faVault, faSliders, faShieldHalved, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faHardDrive } from '@fortawesome/free-regular-svg-icons';
-import { UserService } from '../common/User/user.service';
+import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
 import { Utils } from '../common/Utils/utils';
@@ -72,14 +72,8 @@ export class PreferencesComponent implements OnInit{
 
   
   ngOnInit(): void {
-     if(this.userService.get_zke_key() == null){
-      this.userService.refresh_user_id().then((success) => {
-        console.log("User refreshed successfully.");
-      }, (error) => {
-               this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
-
-
-      });
+     if(!this.userService.isUserLoggedIn()){
+      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
     this.get_preferences()
     this.get_internal_notification()
@@ -89,7 +83,8 @@ export class PreferencesComponent implements OnInit{
   }
 
   get_preferences(){
-    this.http.get("/api/v1/preferences?fields=all", {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/preferences?fields=all", {withCredentials: true, observe: 'response'}).subscribe({
+      next: (response) => {
       if(response.body != null){
         this.loadingPreferences = false;
         const data = JSON.parse(JSON.stringify(response.body));
@@ -115,7 +110,8 @@ export class PreferencesComponent implements OnInit{
         });
         }
       }
-    }, (error) => {
+    }, 
+    error: (error) => {
       this.loadingPreferencesError = true;
       this.loadingPreferences = false;
         let errorMessage = "";
@@ -134,7 +130,7 @@ export class PreferencesComponent implements OnInit{
           this.translate.get('preference.error.update').subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
         });
-    });
+    }});
   }
 
 
@@ -181,11 +177,13 @@ export class PreferencesComponent implements OnInit{
     if(policy == "never" || policy == "always" || policy == "enabledOnly"){
       this.buttonLoading.favicon_policy = true;
       const data = {"id" : "favicon_policy", "value" :policy}
-      this.http.put("/api/v1/preferences",  data, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+      this.http.put("/api/v1/preferences",  data, {withCredentials: true, observe: 'response'}).subscribe({
+        next: () => {
         this.buttonLoading.favicon_policy = false;
         this.faviconPolicy = policy;
 
-    }, (error) => {
+    }, 
+    error:(error) => {
       this.buttonLoading.favicon_policy = false;
       let errorMessage = "";
           if(error.error.message != null){
@@ -204,7 +202,7 @@ export class PreferencesComponent implements OnInit{
           this.translate.get('preference.error.update').subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
           });
-    });
+    }});
   }
   }
 
@@ -263,7 +261,8 @@ export class PreferencesComponent implements OnInit{
   }
 
   get_internal_notification(){
-    this.http.get("/api/v1/notification/internal",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/notification/internal",  {withCredentials:true, observe: 'response'}).subscribe({
+      next: (response) => {
       if(response.status == 200){
         try{
           const data = JSON.parse(JSON.stringify(response.body))
@@ -274,9 +273,10 @@ export class PreferencesComponent implements OnInit{
           console.log(error);
         }
       }
-    }, (error) => {
+    }, 
+    error: (error) => {
       console.log(error);
-    });
+    }});
   }
 
 
@@ -293,10 +293,12 @@ export class PreferencesComponent implements OnInit{
     this.autolock_value_updated = false;
     this.autolock_is_updating = true;
     const autolock_delay_minutes = this.autolockDelayToMinutes();
-    this.http.put("/api/v1/preferences", {"id":"autolock_delay", "value":autolock_delay_minutes}, {withCredentials: true, observe: 'response'}).subscribe((response) => {
+    this.http.put("/api/v1/preferences", {"id":"autolock_delay", "value":autolock_delay_minutes}, {withCredentials: true, observe: 'response'}).subscribe({
+      next: () => {
       this.autolock_value_updated = true;
       this.autolockDelayUpdateDone();
-    }, (error) => {
+    }, 
+    error: (error) => {
       this.autolock_is_updating = false;
       if(error.status == 400){
         if(error.error.message == "invalid_duration"){
@@ -323,7 +325,7 @@ export class PreferencesComponent implements OnInit{
           this.translate.get('preference.error.update').subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
           });
-    });
+    }});
   }
 
   autolockDelayUpdateDone(){

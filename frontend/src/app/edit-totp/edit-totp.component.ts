@@ -59,7 +59,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   isSecretVisible = signal(true);
   totp_code_expiration = 0;
   generating_next_totp_code = false;
-  totp_code_generation_interval:NodeJS.Timeout|undefined;
+  totp_code_generation_interval:number|undefined;
   constructor(
     private router: Router,
     private route : ActivatedRoute,
@@ -80,7 +80,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(){
-    if(this.userService.get_zke_key() == null  && !this.userService.getIsVaultLocal()){
+    if(!this.userService.isVaultLoadedAndDecryptable()){
       this.userService.refresh_user_id().then((success) => {
         this.router.navigate(["/vault"], {relativeTo:this.route.root});
       }, (error) => {
@@ -102,17 +102,17 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
         this.translate.get("blue").subscribe((default_color: string) => {
           this.selected_color.set(default_color);
         });
-        this.remainingTags.set(this.userService.getVaultTags());
+        this.remainingTags.set(this.userService.vault_tags());
         
     } else {
       this.isEditing.set(true);
       this.isSecretVisible.set(false);
       console.log("is editing")
-      if(!this.userService.getIsVaultLocal()){
+      if(!this.userService.isVaultLocal()){
         this.getSecretTOTP()
         this.get_preferences()
       } else {
-        const vault = this.userService.getVault()!;
+        const vault = this.userService.vault()!;
         const property = vault.get(this.secret_uuid);
         this.uuid = this.secret_uuid!;
         this.name.set(property!.get("name")!);
@@ -134,7 +134,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
       }
     }
     
-    this.totp_code_generation_interval = setInterval(()=> { this.compute_totp_expiration() }, 100);
+    this.totp_code_generation_interval = window.setInterval(()=> { this.compute_totp_expiration() }, 100);
     
   }
 
@@ -284,10 +284,11 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
 
   getSecretTOTP(){
     this.uuid = this.secret_uuid!;
-    this.http.get("/api/v1/encrypted_secret/"+this.uuid,  {withCredentials:true, observe: 'response'}).subscribe((response) => {
+    this.http.get("/api/v1/encrypted_secret/"+this.uuid,  {withCredentials:true, observe: 'response'}).subscribe({
+      next:(response) => {
       try{
         const data = JSON.parse(JSON.stringify(response.body));
-        this.crypto.decrypt(data.enc_secret, this.userService.get_zke_key()!).then((decrypted_secret)=>{
+        this.crypto.decrypt(data.enc_secret, this.userService.zke_key()!).then((decrypted_secret)=>{
           if(decrypted_secret == null){
             this.translate.get("totp.error.decryption").subscribe((translation: string) => {
               this.utils.toastWarning(this.toastr,translation,"")
@@ -338,7 +339,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
           if(property!.has("tags")){
             this.tags.set(this.utils.parseTags(property!.get("tags")!));
           }
-          for(let tag of this.userService.getVaultTags()){
+          for(let tag of this.userService.vault_tags()){
             if(!this.tags().includes(tag)){
               this.remainingTags.update(rt => [...rt, tag]);
             }
@@ -351,7 +352,8 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
             this.utils.toastWarning(this.toastr,translation,"")
       });
       }
-    }, (error) => {
+    }, 
+    error: (error) => {
       let errorMessage = "";
       if(error.error.message != null){
         errorMessage = error.error.message;
@@ -369,12 +371,12 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
       this.translate.get("totp.error.fetch_secret_server").subscribe((translation: string) => {
       this.utils.toastError(this.toastr, translation  + " " +this.translate.instant(errorMessage),"");
       });
-    });
+    }});
   }
 
   save(){
     this.isSaving.set(true);
-    if(this.userService.getId() == null){
+    if(this.userService.id() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
     }
 
@@ -409,7 +411,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
     
     const jsonProperty = this.utils.mapToJson(property);
     try{
-      this.crypto.encrypt(jsonProperty, this.userService.get_zke_key()!).then  ((enc_jsonProperty)=>{
+      this.crypto.encrypt(jsonProperty, this.userService.zke_key()!).then  ((enc_jsonProperty)=>{
         if(this.secret_uuid != null){
           this.updateSecret(enc_jsonProperty, property);
         } else { 
@@ -581,7 +583,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
 
   deleteTag(tag:string){
     this.tags.update(t => t.filter(item => item !== tag));
-    if(this.userService.getVaultTags().includes(tag)){
+    if(this.userService.vault_tags().includes(tag)){
       this.remainingTags.update(rt => [...rt, tag]);
     }
   }

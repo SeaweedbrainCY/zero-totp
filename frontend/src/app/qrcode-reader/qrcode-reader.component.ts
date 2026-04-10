@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ZXingScannerComponent } from '@zxing/ngx-scanner';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { UserService } from '../common/User/user.service';
-import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
+import { UserService } from '../services/User/user.service';
+import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Utils } from '../common/Utils/utils';
 import { ToastrService } from 'ngx-toastr';
@@ -43,7 +43,7 @@ export class QrcodeReaderComponent implements OnInit {
 
   
   ngOnInit(): void {
-    if(this.userService.get_zke_key() == null){
+    if(this.userService.zke_key() == null){
       this.userService.refresh_user_id().then((success) => {
         this.router.navigate(["/vault"], {relativeTo:this.route.root});
       }, (error) => {
