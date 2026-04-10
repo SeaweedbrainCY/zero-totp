@@ -51,6 +51,18 @@ export class UserService {
     return this.isVaultLocal() && this.zke_key != null
    }
 
+   isUserLoggedIn():boolean {
+    if (this.id() != null) {
+      return true
+    }
+    this.refresh_user_id().then(()=>{
+        return true
+      }, (error)=>{
+        return false
+      })
+      return false
+   }
+
    clear(){
     this.id.set(null);
     this.email.set(null);
