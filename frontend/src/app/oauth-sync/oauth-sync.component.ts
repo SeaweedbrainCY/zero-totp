@@ -1,4 +1,4 @@
-import { Component, OnInit, Injectable, inject } from '@angular/core';
+import { Component, OnInit, Injectable, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
@@ -14,8 +14,8 @@ import { Utils } from '../common/Utils/utils';
 })
 @Injectable({providedIn: 'root'})
 export class OauthSyncComponent implements OnInit {
-  errorMessage = '';
-  errorDetail = "";
+  errorMessage = signal('');
+  errorDetail = signal("");
   faCircleNotch = faCircleNotch;
   credentials:string|null;
   encrypted_credentials:string|null = null;
@@ -56,8 +56,8 @@ export class OauthSyncComponent implements OnInit {
       } else if(error.error.detail != null){
         errorMessage = error.error.title;
       }
-      this.errorMessage = 'oauth.error.impossible' ;
-      this.errorDetail = errorMessage;
+      this.errorMessage.set('oauth.error.impossible') ;
+      this.errorDetail.set(errorMessage);
     }});
   }
   

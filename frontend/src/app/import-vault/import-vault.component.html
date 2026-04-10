@@ -8,7 +8,7 @@
     </div>
   </div>
 
-  @if (vault_type == null) {
+  @if (vault_type() == null) {
     <div class=" is-flex is-justify-content-center mt-6 pt-6">
       <div class="is-flex is-flex-direction-column is-align-items-stretch" style="max-width: 90vw;">
         <button class="button is-link is-light is-large is-responsive mt-4" [routerLink]="['./zero-totp/import']"
@@ -48,12 +48,12 @@
       </div>
     </div>
   }
-  @if (vault_type != null && vault_type == 'zero-totp') {
+  @if (vault_type() != null && vault_type() == 'zero-totp') {
     <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center mt-6 pt-2"
       >
       <div class="is-flex is-justify-content-space-around" style="width:70vw">
         <div class="is-flex is-justify-content-center is-align-items-center is-flex-wrap-wrap">
-          <div class="tag is-rounded is-success is-size-5 has-text-weight-bold" [ngClass]="{'is-light':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) < 0}">
+          <div class="tag is-rounded is-success is-size-5 has-text-weight-bold" [ngClass]="{'is-light':this.vault_steps.get(this.vault_type()!)!.indexOf(this.step()!) < 0}">
             1
           </div>
           <div class="has-text-weight-bold ml-3 mr-3 has-text-centered">
@@ -61,7 +61,7 @@
           </div>
         </div>
         <div class="is-flex is-justify-content-center is-align-items-center is-flex-wrap-wrap">
-          <div class="tag is-rounded is-success is-size-5 has-text-weight-bold" [ngClass]="{'is-light':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) < 1}">
+          <div class="tag is-rounded is-success is-size-5 has-text-weight-bold" [ngClass]="{'is-light':this.vault_steps.get(this.vault_type()!)!.indexOf(this.step()!) < 1}">
             2
           </div>
           <div class="has-text-weight-bold ml-3 mr-3 has-text-centered">
@@ -69,7 +69,7 @@
           </div>
         </div>
         <div class="is-flex is-justify-content-center is-align-items-center is-flex-wrap-wrap">
-          <div class="tag is-rounded is-success is-light is-size-5 has-text-weight-bold" [ngClass]="{'is-light':this.vault_steps.get(this.vault_type)!.indexOf(this.step!) < 2}">
+          <div class="tag is-rounded is-success is-light is-size-5 has-text-weight-bold" [ngClass]="{'is-light':this.vault_steps.get(this.vault_type()!)!.indexOf(this.step()!) < 2}">
             3
           </div>
           <div class="has-text-weight-bold ml-3 mr-3 has-text-centered">
@@ -78,28 +78,28 @@
         </div>
       </div>
       <div style="border-top:1px lightgray solid; width: 30vw; height: 1px;" class="mt-4 mb-4"></div>
-      @if (step == 'import') {
+      @if (step() == 'import') {
         <div>
           <h3 class="is-size-3 has-text-centered has-text-weight-bold "
             style="line-height: normal;"> {{
             'import_vault.zero_totp.import' | translate }}
           </h3>
           <div class="is-flex is-justify-content-center mt-6 mb-6">
-            @if (local_vault_service == null) {
+            @if (local_vault_service() == null) {
               <div class="file is-boxed">
                 <label class="file-label">
                   <input class="file-input" type="file" name="resume" accept=".zero-totp,.txt" (change)="openFile($event)"
                     >
                   <span class="file-cta">
                     <span class="file-icon">
-                      @if (!is_importing) {
+                      @if (!is_importing()) {
                         <fa-icon [icon]="faCloudArrowUp" size="2xl" class="mb-2"></fa-icon>
                       }
-                      @if (is_importing) {
+                      @if (is_importing()) {
                         <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined"></fa-icon>
                       }
                     </span>
-                    @if (!is_importing) {
+                    @if (!is_importing()) {
                       <span class="file-label">
                         {{ 'login.backup.vault_backup' | translate }}
                       </span>
@@ -108,12 +108,12 @@
                 </label>
               </div>
             }
-            @if (local_vault_service != null && local_vault_service.get_is_signature_valid()) {
+            @if (local_vault_service() != null && local_vault_service()!.get_is_signature_valid()) {
               <div>
-                <p class="has-text-centered has-text-weight-bold">@if (loading_file) {
+                <p class="has-text-centered has-text-weight-bold">@if (loading_file()) {
                   <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined"></fa-icon>
                 }
-                {{file_name}} - <span
+                {{file_name()}} - <span
                 class="has-text-success">{{"import_vault.secure_text" | translate}} <fa-icon [icon]="faLock"
               class="ml-2"></fa-icon></span></p>
             </div>
@@ -121,41 +121,41 @@
         </div>
       </div>
     }
-    @if (step == 'decrypt') {
+    @if (step() == 'decrypt') {
       <div>
         <h3 class="is-size-3 has-text-centered has-text-weight-bold "
           style="line-height: normal;"> {{
           'import_vault.zero_totp.decrypt' | translate }}
         </h3>
         <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center mt-6 mb-6 ">
-          <p class=" has-text-centered">{{file_name}} - @if (decrypted_vault == undefined) {
+          <p class=" has-text-centered">{{file_name()}} - @if (decrypted_vault() == undefined) {
             <span class="has-text-weight-bold has-text-danger"
               >{{
               'encrypted' | translate}} <fa-icon [icon]="faLock" class="mr-2"></fa-icon> </span>
-              } @if (decrypted_vault != undefined) {
+              } @if (decrypted_vault() != undefined) {
               <span
                 class="has-text-weight-bold has-text-success">{{ 'decrypted' |
                 translate}} <fa-icon [icon]="faUnlock" class="mr-2"></fa-icon> </span>
               }</p>
-              <p class="has-text-centered has-text-danger has-text-weight-bold" [ngClass]="{'shake':decryption_error != ''}">
-              {{decryption_error}}</p><br>
+              <p class="has-text-centered has-text-danger has-text-weight-bold" [ngClass]="{'shake':decryption_error() != ''}">
+              {{decryption_error()}}</p><br>
               <div class="will_be_reduced "
-                [ngClass]="{ 'field has-addons' : decrypt_input_visible, 'has-text-centered':!decrypt_input_visible, reduced:decrypted_vault != undefined && decrypt_input_visible }"
+                [ngClass]="{ 'field has-addons' : decrypt_input_visible(), 'has-text-centered':!decrypt_input_visible(), reduced:decrypted_vault() != undefined && decrypt_input_visible() }"
                 style="width: 70vw;">
-                @if (decrypt_input_visible) {
+                @if (decrypt_input_visible()) {
                   <div class="control is-expanded ">
-                    <input class="input will_be_reduced" [ngClass]="{reduced:decrypted_vault != undefined}" type="password"
+                    <input class="input will_be_reduced" [ngClass]="{reduced:decrypted_vault() != undefined}" type="password"
                       placeholder="{{'passphrase'| translate}}" name="imported_vault_passphrase"
-                      [(ngModel)]="imported_vault_passphrase">
+                      [ngModel]="imported_vault_passphrase()" (ngModelChange)="imported_vault_passphrase.set($event)">
                   </div>
                 }
                 <div class="control">
                   <button class="button is-success" (click)="decrypt()">
-                    @if (decrypt_input_visible) {
+                    @if (decrypt_input_visible()) {
                       <span><fa-icon [icon]="faUnlockKeyhole" class="mr-2"></fa-icon> {{'decrypt'|
                     translate}}</span>
                   }
-                  @if (!decrypt_input_visible) {
+                  @if (!decrypt_input_visible()) {
                     <span> {{'decrypted'| translate}} <fa-icon [icon]="faCircleCheck"
                     class="ml-2"></fa-icon></span>
                   }
@@ -165,55 +165,55 @@
           </div>
         </div>
       }
-      @if (step == 'encrypt') {
+      @if (step() == 'encrypt') {
         <div>
           <h3 class="is-size-3 has-text-centered has-text-weight-bold "
             style="line-height: normal;"> {{
-            'import_vault.zero_totp.encrypt' | translate }} @if (uploading) {
+            'import_vault.zero_totp.encrypt' | translate }} @if (uploading()) {
             <fa-icon [icon]="faCircleNotch" class="ml-2"
             [animation]="'spin'"></fa-icon>
           }
         </h3>
         <br>
-          @if (!uploading) {
+          @if (!uploading()) {
             <p class="is-size-4 has-text-centered mt-4">{{
-            'import_vault.zero_totp.encrypt_titles.subtitle' | translate }} {{vault_date}} ? </p>
+            'import_vault.zero_totp.encrypt_titles.subtitle' | translate }} {{vault_date()}} ? </p>
           }
-          @if (uploading) {
+          @if (uploading()) {
             <p class="is-size-4 has-text-centered mt-4 has-text-danger has-text-weight-bold"><fa-icon
             [icon]="faCircleExclamation" class="mr-2"></fa-icon> {{
           'import_vault.zero_totp.encrypt_titles.warning' | translate }}</p>
         }
-        @if (uploading) {
-          <p class="has-text-centered">{{upload_state}}<fa-icon [icon]="faCircleNotch" class="ml-2"
+        @if (uploading()) {
+          <p class="has-text-centered">{{upload_state()}}<fa-icon [icon]="faCircleNotch" class="ml-2"
           [animation]="'spin'"></fa-icon></p>
         }
         <div class="is-flex is-justify-content-space-around is-align-items-stretch is-flex-wrap-wrap mt-2 mb-6">
-          @if (decrypted_vault != undefined) {
-            <div class="box " style="margin: 0; " [style]="isMobileDevice ? 'width: 80vw;' : 'width: 60vw;'"
+          @if (decrypted_vault() != undefined) {
+            <div class="box " style="margin: 0; " [style]="isMobileDevice() ? 'width: 80vw;' : 'width: 60vw;'"
               >
               <p class="has-text-weight-bold mb-4">{{'import_vault.zero_totp.will_be_kept' | translate }}</p>
-              @for (key of decrypted_vault!.keys(); track key) {
+              @for (key of decrypted_vault()!.keys(); track key) {
                 <div class="is-flex is-justify-content-center is-align-items-center is-flex-direction-column"
                   >
                   <div class="notification is-light" style="width: 100%; margin-bottom: 5px;"
-                    [ngClass]="{'is-success' : uploaded_uuid.includes(key),' is-primary': uploaded_uuid.includes(key) && upload_error_uuid.includes(key), 'is-danger': upload_error_uuid.includes(key)}">
+                    [ngClass]="{'is-success' : uploaded_uuid().includes(key),' is-primary': uploaded_uuid().includes(key) && upload_error_uuid().includes(key), 'is-danger': upload_error_uuid().includes(key)}">
                     <p>
-                      @if (!uploading && !uploaded_uuid.includes(key) && !upload_error_uuid.includes(key)) {
+                      @if (!uploading() && !uploaded_uuid().includes(key) && !upload_error_uuid().includes(key)) {
                         <fa-icon [icon]="faCloudArrowUp" class="mr-4"
                         ></fa-icon>
                       }
-                      @if (uploading && !uploaded_uuid.includes(key) && !upload_error_uuid.includes(key)) {
+                      @if (uploading() && !uploaded_uuid().includes(key) && !upload_error_uuid().includes(key)) {
                         <fa-icon [icon]="faCircleNotch" class="mr-4"
                         [animation]="'spin'"></fa-icon>
                       }
-                      @if (uploaded_uuid.includes(key)) {
+                      @if (uploaded_uuid().includes(key)) {
                         <fa-icon [icon]="faFileCircleCheck" class="mr-4"></fa-icon>
                       }
-                      @if ( upload_error_uuid.includes(key)) {
+                      @if ( upload_error_uuid().includes(key)) {
                         <fa-icon [icon]="faFileExcel" class="mr-4"></fa-icon>
                       }
-                      {{decrypted_vault!.get(key)!.get("name")}}
+                      {{decrypted_vault()!.get(key)!.get("name")}}
                     </p>
                   </div>
                 </div>
@@ -226,14 +226,14 @@
     <div class="is-flex is-justify-content-center mt-6">
       <div class="field is-grouped">
         <p class="control">
-          <button class="button" (click)="cancel()" [disabled]="uploading">{{'cancel'| translate}}</button>
+          <button class="button" (click)="cancel()" [disabled]="uploading()">{{'cancel'| translate}}</button>
         </p>
         <p class="control">
-          <button class="button is-danger" (click)="giveUp()" [disabled]="uploading">{{'give_up'| translate}}</button>
+          <button class="button is-danger" (click)="giveUp()" [disabled]="uploading()">{{'give_up'| translate}}</button>
         </p>
         <p class="control">
           <button class="button is-success" (click)="continue()"
-            [disabled]="is_continue_disabled || uploading">{{continue_button_text |
+            [disabled]="is_continue_disabled() || uploading()">{{continue_button_text() |
           translate}}</button>
         </p>
       </div>
@@ -242,7 +242,7 @@
 }
 </section>
 
-<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isUnsecureVaultModaleActive}">
+<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isUnsecureVaultModaleActive()}">
   <div class="modal-background" (click)="rejectUnsecureVault()"></div>
   <div class="modal-content">
     <section class="modal-card-body">
@@ -262,7 +262,7 @@
   <button class="modal-close is-large" aria-label="close" (click)="rejectUnsecureVault()"></button>
 </div>
 
-<div id="success" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': importSuccess && !import_had_error}">
+<div id="success" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': importSuccess() && !import_had_error()}">
   <div class="modal-background"></div>
   <div class="modal-content">
     <section class="modal-card-body">
@@ -277,16 +277,16 @@
   </div>
 </div>
 
-<div id="success" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': importSuccess && import_had_error}">
+<div id="success" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': importSuccess() && import_had_error()}">
   <div class="modal-background"></div>
   <div class="modal-content">
     <section class="modal-card-body">
       <h1 class="is-size-2 has-text-primary has-text-centered">{{ 'import_vault.success_with_error_modal.title' |
       translate }}</h1>
       <strong>{{ 'import_vault.success_with_error_modal.message' | translate }}</strong>
-      @for (uuid of upload_error_uuid; track uuid) {
+      @for (uuid of upload_error_uuid(); track uuid) {
         <ul>
-          <li>{{decrypted_vault!.get(uuid)!.get('name')}}</li>
+          <li>{{decrypted_vault()!.get(uuid)!.get('name')}}</li>
         </ul>
       }
       <br><br>

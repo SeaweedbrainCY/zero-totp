@@ -1,4 +1,4 @@
-@if (loadingPreferences || loading_backup_configuration) {
+@if (loadingPreferences() || loading_backup_configuration()) {
   <section class="hero is-halfheight mt-6 " style="min-height: 70vh;">
     <article class="hero-body is-flex is-justify-content-center">
       <div>
@@ -10,7 +10,7 @@
     </article>
   </section>
 }
-@if (loadingPreferencesError) {
+@if (loadingPreferencesError()) {
   <section class="hero is-halfheight mt-6" style="min-height: 70vh;"
     >
     <article class="hero-body is-flex is-justify-content-center">
@@ -21,7 +21,7 @@
   </section>
 }
 
-@if (!loadingPreferences && !loading_backup_configuration && !loadingPreferencesError) {
+@if (!loadingPreferences() && !loading_backup_configuration() && !loadingPreferencesError()) {
   <section class="hero is-halfheight mt-6 pb-6 " style="min-height: 70vh;"
     >
     <div class="container is-fluid ">
@@ -30,7 +30,7 @@
           style="line-height: normal;">{{ 'preference.title' | translate }}
         </h1>
         <div class="is-flex is-justify-content-center">
-          @if (notification_message != undefined) {
+          @if (notification_message() != undefined) {
             <div class="notification is-link is-light  m-4 is-flex is-justify-content-space-between"
               style="max-width: 70vw;">
               <div class="is-flex is-justify-content-center is-flex-direction-column">
@@ -38,7 +38,7 @@
                   <div class="is-flex is-justify-content-center is-flex-direction-column mr">
                     <fa-icon [icon]="faLightbulb" class="mr-4"></fa-icon>
                   </div>
-                  <strong>{{notification_message}}</strong>
+                  <strong>{{notification_message()}}</strong>
                 </div>
               </div>
             </div>
@@ -68,43 +68,43 @@
                       <span class="select">
                         <select #duration_unit_select
                           (change)="change_duration_unit(duration_unit_select.value)"
-                          (name)="duration_unit" [ngModel]="duration_unit" value="Unit">
+                          (name)="duration_unit()" [ngModel]="duration_unit()" value="Unit">
                           <option>minute</option>
                           <option value="hour">{{'hour' | translate}}</option>
                         </select>
                       </span>
                     </p>
                     <div class="control">
-                      <input class="input" [style.width.ch]="input_auto_compute_size(autolock_delay)"
+                      <input class="input" [style.width.ch]="input_auto_compute_size(autolock_delay())"
                         type="number" placeholder="10" name="autolock_delay"
-                        [(ngModel)]="autolock_delay" min="1" max="60">
+                        [ngModel]="autolock_delay()" (ngModelChange)="autolock_delay.set($event)" min="1" max="60">
                     </div>
                     <div class="control">
                       <button class="button is-info is-outlined"
-                        [ngClass]="{'is-loading':autolock_is_updating, 'is-info':!autolock_update_done_animation && !autolock_update_failed_animation, 'is-success':autolock_update_done_animation, 'is-danger':autolock_update_failed_animation}"
+                        [ngClass]="{'is-loading':autolock_is_updating(), 'is-info':!autolock_update_done_animation() && !autolock_update_failed_animation(), 'is-success':autolock_update_done_animation(), 'is-danger':autolock_update_failed_animation()}"
                         (click)="autolockDelayUpdate()">
-                        @if (!autolock_update_done_animation && !autolock_update_failed_animation) {
+                        @if (!autolock_update_done_animation() && !autolock_update_failed_animation()) {
                           <span
                             >{{'update'
                           | translate}}</span>
                         }
-                        @if (autolock_update_done_animation) {
+                        @if (autolock_update_done_animation()) {
                           <fa-icon [icon]="faCheck"></fa-icon>
                         }
-                        @if (autolock_update_failed_animation) {
+                        @if (autolock_update_failed_animation()) {
                           <fa-icon
                           [icon]="faXmark"></fa-icon>
                         }
                       </button>
                     </div>
                   </div>
-                  @if (autolock_display_error) {
+                  @if (autolock_display_error()) {
                     <span class="help has-text-left is-danger">
                       <span>{{'preference.account.security.autolock.error' | translate :
-                        {min:minimum_duration, max:maximum_duration} }}<br></span>
+                        {min:minimum_duration(), max:maximum_duration()} }}<br></span>
                       </span>
                     }
-                    @if (autolock_value_updated) {
+                    @if (autolock_value_updated()) {
                       <span class="help has-text-left is-success">
                         <span>{{'preference.account.security.autolock.success' | translate}}<br></span>
                       </span>
@@ -127,35 +127,35 @@
                   </span>
                 </strong>
                 <div class="buttons has-addons">
-                  <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'always'}"
+                  <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy() == 'always'}"
                     (click)="changeFaviconSettings('always')"
-                    [disabled]="this.buttonLoading.favicon_policy == true">
+                    [disabled]="buttonLoading().favicon_policy == true">
                     {{ 'always' | translate }}
                   </button>
                   <button class="button "
-                    [ngClass]="{'is-selected is-success':faviconPolicy == 'enabledOnly'}"
+                    [ngClass]="{'is-selected is-success':faviconPolicy() == 'enabledOnly'}"
                     (click)="changeFaviconSettings('enabledOnly')"
-                    [disabled]="this.buttonLoading.favicon_policy == true">
+                    [disabled]="buttonLoading().favicon_policy == true">
                     {{ 'preference.vault.display.favicon.option.enabled' | translate }}
                   </button>
-                  <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy == 'never'}"
+                  <button class="button " [ngClass]="{'is-selected is-success':faviconPolicy() == 'never'}"
                     (click)="changeFaviconSettings('never')"
-                    [disabled]="this.buttonLoading.favicon_policy == true">
+                    [disabled]="buttonLoading().favicon_policy == true">
                     {{ 'never' | translate }}
                   </button>
                 </div>
-                @if (!this.moreHelpDisplayed.favicon_settings) {
+                @if (!moreHelpDisplayed().favicon_settings) {
                   <button class="button is-info is-rounded is-small is-light"
-                    (click)="this.moreHelpDisplayed.favicon_settings = true">{{ 'preference.more_info' |
+                    (click)="moreHelpDisplayed.update(m => ({ ...m, favicon_settings: true }))">{{ 'preference.more_info' |
                     translate }} <fa-icon [icon]="faCircleInfo" class="ml-2"></fa-icon></button>
                   }
-                  @if (this.moreHelpDisplayed.favicon_settings) {
+                  @if (moreHelpDisplayed().favicon_settings) {
                     <article class="message is-info">
                       <div class="message-header">
                         <p>{{ 'preference.more_info' | translate }} <fa-icon [icon]="faCircleInfo"
                         class="ml-2"></fa-icon></p>
                         <button class="delete"
-                        (click)="this.moreHelpDisplayed.favicon_settings = false"></button>
+                        (click)="moreHelpDisplayed.update(m => ({ ...m, favicon_settings: false }))"></button>
                       </div>
                       <div class="message-body">
                         <ul>
@@ -180,7 +180,7 @@
                   <div style="border-bottom: 1px solid silver"></div>
                   <p class="has-text-grey pb-3">{{ 'preference.ackup.section.subtitle' | translate }}
                   </p>
-                  @if (!is_google_drive_enabled_on_this_tenant) {
+                  @if (!is_google_drive_enabled_on_this_tenant()) {
                     <div>
                       <div class="notification is-info is-light">
                         <fa-icon [icon]="faCircleExclamation" class="mr-2"></fa-icon>
@@ -189,7 +189,7 @@
                       </div>
                     </div>
                   }
-                  @if (is_google_drive_enabled_on_this_tenant) {
+                  @if (is_google_drive_enabled_on_this_tenant()) {
                     <div>
                       <div class="box">
                         <label class="label is-size-4">{{ 'preference.backup.minimum.title' | translate }}
@@ -197,7 +197,7 @@
                           }} </span></label>
                           <div class="field is-flex-tablet">
                             <div class="control has-icons-left mb-3">
-                              <input class="input" type="number" placeholder="Default : {{default_backup_minimum_count}}" name="backup_minimum_count" [(ngModel)]="backup_minimum_count">
+                              <input class="input" type="number" placeholder="Default : {{default_backup_minimum_count()}}" name="backup_minimum_count" [ngModel]="backup_minimum_count()" (ngModelChange)="backup_minimum_count.set($event)">
                               @if (false) {
                                 <span class="help has-text-left is-danger"></span>
                               }
@@ -206,7 +206,7 @@
                               </span>
                             </div>
                             <div class="has-text-centered">
-                              <button class="button is-info is-centered ml-3"  [ngClass]="this.buttonLoading.backup_conf_min_count ? 'is-loading':'is-outlined'" (click)="updateBackupConfiguration('backup_minimum_count')" [disabled]="this.buttonLoading.backup_conf_min_count">{{"update" |
+                              <button class="button is-info is-centered ml-3"  [ngClass]="buttonLoading().backup_conf_min_count ? 'is-loading':'is-outlined'" (click)="updateBackupConfiguration('backup_minimum_count')" [disabled]="buttonLoading().backup_conf_min_count">{{"update" |
                               translate}}</button>
                             </div>
                           </div>
@@ -222,7 +222,7 @@
                           </span></label>
                           <div class="field is-flex-tablet">
                             <div class="control has-icons-left mb-3">
-                              <input class="input" type="number" placeholder="Default : {{default_backup_max_age}}" name="backup_max_age" [(ngModel)]="backup_max_age">
+                              <input class="input" type="number" placeholder="Default : {{default_backup_max_age()}}" name="backup_max_age" [ngModel]="backup_max_age()" (ngModelChange)="backup_max_age.set($event)">
                               @if (false) {
                                 <span class="help has-text-left is-danger"></span>
                               }
@@ -231,7 +231,7 @@
                               </span>
                             </div>
                             <div class="has-text-centered">
-                              <button class="button is-info is-centered ml-3" [ngClass]="this.buttonLoading.backup_conf_max_age ? 'is-loading':'is-outlined'" (click)="updateBackupConfiguration('max_age_in_days')" [disabled]="this.buttonLoading.backup_conf_max_age">{{"update" |
+                              <button class="button is-info is-centered ml-3" [ngClass]="buttonLoading().backup_conf_max_age ? 'is-loading':'is-outlined'" (click)="updateBackupConfiguration('max_age_in_days')" [disabled]="buttonLoading().backup_conf_max_age">{{"update" |
                               translate}}</button>
                             </div>
                           </div>
@@ -252,13 +252,13 @@
                     <p class="has-text-grey pb-3">{{ 'preference.advanced.subtitle' | translate }}
                     </p>
                     <div class="control">
-                      @if (!isDisplayingAdvancedSettings) {
+                      @if (!isDisplayingAdvancedSettings()) {
                         <button class="button is-info is-outlined" (click)="displayAdvancedSettings()"
                           data-target="confirmation">{{
                           'preference.advanced.button' | translate }}
                         </button>
                       }
-                      @if (isDisplayingAdvancedSettings) {
+                      @if (isDisplayingAdvancedSettings()) {
                         <div>
                           <div class="box">
                             <label class="label is-size-4	">{{ 'preference.iteration.title' | translate
