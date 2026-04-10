@@ -3,12 +3,12 @@ import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, 
 import { HttpClient } from '@angular/common/http';
 
 import { Router, ActivatedRoute } from '@angular/router';
-import { UserService } from '../common/User/user.service';
+import { UserService } from '../services/User/user.service';
 import { Crypto } from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
-import { LocalVaultV1Service, UploadVaultStatus } from '../common/upload-vault/LocalVaultv1Service.service';
+import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
 import { Utils } from '../common/Utils/utils';
-import { VaultService } from '../common/VaultService/vault.service';
+import { VaultService } from '../services/VaultService/vault.service';
 
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';

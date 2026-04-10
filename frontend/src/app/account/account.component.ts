@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { faEnvelope, faLock, faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash, faVault, faExclamationTriangle, faEye, faEyeSlash, faCircleExclamation, faCircleNotch, faLightbulb, faL } from '@fortawesome/free-solid-svg-icons';
-import { UserService } from '../common/User/user.service';
+import { UserService } from '../services/User/user.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Utils } from '../common/Utils/utils';

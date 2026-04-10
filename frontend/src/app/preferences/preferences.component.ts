@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { GlobalConfigurationService } from '../common/GlobalConfiguration/global-configuration.service';
+import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
 
 @Component({
     selector: 'app-preferences',

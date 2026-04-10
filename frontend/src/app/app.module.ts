@@ -56,7 +56,7 @@ import { ImportVaultComponent } from "./import-vault/import-vault.component";
 import { FaqComponent } from "./faq/faq.component";
 import { provideMarkdown } from "ngx-markdown";
 import { MarkdownModule } from "ngx-markdown";
-import { GlobalConfigurationService } from "./common/GlobalConfiguration/global-configuration.service";
+import { GlobalConfigurationService } from "./services/GlobalConfiguration/global-configuration.service";
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);

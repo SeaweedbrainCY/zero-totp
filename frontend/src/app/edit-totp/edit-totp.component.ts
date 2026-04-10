@@ -1,15 +1,13 @@
 import { Component, OnDestroy, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { UserService } from '../common/User/user.service';
+import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch, faEyeSlash, faEye, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Utils  } from '../common/Utils/utils';
 
 import { Crypto } from '../common/Crypto/crypto';
-import { QrCodeTOTP } from '../common/qr-code-totp/qr-code-totp.service';
-import { LocalVaultV1Service } from '../common/upload-vault/LocalVaultv1Service.service';
+import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
 import URLParse from 'url-parse';
-import { dom } from '@fortawesome/fontawesome-svg-core';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { TOTP } from 'totp-generator'

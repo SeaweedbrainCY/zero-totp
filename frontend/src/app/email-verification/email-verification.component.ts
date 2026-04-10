@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { faPaperPlane, faArrowRotateLeft, faPen, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { UserService } from '../common/User/user.service';
+import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 

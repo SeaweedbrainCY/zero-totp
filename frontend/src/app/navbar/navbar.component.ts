@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { UserService } from '../common/User/user.service';
+import { UserService } from '../services/User/user.service';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';

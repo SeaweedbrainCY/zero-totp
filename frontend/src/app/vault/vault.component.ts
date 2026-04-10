@@ -14,7 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr'; 
 import { TOTP } from "totp-generator"
 import { VaultService } from '../common/VaultService/vault.service';
-import { GlobalConfigurationService } from '../common/GlobalConfiguration/global-configuration.service';
+import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
 
 
 @Component({
