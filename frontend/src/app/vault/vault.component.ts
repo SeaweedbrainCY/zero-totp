@@ -120,7 +120,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.page_title.set("vault.title.backup");
       this.vault_date.set(vaultDate);
       this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
-    } else if (this.userService.id() == null) {
+    } else if (this.userService.zke_key() == null) {
       this.userService.refresh_user_id().then(() => {
         this.isVaultEncrypted.set(true);
       }, () => {
@@ -202,7 +202,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   get_preferences() {
-    this.http.get("/api/v1/preferences?fields=favicon_policy", { withCredentials: true, observe: 'response' }).subscribe((response) => {
+    this.http.get("/api/v1/preferences?fields=favicon_policy", { withCredentials: true, observe: 'response' }).subscribe({
+      next: (response) => {
       if (response.body != null) {
         const data = JSON.parse(JSON.stringify(response.body));
         if (data.favicon_policy != null) {
@@ -214,7 +215,8 @@ export class VaultComponent implements OnInit, OnDestroy {
           });
         }
       }
-    }, (error) => {
+    }, 
+    error: (error) => {
       let errorMessage = "";
       if (error.error.message != null) {
         errorMessage = error.error.message;
@@ -228,7 +230,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.translate.get("vault.error.server").subscribe((translation: string) => {
         this.utils.toastError(this.toastr, "Error : Impossible to update your preferences. " + this.translate.instant(errorMessage), "");
       });
-    });
+    }});
   }
 
   decrypt_and_display_vault(encrypted_vault: Array<Map<string, string>>) {
@@ -415,7 +417,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   downloadVault() {
-    this.http.get("/api/v1/vault/export", { withCredentials: true, observe: 'response', responseType: 'blob' },).subscribe((response) => {
+    this.http.get("/api/v1/vault/export", { withCredentials: true, observe: 'response', responseType: 'blob' },).subscribe({
+      next: (response) => {
       const blob = new Blob([response.body!], { type: 'text/plain' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -425,7 +428,8 @@ export class VaultComponent implements OnInit, OnDestroy {
       a.click();
       window.URL.revokeObjectURL(url);
       this.utils.toastSuccess(this.toastr, this.translate.instant("vault.downloaded"), "");
-    }, error => {
+    }, 
+    error: error => {
       let errorMessage = "";
       if (error.error.message != null) {
         errorMessage = error.error.message;
@@ -443,15 +447,17 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.translate.get("vault.error.server").subscribe((translation: string) => {
         this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
       });
-    });
+    }});
   }
 
   get_oauth_authorization_url() {
-    this.http.get("/api/v1/google-drive/oauth/authorization-flow", { withCredentials: true, observe: 'response' }).subscribe((response) => {
+    this.http.get("/api/v1/google-drive/oauth/authorization-flow", { withCredentials: true, observe: 'response' }).subscribe({
+      next: (response) => {
       const data = JSON.parse(JSON.stringify(response.body))
       sessionStorage.setItem("oauth_state", data.state);
       window.location.href = data.authorization_url;
-    }, (error) => {
+    }, 
+    error: (error) => {
       let errorMessage = "";
       if (error.error.message != null) {
         errorMessage = error.error.message;
@@ -461,7 +467,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.translate.get("vault.oauth.error.server").subscribe((translation: string) => {
         this.utils.toastError(this.toastr, translation + ". " + errorMessage, "");
       });
-    });
+    }});
   }
 
 
@@ -498,10 +504,12 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   backup_vault_to_google_drive() {
-    this.http.put("/api/v1/google-drive/backup", {}, { withCredentials: true, observe: 'response' },).subscribe((response) => {
+    this.http.put("/api/v1/google-drive/backup", {}, { withCredentials: true, observe: 'response' },).subscribe({
+      next: (response) => {
       this.isGoogleDriveSync.set("uptodate");
       this.lastBackupDate.set(String(formatDate(new Date(), 'dd/MM/yyyy HH:mm:ss', 'en')));
-    }, (error) => {
+    }, 
+    error: (error) => {
       this.isGoogleDriveSync.set('error');
       let errorMessage = "";
       if (error.error.message != null) {
@@ -512,7 +520,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.translate.get("vault.error.backup.part1").subscribe((translation: string) => {
         this.utils.toastError(this.toastr, translation + " " + errorMessage + ". " + this.translate.instant("vault.error.backup.part2"), "");
       });
-    });
+    }});
   }
 
   check_last_backup() {
@@ -567,11 +575,13 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   disable_google_drive() {
-    this.http.delete("/api/v1/google-drive/option", { withCredentials: true, observe: 'response' },).subscribe((response) => {
+    this.http.delete("/api/v1/google-drive/option", { withCredentials: true, observe: 'response' },).subscribe({
+      next: (response) => {
       this.isGoogleDriveEnabled = false;
       this.isGoogleDriveSync.set("false");
       this.utils.toastSuccess(this.toastr, this.translate.instant("vault.google.disabled"), "");
-    }, (error) => {
+    }, 
+    error: (error) => {
       this.isGoogleDriveSync.set('error');
       let errorMessage = "";
       if (error.error.message != null) {
@@ -581,7 +591,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       }
 
       this.utils.toastError(this.toastr, this.translate.instant("vault.error.google.disable") + " " + errorMessage, "");
-    });
+    }});
   }
 
 
@@ -632,6 +642,8 @@ export class VaultComponent implements OnInit, OnDestroy {
                   this.vaultService.decryptZKEKey(zke_encrypted_key, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
                     this.userService.zke_key.set(zke_key!);
                     this.isVaultEncrypted.set(false);
+                    document.getElementById("add-code-button")!.style.display = "flex";
+                    document.getElementById("add-code-button")!.onclick = () => { this.isModalActive.set(true); };
                     this.isDecryptingLockedVaut = false;
                     this.get_and_decrypt_vault();
                   }, (error) => {
