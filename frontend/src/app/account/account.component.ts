@@ -724,7 +724,7 @@ export class AccountComponent implements OnInit {
   deletionModal() {
     if (!this.buttonLoading.deletion()) {
       this.deleteAccountConfirmationCountdown.set(5);
-      if (!this.isDeletionModalActive) {
+      if (!this.isDeletionModalActive()) {
         this.startTimer();
       } else {
         this.pauseTimer();
@@ -737,7 +737,7 @@ export class AccountComponent implements OnInit {
     this.deleteAccountConfirmationCountdown.set(5);
     this.interval = setInterval(() => {
       if (this.deleteAccountConfirmationCountdown() > 0) {
-        this.deleteAccountConfirmationCountdown.update(current=> current--)
+        this.deleteAccountConfirmationCountdown.update(current=> current-1)
       } else {
         clearInterval(this.interval);
       }
