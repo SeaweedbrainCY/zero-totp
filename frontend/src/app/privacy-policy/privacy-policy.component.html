@@ -1,5 +1,5 @@
 <section class="hero content is-halfheight m-6  has-text-weight-medium pb-6	" style="min-height: 70vh;">
-  @if (!is_privacy_policy_loaded && !loading_error) {
+  @if (!is_privacy_policy_loaded() && !loading_error()) {
     <article class="hero-body is-flex is-justify-content-center"
       >
       <div>
@@ -14,7 +14,7 @@
       </div>
     </article>
   }
-  @if (loading_error) {
+  @if (loading_error()) {
     <article class="hero-body is-flex is-justify-content-center"
       >
       <div>
@@ -28,9 +28,9 @@
       </div>
     </article>
   }
-  @if (privacy_policy_md != undefined && !loading_error) {
+  @if (privacy_policy_md() != undefined && !loading_error()) {
     <markdown
-      [data]="privacy_policy_md"
+      [data]="privacy_policy_md()"
       >
     </markdown>
   }
