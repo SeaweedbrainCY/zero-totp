@@ -55,7 +55,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   file_name = signal("");
   decrypted_vault = signal<Map<string, Map<string, string>> | undefined>(undefined);
   decryption_error = signal("");
-  decrypt_input_visible = signal(true);
+  is_vault_successfully_decrypted = signal(false);
   uploading = signal(false);
   upload_state = signal("");
   uploaded_uuid = signal<string[]>([]);
@@ -180,9 +180,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   }
 
   hideDecryptionInput() {
-    setTimeout(() => {
-      this.decrypt_input_visible.set(false);
-    }, 1000);
+    
   }
 
   openVaultV1(event: any, unsecure_context: string, input: any) {
@@ -388,7 +386,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
 
   decrypt() {
-    if (!this.decrypt_input_visible()) {
+    if (this.is_vault_successfully_decrypted()) {
       return;
     }
     this.decryption_error.set("");
@@ -398,7 +396,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
           this.vaultService.decryptVault(this.local_vault_service()!.get_enc_secrets()!, zke_key).then((decrypted_vault) => {
             this.decrypted_vault.set(decrypted_vault);
             this.is_continue_disabled.set(false);
-            this.hideDecryptionInput();
+            this.is_vault_successfully_decrypted.set(true)
 
           }, (error) => {
             this.translate.get("import_vault.errors.decryption_failure").subscribe((translation) => {

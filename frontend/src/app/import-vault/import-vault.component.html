@@ -128,34 +128,31 @@
           'import_vault.zero_totp.decrypt' | translate }}
         </h3>
         <div class="is-flex is-justify-content-center is-flex-direction-column is-align-items-center mt-6 mb-6 ">
-          <p class=" has-text-centered">{{file_name()}} - @if (decrypted_vault() == undefined) {
+          <p class=" has-text-centered">{{file_name()}} - @if (!is_vault_successfully_decrypted()) {
             <span class="has-text-weight-bold has-text-danger"
               >{{
               'encrypted' | translate}} <fa-icon [icon]="faLock" class="mr-2"></fa-icon> </span>
-              } @if (decrypted_vault() != undefined) {
+              } @if (is_vault_successfully_decrypted()) {
               <span
                 class="has-text-weight-bold has-text-success">{{ 'decrypted' |
                 translate}} <fa-icon [icon]="faUnlock" class="mr-2"></fa-icon> </span>
               }</p>
               <p class="has-text-centered has-text-danger has-text-weight-bold" [ngClass]="{'shake':decryption_error() != ''}">
               {{decryption_error()}}</p><br>
-              <div class="will_be_reduced "
-                [ngClass]="{ 'field has-addons' : decrypt_input_visible(), 'has-text-centered':!decrypt_input_visible(), reduced:decrypted_vault() != undefined && decrypt_input_visible() }"
-                style="width: 70vw;">
-                @if (decrypt_input_visible()) {
-                  <div class="control is-expanded ">
-                    <input class="input will_be_reduced" [ngClass]="{reduced:decrypted_vault() != undefined}" type="password"
+              <div
+                style="width: 70vw;" class="field has-addons">
+                  <div class="control is-expanded  ">
+                    <input class="input"  type="password"
                       placeholder="{{'passphrase'| translate}}" name="imported_vault_passphrase"
                       [ngModel]="imported_vault_passphrase()" (ngModelChange)="imported_vault_passphrase.set($event)">
                   </div>
-                }
                 <div class="control">
                   <button class="button is-success" (click)="decrypt()">
-                    @if (decrypt_input_visible()) {
+                    @if (!is_vault_successfully_decrypted()) {
                       <span><fa-icon [icon]="faUnlockKeyhole" class="mr-2"></fa-icon> {{'decrypt'|
                     translate}}</span>
                   }
-                  @if (!decrypt_input_visible()) {
+                  @if (is_vault_successfully_decrypted()) {
                     <span> {{'decrypted'| translate}} <fa-icon [icon]="faCircleCheck"
                     class="ml-2"></fa-icon></span>
                   }
