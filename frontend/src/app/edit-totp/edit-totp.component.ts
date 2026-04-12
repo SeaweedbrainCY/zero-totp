@@ -80,7 +80,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(){
-    if(!this.userService.isVaultLoadedAndDecryptable()){
+    if(this.userService.zke_key() == null  && !this.userService.isVaultLocal()){
       this.userService.refresh_user_id().then((success) => {
         this.router.navigate(["/vault"], {relativeTo:this.route.root});
       }, (error) => {
