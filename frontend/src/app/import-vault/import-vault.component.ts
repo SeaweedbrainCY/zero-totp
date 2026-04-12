@@ -94,8 +94,15 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if(!this.userService.isVaultLoadedAndDecryptable()){
-        this.router.navigate(["/vault"], {relativeTo:this.route.root});
+    if (this.userService.id() == null) {
+      this.userService.refresh_user_id().then(
+        () => {
+          this.router.navigate(['/vault'], { relativeTo: this.route.root });
+        },
+        () => {
+          this.router.navigate(['/login/sessionKilled'], { relativeTo: this.route.root });
+        },
+      );
     }
 
     this.init_component()

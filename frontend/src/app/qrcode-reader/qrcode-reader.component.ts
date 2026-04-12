@@ -40,7 +40,7 @@ export class QrcodeReaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.userService.zke_key() == null) {
+    if (this.userService.id() == null) {
       this.userService.refresh_user_id().then(
         () => {
           this.router.navigate(['/vault'], { relativeTo: this.route.root });
