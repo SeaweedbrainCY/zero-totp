@@ -26,7 +26,6 @@ import { PagenotfoundComponent } from "./pagenotfound/pagenotfound.component";
 import { ZXingScannerModule } from "@zxing/ngx-scanner";
 import { QrcodeReaderComponent } from "./qrcode-reader/qrcode-reader.component";
 import { QrCodeTOTP } from "./services/qr-code-totp/qr-code-totp.service";
-import { DevComponent } from "./dev/dev.component";
 import { AccountComponent } from "./account/account.component";
 import { LocalVaultV1Service } from "./services/upload-vault/LocalVaultv1Service.service";
 import { PrivacyPolicyComponent } from "./privacy-policy/privacy-policy.component";
@@ -81,7 +80,6 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
     FooterComponent,
     PagenotfoundComponent,
     QrcodeReaderComponent,
-    DevComponent,
     AccountComponent,
     PrivacyPolicyComponent,
     ChangelogComponent,
