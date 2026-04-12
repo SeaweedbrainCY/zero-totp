@@ -35,7 +35,7 @@
             </p>
             <div class="field is-full is-flex is-justify-content-center has-addons ">
               <p class="control has-icons-left has-icons-right">
-                <input class="input block" type="{{isPassphraseVisible ? 'text' : 'password'}}"
+                <input class="input block" type="{{isPassphraseVisible() ? 'text' : 'password'}}"
                   placeholder="{{'passphrase' | translate}}" name="passphrase" [(ngModel)]="passphrase"
                   (keyup.enter)="unlockVault()">
                 <span class="icon is-small is-left">
@@ -43,20 +43,20 @@
                 </span>
               </p>
               <div class="control">
-                <a class="button" (click)="isPassphraseVisible = !isPassphraseVisible">
-                  @if (isPassphraseVisible) {
+                <a class="button" (click)="isPassphraseVisible.update(current => !current)">
+                  @if (isPassphraseVisible()) {
                     <fa-icon [icon]="faEyeSlash" size="sm"></fa-icon>
-                    }@if (!isPassphraseVisible) {
+                    }@if (!isPassphraseVisible()) {
                     <fa-icon
                     [icon]="faEye" size="sm"></fa-icon>
                   }
                 </a>
               </div>
             </div>
-            @if (vaultDecryptionErrorMessage != '') {
+            @if (vaultDecryptionErrorMessage() != '') {
               <p class="has-text-weight-light has-text-danger"
                 style="margin-top:-20px">
-                {{vaultDecryptionErrorMessage | translate}}
+                {{vaultDecryptionErrorMessage() | translate}}
               </p>
             }
             <button class="button is-info mt-4 has-text-white" (click)="unlockVault()">
@@ -72,9 +72,9 @@
     <section class="hero  is-halfheight mt-6 pb-6" style="min-height: 70vh;">
       <div class="container  is-fluid ">
         <div>
-          <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">{{page_title | translate}}
-            @if (vault_date != undefined) {
-              <span>{{vault_date}}</span>
+          <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">{{page_title() | translate}}
+            @if (vault_date() != undefined) {
+              <span>{{vault_date()}}</span>
             }</h1>
             <p class="has-text-centered has-text-grey pb-6">{{ 'vault.subtitle' | translate }} </p>
             @if (this.userService.isVaultLocal()) {
@@ -90,24 +90,24 @@
             @if (!this.userService.isVaultLocal()) {
               <div class="message is-success">
                 <div class="message"
-                  [ngClass]="{'is-success': isGoogleDriveSync == 'uptodate' || !is_google_drive_enabled_on_this_tenant ||  isGoogleDriveSync == 'loading', 'is-warning': isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false' }">
-                  <div class="message-header" (click)="storageOptionOpen = !storageOptionOpen"
+                  [ngClass]="{'is-success': isGoogleDriveSync() == 'uptodate' || !is_google_drive_enabled_on_this_tenant() ||  isGoogleDriveSync() == 'loading', 'is-warning': isGoogleDriveSync() == 'error' || isGoogleDriveSync() == 'false' }">
+                  <div class="message-header" (click)="storageOptionOpen.update(storageOptionOpen => !storageOptionOpen)"
                     style="cursor: pointer;">
-                    <p>{{ 'vault.storage.title' | translate }} @if ((isGoogleDriveSync == 'error' || isGoogleDriveSync == 'false') && is_google_drive_enabled_on_this_tenant) {
+                    <p>{{ 'vault.storage.title' | translate }} @if ((isGoogleDriveSync() == 'error' || isGoogleDriveSync() == 'false') && is_google_drive_enabled_on_this_tenant()) {
                       <span
                       class="tag is-small is-danger has-text-weight-bold ml-3">1</span>
                     }</p>
-                    <div class="has-text-weight-light">@if (storageOptionOpen) {
+                    <div class="has-text-weight-light">@if (storageOptionOpen()) {
                       <span>{{ 'less' | translate
                       }}</span>
                     }
-                    @if (!storageOptionOpen) {
+                    @if (!storageOptionOpen()) {
                       <span>{{ 'more' | translate }}</span>
                     }
-                    @if (!storageOptionOpen) {
+                    @if (!storageOptionOpen()) {
                       <fa-icon [icon]="faChevronDown" class="pl-1"></fa-icon>
                     }
-                    @if (storageOptionOpen) {
+                    @if (storageOptionOpen()) {
                       <fa-icon [icon]="faChevronUp" class="pl-1"></fa-icon>
                     }
                   </div>
@@ -120,31 +120,31 @@
                     is-one-third-widescreen
                     is-one-quarter-fullhd">
                       <div class="is-flex is-justify-content-center">
-                        <div class="tags has-addons mb-0" (click)="storageOptionOpen = true"
+                        <div class="tags has-addons mb-0" (click)="storageOptionOpen.set(true)"
                           style="align-items: normal;" aria-haspopup="true"
                           aria-controls="dropdown-menu4">
-                          @if (current_domain == 'zero-totp.com') {
+                          @if (current_domain() == 'zero-totp.com') {
                             <span class="tag is-medium is-dark has-text-weight-bold" id="totp-tag"><fa-icon
                             [icon]="faServer" class="pr-1"></fa-icon>
                           {{ 'vault.storage.zero_totp.title' | translate }} </span>
                         }
-                        @if (current_domain != 'zero-totp.com') {
+                        @if (current_domain() != 'zero-totp.com') {
                           <span class="tag is-medium is-dark has-text-weight-bold" id="totp-tag"><fa-icon
                           [icon]="faServer" class="pr-1" ></fa-icon>
-                        {{current_domain}}  </span>
+                        {{current_domain()}}  </span>
                       }
                       <span class="tag is-success is-medium" id="totp-status-tag"> <fa-icon
                       [icon]="faCheckCircle"></fa-icon></span>
                       <br>
                       </div>
                     </div>
-                    <div [hidden]="!storageOptionOpen" class="mb-3">
+                    <div [hidden]="!storageOptionOpen()" class="mb-3">
                       <div class="is-flex is-flex-wrap-wrap is-justify-content-center mb-1">
-                        @if (current_domain == 'zero-totp.com') {
+                        @if (current_domain() == 'zero-totp.com') {
                           <p class="is-size-7 ">{{ 'vault.storage.zero_totp.location' | translate }}</p>
                         }
-                        @if (current_domain != 'zero-totp.com') {
-                          <p class="is-size-7 ">{{ 'vault.storage.zero_totp.self-host.location' | translate }} {{current_domain}} </p>
+                        @if (current_domain() != 'zero-totp.com') {
+                          <p class="is-size-7 ">{{ 'vault.storage.zero_totp.self-host.location' | translate }} {{current_domain()}} </p>
                         }
                       </div>
                       <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
@@ -154,7 +154,7 @@
                     </div>
                   </div>
                 </div>
-                @if (is_google_drive_enabled_on_this_tenant) {
+                @if (is_google_drive_enabled_on_this_tenant()) {
 <div class=" column is-full-mobile
                       is-four-fifths-tablet
                       is-one-third-desktop
@@ -162,51 +162,51 @@
                       is-one-quarter-fullhd">
                     <div class="is-flex is-justify-content-center">
                       <div class="tags has-addons mb-2" style="align-items: normal;"
-                        (click)="storageOptionOpen = true">
+                        (click)="storageOptionOpen.set(true)">
                         <span class="tag is-medium is-dark" id="google-tag"> <fa-icon
                         [icon]="faGoogleDrive" class="pr-1"></fa-icon> <span
                         class=" has-text-weight-bold">Google Drive
                       </span></span>
                       <span class="tag is-danger is-medium "
-                        [ngClass]="{'is-danger':isGoogleDriveSync == 'false' || isGoogleDriveSync == 'error' , 'is-success':isGoogleDriveSync == 'uptodate', 'is-warning':isGoogleDriveSync == 'loading'}"
+                        [ngClass]="{'is-danger':isGoogleDriveSync() == 'false' || isGoogleDriveSync() == 'error' , 'is-success':isGoogleDriveSync() == 'uptodate', 'is-warning':isGoogleDriveSync() == 'loading'}"
                         id="google-status-tag">
-                        @if (isGoogleDriveSync == 'false') {
+                        @if (isGoogleDriveSync() == 'false') {
                           <fa-icon
                           [icon]="faCircleXmark"></fa-icon>
                         }
-                        @if (isGoogleDriveSync == 'uptodate') {
+                        @if (isGoogleDriveSync() == 'uptodate') {
                           <fa-icon
                           [icon]="faCheckCircle"></fa-icon>
                         }
-                        @if (isGoogleDriveSync == 'error') {
+                        @if (isGoogleDriveSync() == 'error') {
                           <fa-icon [icon]="faCircleExclamation"
                           animation="fade"></fa-icon>
                         }
-                        @if (isGoogleDriveSync== 'loading') {
+                        @if (isGoogleDriveSync()== 'loading') {
                           <fa-icon
                             [animation]="true ? 'spin' : undefined"
                           [icon]="faCircleNotch"></fa-icon>
                         }</span>
                       </div>
                     </div>
-                    <div [hidden]="!storageOptionOpen" class="mb-3">
+                    <div [hidden]="!storageOptionOpen()" class="mb-3">
                       <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
-                        [hidden]="!storageOptionOpen">
-                        @if (isGoogleDriveSync == 'false') {
+                        [hidden]="!storageOptionOpen()">
+                        @if (isGoogleDriveSync() == 'false') {
                           <button class="button   mb-3 mr-2 ml-2"
                             (click)="get_oauth_authorization_url()"><fa-icon [icon]="faLink"
                           class="mr-3"></fa-icon> {{ 'vault.storage.google.sync' | translate }}
                         </button>
                       }
-                      @if (isGoogleDriveSync == 'false') {
+                      @if (isGoogleDriveSync() == 'false') {
                         <button class="button   mb-3 mr-2 ml-2" [routerLink]="['/faq/google-drive']"
                           ><fa-icon [icon]="faCircleInfo" class="mr-3"></fa-icon> {{
                         'vault.storage.google.info' | translate }}</button>
                       }
-                      @if (isGoogleDriveSync == 'uptodate') {
+                      @if (isGoogleDriveSync() == 'uptodate') {
                         <div class="has-text-centered">
                           <div class="is-size-7 ">{{ 'vault.storage.google.last_backup' | translate }}
-                            {{lastBackupDate}}
+                            {{lastBackupDate()}}
                             <div class="dropdown is-hoverable">
                               <div class="dropdown-trigger">
                                 <a aria-haspopup="true" aria-controls="dropdown-menu4">
@@ -238,19 +238,19 @@
                       </div>
                     </div>
                   }
-                  @if (isGoogleDriveSync == 'error') {
+                  @if (isGoogleDriveSync() == 'error') {
                     <div class="has-text-centered">
-                      <p class="has-text-danger is-size-7 ">{{google_drive_error_message}}</p>
+                      <p class="has-text-danger is-size-7 ">{{google_drive_error_message()}}</p>
                       <p class="has-text-centered mt-1">
-                        @if (!google_drive_refresh_token_error) {
+                        @if (!google_drive_refresh_token_error()) {
                           <button class="button   mb-3 mr-2 ml-2"
                             (click)="resync_after_error()"><fa-icon [icon]="faLink"
                           class="mr-3"></fa-icon> {{ 'vault.storage.google.resync' |
                         translate }} </button>
                       }
-                      @if (google_drive_refresh_token_error) {
+                      @if (google_drive_refresh_token_error()) {
                         <button class="button   mb-3 mr-2 ml-2"
-                          (click)="google_drive_refresh_token_error_display_modal_active = true"><fa-icon [icon]="faLink"
+                          (click)="google_drive_refresh_token_error_display_modal_active.set(true)"><fa-icon [icon]="faLink"
                         class="mr-3"></fa-icon> {{ 'vault.storage.google.how_to_fix' |
                       translate }} </button>
                     }
@@ -273,7 +273,7 @@
                     is-one-quarter-fullhd">
       <div class="is-flex is-justify-content-center">
         <div class="tags has-addons mb-2" style="align-items: normal;"
-          (click)="storageOptionOpen = true">
+          (click)="storageOptionOpen.set(true)">
           <span class="tag is-medium is-dark has-text-weight-bold" id="download-tag">
             <fa-icon [icon]="faDesktop" class="pr-1"></fa-icon>{{
             'vault.storage.local.title' | translate }}
@@ -282,16 +282,16 @@
           [icon]="faDownload"></fa-icon></span>
         </div>
       </div>
-      <div [hidden]="!storageOptionOpen" class="mb-3">
+      <div [hidden]="!storageOptionOpen()" class="mb-3">
         <div class="is-flex is-flex-wrap-wrap is-justify-content-center"
-          [hidden]="!storageOptionOpen">
+          [hidden]="!storageOptionOpen()">
           <button class="button   mb-3 mr-2 ml-2" (click)="downloadVault()"><fa-icon
           [icon]="faDownload" class="mr-3 "></fa-icon>{{
         'vault.storage.local.save' | translate }}</button>
-        <div class="dropdown" [ngClass]="{'is-active': isRestoreBackupModaleActive}">
+        <div class="dropdown" [ngClass]="{'is-active': (isRestoreBackupModaleActive())}">
           <div class="dropdown-trigger">
             <button class="button  mr-2 ml-2 "
-              (click)="isRestoreBackupModaleActive = !isRestoreBackupModaleActive"
+              (click)="isRestoreBackupModaleActive.update(current => !current)"
               ria-haspopup="true" aria-controls="dropdown-menu"><fa-icon
             [icon]="faUpload" class="mr-3 "></fa-icon>{{
           'vault.storage.local.open' | translate }}</button>
@@ -333,11 +333,11 @@
   <div class="mb-4">
     <strong>{{'vault.filter.tag.title' | translate}} : </strong>
     <span class="tag is-rounded ml-4" style="cursor:pointer"
-    [ngClass]="{'is-info':selectedTags.length == 0}" (click)="selectedTags=[]; filterVault()">All</span>
+    [ngClass]="{'is-info':selectedTags().length == 0}" (click)="selectedTags.set([]); filterVault()">All</span>
     @for (tag of  this.userService.vault_tags(); track tag) {
       <span>
         <span class="tag is-rounded ml-4 mt-2" style="cursor:pointer"
-        [ngClass]="{'is-info':selectedTags.includes(tag)}" (click)="selectTag(tag)">{{tag}} </span>
+        [ngClass]="{'is-info':selectedTags().includes(tag)}" (click)="selectTag(tag)">{{tag}} </span>
       </span>
     }
   </div>
@@ -345,9 +345,9 @@
 @if (!this.userService.isVaultLocal()) {
   <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault"
     >{{ 'vault.button.reload' | translate }} <fa-icon
-  [icon]="faRotateRight" class="pl-1" [animation]="reloadSpin ? 'spin' : undefined"></fa-icon></span>
+  [icon]="faRotateRight" class="pl-1" [animation]="reloadSpin() ? 'spin' : undefined"></fa-icon></span>
 }
-@if (reloadSpin) {
+@if (reloadSpin()) {
   <article class="hero is-halfheight" style="min-height: 40vh;">
     <article class="hero-body is-flex is-justify-content-center">
       <div>
@@ -357,7 +357,7 @@
     </article>
   </article>
 }
-@if (!reloadSpin) {
+@if (!reloadSpin()) {
   <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
     @if (!this.userService.isVaultLocal()) {
 <div class="column is-full-mobile
@@ -365,7 +365,7 @@
             is-one-third-desktop
             is-one-third-widescreen
             is-one-quarter-fullhd">
-        <a (click)="isModalActive = !isModalActive">
+        <a (click)="isModalActive.update(current => !current)">
           <div class="card  ">
             <header class="card-header">
               <p class="card-header-title">{{ 'vault.button.add' | translate }}</p>
@@ -380,47 +380,47 @@
         </a>
       </div>
     }
-    @for (uuid of vaultUUIDs; track uuid) {
+    @for (uuid of vaultUUIDs(); track uuid) {
 <div class="column  is-full-mobile
             is-one-third-tablet
             is-one-third-desktop
             is-one-third-widescreen
             is-one-quarter-fullhd">
         <div class="card totp-card"
-                    [ngClass]="{   'totp-card-green': vault!.get(uuid)?.get('color') == 'success',
+                    [ngClass]="{   'totp-card-green': vault()!.get(uuid)?.get('color') == 'success',
                                                                     
-                    'totp-card-red': vault!.get(uuid)?.get('color') == 'danger',  
-                    'totp-card-blue': vault!.get(uuid)?.get('color') == 'info', 
+                    'totp-card-red': vault()!.get(uuid)?.get('color') == 'danger',  
+                    'totp-card-blue': vault()!.get(uuid)?.get('color') == 'info', 
                                                                     
-                    'totp-card-yellow': vault!.get(uuid)?.get('color') == 'warning',
+                    'totp-card-yellow': vault()!.get(uuid)?.get('color') == 'warning',
                                                                 
                 }">
           <header class="card-header">
-            <p class="card-header-title  ">@if ((vault!.get(uuid)?.get('favicon') == 'true' || faviconPolicy == 'always') && faviconPolicy != 'never') {
+            <p class="card-header-title  ">@if ((vault()!.get(uuid)?.get('favicon') == 'true' || faviconPolicy() == 'always') && faviconPolicy() != 'never') {
               <img
-                src="{{get_favicon_url(vault!.get(uuid)?.get('domain'))}}" alt=""
+                src="{{get_favicon_url(vault()!.get(uuid)?.get('domain'))}}" alt=""
                 width="25px" height="25px" style="margin-right: 6px;">
             }
-          {{vault!.get(uuid)?.get('name')}}</p>
+          {{vault()!.get(uuid)?.get('name')}}</p>
           <button class="card-header-icon" aria-label="edit" (click)="edit(uuid)">
             <span class="icon">
               <fa-icon [icon]="faPen"></fa-icon>
             </span>
           </button>
           <button class="card-header-icon" aria-label="copy" (click)="copy()"
-            [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!">
+            [cdkCopyToClipboard]="vault()!.get(uuid)?.get('code')!">
             <span class="icon">
               <fa-icon [icon]="faCopy"></fa-icon>
             </span>
           </button>
         </header>
-        <a class="noHover" (click)="copy()" [cdkCopyToClipboard]="vault!.get(uuid)?.get('code')!">
+        <a class="noHover" (click)="copy()" [cdkCopyToClipboard]="vault()!.get(uuid)?.get('code')!">
           <div class="card-content " style="text-decoration: none;">
             <div class="content has-text-centered">
-              <p class="is-size-2 has-text-weight-bold">{{vault!.get(uuid)?.get('code')}}
+              <p class="is-size-2 has-text-weight-bold">{{vault()!.get(uuid)?.get('code')}}
                 <br>
-                  <progress class="progress is-small" value="{{progress_bar_percent}}" max="100"
-                  style="height: 10px;">{{progress_bar_percent}}%</progress>
+                  <progress class="progress is-small" value="{{progress_bar_percent()}}" max="100"
+                  style="height: 10px;">{{progress_bar_percent()}}%</progress>
                 </p>
               </div>
             </div>
@@ -434,8 +434,8 @@
 </div>
 </section>
 }
-<div id="addTOTPModal" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
-  <div class="modal-background" (click)="isModalActive = !isModalActive"></div>
+<div id="addTOTPModal" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive()}">
+  <div class="modal-background" (click)="isModalActive.update(current => !current)"></div>
   <div class="modal-content">
     <section class="modal-card-body">
       <h1 class="is-size-3">{{ 'vault.add.title' | translate }}</h1>
@@ -447,15 +447,15 @@
       </div>
     </section>
     <footer class="modal-card-foot is-flex is-justify-content-right">
-      <button class="button" (click)="isModalActive = !isModalActive">{{"cancel" | translate}}</button>
+      <button class="button" (click)="isModalActive.update(current => !current)">{{"cancel" | translate}}</button>
     </footer>
-    <button class="modal-close is-large" aria-label="close" (click)="isModalActive = !isModalActive"></button>
+    <button class="modal-close is-large" aria-label="close" (click)="isModalActive.update(current => !current)"></button>
   </div>
 </div>
 
 
-<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': google_drive_refresh_token_error_display_modal_active}" >
-  <div class="modal-background" (click)="google_drive_refresh_token_error_display_modal_active = false"></div>
+<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': google_drive_refresh_token_error_display_modal_active()}" >
+  <div class="modal-background" (click)="google_drive_refresh_token_error_display_modal_active.set(false)"></div>
   <div class="modal-content mt-6 pt-6 pb-6">
     <header class="modal-card-head">
       <h1 class="is-size-4 has-text-info has-text-weight-bold">⚠️ {{ 'vault.google_drive_refresh_token_error.title' | translate }}</h1>
@@ -490,7 +490,7 @@
           </li>
         </ol><br>
         <p class="has-text-centered">
-          <button class="button is-info" (click)="resync_after_error()" [ngClass]="{'is-loading': isGoogleDriveSync == 'loading'}">{{ 'vault.storage.google.sync' | translate }}</button>
+          <button class="button is-info" (click)="resync_after_error()" [ngClass]="{'is-loading': isGoogleDriveSync() == 'loading'}">{{ 'vault.storage.google.sync' | translate }}</button>
         </p><br>
         <p>
           {{ 'vault.google_drive_refresh_token_error.p3' | translate }}
@@ -510,8 +510,8 @@
   </section>
 
   <footer class="modal-card-foot is-flex is-justify-content-right">
-    <button class="button mr-1" (click)="google_drive_refresh_token_error_display_modal_active = false" >{{ 'close' | translate }} </button>
+    <button class="button mr-1" (click)="google_drive_refresh_token_error_display_modal_active.set(false)" >{{ 'close' | translate }} </button>
   </footer>
 </div>
-<button class="modal-close is-large" aria-label="close" (click)="google_drive_refresh_token_error_display_modal_active = false"></button>
+<button class="modal-close is-large" aria-label="close" (click)="google_drive_refresh_token_error_display_modal_active.set(false)"></button>
 </div>
