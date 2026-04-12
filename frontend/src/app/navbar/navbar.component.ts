@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService } from '../common/User/user.service';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { UserService } from '../services/User/user.service';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
@@ -13,11 +13,12 @@ import { HttpClient } from '@angular/common/http';
     selector: 'app-navbar',
     templateUrl: './navbar.component.html',
     styleUrls: ['./navbar.component.css'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent implements OnInit{
-  currentUrl:string = "";
-  isNavbarExpanded = false;
+  currentUrl = signal("");
+  isNavbarExpanded = signal(false);
   isIdleWatchingEnabled = false;
   faXmark=faXmark
   faUser=faUser;
@@ -31,13 +32,13 @@ export class NavbarComponent implements OnInit{
   faVault=faVault;
   faLightbulb = faLightbulb;
   current_language:string = localStorage.getItem('language') || 'en-uk';
-  isLangDropdownExpanded = false;
+  isLangDropdownExpanded = signal(false);
   idleEndSupscription: Subscription | null = null;
-  notification_message :string|undefined;
+  notification_message = signal<string | undefined>(undefined);
   dismissed_notification_key = "hide_notif_banner";
-  is_waiting_for_internal_notif = false
+  is_waiting_for_internal_notif = false;
   last_notification_check_date = 0;
-  current_theme =  window.document.documentElement.getAttribute('data-theme');
+  current_theme = signal(window.document.documentElement.getAttribute('data-theme'));
   languages = [
     {
       name:"English", // default one
@@ -61,9 +62,10 @@ export class NavbarComponent implements OnInit{
     router.events.subscribe((url:any) => {
       this.check_notification()
       if (url instanceof NavigationEnd){
-      this.currentUrl = url.url;
-      if(this.userService.getVault() && !this.userService.getIsVaultLocal() && !this.idle.isRunning()){
-        this.get_autolock_delay().subscribe((response) => {
+      this.currentUrl.set(url.url);
+      if(this.userService.vault() && !this.userService.isVaultLocal() && !this.idle.isRunning()){
+        this.get_autolock_delay().subscribe({
+          next: (response) => {
           const data = JSON.parse(JSON.stringify(response.body))
           let autolock_delay = 600;
           if(data.autolock_delay != null){
@@ -74,8 +76,8 @@ export class NavbarComponent implements OnInit{
           this.idle.setTimeout(20);
           this.idle.onTimeout.subscribe(() => {
           // As idle.stop() doesn't work (issue #167, we need to check if the user is still logged in before redirecting to the login page)
-            if(this.userService.getId() && !this.userService.getIsVaultLocal()){ 
-              console.log("Idle timeout " +  this.currentUrl )
+            if(this.userService.id() && !this.userService.isVaultLocal()){ 
+              console.log("Idle timeout " +  this.currentUrl() )
               this.userService.clearVault();
               this.router.navigate(["/vault/locked"], {relativeTo:this.route.root});
             }
@@ -83,9 +85,10 @@ export class NavbarComponent implements OnInit{
           if(!this.idle.isRunning()){
           this.idle.watch();
           }
-        }, (error) => {
+        }, 
+        error:(error) => {
           console.log(error);
-        });
+      }});
       }
     }
     translate.use(this.current_language)
@@ -95,14 +98,14 @@ export class NavbarComponent implements OnInit{
   ngOnInit(): void {
     this.get_global_notification();
     this.last_notification_check_date = Math.floor(Date.now()/1000);
-    if(this.userService.get_zke_key() == null){
+    if(this.userService.zke_key() == null){
           this.userService.refresh_user_id()
     }
   }
 
   check_notification(){
     if(this.last_notification_check_date !=0){ // first notif not even been checked yet
-      if(this.is_waiting_for_internal_notif && this.userService.getId() !=null){
+      if(this.is_waiting_for_internal_notif && this.userService.id() !=null){
         this.get_internal_notification()
         this.is_waiting_for_internal_notif = false
         this.last_notification_check_date = Math.floor(Date.now()/1000);
@@ -110,7 +113,7 @@ export class NavbarComponent implements OnInit{
       } else if (this.last_notification_check_date + 60*2 < Math.floor(Date.now()/1000)){
         console.info("check again")
         this.last_notification_check_date = Math.floor(Date.now()/1000);
-        if (this.userService.getId() != null){
+        if (this.userService.id() != null){
           this.get_internal_notification()
         } else {
           this.get_global_notification()
@@ -120,6 +123,7 @@ export class NavbarComponent implements OnInit{
       console.log("first check")
     }
   }
+
   get_global_notification(){
     this.http.get("/api/v1/notification/global",  {withCredentials:true, observe: 'response'}).subscribe((response) => {
       if(response.status == 200){
@@ -130,10 +134,10 @@ export class NavbarComponent implements OnInit{
               const already_dismissed_date = localStorage.getItem(this.dismissed_notification_key);
               if (already_dismissed_date){
                 if(Number(already_dismissed_date) < data.timestamp){
-                  this.notification_message = data.message;
+                  this.notification_message.set(data.message);
                 } 
               } else{ // not dismissed yet
-                this.notification_message = data.message;
+                this.notification_message.set(data.message);
               }
             } else { // authenticated_user_only
               this.is_waiting_for_internal_notif = true
@@ -157,10 +161,10 @@ export class NavbarComponent implements OnInit{
               const already_dismissed_date = localStorage.getItem(this.dismissed_notification_key);
               if (already_dismissed_date){
                 if(Number(already_dismissed_date) < data.timestamp){
-                  this.notification_message = data.message;
+                  this.notification_message.set(data.message);
                 } 
               } else{ // not dismissed yet
-                this.notification_message = data.message;
+                this.notification_message.set(data.message);
               }
           }
         } catch (error){
@@ -177,12 +181,12 @@ export class NavbarComponent implements OnInit{
   }
 
   hide_notification(){
-    this.notification_message = undefined;
+    this.notification_message.set(undefined);
     localStorage.setItem(this.dismissed_notification_key, Math.floor(Date.now()/1000).toString()); // unix
   }
 
   navigateToRoute(route:string){
-    this.isNavbarExpanded = !this.isNavbarExpanded;
+    this.isNavbarExpanded.update(v => !v);
     window.document.getElementById('navbarBurger')?.click();
     this.router.navigate([route], {relativeTo:this.route.root});
   }
@@ -193,7 +197,7 @@ export class NavbarComponent implements OnInit{
   }
 
   changeLanguage(language:string){
-    this.isLangDropdownExpanded = false;
+    this.isLangDropdownExpanded.set(false);
     if(language == 'fr-fr'){
       localStorage.setItem('language','fr-fr');
       this.current_language = 'fr-fr';
@@ -215,17 +219,14 @@ export class NavbarComponent implements OnInit{
   }
 
   toggleThemeButton(){
-    if(this.current_theme == 'light'){
+    if(this.current_theme() == 'light'){
       window.document.documentElement.setAttribute('data-theme', 'dark');
-      this.current_theme = 'dark';
+      this.current_theme.set('dark');
       localStorage.setItem('theme','dark');
     } else {
       window.document.documentElement.setAttribute('data-theme', 'light');
-      this.current_theme = 'light';
+      this.current_theme.set('light');
       localStorage.setItem('theme','light');
     }
   }
-
-
-
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserService } from '../common/User/user.service';
+import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import {faCircleNotch} from '@fortawesome/free-solid-svg-icons';
 
@@ -27,11 +27,11 @@ export class LogoutComponent implements OnInit{
 
   loggout(){
     this.http.put('/api/v1/logout', {},{withCredentials: true, observe: 'response'}).subscribe({
-      next: (response) => {
+      next: () => {
         this.userService.clear();
         this.router.navigate(["/login"], {relativeTo:this.route.root});
       },
-      error: (error) => {
+      error: () => {
         this.userService.clear();
         this.router.navigate(["/login"], {relativeTo:this.route.root});
       }

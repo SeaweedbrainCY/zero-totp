@@ -1,214 +1,253 @@
 <article class="hero is-info" [ngClass]="{
-                                      'is-success': color == 'success',
-                                      'is-warning': color == 'warning',
-                                      'is-danger': color == 'danger',
+                                      'is-success': color() == 'success',
+                                      'is-warning': color() == 'warning',
+                                      'is-danger': color() == 'danger',
 }"  >
   <div class="hero-body has-text-centered">
     <p class="subtitle">
-      <img src="{{faviconURL}}" alt="favicon " *ngIf="(favicon || faviconPolicy=='always') && uriError=='' && faviconPolicy != 'never' " width="20px" height="20px" style="margin-bottom: -4px;">
-      {{name}}<span *ngIf="name==''">example.com</span>
-    </p>
-    <p class="title is-size-2 has-text-weight-bold">
-      <span *ngIf="secret=='' || code == ''">XXX XXX</span>
-      <span *ngIf="secret!=''">{{code}}</span>
-    </p>
-    <div class="is-flex is-justify-content-center">
-      <progress class="progress is-small" value="{{progress_bar_percent}}" max="100"
-        style="width:20vw; height: 5px;">{{progress_bar_percent}}%</progress>
-    </div>
+      @if ((favicon() || faviconPolicy()=='always') && uriError()=='' && faviconPolicy() != 'never' ) {
+        <img src="{{faviconURL()}}" alt="favicon " width="20px" height="20px" style="margin-bottom: -4px;">
+      }
+      {{name()}}@if (name()=='') {
+      <span>example.com</span>
+    }
+  </p>
+  <p class="title is-size-2 has-text-weight-bold">
+    @if (secret()=='' || code() == '') {
+      <span>XXX XXX</span>
+    }
+    @if (secret()!='') {
+      <span>{{code()}}</span>
+    }
+  </p>
+  <div class="is-flex is-justify-content-center">
+    <progress class="progress is-small" value="{{progress_bar_percent()}}" max="100"
+    style="width:20vw; height: 5px;">{{progress_bar_percent()}}%</progress>
   </div>
+</div>
 </article>
-<article class="hero is-halfheight" *ngIf="this.isEditing && this.name == ''" style="min-height: 70vh;">
-  <article class="hero-body is-flex is-justify-content-center" >
-    <div>
+@if (isEditing() && name() == '') {
+  <article class="hero is-halfheight" style="min-height: 70vh;">
+    <article class="hero-body is-flex is-justify-content-center" >
+      <div>
         <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#000000;" size="2xl"></fa-icon >
-    </div>
-</article>
-</article>
-<article class="hero is-halfheight  pb-6" *ngIf="(this.isEditing && this.name != '') || !this.isEditing ">
-  <div class="columns is-flex is-justify-content-center pt-6 is-mobile">
+      </div>
+    </article>
+  </article>
+}
+@if ((isEditing() && name() != '') || !isEditing() ) {
+  <article class="hero is-halfheight  pb-6">
+    <div class="columns is-flex is-justify-content-center pt-6 is-mobile">
     <div class="column is-full-mobile
     is-full-tablet
     is-three-quarters-desktop
     is-three-quarters-widescreen
     is-three-quarters-fullhd">
-      <div class="is-flex is-justify-content-space-around is-flex-direction-column	">
-        <div class="is-flex is-justify-content-space-around columns is-flex-wrap-wrap">
+        <div class="is-flex is-justify-content-space-around is-flex-direction-column	">
+          <div class="is-flex is-justify-content-space-around columns is-flex-wrap-wrap">
           <div class="column is-two-thirds-mobile
         is-one-third-tablet
         is-one-third-desktop
         is-one-third-widescreen
         is-one-third-fullhd mr-2 ml-2">
-            <label class="label">{{ 'name' | translate }}</label>
-            <div class="field has-addons">
-            <div class="control has-icons-left">
-              <input class="input" type="text" placeholder="GitHub" name="name" [(ngModel)]="name"
-                (keyup)="checkName()"
-                [ngClass]="{'is-danger':nameError != '',  'is-success' : name != '' && nameError == '' }"
-                [disabled]="this.userService.getIsVaultLocal()!">
-              <span class="icon is-small is-left">
-                <fa-icon [icon]="faPassport"></fa-icon>
-              </span>
+              <label class="label">{{ 'name' | translate }}</label>
+              <div class="field has-addons">
+                <div class="control has-icons-left">
+                  <input class="input" type="text" placeholder="GitHub" name="name" [ngModel]="name()" (ngModelChange)="name.set($event)"
+                    (keyup)="checkName()"
+                    [ngClass]="{'is-danger':nameError() != '',  'is-success' : name() != '' && nameError() == '' }"
+                    [disabled]="this.userService.isVaultLocal()!">
+                  <span class="icon is-small is-left">
+                    <fa-icon [icon]="faPassport"></fa-icon>
+                  </span>
+                </div>
+                <div class="control ">
+                  <a class="button" (click)="name.set('')">
+                    <fa-icon [icon]="faXmark"></fa-icon>
+                  </a>
+                </div>
+              </div>
+              @if (nameError() != '') {
+                <p class="help is-danger">{{nameError() | translate}}</p>
+              }
             </div>
-            <div class="control ">
-              <a class="button" (click)="this.name= '';">
-                  <fa-icon [icon]="faXmark"></fa-icon>
-              </a>
-            </div>
-            </div>
-            <p class="help is-danger" *ngIf="nameError != ''">{{nameError | translate}}</p>
-          </div>
           <div class="column is-two-thirds-mobile
         is-one-third-tablet
         is-one-third-desktop
         is-one-third-widescreen
         is-one-third-fullhd mr-2 ml-2">
-            <label class="label">{{ 'totp.uri.title' | translate}}</label>
-            <div class="field has-addons">
-            <div class="control has-icons-left">
-              <input class="input" type="text" placeholder="https://github.com" name="uri" [(ngModel)]="uri"
-                (change)="checkURI()"
-                [ngClass]="{'is-warning':uriError != '',  'is-success' : uriError == '' && uri != '' }"
-                [disabled]="this.userService.getIsVaultLocal()!">
-              <span class="icon is-small is-left">
-                <fa-icon [icon]="faGlobe"></fa-icon>
-              </span>
+              <label class="label">{{ 'totp.uri.title' | translate}}</label>
+              <div class="field has-addons">
+                <div class="control has-icons-left">
+                  <input class="input" type="text" placeholder="https://github.com" name="uri" [ngModel]="uri()" (ngModelChange)="uri.set($event)"
+                    (change)="checkURI()"
+                    [ngClass]="{'is-warning':uriError() != '',  'is-success' : uriError() == '' && uri() != '' }"
+                    [disabled]="this.userService.isVaultLocal()!">
+                  <span class="icon is-small is-left">
+                    <fa-icon [icon]="faGlobe"></fa-icon>
+                  </span>
+                </div>
+                <div class="control ">
+                  <a class="button" (click)="uri.set('')">
+                    <fa-icon [icon]="faXmark"></fa-icon>
+                  </a>
+                </div>
+              </div>
+              @if (uriError() != '') {
+                <p class="help is-warning">{{uriError() | translate}}</p>
+              }
             </div>
-            <div class="control ">
-              <a class="button" (click)="this.uri= '';">
-                  <fa-icon [icon]="faXmark"></fa-icon>
-              </a>
-            </div>
-            </div>
-            <p class="help is-warning" *ngIf="uriError != ''">{{uriError | translate}}</p>
-          </div>
           <div class=" column is-two-thirds-mobile
           is-one-third-tablet
           is-one-third-desktop
           is-one-third-widescreen
           is-one-third-fullhd mr-2 ml-2 ">
-            <label class="label">{{ 'totp.secret.add.label' | translate }}</label>
-            <div class="field has-addons">
-            <div class="control has-icons-left">
-              <input class="input" type="{{isSecretVisible ? 'text' : 'password'}}" placeholder="XXXXXXXXXXXXXXXX" name="secret" [(ngModel)]="secret"
-                (change)="checkSecret()"
-                (keyup)="checkSecret()"
-                [ngClass]="{'is-danger':secretError != '', 'is-success' : secret != '' && secretError == '' }"
-                [disabled]="this.userService.getIsVaultLocal()!">
-              <span class="icon is-small is-left">
-                <fa-icon [icon]="faKey"></fa-icon>
-              </span>
-            </div>
-            <div class="control" >
-              <a class="button" (click)="isSecretVisible = !isSecretVisible">
-                <fa-icon [icon]="faEyeSlash" *ngIf="isSecretVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isSecretVisible" size="sm"></fa-icon>
-              </a>
-              
-            </div>
-          </div>
-            <p class="help is-danger" *ngIf="secretError != ''">{{secretError | translate}}</p>
-          </div>
-        </div>
-        <div class="notification is-warning has-text-centered" *ngIf="this.userService.getIsVaultLocal()!">
-          {{ 'totp.error.ro' | translate }}
-        </div>
-        <div class="field p-5 is-flex is-justify-content-center has-text-centered">
-          
-          <label class="checkbox">
-            <input type="checkbox" name="favicon" [(ngModel)]="favicon" (change)="loadFavicon()" class="mr-3">
-            <strong class="mr-1">{{ 'totp.favicon.label' | translate }}</strong>  
-              
-            <span class="tag is-success is-light ml-1" *ngIf="faviconPolicy == 'always'">{{ 'totp.favicon.policy.always' | translate }}</span>
-            <span class="tag is-warning is-light ml-1" *ngIf="faviconPolicy == 'never'">{{ 'totp.favicon.policy.never' | translate }}</span>
-          <div class="dropdown is-right is-hoverable" style="margin-top: 2px;">
-            <div class="dropdown-trigger">
-              <a  aria-haspopup="true" aria-controls="dropdown-menu4">
-                <fa-icon
-        [icon]="faCircleQuestion" class="ml-2" ></fa-icon>
-              </a>
-            </div>
-            <div class="dropdown-menu" id="dropdown-menu4" role="menu" style="width:40vw">
-              <div class="dropdown-content">
-                <div class="dropdown-item">
-                  <span class="has-text-left">{{ 'totp.favicon.add.label' | translate }}<br>
-                    <strong>{{ 'totp.favicon.add.desc.strong' | translate }}</strong><br> {{ 'totp.favicon.add.desc.part2' | translate }}</span>
+              <label class="label">{{ 'totp.secret.add.label' | translate }}</label>
+              <div class="field has-addons">
+                <div class="control has-icons-left">
+                  <input class="input" type="{{isSecretVisible() ? 'text' : 'password'}}" placeholder="XXXXXXXXXXXXXXXX" name="secret" [ngModel]="secret()" (ngModelChange)="secret.set($event)"
+                    (change)="checkSecret()"
+                    (keyup)="checkSecret()"
+                    [ngClass]="{'is-danger':secretError() != '', 'is-success' : secret() != '' && secretError() == '' }"
+                    [disabled]="this.userService.isVaultLocal()!">
+                  <span class="icon is-small is-left">
+                    <fa-icon [icon]="faKey"></fa-icon>
+                  </span>
+                </div>
+                <div class="control" >
+                  <a class="button" (click)="isSecretVisible.update(v => !v)">
+                    @if (isSecretVisible()) {
+                      <fa-icon [icon]="faEyeSlash" size="sm" ></fa-icon>
+                      }@if (!isSecretVisible()) {
+                      <fa-icon [icon]="faEye" size="sm"></fa-icon>
+                    }
+                  </a>
                 </div>
               </div>
+              @if (secretError() != '') {
+                <p class="help is-danger">{{secretError() | translate}}</p>
+              }
             </div>
+          </div>
+          @if (this.userService.isVaultLocal()!) {
+            <div class="notification is-warning has-text-centered">
+              {{ 'totp.error.ro' | translate }}
             </div>
-          </label>
-        </div>
-        <div class="field pt-5 is-flex is-justify-content-center" *ngIf="!this.userService.getIsVaultLocal()!">
-          <div class=" select is-{{color}}">
-            <select #colorSelected name="selected_color" [ngModel]="selected_color" value="Change color"
-              (keyup)="changeColor(colorSelected.value)" (change)="changeColor(colorSelected.value)">
-              <option default>{{ 'blue' | translate }}</option>
-              <option>{{ 'green' | translate }}</option>
-              <option>{{ 'orange' | translate }}</option>
-              <option>{{ 'red' | translate }}</option>
-            </select>
-          </div>
-        </div>
-        <div class=" pb-5 mt-3 mb-3 is-flex is-justify-content-center is-flex-wrap-wrap">
-          <div class="p-2"><strong>Tag :</strong></div>
-          <div class="p-2" *ngFor="let tag of tags">
-            <span class="tag is-rounded is-info">{{tag}} <button class="delete is-small" (click)="deleteTag(tag)"  *ngIf="!this.userService.getIsVaultLocal()!"></button></span>
-           
-          </div>
-          <div class="p-2" style="cursor: pointer ;" (click)="tagModal()" *ngIf="!this.userService.getIsVaultLocal()!">
-            <span class="tag is-rounded is-info"><fa-icon [icon]="faPlus" size="xs"></fa-icon></span>
-          </div>
-        </div>
-        <div class="field is-grouped is-flex is-justify-content-center">
-          <div class="control">
-            <button class="button is-info is-light block" [disabled]="isSaving" (click)="cancel()">{{"cancel" | translate }}</button>
-          </div>
-          <div class="control" *ngIf="secret_uuid != '' && secret_uuid != null ">
-            <button class="button is-danger block" (click)="modal()" data-target="confirmation" [ngClass]="{'is-loading': isDestroying}"
-              [disabled]="this.userService.getIsVaultLocal()! || isSaving">{{ 'delete' | translate }}</button>
-          </div>
-          <div class="control">
-            <button class="button is-info block" (click)="save()" [ngClass]="{'is-loading': isSaving}"
-              [disabled]="this.userService.getIsVaultLocal()! || secretError !='' || nameError != ''  || isDestroying">{{ 'save' | translate }}</button>
+          }
+          <div class="field p-5 is-flex is-justify-content-center has-text-centered">
+            <label class="checkbox">
+              <input type="checkbox" name="favicon" [ngModel]="favicon()" (ngModelChange)="favicon.set($event)" (change)="loadFavicon()" class="mr-3">
+              <strong class="mr-1">{{ 'totp.favicon.label' | translate }}</strong>
+              @if (faviconPolicy() == 'always') {
+                <span class="tag is-success is-light ml-1">{{ 'totp.favicon.policy.always' | translate }}</span>
+              }
+              @if (faviconPolicy() == 'never') {
+                <span class="tag is-warning is-light ml-1">{{ 'totp.favicon.policy.never' | translate }}</span>
+              }
+              <div class="dropdown is-right is-hoverable" style="margin-top: 2px;">
+                <div class="dropdown-trigger">
+                  <a  aria-haspopup="true" aria-controls="dropdown-menu4">
+                    <fa-icon
+                    [icon]="faCircleQuestion" class="ml-2" ></fa-icon>
+                  </a>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu4" role="menu" style="width:40vw">
+                  <div class="dropdown-content">
+                    <div class="dropdown-item">
+                      <span class="has-text-left">{{ 'totp.favicon.add.label' | translate }}<br>
+                        <strong>{{ 'totp.favicon.add.desc.strong' | translate }}</strong><br> {{ 'totp.favicon.add.desc.part2' | translate }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </div>
+            @if (!this.userService.isVaultLocal()!) {
+              <div class="field pt-5 is-flex is-justify-content-center">
+                <div class=" select is-{{color()}}">
+                  <select #colorSelected name="selected_color" [ngModel]="selected_color()" value="Change color"
+                    (keyup)="changeColor(colorSelected.value)" (change)="changeColor(colorSelected.value)">
+                    <option default>{{ 'blue' | translate }}</option>
+                    <option>{{ 'green' | translate }}</option>
+                    <option>{{ 'orange' | translate }}</option>
+                    <option>{{ 'red' | translate }}</option>
+                  </select>
+                </div>
+              </div>
+            }
+            <div class=" pb-5 mt-3 mb-3 is-flex is-justify-content-center is-flex-wrap-wrap">
+              <div class="p-2"><strong>Tag :</strong></div>
+              @for (tag of tags(); track tag) {
+                <div class="p-2">
+                  <span class="tag is-rounded is-info">{{tag}} @if (!this.userService.isVaultLocal()!) {
+                    <button class="delete is-small" (click)="deleteTag(tag)" ></button>
+                  }</span>
+                </div>
+              }
+              @if (!this.userService.isVaultLocal()!) {
+                <div class="p-2" style="cursor: pointer ;" (click)="tagModal()">
+                  <span class="tag is-rounded is-info"><fa-icon [icon]="faPlus" size="xs"></fa-icon></span>
+                </div>
+              }
+            </div>
+            <div class="field is-grouped is-flex is-justify-content-center">
+              <div class="control">
+                <button class="button is-info is-light block" [disabled]="isSaving()" (click)="cancel()">{{"cancel" | translate }}</button>
+              </div>
+              @if (secret_uuid != '' && secret_uuid != null ) {
+                <div class="control">
+                  <button class="button is-danger block" (click)="modal()" data-target="confirmation" [ngClass]="{'is-loading': isDestroying()}"
+                  [disabled]="this.userService.isVaultLocal()! || isSaving()">{{ 'delete' | translate }}</button>
+                </div>
+              }
+              <div class="control">
+                <button class="button is-info block" (click)="save()" [ngClass]="{'is-loading': isSaving()}"
+                [disabled]="this.userService.isVaultLocal()! || secretError() !='' || nameError() != ''  || isDestroying()">{{ 'save' | translate }}</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
+    </article>
+  }
+  <div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive()}">
+    <div class="modal-background" (click)="modal()"></div>
+    <div class="modal-content">
+      <section class="modal-card-body">
+        <h1 class="is-size-1 has-text-danger">{{ 'totp.delete.popup.title' | translate }}</h1>
+        <strong>{{ 'totp.delete.popup.corps' | translate }}</strong>.<br><br>
+      </section>
+      <footer class="modal-card-foot is-flex is-justify-content-right">
+        <button class="button" (click)="modal()" [disabled]="isDestroying()">{{'cancel' | translate}}</button>
+        <button class="button is-danger" (click)="delete()" [ngClass]="{'is-loading': isDestroying()}">{{ 'totp.delete.popup.destroy' | translate }}</button>
+      </footer>
     </div>
+    @if (!isDestroying()) {
+      <button class="modal-close is-large" aria-label="close" (click)="modal()"></button>
+    }
   </div>
-</article>
-<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
-  <div class="modal-background" (click)="modal()"></div>
-  <div class="modal-content">
-    <section class="modal-card-body">
-      <h1 class="is-size-1 has-text-danger">{{ 'totp.delete.popup.title' | translate }}</h1>
-      <strong>{{ 'totp.delete.popup.corps' | translate }}</strong>.<br><br>
-    </section>
-    <footer class="modal-card-foot is-flex is-justify-content-right">
-      <button class="button" (click)="modal()" [disabled]="isDestroying">{{'cancel' | translate}}</button>
-      <button class="button is-danger" (click)="delete()" [ngClass]="{'is-loading': isDestroying}">{{ 'totp.delete.popup.destroy' | translate }}</button>
-    </footer>
-  </div>
-  <button class="modal-close is-large" aria-label="close" (click)="modal()" *ngIf="!isDestroying"></button>
-</div>
 
-<div id="addTag" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isTagModalActive}">
-  <div class="modal-background" (click)="tagModal()"></div>
-  <div class="modal-content">
-    <section class="modal-card-body">
-      <h1 class="is-size-3 mb-4 has-text-centered">{{ 'totp.tag.popup.title' | translate }}</h1>
-      <div class="is-flex is-justify-content-center" style="width: 100%;">
-        <div *ngIf=" remainingTags.length != 0" class="mb-4"  style="width: 100%;" class="is-flex is-justify-content-center is-flex-wrap-wrap">
-          <span *ngFor="let tag of  remainingTags" >
-            <span class="tag is-rounded ml-4 mt-2" style="cursor:pointer"  (click)="selectTag(tag)">{{tag}} </span>
-          </span>
+  <div id="addTag" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isTagModalActive()}">
+    <div class="modal-background" (click)="tagModal()"></div>
+    <div class="modal-content">
+      <section class="modal-card-body">
+        <h1 class="is-size-3 mb-4 has-text-centered">{{ 'totp.tag.popup.title' | translate }}</h1>
+        <div class="is-flex is-justify-content-center" style="width: 100%;">
+          @if ( remainingTags().length != 0) {
+            <div class="mb-4"  style="width: 100%;" class="is-flex is-justify-content-center is-flex-wrap-wrap">
+              @for (tag of remainingTags(); track tag) {
+                <span >
+                  <span class="tag is-rounded ml-4 mt-2" style="cursor:pointer"  (click)="selectTag(tag)">{{tag}} </span>
+                </span>
+              }
+            </div>
+          }
         </div>
+        <div class="is-flex is-justify-content-center">
+          <input class="input is-rounded mr-5 is-small mt-6" style="width:50%" (keyup.enter)="addTag()" [ngModel]="addTagName()" (ngModelChange)="addTagName.set($event)" name="addTagName" type="text" placeholder="{{'totp.tag.popup.placeholder' | translate }}"/>
+          <button class="button is-success is-rounded is-small mt-6" (click)="addTag()"><fa-icon [icon]="faCheck"></fa-icon></button>
         </div>
-      <div class="is-flex is-justify-content-center">
-    <input class="input is-rounded mr-5 is-small mt-6" style="width:50%" (keyup.enter)="addTag()" [(ngModel)]="addTagName" name="addTagName" type="text" placeholder="{{'totp.tag.popup.placeholder' | translate }}"/>
-    <button class="button is-success is-rounded is-small mt-6" (click)="addTag()"><fa-icon [icon]="faCheck"></fa-icon></button>
+      </section>
+    </div>
+    <button class="modal-close is-large" aria-label="close" (click)="tagModal()" ></button>
   </div>
-    </section>
-  </div>
-  <button class="modal-close is-large" aria-label="close" (click)="tagModal()" ></button>
-</div>

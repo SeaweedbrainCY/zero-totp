@@ -1,6 +1,6 @@
-import { Component, OnInit, Injectable, inject } from '@angular/core';
+import { Component, OnInit, Injectable, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserService } from '../common/User/user.service';
+import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
@@ -14,8 +14,8 @@ import { Utils } from '../common/Utils/utils';
 })
 @Injectable({providedIn: 'root'})
 export class OauthSyncComponent implements OnInit {
-  errorMessage = '';
-  errorDetail = "";
+  errorMessage = signal('');
+  errorDetail = signal("");
   faCircleNotch = faCircleNotch;
   credentials:string|null;
   encrypted_credentials:string|null = null;
@@ -37,7 +37,7 @@ export class OauthSyncComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if(this.userService.getId() == null){
+    if(this.userService.id() == null){
       this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
   } else {
       this.backupVault();
@@ -45,18 +45,20 @@ export class OauthSyncComponent implements OnInit {
   }
 
   backupVault(){
-    this.http.put("/api/v1/google-drive/backup", {}, {withCredentials:true, observe: 'response'}, ).subscribe((response) => {
+    this.http.put("/api/v1/google-drive/backup", {}, {withCredentials:true, observe: 'response'}, ).subscribe({
+      next: () => {
       this.router.navigate(["/vault"], {relativeTo:this.route.root});
-    }, (error) => {
+    }, 
+    error: (error) => {
       let errorMessage = "";
       if(error.error.message != null){
         errorMessage = error.error.message;
       } else if(error.error.detail != null){
         errorMessage = error.error.title;
       }
-      this.errorMessage = 'oauth.error.impossible' ;
-      this.errorDetail = errorMessage;
-    });
+      this.errorMessage.set('oauth.error.impossible') ;
+      this.errorDetail.set(errorMessage);
+    }});
   }
   
 

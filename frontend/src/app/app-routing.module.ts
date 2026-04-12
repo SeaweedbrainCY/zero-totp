@@ -9,7 +9,6 @@ import { LogoutComponent } from './logout/logout.component';
 import { AccountComponent } from './account/account.component';
 import { PagenotfoundComponent } from './pagenotfound/pagenotfound.component';
 import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
-import { DevComponent } from './dev/dev.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ChangelogComponent } from './changelog/changelog.component';
 import { CallbackComponent } from './callback/callback.component';
@@ -31,7 +30,6 @@ export const routes: Routes = [
   {path:'vault/add', component: EditTOTPComponent},
   {path:'qrcode', component: QrcodeReaderComponent},
   {path:"logout", component: LogoutComponent},
-  {path:'dev', component: DevComponent},
   {path:"account", component: AccountComponent},
   {path:"privacy", component: PrivacyPolicyComponent},
   {path:"changelog", component: ChangelogComponent},

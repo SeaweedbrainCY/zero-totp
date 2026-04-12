@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Crypto } from '../Crypto/crypto';
+import { Crypto } from '../../common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
-import { Utils } from '../Utils/utils';
+import { Utils } from '../../common/Utils/utils';
 import { Buffer } from 'buffer';
 
 

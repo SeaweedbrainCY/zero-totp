@@ -1,13 +1,17 @@
 <div class="hero is-fullheight">
-    <div class="hero-body is-flex is-justify-content-center">
-        <div class="notification is-danger" *ngIf="errorMessage !=''">
-            <p class="has-text-weight-bold">{{errorMessage | translate}}</p>
-          </div>
-          <div *ngIf="errorMessage ==''">
-            <p class=" has-text-centered"><fa-icon [icon]="faCircleNotch" size="2xl" [animation]="true ? 'spin' : undefined" class="is-dark"></fa-icon></p>
-            <p class="has-text-centered">{{ 'oauth.sync.loading' | translate }} {{errorDetail}} </p>
-          </div>
-          
-    </div>
+  <div class="hero-body is-flex is-justify-content-center">
+    @if (errorMessage() !='') {
+      <div class="notification is-danger">
+        <p class="has-text-weight-bold">{{errorMessage() | translate}}</p>
+      </div>
+    }
+    @if (errorMessage() =='') {
+      <div>
+        <p class=" has-text-centered"><fa-icon [icon]="faCircleNotch" size="2xl" [animation]="true ? 'spin' : undefined" class="is-dark"></fa-icon></p>
+        <p class="has-text-centered">{{ 'oauth.sync.loading' | translate }} {{errorDetail()}} </p>
+      </div>
+    }
+
+  </div>
 
 </div>

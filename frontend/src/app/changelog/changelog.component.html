@@ -1,31 +1,40 @@
 <section class="hero  is-halfheight m-6 pb-6 has-text-weight-medium pt-4" style="min-height: 70vh; display: block;">
-<h1 class="is-size-3-mobile  is-size-1-tablet mt-6 has-text-weight-bold " >Zero-TOTP change log</h1>
-<div class="tags has-addons mt-2 mb-6">
+  <h1 class="is-size-3-mobile  is-size-1-tablet mt-6 has-text-weight-bold " >Zero-TOTP change log</h1>
+  <div class="tags has-addons mt-2 mb-6">
     <span class="tag is-dark is-medium">Current version</span>
     <span class="tag is-success is-medium">{{imageHash}}</span>
-</div>
-<div *ngFor="let log of changelogs">
-
-<h3 class="is-size-5-mobile  is-size-3-tablet mt-4 has-text-weight-bold " style="border-bottom: 0.5px lightgray solid; width: 100%;">{{log.date}}</h3>
-<div class="tags has-addons mt-2">
-    <span class="tag is-dark">version</span>
-    <span class="tag is-info">{{log.version}}</span>
-</div>
-<div *ngIf="log.added.length > 0">
-    <p class="has-text-weight-bold"><fa-icon [icon]="faCirclePlus" style="color:#63A375"></fa-icon> We added : </p>
-    <ul>
-        <li *ngFor="let add of log.added">
-            {{add}}
-        </li>
-    </ul>
-</div>
-<div *ngIf="log.fixed.length > 0">
-    <p class="has-text-weight-bold"><fa-icon [icon]="faTruckMedical" style="color:#FE6847"></fa-icon> We fixed : </p>
-    <ul>
-        <li *ngFor="let fix of log.fixed">
-            {{fix}}
-        </li>
-    </ul>
+  </div>
+  @for (log of changelogs; track log) {
+    <div>
+      <h3 class="is-size-5-mobile  is-size-3-tablet mt-4 has-text-weight-bold " style="border-bottom: 0.5px lightgray solid; width: 100%;">{{log.date}}</h3>
+      <div class="tags has-addons mt-2">
+        <span class="tag is-dark">version</span>
+        <span class="tag is-info">{{log.version}}</span>
+      </div>
+      @if (log.added.length > 0) {
+        <div>
+          <p class="has-text-weight-bold"><fa-icon [icon]="faCirclePlus" style="color:#63A375"></fa-icon> We added : </p>
+          <ul>
+            @for (add of log.added; track add) {
+              <li>
+                {{add}}
+              </li>
+            }
+          </ul>
+        </div>
+      }
+      @if (log.fixed.length > 0) {
+        <div>
+          <p class="has-text-weight-bold"><fa-icon [icon]="faTruckMedical" style="color:#FE6847"></fa-icon> We fixed : </p>
+          <ul>
+            @for (fix of log.fixed; track fix) {
+              <li>
+                {{fix}}
+              </li>
+            }
+          </ul>
+        </div>
+      }
     </div>
-    </div>
-    </section>
+  }
+</section>

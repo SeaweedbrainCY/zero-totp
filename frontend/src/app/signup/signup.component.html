@@ -1,5 +1,6 @@
 <section class="hero  is-halfheight m-6 pb-6" style="min-height: 70vh;">
-   <div class="hero-body is-flex is-flex-direction-column is-justify-content-space-around	is-fullheight" *ngIf="!signup_enabled">
+   <div class="hero-body is-flex is-flex-direction-column is-justify-content-space-around	is-fullheight">
+    @if (!signup_enabled()) {
       <article class="message is-warning">
         <div class="message-header">
           <p><fa-icon [icon]="faDoorClosed" class="mr-2"></fa-icon> Signup is disabled </p>
@@ -10,8 +11,10 @@
           To use Zero-TOTP, you can also use the official instance <a href="https://zero-totp.com/signup" target="_blank">zero-totp.com <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon> </a>.<br>
         </div>
       </article>
+    }
     </div>
-    <div class="hero-body is-flex is-flex-direction-column is-justify-content-space-around	is-fullheight" *ngIf="signup_enabled">
+    @if (signup_enabled()) {
+    <div class="hero-body is-flex is-flex-direction-column is-justify-content-space-around	is-fullheight">
     <div class="has-text-centered	is-full is-flex is-justify-content-center">
       <p><span class="title is-1 is-full has-text-centered has-text-info has-text-weight-bold">
           {{ 'signup.welcome' | translate }} !</span><br />
@@ -25,70 +28,96 @@
       </div>
       <div class="field is-full is-flex is-justify-content-center has-addons ">
         <p class="control has-icons-left" style="min-width: 30vw;">
-       <input class="input" type="text" placeholder="{{ 'username' | translate }}" name="username" [(ngModel)]="username" (keyup)="checkUsername()" [ngClass]="{'is-danger' : usernameErrorMessage != ''}"/>
-       <span class="help has-text-left is-danger" *ngIf="usernameErrorMessage!=''">{{usernameErrorMessage}}</span>
+       <input class="input" type="text" placeholder="{{ 'username' | translate }}" name="username" [ngModel]="username()" (ngModelChange)="username.set($event)" (keyup)="checkUsername()" [ngClass]="{'is-danger' : usernameErrorMessage() != ''}"/>
+       @if (usernameErrorMessage() != '') {
+         <span class="help has-text-left is-danger">{{usernameErrorMessage()}}</span>
+       }
           <span class="icon is-small is-left">
             <fa-icon [icon]="faUser"></fa-icon>
           </span>
         </p>
         <p class="control">
           <a class="button" (click)="checkUsername()">
-            <fa-icon [icon]="faCheck" *ngIf="usernameErrorMessage == ''"></fa-icon>
-            <fa-icon [icon]="faXmark" *ngIf="usernameErrorMessage != ''"></fa-icon>
-            </a>
+            @if (usernameErrorMessage() == '') {
+              <fa-icon [icon]="faCheck"></fa-icon>
+            }
+            @if (usernameErrorMessage() != '') {
+              <fa-icon [icon]="faXmark"></fa-icon>
+            }
+          </a>
         </p>
 
       </div>
       <div class="field is-full is-flex is-justify-content-center has-addons">
         <p class="control has-icons-left"  style="min-width: 30vw;">
-           <input class="input" type="email" placeholder="{{ 'email' | translate }}" name="email" [(ngModel)]="email" (keyup)="checkEmail()" [ngClass]="{'is-danger' : emailErrorMessage != ''}"/>
-           <span class="help has-text-left is-danger" *ngIf="emailErrorMessage!=''">{{emailErrorMessage}}</span>
+           <input class="input" type="email" placeholder="{{ 'email' | translate }}" name="email" [ngModel]="email()" (ngModelChange)="email.set($event)" (keyup)="checkEmail()" [ngClass]="{'is-danger' : emailErrorMessage() != ''}"/>
+           @if (emailErrorMessage() != '') {
+             <span class="help has-text-left is-danger">{{emailErrorMessage()}}</span>
+           }
           <span class="icon is-small is-left">
             <fa-icon [icon]="faEnvelope"></fa-icon>
           </span>
         </p>
         <p class="control">
           <a class="button"  (click)="checkEmail()">
-            <fa-icon [icon]="faCheck" *ngIf="emailErrorMessage == ''"></fa-icon>
-            <fa-icon [icon]="faXmark" *ngIf="emailErrorMessage != ''"></fa-icon>
+            @if (emailErrorMessage() == '') {
+              <fa-icon [icon]="faCheck"></fa-icon>
+            }
+            @if (emailErrorMessage() != '') {
+              <fa-icon [icon]="faXmark"></fa-icon>
+            }
           </a>
         </p>
       </div>
       <div class="field is-full is-flex is-justify-content-center has-addons">
         <p class="control has-icons-left"  style="min-width: 30vw;">
-       <input class="input" type="{{isPasswordVisible ? 'text' : 'password'}}" placeholder="{{ 'passphrase' | translate }}" name="password" [(ngModel)]="password"(keyup)="checkPassword()" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" >
-       <span class="help has-text-left is-danger" *ngIf="passwordErrorMessage.length >1">
-          <span *ngFor="let error of passwordErrorMessage" >
-            <span *ngIf="error!=''">{{error}}<br></span>
-          </span>
-        </span>
+       <input class="input" type="{{isPasswordVisible() ? 'text' : 'password'}}" placeholder="{{ 'passphrase' | translate }}" name="password" [ngModel]="password()" (ngModelChange)="password.set($event)" (keyup)="checkPassword()" [ngClass]="{'is-danger' : passwordErrorMessage().length > 1}" >
+       @if (passwordErrorMessage().length > 1) {
+         <span class="help has-text-left is-danger">
+           @for (error of passwordErrorMessage(); track error) {
+             @if (error != '') {
+               <span>{{error}}<br></span>
+             }
+           }
+         </span>
+       }
           <span class="icon is-small is-left">
             <fa-icon [icon]="faKey"></fa-icon>
           </span>
         </p>
         <p class="control">
-          <a class="button" (click)="isPasswordVisible = !isPasswordVisible">
-            <fa-icon [icon]="faEyeSlash" size="sm"*ngIf="isPasswordVisible"></fa-icon><fa-icon [icon]="faEye" size="sm" *ngIf="!isPasswordVisible"></fa-icon>
+          <a class="button" (click)="isPasswordVisible.update(v => !v)">
+            @if (isPasswordVisible()) {
+              <fa-icon [icon]="faEyeSlash" size="sm"></fa-icon>
+            }
+            @if (!isPasswordVisible()) {
+              <fa-icon [icon]="faEye" size="sm"></fa-icon>
+            }
           </a>
         </p>
       </div>
       <div class="field is-full is-flex is-justify-content-center has-addons">
         <p class="control has-icons-left "  style="min-width: 30vw;">
-       <input class="input"  type="{{isConfirmPasswordVisible ? 'text' : 'password'}}"placeholder="{{ 'signup.passphrase.confirmation' | translate }}" name="confirmPassword" [(ngModel)]="confirmPassword" [ngClass]="{'is-danger' : passwordErrorMessage.length >1}" (keyup)="checkPassword()">
+       <input class="input" type="{{isConfirmPasswordVisible() ? 'text' : 'password'}}" placeholder="{{ 'signup.passphrase.confirmation' | translate }}" name="confirmPassword" [ngModel]="confirmPassword()" (ngModelChange)="confirmPassword.set($event)" [ngClass]="{'is-danger' : passwordErrorMessage().length > 1}" (keyup)="checkPassword()">
           <span class="icon is-small is-left">
             <fa-icon [icon]="faKey"></fa-icon>
           </span>
         </p>
         <p class="control">
-          <a class="button" (click)="isConfirmPasswordVisible = !isConfirmPasswordVisible">
-            <fa-icon [icon]="faEyeSlash" *ngIf="isConfirmPasswordVisible" size="sm" ></fa-icon><fa-icon [icon]="faEye" *ngIf="!isConfirmPasswordVisible" size="sm"></fa-icon>
+          <a class="button" (click)="isConfirmPasswordVisible.update(v => !v)">
+            @if (isConfirmPasswordVisible()) {
+              <fa-icon [icon]="faEyeSlash" size="sm"></fa-icon>
+            }
+            @if (!isConfirmPasswordVisible()) {
+              <fa-icon [icon]="faEye" size="sm"></fa-icon>
+            }
           </a>
         </p>
       </div>
       <div class="field">
         <div class="control">
           <label class="checkbox">
-            <input type="checkbox" name="terms" [(ngModel)]="terms">
+            <input type="checkbox" name="terms" [ngModel]="terms()" (ngModelChange)="terms.set($event)">
             {{ 'signup.checkbox.privacy_policy' | translate }} <a href="/privacy">{{'privacy_policy' | translate}}</a>
           </label>
         </div>
@@ -96,13 +125,15 @@
   <div class="has-text-centered mt-4 mb-4 is-flex is-justify-content-center is-align-items-center is-flex-wrap-wrap">
       <span> {{'login.instance.you_are_using' | translate}} </span>
       <div class="is-flex is-justify-content-center is-align-items-center">
-      <div class="dropdown " [ngClass]="{'is-active': instance_dropdown_active, 'is-hoverable': !this.utils.isDeviceMobile()}">
+      <div class="dropdown " [ngClass]="{'is-active': instance_dropdown_active(), 'is-hoverable': !this.utils.isDeviceMobile()}">
         <div class="dropdown-trigger">
-          <button class="button is-ghost pl-1" aria-haspopup="true" aria-controls="dropdown-menu" (click)="zero_totp_instance_button_click()"> {{current_domain}}
-            <span class="tag is-success is-rounded  has-text-white ml-2" style="text-decoration: none !important;"
-              *ngIf="current_domain == 'zero-totp.com'">{{'official' | translate}} </span>
-            <span class="tag is-info is-rounded  has-text-white ml-2" style="text-decoration: none !important;"
-              *ngIf="current_domain != 'zero-totp.com'">{{'self_hosted' | translate}}</span>
+          <button class="button is-ghost pl-1" aria-haspopup="true" aria-controls="dropdown-menu" (click)="zero_totp_instance_button_click()"> {{current_domain()}}
+            @if (current_domain() == 'zero-totp.com') {
+              <span class="tag is-success is-rounded  has-text-white ml-2" style="text-decoration: none !important;">{{'official' | translate}}</span>
+            }
+            @if (current_domain() != 'zero-totp.com') {
+              <span class="tag is-info is-rounded  has-text-white ml-2" style="text-decoration: none !important;">{{'self_hosted' | translate}}</span>
+            }
           </button>
 
         </div>
@@ -114,15 +145,17 @@
             </p>
             <hr class="dropdown-divider" />
             <a href="https://zero-totp.com/signup" class="dropdown-item has-text-centered"
-              [ngClass]="{'is-active': current_domain == 'zero-totp.com'}"
+              [ngClass]="{'is-active': current_domain() == 'zero-totp.com'}"
               style="padding-left: 16px; padding-right: 16px;">zero-totp.com <span
                 class="tag is-success is-rounded  has-text-white ml-2"
                 style="text-decoration: none !important;">{{'official' | translate}}</span> </a>
-            <a class="dropdown-item" 
-              *ngIf="current_domain != 'zero-totp.com'" style="padding-left: 16px; padding-right: 16px;"
-              [ngClass]="{'is-active': current_domain != 'zero-totp.com'}" (click)="instance_dropdown_active=false"> {{current_domain}}<span
-                class="tag is-white is-rounded  has-text-black ml-2"
-                style="text-decoration: none !important;">{{'self_hosted' | translate}}</span> </a>
+            @if (current_domain() != 'zero-totp.com') {
+              <a class="dropdown-item"
+                style="padding-left: 16px; padding-right: 16px;"
+                [ngClass]="{'is-active': current_domain() != 'zero-totp.com'}" (click)="instance_dropdown_active.set(false)"> {{current_domain()}}<span
+                  class="tag is-white is-rounded  has-text-black ml-2"
+                  style="text-decoration: none !important;">{{'self_hosted' | translate}}</span> </a>
+            }
             <hr class="dropdown-divider" />
             <p class="is-size-7" style="padding-left: 16px; padding-right: 16px;">
               <strong>{{'login.instance.select.why.title' | translate}} </strong><br>
@@ -160,10 +193,10 @@
       
       <div class="field">
         <div class="control">
-          <button class="button is-info is-medium mt-6" (click)="openModal()" data-target="confirmation"  [ngClass]="{'is-loading': isLoading}" [disabled]="isLoading || emailErrorMessage != '' || passwordErrorMessage.length > 1 || usernameErrorMessage != '' || !terms || !beta">{{ 'signup.button.start' | translate }}
+          <button class="button is-info is-medium mt-6" (click)="openModal()" data-target="confirmation" [ngClass]="{'is-loading': isLoading()}" [disabled]="isLoading() || emailErrorMessage() != '' || passwordErrorMessage().length > 1 || usernameErrorMessage() != '' || !terms() || !beta()">{{ 'signup.button.start' | translate }}
             </button>
 
-<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive}">
+<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isModalActive()}">
     <div class="modal-background" (click)="closeModal()"></div>
     <div class="modal-content">
        <header class="modal-card-head">
@@ -203,4 +236,5 @@
       </div>
     </div>
   </div>
+  }
 </section>
