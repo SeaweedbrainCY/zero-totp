@@ -179,9 +179,6 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     this.router.navigate(['/import/vault/' + this.vault_type() + '/' + this.vault_steps.get(this.vault_type()!)![0]])
   }
 
-  hideDecryptionInput() {
-    
-  }
 
   openVaultV1(event: any, unsecure_context: string, input: any) {
     this.local_vault_service()!.parseUploadedVault(unsecure_context, this.api_public_key).then((vault_parsing_status) => {
