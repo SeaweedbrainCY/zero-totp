@@ -170,7 +170,7 @@ paths:
           description: Access denied
   /encrypted_secret:
     post:
-      operationId: controllers.add_encrypted_secret
+      operationId: endpoints_controllers.vault.add_encrypted_secret
       tags:
         - Vault
       summary: Add an encrypted secret to the user's vault
@@ -196,7 +196,6 @@ paths:
                   uuid:
                     type: string
                     example: 5cb7f86f-afe9-4666-9728-47ea2f505957
-
         "400":
           description: Missing required parameters
         "401":
