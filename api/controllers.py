@@ -220,22 +220,7 @@ def get_encrypted_secret(user_id, uuid):
             logging.warning("User " + str(user_id) + " tried to access secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
         
-#POST /encrypted_secret
-@require_valid_user
-def add_encrypted_secret(user_id, body):
-    enc_secret = utils.sanitize_input(body["enc_secret"]).strip()
-    secret_uuid = ""
-    totp_secretDB =  TOTP_secretDB()
-    while secret_uuid == "":
-        tmp_uuid = str(uuid4())
-        if not totp_secretDB.get_enc_secret_by_uuid(tmp_uuid):
-            secret_uuid = tmp_uuid
-        
-    if totp_secretDB.add(user_id, enc_secret, secret_uuid):
-        return {"uuid": secret_uuid}, 201
-    else :
-        logging.warning("Unknown error while adding encrypted secret for user " + str(user_id))
-        return {"message": "Unknown error while adding encrypted secret"}, 500
+
 
 #PUT /encrypted_secret/{uuid}
 @require_valid_user
