@@ -1,7 +1,7 @@
 import uuid
 from database.totp_secret_repo import TOTP_secret as TOTP_secret_database
 from environment import logging
-import exceptions
+from Services.vault import exceptions
 
 # Manage encrypted secrets logic between controllers and database
 
