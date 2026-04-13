@@ -7,7 +7,9 @@ from environment import logging
 # POST /encrypted_secrets 
 @require_valid_user
 def mass_add_encrypted_secrets(user_id, body):
-    encrypted_secrets_list = utils.sanitize_input(body["encrypted_secrets_list"])
+    encrypted_secrets_list = []
+    for enc_secret in body["encrypted_secrets_list"]
+        encrypted_secrets_list.append(utils.sanitize_input(enc_secret))
     if len(encrypted_secrets_list) > 100:
         return {"message": "The number of maximum encrypted secrets submitted is over the limit."}, 400
     
