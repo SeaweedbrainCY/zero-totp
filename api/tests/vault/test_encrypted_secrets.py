@@ -67,7 +67,7 @@ class TestEncryptedSecretsController(unittest.TestCase):
         payload["encrypted_secrets_list"] = []
         with self.flask_application.app.app_context():
             self.client.cookies = {"session-token": self.session_token}
-            response = self.client.post(self.endpoint, json=self.json_payload)
+            response = self.client.post(self.endpoint, json=payload)
             self.assertEqual(response.status_code, 201)
             self.assertIn("uuid_list", response.json().keys())
             self.assertIn("message", response.json().keys())
@@ -80,7 +80,7 @@ class TestEncryptedSecretsController(unittest.TestCase):
         payload["encrypted_secrets_list"] = [str(uuid4()) for _ in range(101)]
         with self.flask_application.app.app_context():
             self.client.cookies = {"session-token": self.session_token}
-            response = self.client.post(self.endpoint, json=self.json_payload)
+            response = self.client.post(self.endpoint, json=payload)
             self.assertEqual(response.status_code, 400)
             self.assertIn("message", response.json().keys())
             self.assertEqual(response.json()["message"], "The number of maximum encrypted secrets submitted is over the limit.")
