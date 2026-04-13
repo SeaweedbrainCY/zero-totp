@@ -42,6 +42,12 @@ from sqlalchemy import text
 from CryptoClasses.serverRSAKeys import ServerRSAKeys
  
 
+### WARNING
+## This file is deprecated. New controllers should not be added here.
+## This all-in-one controller is currently being migrated to separate packages under api/endpoint_controllers.
+## Therefore controllers are currently spread over those packages as this work is in progress.
+###
+
 
 
 
