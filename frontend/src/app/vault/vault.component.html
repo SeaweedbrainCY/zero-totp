@@ -329,7 +329,6 @@
     </a>
   </div>
 </div>
-@if ( this.userService.vault_tags().length != 0) {
   <div class="mb-4">
     <strong>{{'vault.filter.tag.title' | translate}} : </strong>
     <span class="tag is-rounded ml-4" style="cursor:pointer"
@@ -341,7 +340,7 @@
       </span>
     }
   </div>
-}
+
 @if (!this.userService.isVaultLocal()) {
   <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault"
     >{{ 'vault.button.reload' | translate }} <fa-icon
