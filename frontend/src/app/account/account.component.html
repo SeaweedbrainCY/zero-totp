@@ -36,7 +36,7 @@
               {{ 'account.username.title' | translate }}
             </h1>
             <div style="border-bottom: 1px solid silver"></div>
-            <p class="has-text-grey pb-3">{{ 'account.username.current' | translate }} {{current_username()}}
+            <p class="has-text-grey pb-3">{{ 'account.username.current' | translate }} <span [ngClass]="{'is-skeleton': loadingAccount()}">{{current_username()}}</span> 
             </p>
             <label class="label">{{ 'account.username.new.label' | translate }}</label>
             <div class="field is-flex-tablet mb-3">
@@ -62,7 +62,7 @@
               {{ 'account.email.title' | translate }}
             </h1>
             <div style="border-bottom: 1px solid silver"></div>
-            <p class="has-text-grey pb-3">{{ 'account.email.current' | translate }} : {{current_email()}}</p>
+            <p class="has-text-grey pb-3">{{ 'account.email.current' | translate }} : <span [ngClass]="{'is-skeleton': loadingAccount()}">{{current_email()}}</span></p>
             <label class="label">{{ 'account.email.update.label' | translate }}</label>
             <div class="field is-flex-tablet">
               <div class="control has-icons-left">

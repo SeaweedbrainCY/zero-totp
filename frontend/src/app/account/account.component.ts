@@ -68,11 +68,9 @@ export class AccountComponent implements OnInit {
   googleDriveBackupModaleActive = signal(false);
   deleteAccountConfirmationCountdown = signal(5);
   interval: any;
-  accountLoadingError = signal("");
-  accountLoadingErrorMessage = signal("");
   loadingAccount: WritableSignal<boolean> = signal(true);
-  current_email = signal("");
-  current_username = signal("");
+  current_email = signal("Loading your current email ...");
+  current_username = signal("Loading your current username ...");
   notification_message: WritableSignal<string | undefined> = signal(undefined);
 
 
@@ -109,23 +107,23 @@ export class AccountComponent implements OnInit {
         this.current_username.set(data.username);
         this.current_email.set(data.email);
       }, error: (error) => {
-        this.loadingAccount.set(false);
         if (error.status == 401) {
           this.userService.clear();
           this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
           return;
         }
         if (error.status == 0) {
-          this.accountLoadingError.set("account.errors.network");
+          this.translate.get("account.errors.network").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr,translation,"")
+          });
         } else if (error.status == 403 && error.error.error == "Not verified") {
-          this.accountLoadingError.set("account.errors.not_found");
           this.router.navigate(["/emailVerification"], { relativeTo: this.route.root });
         } else {
-          this.accountLoadingError.set("account.errors.unknown");
-          this.accountLoadingErrorMessage.set(error.status + " " + error.message + " " + error.error.message);
+          this.translate.get("account.errors.unknown").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr,translation,"")
+          });
         }
-      },
-      complete: () => this.loadingAccount.set(false)
+      }
     })
   }
 
