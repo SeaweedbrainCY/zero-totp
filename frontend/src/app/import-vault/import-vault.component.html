@@ -153,7 +153,7 @@
                     translate}}</span>
                   }
                   @if (is_vault_successfully_decrypted()) {
-                    <span> {{'decrypted'| translate}} <fa-icon [icon]="faCircleCheck"
+                    <span> {{'decrypted'| translate}} <fa-icon [icon]="faCircleCheckFilled"
                     class="ml-2"></fa-icon></span>
                   }
                 </button>
@@ -164,7 +164,7 @@
       }
       @if (step() == 'encrypt') {
         <div>
-          <h3 class="is-size-3 has-text-centered has-text-weight-bold "
+          <h3 id="enc-upload-title" class="is-size-3 has-text-centered has-text-weight-bold "
             style="line-height: normal;"> {{
             'import_vault.zero_totp.encrypt' | translate }} @if (uploading()) {
             <fa-icon [icon]="faCircleNotch" class="ml-2"
@@ -189,32 +189,27 @@
           @if (decrypted_vault() != undefined) {
             <div class="box " style="margin: 0; " [style]="isMobileDevice() ? 'width: 80vw;' : 'width: 60vw;'"
               >
-              <p class="has-text-weight-bold mb-4">{{'import_vault.zero_totp.will_be_kept' | translate }}</p>
-              @for (key of decrypted_vault()!.keys(); track key) {
-                <div class="is-flex is-justify-content-center is-align-items-center is-flex-direction-column"
+              <p class="has-text-weight-bold mb-4">{{'import_vault.zero_totp.will_be_kept' | translate }} ({{selected_uuid().length}}) {{'import_vault.zero_totp.items' | translate }} </p>
+              <p class="is-flex is-justify-content-start is-align-items-center">
+                <a class="button is-ghost" (click)="selectAllSecret()">All</a> <span>|</span> <a class="button is-ghost" (click)='selectNoSecret()'>None</a>
+              </p>
+              <div class="is-flex is-justify-content-center is-align-items-left is-flex-direction-column"
                   >
-                  <div class="notification is-light" style="width: 100%; margin-bottom: 5px;"
-                    [ngClass]="{'is-success' : uploaded_uuid().includes(key),' is-primary': uploaded_uuid().includes(key) && upload_error_uuid().includes(key), 'is-danger': upload_error_uuid().includes(key)}">
-                    <p>
-                      @if (!uploading() && !uploaded_uuid().includes(key) && !upload_error_uuid().includes(key)) {
-                        <fa-icon [icon]="faCloudArrowUp" class="mr-4"
+              @for (key of decrypted_vault()!.keys(); track key) {
+                    <p style="cursor: pointer;" (click)="selectSecret(key)">
+                      @if (selected_uuid().includes(key)) {
+                        <fa-icon [icon]="faCircleCheck" class="mr-4"
                         ></fa-icon>
                       }
-                      @if (uploading() && !uploaded_uuid().includes(key) && !upload_error_uuid().includes(key)) {
-                        <fa-icon [icon]="faCircleNotch" class="mr-4"
-                        [animation]="'spin'"></fa-icon>
-                      }
-                      @if (uploaded_uuid().includes(key)) {
-                        <fa-icon [icon]="faFileCircleCheck" class="mr-4"></fa-icon>
-                      }
-                      @if ( upload_error_uuid().includes(key)) {
-                        <fa-icon [icon]="faFileExcel" class="mr-4"></fa-icon>
+                      @if (!selected_uuid().includes(key)) {
+                        <fa-icon [icon]="faCircle" class="mr-4"
+                        ></fa-icon>
                       }
                       {{decrypted_vault()!.get(key)!.get("name")}}
                     </p>
+                     }
                   </div>
-                </div>
-              }
+             
             </div>
           }
         </div>
@@ -292,7 +287,6 @@
     <footer class="modal-card-foot is-flex is-justify-content-center">
       <button class="button is-primary mr-2" [routerLink]="['/import/vault']">{{
       'import_vault.success_with_error_modal.back_return' | translate }}</button>
-      <button class="button is-primary mr-2 ml-2" (click)="retryFailedOnes()">{{ 'retry' | translate }}</button>
       <button class="button is-primary ml-2" [routerLink]="['/vault']">{{ 'import_vault.success_modal.button' |
       translate }}</button>
     </footer>

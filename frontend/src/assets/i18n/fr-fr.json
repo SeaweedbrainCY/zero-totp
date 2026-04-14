@@ -475,6 +475,7 @@
         "warning": "Chiffrement et envoi en cours. Ne ferme pas cette page"
       },
       "import": "Importe une backup de ton coffre Zero-TOTP",
+      "items": "items",
       "select": "Méthode de fusion",
       "will_be_deleted": "Sera supprimé",
       "will_be_kept": "Sera ajouté"

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
-import { faFileArrowDown, faArrowRight, faCloudArrowUp, faCheck, faUnlockKeyhole, faLock, faUnlock, faCircleCheck, faCircleNotch, faCircleExclamation, faFileCircleCheck } from '@fortawesome/free-solid-svg-icons';
-import { faCircle, faFileExcel } from '@fortawesome/free-regular-svg-icons';
+import { faFileArrowDown, faArrowRight, faCloudArrowUp, faCheck, faUnlockKeyhole, faLock, faUnlock, faCircleCheck as faCircleCheckFilled, faCircleNotch, faCircleExclamation, faFileCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faFileExcel, faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
 import { TranslateService } from '@ngx-translate/core';
 import { Router, ActivatedRoute, RouterStateSnapshot, NavigationEnd } from '@angular/router';
 import { ViewportRuler } from '@angular/cdk/scrolling';
@@ -40,6 +40,8 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   faCircleCheck = faCircleCheck;
   faFileExcel = faFileExcel;
   faCircleNotch = faCircleNotch;
+  faCircle = faCircle;
+  faCircleCheckFilled = faCircleCheckFilled;
 
   vault_type = signal<string | null>(null);
   step = signal<string | null>(null);
@@ -58,10 +60,10 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   is_vault_successfully_decrypted = signal(false);
   uploading = signal(false);
   upload_state = signal("");
-  uploaded_uuid = signal<string[]>([]);
   upload_error_uuid = signal<string[]>([]);
   importSuccess = signal(false);
   import_had_error = signal(false);
+  selected_uuid = signal<string[]>([])
 
   selected_merging_option = "";
   api_public_key: any = undefined;
@@ -177,6 +179,22 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
   redirectToFirstStep() {
     this.router.navigate(['/import/vault/' + this.vault_type() + '/' + this.vault_steps.get(this.vault_type()!)![0]])
+  }
+
+  selectSecret(key_uuid: string) {
+    if (this.selected_uuid().includes(key_uuid)) {
+      this.selected_uuid.update(current => current.filter(value => (value != key_uuid)))
+    } else {
+      this.selected_uuid.update(current => [...current, key_uuid])
+    }
+  }
+
+  selectAllSecret() {
+    this.selected_uuid.set(Array.from((this.decrypted_vault()!.keys())))
+  }
+
+  selectNoSecret() {
+    this.selected_uuid.set([])
   }
 
 
@@ -394,6 +412,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
             this.decrypted_vault.set(decrypted_vault);
             this.is_continue_disabled.set(false);
             this.is_vault_successfully_decrypted.set(true)
+            this.selected_uuid.set(Array.from((this.decrypted_vault()!.keys())))
 
           }, (error) => {
             this.translate.get("import_vault.errors.decryption_failure").subscribe((translation) => {
@@ -424,64 +443,76 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   }
 
 
-  upload() {
+  async upload() {
+    document.getElementById("enc-upload-title")?.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
     this.uploading.set(true);
     this.upload_error_uuid.set([]);
-    this.uploaded_uuid.set([]);
     this.import_had_error.set(false);
     this.translate.get("import_vault.uploading.steps.encryption").subscribe((translation) => {
       this.upload_state.set(translation);
     });
+    const batches = await this.encryptAndBatch();
+    await this.uploadBatches(batches);
+    
+    this.uploading.set(false);
 
-    this.processVaultConcurrently().then(() => {
-      this.uploading.set(false);
+    if (!this.import_had_error()){
       this.importSuccess.set(true);
+    }
+  }
+
+  private uploadBatch(batch: string[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.http.post("/api/v1/encrypted_secrets", { encrypted_secrets_list: batch }, {
+        withCredentials: true,
+        observe: 'response'
+      }).subscribe({
+        next: () => {
+          resolve();
+        },
+        error: (error) => {
+          this.import_had_error.set(true);
+          this.uploading.set(false);
+          this.translate.get("import_vault.uploading.errors.upload").subscribe((translation) => {
+            this.utils.toastError(this.toastr, translation, ". Error: " + error);
+          });
+          reject(error);
+        },
+      });
     });
   }
 
-  async processVaultConcurrently() {
-    const concurrencyLimit = 5;
-    const queue: (() => Promise<void>)[] = [];
-
-    for (const [uuid, secretMap] of this.decrypted_vault()!) {
-      queue.push(async () => {
-        try {
-          const enc_jsonProperty = await this.encryptSecret(secretMap);
-          await this.uploadSecret(uuid, enc_jsonProperty);
-
-          this.uploaded_uuid.update(arr => [...arr, uuid]);
-          console.log("Uploaded:", uuid);
-        } catch (error) {
-          console.error("Error uploading", uuid, error);
-          this.upload_error_uuid.update(arr => [...arr, uuid]);
-          this.import_had_error.set(true);
-
-          this.translate.get("import_vault.uploading.errors.upload").subscribe((translation) => {
-            this.utils.toastError(
-              this.toastr,
-              translation,
-              "Secret name: " + secretMap.get("name") + ". Error: " + error
-            );
-          });
-        }
-      });
+  private async uploadBatches(batches: string[][]): Promise<void> {
+    for (const batch of batches) {
+      await this.uploadBatch(batch);
     }
-
-    const runQueue = async () => {
-      const workers = new Array(concurrencyLimit).fill(0).map(async () => {
-        while (queue.length) {
-          const task = queue.shift();
-          if (task) {
-            await task();
-          }
-        }
-      });
-      await Promise.all(workers);
-    };
-
-    await runQueue();
   }
 
+
+  private async encryptAndBatch(): Promise<string[][]> {
+    const encryptionPromises = this.selected_uuid().map(uuid =>
+      this.encryptSecret(this.decrypted_vault()!.get(uuid)!).then(
+        encrypted_secret => ({ success: true, encrypted_secret } as const),
+        () => {
+          this.import_had_error.set(true);
+          this.upload_error_uuid.update(current => [...current, uuid]);
+          return { success: false } as const;
+        }
+      )
+    );
+
+    const results = await Promise.all(encryptionPromises);
+
+    const encrypted_secrets_list = results
+      .filter(r => r.success)
+      .map(r => (r as { success: true; encrypted_secret: string }).encrypted_secret);
+
+    const batches: string[][] = [];
+    for (let i = 0; i < encrypted_secrets_list.length; i += 100) {
+      batches.push(encrypted_secrets_list.slice(i, i + 100));
+    }
+    return batches;
+  }
 
   encryptSecret(secret_properties: Map<string, string>): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -496,30 +527,4 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     });
   }
 
-  uploadSecret(uuid: string, enc_jsonProperty: string): Promise<HttpResponse<Object>> {
-    return new Promise((resolve, reject) => {
-      this.http.post("/api/v1/encrypted_secret", {enc_secret: enc_jsonProperty}, {withCredentials: true, observe: 'response'}).subscribe({
-        next: (response) => {
-          resolve(response);
-        },
-        error: (error) => {
-          reject(error.message + error.error.message);
-        }
-      });
-    });
-  }
-
-  retryFailedOnes() {
-    for (let uuid of this.decrypted_vault()!.keys()) {
-      if (!this.upload_error_uuid().includes(uuid)) {
-        this.decrypted_vault()!.delete(uuid);
-      }
-    }
-    this.uploading.set(true);
-    this.upload_error_uuid.set([]);
-    this.uploaded_uuid.set([]);
-    this.import_had_error.set(false);
-    this.importSuccess.set(false);
-    this.upload();
-  }
 }

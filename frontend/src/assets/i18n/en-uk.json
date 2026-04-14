@@ -477,6 +477,7 @@
         "warning": "Encryption and upload in progress. Do not close your browser"
       },
       "import": "Import a backup of your Zero-TOTP vault",
+      "items": "items",
       "select": "Merging method",
       "will_be_deleted": "To delete",
       "will_be_kept": "Will be added"
