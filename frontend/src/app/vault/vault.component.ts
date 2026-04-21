@@ -106,6 +106,7 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this.userService.isVaultLocal()) {
+      // Local vault, the user uploaded it 
       this.isVaultEncrypted.set(false);
       this.local_vault_service = this.userService.local_vault_service();
       let vaultDate = "unknown"
@@ -119,8 +120,9 @@ export class VaultComponent implements OnInit, OnDestroy {
 
       this.page_title.set("vault.title.backup");
       this.vault_date.set(vaultDate);
-      this.decrypt_and_display_vault(this.local_vault_service!.get_enc_secrets()!);
+      this.decrypt_vault(this.local_vault_service!.get_enc_secrets()!);
     } else if (this.userService.zke_key() == null) {
+      // User refreshed the page
       this.userService.refresh_user_id().then(() => {
         this.isVaultEncrypted.set(true);
       }, () => {
@@ -129,11 +131,27 @@ export class VaultComponent implements OnInit, OnDestroy {
       });
 
     } else {
-      // Display the add button 
+      // User is logged in, can have vault in memory
       document.getElementById("add-code-button")!.style.display = "flex";
       document.getElementById("add-code-button")!.onclick = () => { this.isModalActive.set(true); };
       this.isVaultEncrypted.set(false);
-      this.get_and_decrypt_vault();
+      this.get_google_drive_option();
+      this.get_preferences();
+      if (this.userService.vault() == null) {
+        // We need to download and decrypt the vault
+        this.getUserEncryptedVault().then(encrypted_vault => {
+          this.decrypt_vault(encrypted_vault).then(_ => {
+            this.startDisplayingCode()
+            this.display_vault()
+          })
+        })
+      } else {
+        // The vault is in memory no need to download/decrypt it
+        this.vault.set(this.userService.vault()!)
+        this.startDisplayingCode()
+        this.display_vault()
+      }
+
     }
 
   }
@@ -154,162 +172,166 @@ export class VaultComponent implements OnInit, OnDestroy {
     // setInterval(()=> { this.generateCode() }, 100);
   }
 
-  get_and_decrypt_vault() {
-    this.get_google_drive_option();
-    this.get_preferences();
-
-    this.reloadSpin.set(true)
-    this.vault.set(new Map<string, Map<string, string>>());
-    this.vaultUUIDs.set([]);
-    this.userService.vault_tags.set([]);
-    this.http.get("/api/v1/all_secrets", { withCredentials: true, observe: 'response' }).subscribe({
-      next: (response) => {
-        const data = JSON.parse(JSON.stringify(response.body))
-        let encrypted_secret_vault = new Array<Map<string, string>>();
-        for (let secret of data.enc_secrets) {
-          let secret_map = new Map<string, string>();
-          secret_map.set("uuid", secret.uuid);
-          secret_map.set("enc_secret", secret.enc_secret);
-          encrypted_secret_vault.push(secret_map);
-        }
-        this.decrypt_and_display_vault(encrypted_secret_vault);
-      },
-      error: (error) => {
-        this.reloadSpin.set(true)
-        if (error.status == 404) {
-          this.userService.vault.set(new Map<string, Map<string, string>>());
-          this.reloadSpin.set(false)
-        } else {
-          let errorMessage = "";
-          if (error.error.message != null) {
-            errorMessage = error.error.message;
-          } else if (error.error.detail != null) {
-            errorMessage = error.error.detail;
+  getUserEncryptedVault(): Promise<Array<Map<string, string>>> {
+    return new Promise<Array<Map<string, string>>>((resolve, reject) => {
+      this.reloadSpin.set(true)
+      this.vault.set(new Map<string, Map<string, string>>());
+      this.vaultUUIDs.set([]);
+      this.userService.vault_tags.set([]);
+      this.http.get("/api/v1/all_secrets", { withCredentials: true, observe: 'response' }).subscribe({
+        next: (response) => {
+          const data = JSON.parse(JSON.stringify(response.body))
+          let encrypted_secret_vault = new Array<Map<string, string>>();
+          for (let secret of data.enc_secrets) {
+            let secret_map = new Map<string, string>();
+            secret_map.set("uuid", secret.uuid);
+            secret_map.set("enc_secret", secret.enc_secret);
+            encrypted_secret_vault.push(secret_map);
           }
-          if (error.status == 0) {
-            errorMessage = "vault.error.server_unreachable"
-          } else if (error.status == 401) {
-            this.userService.clear();
-            this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
-            return;
+          resolve(encrypted_secret_vault)
+        },
+        error: (error) => {
+          this.reloadSpin.set(true)
+          if (error.status == 404) {
+            this.userService.vault.set(new Map<string, Map<string, string>>());
+            this.reloadSpin.set(false)
+          } else {
+            let errorMessage = "";
+            if (error.error.message != null) {
+              errorMessage = error.error.message;
+            } else if (error.error.detail != null) {
+              errorMessage = error.error.detail;
+            }
+            if (error.status == 0) {
+              errorMessage = "vault.error.server_unreachable"
+            } else if (error.status == 401) {
+              this.userService.clear();
+              this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
+              return;
+            }
+            this.translate.get("vault.error.server").subscribe((translation: string) => {
+              this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
+            });
           }
-          this.translate.get("vault.error.server").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
-          });
+          reject(error)
         }
-      }
+      });
     });
   }
 
   get_preferences() {
     this.http.get("/api/v1/preferences?fields=favicon_policy", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
-      if (response.body != null) {
-        const data = JSON.parse(JSON.stringify(response.body));
-        if (data.favicon_policy != null) {
-          this.faviconPolicy.set(data.favicon_policy);
-        } else {
-          this.faviconPolicy.set("enabledOnly");
-          this.translate.get("vault.error.preferences").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, "");
-          });
-        }
-      }
-    }, 
-    error: (error) => {
-      let errorMessage = "";
-      if (error.error.message != null) {
-        errorMessage = error.error.message;
-      } else if (error.error.detail != null) {
-        errorMessage = error.error.detail;
-      }
-      if (error.status == 0) {
-        errorMessage = "vault.error.server_unreachable"
-        return;
-      }
-      this.translate.get("vault.error.server").subscribe((translation: string) => {
-        this.utils.toastError(this.toastr, "Error : Impossible to update your preferences. " + this.translate.instant(errorMessage), "");
-      });
-    }});
-  }
-
-  decrypt_and_display_vault(encrypted_vault: Array<Map<string, string>>) {
-    this.reloadSpin.set(true)
-    this.vault.set(new Map<string, Map<string, string>>());
-    this.vaultUUIDs.set([]);
-    try {
-      if (this.userService.zke_key() != null) {
-        try {
-          this.startDisplayingCode()
-          for (let secret of encrypted_vault) {
-            const uuid = secret.get("uuid");
-            const enc_secret = secret.get("enc_secret");
-            if (uuid != null && enc_secret != null) {
-              this.crypto.decrypt(enc_secret, this.userService.zke_key()!).then((dec_secret) => {
-                if (dec_secret == null) {
-                  this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
-                    this.utils.toastError(this.toastr, translation, "");
-                  });
-                  let fakeProperty = new Map<string, string>();
-                  fakeProperty.set("color", "info");
-                  fakeProperty.set("name", "🔒")
-                  fakeProperty.set("secret", "");
-
-                  this.vault.update(vault => vault?.set(uuid, fakeProperty));
-                } else {
-                  try {
-                    this.vault.update(vault => vault?.set(uuid, this.utils.mapFromJson(dec_secret)));
-                    this.userService.vault.set(this.vault()!);
-
-                    this.filterVault(); // to display all the vault
-                    for (let uuid of this.vaultUUIDs()) {
-                      // display all tags, always
-                      if (this.vault()!.get(uuid)!.has("tags")) {
-                        const secret_tags = this.utils.parseTags(this.vault()!.get(uuid)!.get("tags")!);
-                        for (const tag of secret_tags) {
-                          if (!this.userService.vault_tags().includes(tag)) {
-                            this.userService.vault_tags().push(tag);
-                          }
-                        }
-                      }
-                    }
-                  } catch {
-                    this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
-                      this.utils.toastError(this.toastr, "vault.error.wrong_key", "");
-                    });
-                  }
-                }
-              }).catch((error) => {
-                console.log(error);
-                this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-                  this.utils.toastError(this.toastr, translation + " " + error, "");
-                });
-              });
-            } else {
-              console.log("uuid or enc_secret is null");
-              this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-                this.utils.toastError(this.toastr, translation, "");
-              });
-            }
-
+        if (response.body != null) {
+          const data = JSON.parse(JSON.stringify(response.body));
+          if (data.favicon_policy != null) {
+            this.faviconPolicy.set(data.favicon_policy);
+          } else {
+            this.faviconPolicy.set("enabledOnly");
+            this.translate.get("vault.error.preferences").subscribe((translation: string) => {
+              this.utils.toastError(this.toastr, translation, "");
+            });
           }
-          this.reloadSpin.set(false)
-        } catch (e) {
-          console.log(e);
-          this.translate.get("vault.error.wrong_key_vault").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, "")
-          });
         }
-      } else {
-        this.translate.get("vault.error.decryption_vault").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation, "")
+      },
+      error: (error) => {
+        let errorMessage = "";
+        if (error.error.message != null) {
+          errorMessage = error.error.message;
+        } else if (error.error.detail != null) {
+          errorMessage = error.error.detail;
+        }
+        if (error.status == 0) {
+          errorMessage = "vault.error.server_unreachable"
+          return;
+        }
+        this.translate.get("vault.error.server").subscribe((translation: string) => {
+          this.utils.toastError(this.toastr, "Error : Impossible to update your preferences. " + this.translate.instant(errorMessage), "");
         });
       }
-    } catch (e) {
-      this.translate.get("vault.error.retrieve_vault").subscribe((translation: string) => {
-        this.utils.toastError(this.toastr, translation, "")
-      });
-    }
+    });
+  }
+
+  decrypt_vault(encrypted_vault: Array<Map<string, string>>): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      this.reloadSpin.set(true)
+      this.vault.set(new Map<string, Map<string, string>>());
+      this.vaultUUIDs.set([]);
+      try {
+        if (this.userService.zke_key() != null) {
+          try {
+            for (let secret of encrypted_vault) {
+              const uuid = secret.get("uuid");
+              const enc_secret = secret.get("enc_secret");
+              if (uuid != null && enc_secret != null) {
+                this.crypto.decrypt(enc_secret, this.userService.zke_key()!).then((dec_secret) => {
+                  if (dec_secret == null) {
+                    this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
+                      this.utils.toastError(this.toastr, translation, "");
+                    });
+                    let fakeProperty = new Map<string, string>();
+                    fakeProperty.set("color", "info");
+                    fakeProperty.set("name", "🔒")
+                    fakeProperty.set("secret", "");
+
+                    this.vault.update(vault => vault?.set(uuid, fakeProperty));
+                    this.reloadSpin.set(false)
+                    reject("dec_secret is null")
+                  } else {
+                    try {
+                      this.vault.update(vault => vault?.set(uuid, this.utils.mapFromJson(dec_secret)));
+                      this.userService.vault.set(this.vault()!);
+                      this.reloadSpin.set(false)
+                      resolve(true)
+                    } catch {
+                      this.reloadSpin.set(false)
+                      this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
+                        this.utils.toastError(this.toastr, "vault.error.wrong_key", "");
+                      });
+                      reject("vault.error.wrong_key")
+                    }
+                  }
+                }).catch((error) => {
+                  console.log(error);
+                  this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+                    this.utils.toastError(this.toastr, translation + " " + error, "");
+                  });
+                  this.reloadSpin.set(false)
+                  reject(error)
+                });
+              } else {
+                console.log("uuid or enc_secret is null");
+                this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+                  this.utils.toastError(this.toastr, translation, "");
+                });
+                this.reloadSpin.set(false)
+                reject("uuid or enc_secret is null")
+              }
+
+            }
+          } catch (e) {
+            console.log(e);
+            this.translate.get("vault.error.wrong_key_vault").subscribe((translation: string) => {
+              this.utils.toastError(this.toastr, translation, "")
+            });
+            this.reloadSpin.set(false)
+            reject(e)
+          }
+        } else {
+          this.translate.get("vault.error.decryption_vault").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation, "")
+          });
+          this.reloadSpin.set(false)
+          reject("vault.error.decryption_vault")
+        }
+      } catch (e) {
+        this.translate.get("vault.error.retrieve_vault").subscribe((translation: string) => {
+          this.utils.toastError(this.toastr, translation, "")
+        });
+        this.reloadSpin.set(false)
+        reject(e)
+      }
+    })
   }
 
   navigate(route: string) {
@@ -419,55 +441,57 @@ export class VaultComponent implements OnInit, OnDestroy {
   downloadVault() {
     this.http.get("/api/v1/vault/export", { withCredentials: true, observe: 'response', responseType: 'blob' },).subscribe({
       next: (response) => {
-      const blob = new Blob([response.body!], { type: 'text/plain' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      const date = String(formatDate(new Date(), 'dd-MM-yyyy-hh-mm-ss', 'en'));
-      a.download = 'Zero-TOTP_backup_' + date + '.txt';
-      a.click();
-      window.URL.revokeObjectURL(url);
-      this.utils.toastSuccess(this.toastr, this.translate.instant("vault.downloaded"), "");
-    }, 
-    error: error => {
-      let errorMessage = "";
-      if (error.error.message != null) {
-        errorMessage = error.error.message;
-      } else if (error.error.detail != null) {
-        errorMessage = error.error.detail;
-      }
+        const blob = new Blob([response.body!], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const date = String(formatDate(new Date(), 'dd-MM-yyyy-hh-mm-ss', 'en'));
+        a.download = 'Zero-TOTP_backup_' + date + '.txt';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.utils.toastSuccess(this.toastr, this.translate.instant("vault.downloaded"), "");
+      },
+      error: error => {
+        let errorMessage = "";
+        if (error.error.message != null) {
+          errorMessage = error.error.message;
+        } else if (error.error.detail != null) {
+          errorMessage = error.error.detail;
+        }
 
-      if (error.status == 0) {
-        errorMessage = "vault.error.server_unreachable"
-      } else if (error.status == 401) {
-        this.userService.clear();
-        this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
-        return;
+        if (error.status == 0) {
+          errorMessage = "vault.error.server_unreachable"
+        } else if (error.status == 401) {
+          this.userService.clear();
+          this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
+          return;
+        }
+        this.translate.get("vault.error.server").subscribe((translation: string) => {
+          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
+        });
       }
-      this.translate.get("vault.error.server").subscribe((translation: string) => {
-        this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
-      });
-    }});
+    });
   }
 
   get_oauth_authorization_url() {
     this.http.get("/api/v1/google-drive/oauth/authorization-flow", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
-      const data = JSON.parse(JSON.stringify(response.body))
-      sessionStorage.setItem("oauth_state", data.state);
-      window.location.href = data.authorization_url;
-    }, 
-    error: (error) => {
-      let errorMessage = "";
-      if (error.error.message != null) {
-        errorMessage = error.error.message;
-      } else if (error.error.detail != null) {
-        errorMessage = error.error.detail;
+        const data = JSON.parse(JSON.stringify(response.body))
+        sessionStorage.setItem("oauth_state", data.state);
+        window.location.href = data.authorization_url;
+      },
+      error: (error) => {
+        let errorMessage = "";
+        if (error.error.message != null) {
+          errorMessage = error.error.message;
+        } else if (error.error.detail != null) {
+          errorMessage = error.error.detail;
+        }
+        this.translate.get("vault.oauth.error.server").subscribe((translation: string) => {
+          this.utils.toastError(this.toastr, translation + ". " + errorMessage, "");
+        });
       }
-      this.translate.get("vault.oauth.error.server").subscribe((translation: string) => {
-        this.utils.toastError(this.toastr, translation + ". " + errorMessage, "");
-      });
-    }});
+    });
   }
 
 
@@ -506,21 +530,22 @@ export class VaultComponent implements OnInit, OnDestroy {
   backup_vault_to_google_drive() {
     this.http.put("/api/v1/google-drive/backup", {}, { withCredentials: true, observe: 'response' },).subscribe({
       next: (response) => {
-      this.isGoogleDriveSync.set("uptodate");
-      this.lastBackupDate.set(String(formatDate(new Date(), 'dd/MM/yyyy HH:mm:ss', 'en')));
-    }, 
-    error: (error) => {
-      this.isGoogleDriveSync.set('error');
-      let errorMessage = "";
-      if (error.error.message != null) {
-        errorMessage = error.error.message;
-      } else if (error.error.detail != null) {
-        errorMessage = error.error.title;
+        this.isGoogleDriveSync.set("uptodate");
+        this.lastBackupDate.set(String(formatDate(new Date(), 'dd/MM/yyyy HH:mm:ss', 'en')));
+      },
+      error: (error) => {
+        this.isGoogleDriveSync.set('error');
+        let errorMessage = "";
+        if (error.error.message != null) {
+          errorMessage = error.error.message;
+        } else if (error.error.detail != null) {
+          errorMessage = error.error.title;
+        }
+        this.translate.get("vault.error.backup.part1").subscribe((translation: string) => {
+          this.utils.toastError(this.toastr, translation + " " + errorMessage + ". " + this.translate.instant("vault.error.backup.part2"), "");
+        });
       }
-      this.translate.get("vault.error.backup.part1").subscribe((translation: string) => {
-        this.utils.toastError(this.toastr, translation + " " + errorMessage + ". " + this.translate.instant("vault.error.backup.part2"), "");
-      });
-    }});
+    });
   }
 
   check_last_backup() {
@@ -577,21 +602,22 @@ export class VaultComponent implements OnInit, OnDestroy {
   disable_google_drive() {
     this.http.delete("/api/v1/google-drive/option", { withCredentials: true, observe: 'response' },).subscribe({
       next: (response) => {
-      this.isGoogleDriveEnabled = false;
-      this.isGoogleDriveSync.set("false");
-      this.utils.toastSuccess(this.toastr, this.translate.instant("vault.google.disabled"), "");
-    }, 
-    error: (error) => {
-      this.isGoogleDriveSync.set('error');
-      let errorMessage = "";
-      if (error.error.message != null) {
-        errorMessage = error.error.message;
-      } else if (error.error.detail != null) {
-        errorMessage = error.error.detail;
-      }
+        this.isGoogleDriveEnabled = false;
+        this.isGoogleDriveSync.set("false");
+        this.utils.toastSuccess(this.toastr, this.translate.instant("vault.google.disabled"), "");
+      },
+      error: (error) => {
+        this.isGoogleDriveSync.set('error');
+        let errorMessage = "";
+        if (error.error.message != null) {
+          errorMessage = error.error.message;
+        } else if (error.error.detail != null) {
+          errorMessage = error.error.detail;
+        }
 
-      this.utils.toastError(this.toastr, this.translate.instant("vault.error.google.disable") + " " + errorMessage, "");
-    }});
+        this.utils.toastError(this.toastr, this.translate.instant("vault.error.google.disable") + " " + errorMessage, "");
+      }
+    });
   }
 
 
@@ -625,6 +651,21 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.filterVault();
   }
 
+  display_vault() {
+    this.filterVault(); // to display all the vault
+    for (let uuid of this.vaultUUIDs()) {
+      // display all tags, always
+      if (this.vault()!.get(uuid)!.has("tags")) {
+        const secret_tags = this.utils.parseTags(this.vault()!.get(uuid)!.get("tags")!);
+        for (const tag of secret_tags) {
+          if (!this.userService.vault_tags().includes(tag)) {
+            this.userService.vault_tags.update(current => [...current, tag])
+          }
+        }
+      }
+    }
+  }
+
   unlockVault() {
     this.isDecryptingLockedVaut = true;
     this.vaultDecryptionErrorMessage.set("");
@@ -645,7 +686,16 @@ export class VaultComponent implements OnInit, OnDestroy {
                     document.getElementById("add-code-button")!.style.display = "flex";
                     document.getElementById("add-code-button")!.onclick = () => { this.isModalActive.set(true); };
                     this.isDecryptingLockedVaut = false;
-                    this.get_and_decrypt_vault();
+                    this.getUserEncryptedVault().then(encrypted_vault => {
+                      this.decrypt_vault(encrypted_vault).then(_ => {
+                        this.startDisplayingCode()
+                        this.display_vault()
+                      }, error => {
+                        console.log(error)
+                      })
+                    }, (error)=> {
+                      console.log(error)
+                    })
                   }, (error) => {
                     console.log(error);
                     this.isDecryptingLockedVaut = false;
@@ -692,9 +742,5 @@ export class VaultComponent implements OnInit, OnDestroy {
       }
     })
   }
-
-
-
-
 }
 
