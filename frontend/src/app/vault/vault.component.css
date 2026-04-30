@@ -6,3 +6,19 @@ li{
 
 
 
+.totp-ring__track,
+.totp-ring__progress {
+  fill: none;
+  stroke-width: 8px;
+}
+
+.totp-ring__track {
+  stroke: #dbdbdb;
+}
+
+.totp-ring__progress {
+  stroke-linecap: round;
+  stroke-dasharray: 150.796;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}

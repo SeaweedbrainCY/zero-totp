@@ -742,5 +742,13 @@ export class VaultComponent implements OnInit, OnDestroy {
       }
     })
   }
-}
 
+  getColorFromTOTPColorType(colorType: string): string {
+    switch (colorType) {
+      case "success": return "#63A375"
+      case "danger": return "#FE6847"
+      case "warning": return "#FFCF56"
+      default: return "#5AA9E6"
+    }
+  }
+}
