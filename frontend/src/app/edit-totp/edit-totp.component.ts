@@ -435,7 +435,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
       this.utils.toastSuccess(this.toastr,  this.translate.instant("totp.secret.add.added"),"");
       this.QRCodeService.setLabel('')
       this.QRCodeService.setSecret('')
-      this.router.navigate(["/vault"], {relativeTo:this.route.root});
+      this.router.navigate(["/vault/reload"], {relativeTo:this.route.root});
     }, (error) => {
       let errorMessage = "";
       if(error.error.message != null){
@@ -460,7 +460,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
   updateSecret(enc_property:string, property: Map<string,string>){
     this.http.put("/api/v1/encrypted_secret/"+this.uuid, {enc_secret:enc_property}, {withCredentials:true, observe: 'response'}).subscribe((response) => {      
       this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.add.success") ,"");
-      this.router.navigate(["/vault"], {relativeTo:this.route.root});
+      this.router.navigate(["/vault/reload"], {relativeTo:this.route.root});
     }, (error) => {
       let errorMessage = "";
       if(error.error.message != null){
@@ -488,7 +488,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy{
       if(response.status == 201){
       this.isDestroying.set(false);
       this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.delete.success"),"");
-      this.router.navigate(["/vault"], {relativeTo:this.route.root});
+      this.router.navigate(["/vault/reload"], {relativeTo:this.route.root});
     } else {
       this.isDestroying.set(false);
       this.utils.toastWarning(this.toastr,  this.translate.instant("totp.error.deleting"),"");

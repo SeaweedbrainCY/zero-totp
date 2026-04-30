@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, signal, WritableSignal } from '@angular/core';
 import { UserService } from '../services/User/user.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
@@ -62,6 +62,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   passphrase = "";
   filter = "";
   isDecryptingLockedVaut = false;
+  currentURL = ""
 
 
   // Signals 
@@ -102,6 +103,12 @@ export class VaultComponent implements OnInit, OnDestroy {
     public globalConfigurationService: GlobalConfigurationService
   ) {
     this.current_domain.set(window.location.host);
+    router.events.subscribe((url:any) => {
+      if (url instanceof NavigationEnd){
+          this.currentURL = url.url;
+      }
+    });
+
   }
 
   ngOnInit() {
@@ -137,7 +144,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.isVaultEncrypted.set(false);
       this.get_google_drive_option();
       this.get_preferences();
-      if (this.userService.vault() == null) {
+      if (this.userService.vault() == null || this.currentURL == "/vault/reload") {
         // We need to download and decrypt the vault
         this.getUserEncryptedVault().then(encrypted_vault => {
           this.decrypt_vault(encrypted_vault).then(_ => {
