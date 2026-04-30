@@ -435,7 +435,14 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   reload() {
-    this.ngOnInit();
+    this.get_google_drive_option();
+    this.get_preferences();
+    this.getUserEncryptedVault().then(encrypted_vault => {
+      this.decrypt_vault(encrypted_vault).then(_ => {
+        this.startDisplayingCode()
+        this.display_vault()
+      })
+    })
   }
 
   downloadVault() {
