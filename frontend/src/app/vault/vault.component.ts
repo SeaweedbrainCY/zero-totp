@@ -63,6 +63,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   filter = "";
   isDecryptingLockedVaut = false;
   currentURL = ""
+  totpGenerationIntervalID: number = 0
+  totpValidityUIAnimationIntervalID = 0
 
 
   // Signals 
@@ -171,12 +173,46 @@ export class VaultComponent implements OnInit, OnDestroy {
     document.getElementById("add-code-button")!.style.display = "none";
   }
 
+  // Return epoch time a totp codes needs to be generated
+  getNextTOTPGenerationEpochTime(): number {
+    return (Math.floor(Date.now()/30_000)+1)*30_000
+  }
+
+  startTOTPGenerationInterval(){
+    // TOTP generation interval. Every 30 s
+    let msUntilNextGeneration = this.getNextTOTPGenerationEpochTime() - Date.now()
+     window.setTimeout(() => {
+      this.generateCode()
+      this.totpGenerationIntervalID = window.setInterval(()=> {
+        this.generateCode()
+        console.log("code generated at "+Date.now())
+      }, 30_000)
+    }, msUntilNextGeneration)
+  }
+
+  updateTOTPValidationUI() {
+      let msUntilNextGeneration = this.getNextTOTPGenerationEpochTime() - Date.now()
+        this.progress_bar_percent.set(msUntilNextGeneration / 300)
+    }
+
+  startTOTPValidityUIAnimation() {
+    // Update TOTP validity animation. Every 1s
+
+    // TOTP codes generate on exact second, like 14:30:00,000. So validity animation should update every plain second, ie ms=000
+    let msUntilPlainSecond = (Math.floor(Date.now()) / 1000 + 1) * 1000 - Date.now()
+    window.setTimeout(() => {
+      this.updateTOTPValidationUI()
+      this.totpValidityUIAnimationIntervalID = window.setInterval(() => {
+        this.updateTOTPValidationUI()
+      }, 1000)
+    }, msUntilPlainSecond)
+  }
+
 
 
   startDisplayingCode() {
-    this.totp_code_generation_interval = window.setInterval(() => { this.compute_totp_expiration() }, 100);
-    // setInterval(()=> { this.generateTime() }, 20);
-    // setInterval(()=> { this.generateCode() }, 100);
+    this.startTOTPGenerationInterval()
+    this.startTOTPValidityUIAnimation()
   }
 
   getUserEncryptedVault(): Promise<Array<Map<string, string>>> {
@@ -346,21 +382,9 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   }
 
-  generateTime() {
-    const duration = 30 - Math.floor(Date.now() / 10 % 3000) / 100;
-    this.remainingTime = (duration / 30) * 100
-  }
 
 
-  compute_totp_expiration() {
-    const now = Date.now();
-    const remaining = this.totp_code_expiration - now;
-    this.progress_bar_percent.set(remaining / 300);
-    if (remaining < 0 && !this.generating_next_totp_code) {
-      this.generating_next_totp_code = true;
-      this.generateCode();
-    }
-  }
+
 
   generateCode() {
     if (this.vaultUUIDs == undefined) {
