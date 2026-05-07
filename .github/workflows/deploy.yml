@@ -11,8 +11,15 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'v[0-9]+.[0-9]+.[0-9]+-dev.[0-9]+'
 
-jobs:
+env:
+  TAG: ${{ github.ref_name }}
+  REF_NAME: ${{ github.ref_name }}
+  REPOSITORY: ${{ github.repository }}
+  GITHUB_ACTOR_USERNAME: ${{ github.actor }}
+  COMMIT_SHA: ${{ github.sha}}
 
+
+jobs:
     setup:
       runs-on: ubuntu-latest
       outputs:
@@ -21,14 +28,13 @@ jobs:
         environment: ${{ steps.check_env.outputs.environment }}
       steps:
         - name: Determine environment
-          id: check_env
+          id: check_env            
           run: |
-            TAG="${{ github.ref_name }}"
-            if [[ $TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.[0-9]+$ ]]; then
+            if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-dev\.[0-9]+$ ]]; then
               echo "is_dev=true" >> $GITHUB_OUTPUT
               echo "is_prod=false" >> $GITHUB_OUTPUT
               echo "environment=development" >> $GITHUB_OUTPUT
-            elif [[ $TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            elif [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
               echo "is_dev=false" >> $GITHUB_OUTPUT
               echo "is_prod=true" >> $GITHUB_OUTPUT
               echo "environment=production" >> $GITHUB_OUTPUT
@@ -46,10 +52,8 @@ jobs:
     tests_and_security:
       needs: setup
       name: Tests and security analysis
-      uses: ./.github/workflows/security_analysis.yml  # use the callable tests job to run tests
+      uses: ./.github/workflows/test.yml  # use the callable tests job to run tests
       secrets:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }} 
         MAXMIND_PERMALINK: ${{ secrets.MAXMIND_PERMALINK }}
 
@@ -71,9 +75,9 @@ jobs:
           run: |
             echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
             echo "DATE=$(date)" >> $GITHUB_ENV
-            echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
-            echo "CURRENT_SHORT_VERSION=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
-            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+            echo "CURRENT_VERSION=$(echo "$REF_NAME" | sed 's/^v//')"  >> $GITHUB_ENV
+            echo "CURRENT_SHORT_VERSION=$(echo  "$REF_NAME"  | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
+            echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
             platform=${{ matrix.os == 'ubuntu-24.04' && 'linux/amd64' || 'linux/arm64' }}
             arch=${{ matrix.os == 'ubuntu-24.04' && 'amd64' || 'arm64' }}
             echo "PLATFORM=${platform}" >> $GITHUB_ENV
@@ -82,7 +86,7 @@ jobs:
 
         - name: Create frontend environment file
           working-directory: ./frontend
-          run: bash generate-env.sh '${{ github.ref_name }}' '${{secrets.RSA_PUBLIC_KEY}}'
+          run: bash generate-env.sh "$REF_NAME" '${{secrets.RSA_PUBLIC_KEY}}'
 
         
         - name: Generate sitemap.xml
@@ -99,7 +103,7 @@ jobs:
           uses: docker/login-action@v3
           with:
             registry: ghcr.io
-            username: ${{ github.actor }}
+            username: "$GITHUB_ACTOR_USERNAME"
             password: ${{ secrets.GITHUB_TOKEN }}
 
 
@@ -116,7 +120,7 @@ jobs:
           id: meta
           uses: docker/metadata-action@v5
           with:
-            images: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
+            images: "ghcr.io/$REPOSITORY-frontend"
             labels: |
               org.opencontainers.image.title=Zero-TOTP frontend
               org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP
@@ -134,7 +138,7 @@ jobs:
           id: build
           with:
             context: ./frontend
-            tags: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
+            tags: "ghcr.io/$REPOSITORY-frontend"
             labels: ${{ steps.meta.outputs.labels }}
             annotations: ${{ steps.meta.outputs.annotations }}
             cache-from: type=gha
@@ -177,9 +181,9 @@ jobs:
           run: |
             echo "GIT_COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
             echo "DATE=$(date)" >> $GITHUB_ENV
-            echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
-            echo "CURRENT_SHORT_VERSION=$(echo ${{ github.ref_name }} | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
-            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+            echo "CURRENT_VERSION=$(echo "$REF_NAME" | sed 's/^v//')"  >> $GITHUB_ENV
+            echo "CURRENT_SHORT_VERSION=$(echo "$REF_NAME" | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
+            echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
             platform=${{ matrix.os == 'ubuntu-24.04' && 'linux/amd64' || 'linux/arm64' }}
             arch=${{ matrix.os == 'ubuntu-24.04' && 'amd64' || 'arm64' }}
             echo "ARCH=${arch}" >> $GITHUB_ENV
@@ -196,7 +200,7 @@ jobs:
           uses: docker/login-action@v3
           with:
             registry: ghcr.io
-            username: ${{ github.actor }}
+            username: "$GITHUB_ACTOR_USERNAME"
             password: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Login to Docker Hub
@@ -210,18 +214,18 @@ jobs:
 
         - name: Populating API version
           working-directory: ./api
-          run: echo ${{ github.ref_name }} > ./VERSION
+          run: echo "$REF_NAME" > ./VERSION
 
         - name: Populating API version
           working-directory: ./api
-          run: echo ${{ github.ref_name }} > ./VERSION && echo ${{ github.sha}} | cut -c1-7 >> ./VERSION
+          run: echo "$REF_NAME" > ./VERSION && echo "$COMMIT_SHA" | cut -c1-7 >> ./VERSION
 
 
         - name: Docker meta
           id: meta
           uses: docker/metadata-action@v5
           with:
-            images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
+            images: "ghcr.io/$REPOSITORY-api"
             labels: |
               org.opencontainers.image.title=Zero-TOTP API
               org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP
@@ -238,7 +242,7 @@ jobs:
           uses: docker/build-push-action@v6
           with:
             context: ./api
-            tags: ghcr.io/${{ env.REPOSITORY_NAME }}-api
+            tags: "ghcr.io/$REPOSITORY-api"
             labels: ${{ steps.meta.outputs.labels }}
             annotations: ${{ steps.meta.outputs.annotations }}
             cache-from: type=gha
@@ -269,8 +273,8 @@ jobs:
         - name: Extract Git commit
           id: vars
           run: |
-            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
-            echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
+            echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+            echo "CURRENT_VERSION=$(echo "$REF_NAME" | sed 's/^v//')"  >> $GITHUB_ENV
 
         - name: Download digests
           uses: actions/download-artifact@v4
@@ -283,7 +287,7 @@ jobs:
           uses: docker/login-action@v3
           with:
             registry: ghcr.io
-            username: ${{ github.actor }}
+            username: "$GITHUB_ACTOR_USERNAME"
             password: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Set up Docker Buildx
@@ -295,7 +299,7 @@ jobs:
           id: meta-dev
           uses: docker/metadata-action@v5
           with:
-            images: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
+            images: "ghcr.io/$REPOSITORY-frontend"
             tags: |
               type=semver,pattern={{version}}
               type=raw,value=dev
@@ -309,7 +313,7 @@ jobs:
           if : needs.setup.outputs.is_prod == 'true'
           uses: docker/metadata-action@v5
           with:
-            images: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
+            images: "ghcr.io/$REPOSITORY-frontend"
             tags: |
               type=semver,pattern={{version}}
               type=semver,pattern={{major}}.{{minor}}
@@ -322,11 +326,11 @@ jobs:
           working-directory: ${{ runner.temp }}/digests
           run: |
             docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<<   "$DOCKER_METADATA_OUTPUT_JSON") \
-              $(printf 'ghcr.io/${{ env.REPOSITORY_NAME }}-frontend@sha256:%s ' *) 
+              $(printf "ghcr.io/$REPOSITORY-frontend@sha256:%s "  *) 
 
         - name: Inspect image
           run: |
-            docker buildx imagetools inspect ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.version || steps.meta-prod.outputs.version }}
+            docker buildx imagetools inspect "ghcr.io/$REPOSITORY-frontend:${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.version || steps.meta-prod.outputs.version }}"
 
     merge-api-manifests:
       runs-on: ubuntu-latest
@@ -337,8 +341,8 @@ jobs:
         - name: Extract Git commit
           id: vars
           run: |
-            echo "REPOSITORY_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
-            echo "CURRENT_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')"  >> $GITHUB_ENV
+            echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+            echo "CURRENT_VERSION=$(echo "$REF_NAME" | sed 's/^v//')"  >> $GITHUB_ENV
 
         - name: Download digests
           uses: actions/download-artifact@v4
@@ -351,7 +355,7 @@ jobs:
           uses: docker/login-action@v3
           with:
             registry: ghcr.io
-            username: ${{ github.actor }}
+            username: "$GITHUB_ACTOR_USERNAME"
             password: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Set up Docker Buildx
@@ -361,7 +365,7 @@ jobs:
           id: meta-dev
           uses: docker/metadata-action@v5
           with:
-            images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
+            images: "ghcr.io/$REPOSITORY-api"
             tags: |
               type=semver,pattern={{version}}
               type=raw,value=dev
@@ -374,7 +378,7 @@ jobs:
           id: meta-prod
           uses: docker/metadata-action@v5
           with:
-            images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
+            images: "ghcr.io/$REPOSITORY-api"
             tags: |
               type=semver,pattern={{version}}
               type=semver,pattern={{major}}.{{minor}}
@@ -387,11 +391,11 @@ jobs:
           working-directory: ${{ runner.temp }}/digests
           run: |
             docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<<   "$DOCKER_METADATA_OUTPUT_JSON") \
-              $(printf 'ghcr.io/${{ env.REPOSITORY_NAME }}-api@sha256:%s ' *)
+              $(printf "ghcr.io/$REPOSITORY-api@sha256:%s " *)
 
         - name: Inspect image
           run: |
-            docker buildx imagetools inspect ghcr.io/${{ env.REPOSITORY_NAME }}-api:${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.version || steps.meta-prod.outputs.version }}
+            docker buildx imagetools inspect "ghcr.io/$EPOSITORY-api:${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.version || steps.meta-prod.outputs.version }}"
 
 
     e2e-tests:
@@ -404,7 +408,7 @@ jobs:
             - name: Use last published image 
               working-directory: ./e2e-tests
               run: |
-                current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+                current_version=$(echo "$REF_NAME" | sed 's/^v//')
                 echo "Current version: $current_version"
                 sed -i "s|\(image: ghcr.io/seaweedbraincy/zero-totp-api:\).*|\1$current_version|" docker-compose.yml
                 sed -i "s|\(image: ghcr.io/seaweedbraincy/zero-totp-frontend:\).*|\1$current_version|" docker-compose.yml
@@ -475,7 +479,7 @@ jobs:
 
         - name: Scan Docker image
           run: |
-            current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+            current_version=$(echo "$REF_NAME" | sed 's/^v//')
             trivy image --exit-code 1 --ignorefile ./.trivyignore.yaml --show-suppressed --severity CRITICAL,HIGH --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-api:$current_version
 
     frontend-docker-security-scan:
@@ -494,7 +498,7 @@ jobs:
 
         - name: Scan Docker image
           run: |
-            current_version=$(echo ${{ github.ref_name }} | sed 's/^v//')
+            current_version=$(echo "$REF_NAME" | sed 's/^v//')
             trivy image --exit-code 1 --severity CRITICAL,HIGH --ignorefile ./.trivyignore.yaml --show-suppressed --no-progress --ignore-unfixed ghcr.io/${{ secrets.USERNAME_GITHUB }}/zero-totp-frontend:$current_version
 
 
