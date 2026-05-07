@@ -138,7 +138,7 @@ jobs:
           id: build
           with:
             context: ./frontend
-            tags: "ghcr.io/$REPOSITORY-frontend"
+            tags: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
             labels: ${{ steps.meta.outputs.labels }}
             annotations: ${{ steps.meta.outputs.annotations }}
             cache-from: type=gha
@@ -225,7 +225,7 @@ jobs:
           id: meta
           uses: docker/metadata-action@v5
           with:
-            images: "ghcr.io/$REPOSITORY-api"
+            images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
             labels: |
               org.opencontainers.image.title=Zero-TOTP API
               org.opencontainers.image.description=A complete reliable secure and open source webapp based on zero-knowledge encryption to deal with TOTP
@@ -242,7 +242,7 @@ jobs:
           uses: docker/build-push-action@v6
           with:
             context: ./api
-            tags: "ghcr.io/$REPOSITORY-api"
+            tags: ghcr.io/${{ env.REPOSITORY_NAME }}-api
             labels: ${{ steps.meta.outputs.labels }}
             annotations: ${{ steps.meta.outputs.annotations }}
             cache-from: type=gha
@@ -299,7 +299,7 @@ jobs:
           id: meta-dev
           uses: docker/metadata-action@v5
           with:
-            images: "ghcr.io/$REPOSITORY-frontend"
+            images: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
             tags: |
               type=semver,pattern={{version}}
               type=raw,value=dev
@@ -313,7 +313,7 @@ jobs:
           if : needs.setup.outputs.is_prod == 'true'
           uses: docker/metadata-action@v5
           with:
-            images: "ghcr.io/$REPOSITORY-frontend"
+            images: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
             tags: |
               type=semver,pattern={{version}}
               type=semver,pattern={{major}}.{{minor}}
@@ -326,11 +326,12 @@ jobs:
           working-directory: ${{ runner.temp }}/digests
           run: |
             docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<<   "$DOCKER_METADATA_OUTPUT_JSON") \
-              $(printf "ghcr.io/$REPOSITORY-frontend@sha256:%s "  *) 
+              $(printf 'ghcr.io/${{ env.REPOSITORY_NAME }}-frontend@sha256:%s ' *)
+
 
         - name: Inspect image
           run: |
-            docker buildx imagetools inspect "ghcr.io/$REPOSITORY-frontend:${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.version || steps.meta-prod.outputs.version }}"
+              docker buildx imagetools inspect ghcr.io/${{ env.REPOSITORY_NAME }}-frontend:${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.version || steps.meta-prod.outputs.version }}
 
     merge-api-manifests:
       runs-on: ubuntu-latest
@@ -365,7 +366,7 @@ jobs:
           id: meta-dev
           uses: docker/metadata-action@v5
           with:
-            images: "ghcr.io/$REPOSITORY-api"
+            images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
             tags: |
               type=semver,pattern={{version}}
               type=raw,value=dev
@@ -378,7 +379,7 @@ jobs:
           id: meta-prod
           uses: docker/metadata-action@v5
           with:
-            images: "ghcr.io/$REPOSITORY-api"
+            images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
             tags: |
               type=semver,pattern={{version}}
               type=semver,pattern={{major}}.{{minor}}
@@ -391,11 +392,12 @@ jobs:
           working-directory: ${{ runner.temp }}/digests
           run: |
             docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<<   "$DOCKER_METADATA_OUTPUT_JSON") \
-              $(printf "ghcr.io/$REPOSITORY-api@sha256:%s " *)
+              $(printf 'ghcr.io/${{ env.REPOSITORY_NAME }}-api@sha256:%s ' *)
 
         - name: Inspect image
           run: |
-            docker buildx imagetools inspect "ghcr.io/$EPOSITORY-api:${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.version || steps.meta-prod.outputs.version }}"
+            docker buildx imagetools inspect ghcr.io/${{ env.REPOSITORY_NAME }}-api:${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.version || steps.meta-prod.outputs.version }}
+
 
 
     e2e-tests:
