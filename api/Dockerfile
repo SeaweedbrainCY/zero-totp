@@ -30,6 +30,7 @@ COPY Email/ /api/Email/
 COPY endpoints_controllers/ /api/endpoints_controllers/
 COPY migrations/ /api/migrations/
 COPY monitoring/ /api/monitoring/
+COPY Services/ /api/Services/
 COPY Oauth/ /api/Oauth/
 COPY openAPI/ /api/openAPI/
 COPY toolbox_scripts/ /api/toolbox_scripts/
