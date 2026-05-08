@@ -71,9 +71,8 @@ test('Add TOTP code', async ({ page }) => {
     - paragraph: Github
     - button "edit"
     - button "copy"
-    - paragraph:
-      - text: /\\d+/
-      - progressbar: /\\d+\\.\\d+%/
+    - img
+    - text: /\\d+/
     `);
 });
 
@@ -106,9 +105,8 @@ test('Add several TOTP code', async ({ page }) => {
     - paragraph: Amazon
     - button "edit"
     - button "copy"
-    - paragraph:
-      - text: /\\d+/
-      - progressbar: /\\d+\\.\\d+%/
+    - img
+    - text: /\\d+/
     `);
   await page.locator('a').filter({ hasText: 'Add a new TOTP code' }).click();
   await page.getByRole('button', { name: 'Enter it manually' }).click();
@@ -128,9 +126,8 @@ test('Add several TOTP code', async ({ page }) => {
     - paragraph: Apple
     - button "edit"
     - button "copy"
-    - paragraph:
-      - text: /\\d+/
-      - progressbar: /\\d+\\.\\d+%/
+    - img
+    - text: /\\d+/
     `);
   await page.locator('a').filter({ hasText: 'Add a new TOTP code' }).click();
   await page.getByRole('button', { name: 'Enter it manually' }).click();
@@ -150,9 +147,8 @@ test('Add several TOTP code', async ({ page }) => {
     - paragraph: Microsoft
     - button "edit"
     - button "copy"
-    - paragraph:
-      - text: /\\d+/
-      - progressbar: /\\d+\\.\\d+%/
+    - img
+    - text: /\\d+/
     `);
 });
 
@@ -178,9 +174,8 @@ test('Edit TOTP code', async ({ page }) => {
     - paragraph: Github
     - button "edit"
     - button "copy"
-    - paragraph:
-      - text: /\\d+/
-      - progressbar: /\\d+\\.\\d+%/
+    - img
+    - text: /\\d+/
     `);
 });
 
