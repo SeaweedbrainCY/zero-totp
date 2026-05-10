@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { faEnvelope, faLock, faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash, faVault, faExclamationTriangle, faEye, faEyeSlash, faCircleExclamation, faCircleNotch, faLightbulb, faL } from '@fortawesome/free-solid-svg-icons';
-import { UserService } from '../services/User/user.service';
+import { TOTPEntry, UserService } from '../services/User/user.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Utils } from '../common/Utils/utils';
@@ -10,6 +10,7 @@ import { Buffer } from 'buffer';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Writable } from 'node_modules/@angular/core/types/_chrome_dev_tools_performance-chunk';
+import { VaultService } from '../services/VaultService/vault.service';
 
 type LoadingButtons = {
   email: WritableSignal<boolean>;
@@ -84,6 +85,7 @@ export class AccountComponent implements OnInit {
     private crypto: Crypto,
     public translate: TranslateService,
     private toastr: ToastrService,
+    private vaultService: VaultService,
   ) { }
 
 
@@ -114,13 +116,13 @@ export class AccountComponent implements OnInit {
         }
         if (error.status == 0) {
           this.translate.get("account.errors.network").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr,translation,"")
+            this.utils.toastError(this.toastr, translation, "")
           });
         } else if (error.status == 403 && error.error.error == "Not verified") {
           this.router.navigate(["/emailVerification"], { relativeTo: this.route.root });
         } else {
           this.translate.get("account.errors.unknown").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr,translation,"")
+            this.utils.toastError(this.toastr, translation, "")
           });
         }
       }
@@ -483,65 +485,25 @@ export class AccountComponent implements OnInit {
   }
 
 
-  get_all_secret(): Promise<Map<string, Map<string, string>>> {
-    return new Promise<Map<string, Map<string, string>>>((resolve, reject) => {
-      let vault = new Map<string, Map<string, string>>();
-      this.http.get("/api/v1/all_secrets", { withCredentials: true, observe: 'response' }).subscribe((response) => {
-        try {
-          const data = JSON.parse(JSON.stringify(response.body))
-          const zke_key = this.userService.zke_key()
-          if (zke_key != null) {
-            try {
-              for (let secret of data.enc_secrets) {
-                this.crypto.decrypt(secret.enc_secret, zke_key!).then((dec_secret) => {
-                  if (dec_secret == null) {
-                    this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.wrong_key"), "");
-                    reject("dec_secret is null");
-                  } else {
-                    try {
-                      vault.set(secret.uuid, this.utils.mapFromJson(dec_secret));
-                    } catch (e) {
-                      this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.decrypt_one_secret"), "");
-                      reject(e)
-                    }
-                  }
-                })
-              }
-              resolve(vault)
-            } catch (e) {
-              this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.wrong_key_vault"), "");
-              reject(e)
-            }
-          } else {
-            this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.expired"), "");
-            reject("zke_key is null");
+  get_all_secret(): Promise<Map<string, TOTPEntry>> {
+    return new Promise<Map<string, TOTPEntry>>((resolve, reject) => {
+      this.userService.getUserEncryptedVault().then(encrypted_vault => {
+        this.vaultService.decryptVault(encrypted_vault, this.userService.zke_key()!).then(result => {
+          if (result.errors.length != 0) {
+            const errors = result.errors.join(". ")
+            this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+              this.utils.toastError(this.toastr, translation, errors);
+            });
+            reject(errors)
           }
-        } catch (e) {
-          this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.fetch_vault"), "");
-          reject(e)
-        }
-      }, (error) => {
-        if (error.status == 404) {
-          resolve(new Map<string, Map<string, string>>());
-        } else {
-          let errorMessage = "";
-          if (error.error.message != null) {
-            errorMessage = error.error.message;
-          } else if (error.error.detail != null) {
-            errorMessage = error.error.detail;
-          }
-          if (error.status == 0) {
-            errorMessage = this.translate.instant("account.passphrase.error.network");
-          } else if (error.status == 401) {
-            this.userService.clear();
-            this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
-            return;
-          }
-
-          this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.fetch_vault") + " " + errorMessage, "");
-          reject(error)
-        }
-      });
+          resolve(result.vault)
+        },
+          error => {
+            this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+              this.utils.toastError(this.toastr, translation, error);
+            });
+          })
+      })
     });
   }
 
@@ -558,7 +520,7 @@ export class AccountComponent implements OnInit {
     });
   }
 
-  encryptVault(vault: Map<string, Map<string, string>>, zkeKey_str: string): Promise<Map<string, string>> {
+  encryptVault(vault: Map<string, TOTPEntry>, zkeKey_str: string): Promise<Map<string, string>> {
     return new Promise<Map<string, string>>((resolve, reject) => {
       try {
         const zke_key_raw = Buffer.from(zkeKey_str, "base64");
@@ -572,7 +534,7 @@ export class AccountComponent implements OnInit {
           const enc_vault = new Map<string, string>();
           for (let [uuid, property] of vault) {
             try {
-              this.crypto.encrypt(this.utils.mapToJson(property), zke_key).then(enc_property => {
+              this.crypto.encrypt(this.userService.TOTPEntryToJSON(property), zke_key).then(enc_property => {
                 enc_vault.set(uuid, enc_property);
               });
             } catch (e) {
@@ -589,7 +551,7 @@ export class AccountComponent implements OnInit {
   }
 
 
-  verifyEncryption(derivedKey: CryptoKey, zke_enc: string, enc_vault: Map<string, string>, vault: Map<string, Map<string, string>>): Promise<string> {
+  verifyEncryption(derivedKey: CryptoKey, zke_enc: string, enc_vault: Map<string, string>, vault: Map<string, TOTPEntry>): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       this.crypto.decrypt(zke_enc, derivedKey).then((zke_key_str) => {
         if (zke_key_str != null) {
@@ -610,8 +572,8 @@ export class AccountComponent implements OnInit {
                         reject("dec_secret is null");
                       } else {
                         try {
-                          const secret = this.utils.mapFromJson(dec_secret).get("secret");
-                          if (secret != vault.get("uuid")!.get("secret")) {
+                          const secret = this.userService.TOTPEntryFromJSON(dec_secret).secret;
+                          if (secret != vault.get("uuid")!.secret) {
                             reject("secret is different")
                           }
                         } catch (e) {
@@ -645,32 +607,34 @@ export class AccountComponent implements OnInit {
       const salt = this.crypto.generateRandomSalt();
       this.crypto.hashPassphrase(this.newPassword, salt).then(hashed => {
         const data = {
-          enc_vault: this.utils.mapToJson(enc_vault),
+          enc_vault: JSON.stringify(enc_vault),
           old_passphrase: this.hashedOldPassword,
           new_passphrase: hashed,
           zke_enc: zke_enc,
           passphrase_salt: salt,
           derived_key_salt: derivedKeySalt
         }
-        this.http.put("/api/v1/update/vault", data, { withCredentials: true, observe: 'response' }).subscribe({next : () => {
-          resolve("ok");
-        }, error: (error)=> {
-          if (error.status == 500) {
-            if (error.error.hashing == 1) {
-              this.utils.toastError(this.toastr, this.translate.instant('account.passphrase.error.hash_new'), "");
-              reject(error.status)
+        this.http.put("/api/v1/update/vault", data, { withCredentials: true, observe: 'response' }).subscribe({
+          next: () => {
+            resolve("ok");
+          }, error: (error) => {
+            if (error.status == 500) {
+              if (error.error.hashing == 1) {
+                this.utils.toastError(this.toastr, this.translate.instant('account.passphrase.error.hash_new'), "");
+                reject(error.status)
+              } else {
+                this.translate.get("account.passphrase.error.fatal").subscribe((translation: string) => {
+                  this.utils.toastError(this.toastr, translation, error.error.message);
+                });
+                reject(error.status)
+              }
+              resolve("ok");
             } else {
-              this.translate.get("account.passphrase.error.fatal").subscribe((translation: string) => {
-                this.utils.toastError(this.toastr, translation, error.error.message);
-              });
+              this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.fatal_light") + error.status + " " + error.error.message, "");
               reject(error.status)
             }
-            resolve("ok");
-          } else {
-            this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.fatal_light") + error.status + " " + error.error.message, "");
-            reject(error.status)
           }
-        }});
+        });
       });
     });
   }
@@ -680,18 +644,19 @@ export class AccountComponent implements OnInit {
       let headers = new HttpHeaders().set('x-hash-passphrase', this.hashedOldPassword);
       this.http.delete("/api/v1/account", { headers: headers, withCredentials: true, observe: 'response' }).subscribe({
         next: () => {
-        resolve("ok")
-      }, 
-      error: (error) => {
-        let errorMessage = "";
-        if (error.error.message != null) {
-          errorMessage = error.error.message;
-        } else if (error.error.detail != null) {
-          errorMessage = error.error.detail;
+          resolve("ok")
+        },
+        error: (error) => {
+          let errorMessage = "";
+          if (error.error.message != null) {
+            errorMessage = error.error.message;
+          } else if (error.error.detail != null) {
+            errorMessage = error.error.detail;
+          }
+          this.utils.toastError(this.toastr, errorMessage, "");
+          reject(errorMessage)
         }
-        this.utils.toastError(this.toastr, errorMessage, "");
-        reject(errorMessage)
-      }});
+      });
     });
 
   }
@@ -699,20 +664,21 @@ export class AccountComponent implements OnInit {
   get_internal_notification() {
     this.http.get("/api/v1/notification/internal", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
-      if (response.status == 200) {
-        try {
-          const data = JSON.parse(JSON.stringify(response.body))
-          if (data.display_notification) {
-            this.notification_message.set(data.message);
+        if (response.status == 200) {
+          try {
+            const data = JSON.parse(JSON.stringify(response.body))
+            if (data.display_notification) {
+              this.notification_message.set(data.message);
+            }
+          } catch (error) {
+            console.log(error);
           }
-        } catch (error) {
-          console.log(error);
         }
+      },
+      error: (error) => {
+        console.log(error);
       }
-    }, 
-    error:(error) => {
-      console.log(error);
-    }});
+    });
   }
 
 
@@ -735,7 +701,7 @@ export class AccountComponent implements OnInit {
     this.deleteAccountConfirmationCountdown.set(5);
     this.interval = setInterval(() => {
       if (this.deleteAccountConfirmationCountdown() > 0) {
-        this.deleteAccountConfirmationCountdown.update(current=> current-1)
+        this.deleteAccountConfirmationCountdown.update(current => current - 1)
       } else {
         clearInterval(this.interval);
       }
