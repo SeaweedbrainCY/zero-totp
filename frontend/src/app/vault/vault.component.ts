@@ -133,6 +133,8 @@ export class VaultComponent implements OnInit, OnDestroy {
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation, result.errors.join(". "));
           });
+        } else {
+          this.userService.vault.set(result.vault)
         }
       },
         error => {
@@ -166,7 +168,9 @@ export class VaultComponent implements OnInit, OnDestroy {
             if (result.errors.length != 0) {
               this.translate.get("vault.error.decryption").subscribe((translation: string) => {
                 this.utils.toastError(this.toastr, translation, result.errors.join(". "));
+                return
               });
+              this.userService.vault.set(result.vault)
             }
           },
             error => {
@@ -235,6 +239,8 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.startTOTPValidityUIAnimation()
   }
 
+
+  // DEPRECATED: Should use user service's own utility
   getUserEncryptedVault(): Promise<Array<Map<string, string>>> {
     return new Promise<Array<Map<string, string>>>((resolve, reject) => {
       this.reloadSpin.set(true)
@@ -364,7 +370,9 @@ export class VaultComponent implements OnInit, OnDestroy {
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation, result.errors.join(". "));
           });
+          return
         }
+        this.userService.vault.set(result.vault)
       },
         error => {
           this.reloadSpin.set(false)
@@ -617,7 +625,9 @@ export class VaultComponent implements OnInit, OnDestroy {
                           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
                             this.utils.toastError(this.toastr, translation, result.errors.join(". "));
                           });
+                          return
                         }
+                        this.userService.vault.set(result.vault)
                       },
                         error => {
                           this.reloadSpin.set(false)
