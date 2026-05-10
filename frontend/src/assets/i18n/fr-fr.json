@@ -782,6 +782,7 @@
       "fav_empty": "L'URI ne peut pas être vide",
       "fetch_secret": "Une erreur est survenue en récupérant le secret",
       "fetch_secret_server": "Une erreur est survenue en récupérant le secret depuis le serveur",
+      "get": "Une erreur est survenue en récupérant ton secret. Propriétés non-définies.",
       "invalid_domain": "Nom de domaine invalide",
       "invalid_uri": "URI invalide",
       "missing_https": "http(s):// manquant",
@@ -850,6 +851,7 @@
         "part2": "Essaye de re-synchroniser ton compte google."
       },
       "decryption": "Une erreur est survenue en déchiffrant les secrets.",
+      "decryption_one": "Une erreur est survenue en déchiffrant l'un de tes secrets. Les informations affichées seront incomplètes.",
       "decryption_vault": "Impossible de déchiffrer ton coffre. Déconnecte puis reconnecte toi.",
       "google": {
         "disable": "Erreur : Impossible de désactiver Google Drive",
