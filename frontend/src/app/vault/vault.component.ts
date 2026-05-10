@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, signal, WritableSignal } from '@angular/core';
-import { UserService } from '../services/User/user.service';
+import { Component, OnInit, OnDestroy, signal, WritableSignal, Signal } from '@angular/core';
+import { UserService, TOTPEntry } from '../services/User/user.service';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
@@ -12,7 +12,7 @@ import { LocalVaultV1Service } from '../services/upload-vault/LocalVaultv1Servic
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { TOTP } from "totp-generator"
-import { VaultService } from '../services/VaultService/vault.service';
+import { VaultService, DecryptedVaultResult } from '../services/VaultService/vault.service';
 import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
 
 
@@ -55,9 +55,6 @@ export class VaultComponent implements OnInit, OnDestroy {
   remainingTime = 0;
   local_vault_service: LocalVaultV1Service | null = null;
   isGoogleDriveEnabled = true;
-  animationFrameId: number = 0;
-  totp_code_expiration = 0;
-  generating_next_totp_code = false;
   totp_code_generation_interval: number | undefined;
   passphrase = "";
   filter = "";
@@ -79,16 +76,16 @@ export class VaultComponent implements OnInit, OnDestroy {
   isVaultEncrypted: WritableSignal<boolean | undefined> = signal(undefined);
   isPassphraseVisible = signal(false);
   isGoogleDriveSync = signal("loading"); // uptodate, loading, error, false
-  vaultUUIDs: WritableSignal<string[]> = signal([]);
   isModalActive = signal(false)
   reloadSpin = signal(false)
   storageOptionOpen = signal(false)
   page_title = signal("vault.title.main");
   vault_date: WritableSignal<string | undefined> = signal(undefined); // for local vault
   isRestoreBackupModaleActive = signal(false);
-  vault: WritableSignal<Map<string, Map<string, string>> | undefined> = signal(undefined);
   lastBackupDate = signal("");
   faviconPolicy = signal("");
+  totpCodesMap: WritableSignal<Map<string, string>> = signal(new Map<string, string>())
+  searchBarValue = signal("")
 
 
 
@@ -105,9 +102,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     public globalConfigurationService: GlobalConfigurationService
   ) {
     this.current_domain.set(window.location.host);
-    router.events.subscribe((url:any) => {
-      if (url instanceof NavigationEnd){
-          this.currentURL = url.url;
+    router.events.subscribe((url: any) => {
+      if (url instanceof NavigationEnd) {
+        this.currentURL = url.url;
       }
     });
 
@@ -129,7 +126,21 @@ export class VaultComponent implements OnInit, OnDestroy {
 
       this.page_title.set("vault.title.backup");
       this.vault_date.set(vaultDate);
-      this.decrypt_vault(this.local_vault_service!.get_enc_secrets()!);
+      this.reloadSpin.set(true)
+      this.vaultService.decryptVault(this.local_vault_service!.get_enc_secrets()!, this.userService.zke_key()!).then(result => {
+        this.reloadSpin.set(false)
+        if (result.errors.length != 0) {
+          this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation, result.errors.join(". "));
+          });
+        }
+      },
+        error => {
+          this.reloadSpin.set(false)
+          this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation, error);
+          });
+        })
     } else if (this.userService.zke_key() == null) {
       // User refreshed the page
       this.userService.refresh_user_id().then(() => {
@@ -146,19 +157,28 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.isVaultEncrypted.set(false);
       this.get_google_drive_option();
       this.get_preferences();
-      if (this.userService.vault() == null || this.currentURL == "/vault/reload") {
+      if (this.userService.zke_key() == null || this.currentURL == "/vault/reload") {
         // We need to download and decrypt the vault
+        this.reloadSpin.set(true)
         this.getUserEncryptedVault().then(encrypted_vault => {
-          this.decrypt_vault(encrypted_vault).then(_ => {
-            this.startDisplayingCode()
-            this.display_vault()
-          })
+          this.vaultService.decryptVault(encrypted_vault, this.userService.zke_key()!).then(result => {
+            this.reloadSpin.set(false)
+            if (result.errors.length != 0) {
+              this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+                this.utils.toastError(this.toastr, translation, result.errors.join(". "));
+              });
+            }
+          },
+            error => {
+              this.reloadSpin.set(false)
+              this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+                this.utils.toastError(this.toastr, translation, error);
+              });
+            })
         })
       } else {
         // The vault is in memory no need to download/decrypt it
-        this.vault.set(this.userService.vault()!)
         this.startDisplayingCode()
-        this.display_vault()
       }
 
     }
@@ -175,25 +195,25 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   // Return epoch time a totp codes needs to be generated
   getNextTOTPGenerationEpochTime(): number {
-    return (Math.floor(Date.now()/30_000)+1)*30_000
+    return (Math.floor(Date.now() / 30_000) + 1) * 30_000
   }
 
-  startTOTPGenerationInterval(){
+  startTOTPGenerationInterval() {
     // TOTP generation interval. Every 30 s
     let msUntilNextGeneration = this.getNextTOTPGenerationEpochTime() - Date.now()
-     window.setTimeout(() => {
+    window.setTimeout(() => {
       this.generateCode()
-      this.totpGenerationIntervalID = window.setInterval(()=> {
+      this.totpGenerationIntervalID = window.setInterval(() => {
         this.generateCode()
-        console.log("code generated at "+Date.now())
+        console.log("code generated at " + Date.now())
       }, 30_000)
     }, msUntilNextGeneration)
   }
 
   updateTOTPValidationUI() {
-      let msUntilNextGeneration = this.getNextTOTPGenerationEpochTime() - Date.now()
-        this.progress_bar_percent.set(msUntilNextGeneration / 300)
-    }
+    let msUntilNextGeneration = this.getNextTOTPGenerationEpochTime() - Date.now()
+    this.progress_bar_percent.set(msUntilNextGeneration / 300)
+  }
 
   startTOTPValidityUIAnimation() {
     // Update TOTP validity animation. Every 1s
@@ -218,8 +238,6 @@ export class VaultComponent implements OnInit, OnDestroy {
   getUserEncryptedVault(): Promise<Array<Map<string, string>>> {
     return new Promise<Array<Map<string, string>>>((resolve, reject) => {
       this.reloadSpin.set(true)
-      this.vault.set(new Map<string, Map<string, string>>());
-      this.vaultUUIDs.set([]);
       this.userService.vault_tags.set([]);
       this.http.get("/api/v1/all_secrets", { withCredentials: true, observe: 'response' }).subscribe({
         next: (response) => {
@@ -236,7 +254,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.reloadSpin.set(true)
           if (error.status == 404) {
-            this.userService.vault.set(new Map<string, Map<string, string>>());
+            this.userService.vault.set(new Map<string, TOTPEntry>());
             this.reloadSpin.set(false)
           } else {
             let errorMessage = "";
@@ -295,88 +313,6 @@ export class VaultComponent implements OnInit, OnDestroy {
     });
   }
 
-  decrypt_vault(encrypted_vault: Array<Map<string, string>>): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-      this.reloadSpin.set(true)
-      this.vault.set(new Map<string, Map<string, string>>());
-      this.vaultUUIDs.set([]);
-      try {
-        if (this.userService.zke_key() != null) {
-          try {
-            for (let secret of encrypted_vault) {
-              const uuid = secret.get("uuid");
-              const enc_secret = secret.get("enc_secret");
-              if (uuid != null && enc_secret != null) {
-                this.crypto.decrypt(enc_secret, this.userService.zke_key()!).then((dec_secret) => {
-                  if (dec_secret == null) {
-                    this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
-                      this.utils.toastError(this.toastr, translation, "");
-                    });
-                    let fakeProperty = new Map<string, string>();
-                    fakeProperty.set("color", "info");
-                    fakeProperty.set("name", "🔒")
-                    fakeProperty.set("secret", "");
-
-                    this.vault.update(vault => vault?.set(uuid, fakeProperty));
-                    this.reloadSpin.set(false)
-                    reject("dec_secret is null")
-                  } else {
-                    try {
-                      this.vault.update(vault => vault?.set(uuid, this.utils.mapFromJson(dec_secret)));
-                      this.userService.vault.set(this.vault()!);
-                      this.reloadSpin.set(false)
-                      resolve(true)
-                    } catch {
-                      this.reloadSpin.set(false)
-                      this.translate.get("vault.error.wrong_key").subscribe((translation: string) => {
-                        this.utils.toastError(this.toastr, "vault.error.wrong_key", "");
-                      });
-                      reject("vault.error.wrong_key")
-                    }
-                  }
-                }).catch((error) => {
-                  console.log(error);
-                  this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-                    this.utils.toastError(this.toastr, translation + " " + error, "");
-                  });
-                  this.reloadSpin.set(false)
-                  reject(error)
-                });
-              } else {
-                console.log("uuid or enc_secret is null");
-                this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-                  this.utils.toastError(this.toastr, translation, "");
-                });
-                this.reloadSpin.set(false)
-                reject("uuid or enc_secret is null")
-              }
-
-            }
-          } catch (e) {
-            console.log(e);
-            this.translate.get("vault.error.wrong_key_vault").subscribe((translation: string) => {
-              this.utils.toastError(this.toastr, translation, "")
-            });
-            this.reloadSpin.set(false)
-            reject(e)
-          }
-        } else {
-          this.translate.get("vault.error.decryption_vault").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, "")
-          });
-          this.reloadSpin.set(false)
-          reject("vault.error.decryption_vault")
-        }
-      } catch (e) {
-        this.translate.get("vault.error.retrieve_vault").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation, "")
-        });
-        this.reloadSpin.set(false)
-        reject(e)
-      }
-    })
-  }
-
   navigate(route: string) {
     this.router.navigate([route], { relativeTo: this.route.root });
 
@@ -387,74 +323,26 @@ export class VaultComponent implements OnInit, OnDestroy {
 
 
   generateCode() {
-    if (this.vaultUUIDs == undefined) {
-      this.totp_code_expiration = TOTP.generate("aa").expires; // Fake the timer
-      this.generating_next_totp_code = false;
-      return;
-    }
-    for (let uuid of this.vaultUUIDs()) {
-      const secret = this.vault()!.get(uuid)!.get("secret")!;
+    let newTOTPCodesMap = new Map<string, string>()
+    for (let uuid of this.userService.vault().keys()) {
+      const secret = this.userService.vault().get(uuid)!.secret;
       try {
         let code = TOTP.generate(secret).otp
-        this.vault()!.get(uuid)!.set("code", code);
-        if (this.generating_next_totp_code) {
-          this.totp_code_expiration = TOTP.generate(secret).expires
-          this.generating_next_totp_code = false;
-        }
+        newTOTPCodesMap.set(uuid, code)
       } catch (e) {
         console.log(e);
-        let code = "Error"
-        this.vault()!.get(uuid)!.set("code", code);
+        newTOTPCodesMap.set(uuid, "Error")
       }
     }
-
-    if (this.generating_next_totp_code) {
-      this.totp_code_expiration = TOTP.generate("aa").expires; // New check in 1s
-      this.generating_next_totp_code = false;
-    }
+    this.totpCodesMap.set(newTOTPCodesMap)
   }
 
-  filterVault() {
-    this.vaultUUIDs.set([]);
-    let tmp_vault = Array.from(this.vault()!.keys()) as string[];
-    if (this.filter == "" && this.selectedTags.length == 0) {
-      this.vaultUUIDs.set(tmp_vault);
-      this.generateCode();
-      return;
-    }
-    this.filter = this.filter.replace(/[^a-zA-Z0-9-_]/g, '');
-    this.filter = this.filter.toLowerCase();
-    if (this.filter.length > 50) {
-      this.filter = this.filter.substring(0, 50);
-    }
-    let regex = new RegExp(this.filter);
-    if (this.filter == "") { // we filter on tags
-      regex = new RegExp(".*");
-    }
-    for (let uuid of tmp_vault) {
-      let has_tag = false;
-      if (this.selectedTags.length > 0) {
-        if (this.vault()!.get(uuid)!.has("tags")) {
-          const secret_tags = this.utils.parseTags(this.vault()!.get(uuid)!.get("tags")!);
-          for (const tag of this.selectedTags()) {
-            if (secret_tags.includes(tag)) {
-              has_tag = true;
-            }
-          }
-        }
-      }
-      if (this.selectedTags.length == 0 || has_tag) {
-        //filter on search filter
-        if (regex.test(this.get_favicon_url(this.vault()!.get(uuid)?.get('domain')).toLowerCase())) {
-          this.vaultUUIDs.update(vault => [...vault, uuid]);
-        } else if (this.vault()!.get(uuid)?.get('name')) {
-          if (regex.test(this.vault()!.get(uuid)?.get('name')!.toLowerCase()!)) {
-            this.vaultUUIDs.update(vault => [...vault, uuid]);
-          }
-        }
-      }
-    }
-    this.generateCode();
+
+
+
+
+  searchBarValueChanged() {
+    this.searchBarValue.set(this.filter)
   }
 
   edit(domain: string) {
@@ -468,11 +356,22 @@ export class VaultComponent implements OnInit, OnDestroy {
   reload() {
     this.get_google_drive_option();
     this.get_preferences();
+    this.reloadSpin.set(true)
     this.getUserEncryptedVault().then(encrypted_vault => {
-      this.decrypt_vault(encrypted_vault).then(_ => {
-        this.startDisplayingCode()
-        this.display_vault()
-      })
+      this.vaultService.decryptVault(encrypted_vault, this.userService.zke_key()!).then(result => {
+        this.reloadSpin.set(false)
+        if (result.errors.length != 0) {
+          this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation, result.errors.join(". "));
+          });
+        }
+      },
+        error => {
+          this.reloadSpin.set(false)
+          this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+            this.utils.toastError(this.toastr, translation, error);
+          });
+        })
     })
   }
 
@@ -659,10 +558,11 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
 
-  get_favicon_url(unsafe_domain: string | undefined): string {
-    if (unsafe_domain == undefined) {
+  get_favicon_url(unsafe_uri: string | undefined): string {
+    if (unsafe_uri == undefined || unsafe_uri == "") {
       return "https://icons.duckduckgo.com/ip3/unknown.ico";
     }
+    const unsafe_domain = this.utils.getDomainFromURI(unsafe_uri)
     if (this.utils.domain_name_validator(unsafe_domain)) {
       return "https://icons.duckduckgo.com/ip3/" + unsafe_domain + ".ico";
     } else {
@@ -686,23 +586,8 @@ export class VaultComponent implements OnInit, OnDestroy {
     } else {
       this.selectedTags.update(tags => [...tags, tag])
     }
-    this.filterVault();
   }
 
-  display_vault() {
-    this.filterVault(); // to display all the vault
-    for (let uuid of this.vaultUUIDs()) {
-      // display all tags, always
-      if (this.vault()!.get(uuid)!.has("tags")) {
-        const secret_tags = this.utils.parseTags(this.vault()!.get(uuid)!.get("tags")!);
-        for (const tag of secret_tags) {
-          if (!this.userService.vault_tags().includes(tag)) {
-            this.userService.vault_tags.update(current => [...current, tag])
-          }
-        }
-      }
-    }
-  }
 
   unlockVault() {
     this.isDecryptingLockedVaut = true;
@@ -724,15 +609,22 @@ export class VaultComponent implements OnInit, OnDestroy {
                     document.getElementById("add-code-button")!.style.display = "flex";
                     document.getElementById("add-code-button")!.onclick = () => { this.isModalActive.set(true); };
                     this.isDecryptingLockedVaut = false;
+                    this.reloadSpin.set(true)
                     this.getUserEncryptedVault().then(encrypted_vault => {
-                      this.decrypt_vault(encrypted_vault).then(_ => {
-                        this.startDisplayingCode()
-                        this.display_vault()
-                      }, error => {
-                        console.log(error)
-                      })
-                    }, (error)=> {
-                      console.log(error)
+                      this.vaultService.decryptVault(encrypted_vault, this.userService.zke_key()!).then(result => {
+                        this.reloadSpin.set(false)
+                        if (result.errors.length != 0) {
+                          this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+                            this.utils.toastError(this.toastr, translation, result.errors.join(". "));
+                          });
+                        }
+                      },
+                        error => {
+                          this.reloadSpin.set(false)
+                          this.translate.get("vault.error.decryption").subscribe((translation: string) => {
+                            this.utils.toastError(this.toastr, translation, error);
+                          });
+                        })
                     })
                   }, (error) => {
                     console.log(error);
@@ -751,7 +643,7 @@ export class VaultComponent implements OnInit, OnDestroy {
                 console.log(response);
                 this.isDecryptingLockedVaut = false;
                 this.translate.get("vault.error.unlock").subscribe((translation: string) => {
-                  this.utils.toastError(this.toastr, translation + " " + "U3-" + response.statusText, "");
+                  this.utils.toastError(this.toastr, translation + " " + "U3-" + response.status, "");
                 });
               }
 
@@ -788,5 +680,38 @@ export class VaultComponent implements OnInit, OnDestroy {
       case "warning": return "#FFCF56"
       default: return "#5AA9E6"
     }
+  }
+
+  // Evaluates if a code should be displayed. The logic check the filtering tags and search items
+  // It is important to keep the dynamic part selectedTagsList and searchBarValue as args because its the update of those values, catched in the HTML component that will re-trigger the function evaluation
+  shouldDisplayCode(totpEntry: TOTPEntry, selectedTagsList: string[], searchBarValue: string): boolean {
+    if (selectedTagsList.length == 0 && searchBarValue == "") {
+      return true
+    }
+
+    if (selectedTagsList.length > 0) {
+      let hasOneGoodTag = false
+      for (let tag of selectedTagsList) {
+        if (totpEntry.tags.includes(tag)) {
+          hasOneGoodTag = true;
+          break;
+        }
+      }
+      if (!hasOneGoodTag) {
+        return false
+      }
+    }
+
+    if (searchBarValue != "") {
+      let filter = searchBarValue.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
+      if (filter.length > 50) {
+        // Avoid slowing down the browser. Ne search with more than 50 char
+        filter = filter.substring(0, 50)
+      }
+      if (!totpEntry.name.includes(filter) && !totpEntry.uri.includes(filter)) {
+        return false
+      }
+    }
+    return true
   }
 }

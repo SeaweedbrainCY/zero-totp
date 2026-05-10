@@ -302,13 +302,13 @@
       <div class="field has-addons">
         <div class="control  has-icons-left is-expanded">
           <input class="input" type="text" placeholder="Search" name="filter" [(ngModel)]="filter"
-            (keyup)="filterVault()">
+            (keyup)="searchBarValueChanged()">
           <span class="icon is-left">
             <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
           </span>
         </div>
         <div class="control ">
-          <a class="button" (click)="filter='';filterVault() ">
+          <a class="button" (click)="filter='';searchBarValueChanged() ">
             <fa-icon [icon]="faXmark"></fa-icon>
           </a>
         </div>
@@ -316,7 +316,7 @@
       <div class="mb-4">
         <strong>{{'vault.filter.tag.title' | translate}} : </strong>
         <span class="tag is-rounded ml-4" style="cursor:pointer" [ngClass]="{'is-info':selectedTags().length == 0}"
-          (click)="selectedTags.set([]); filterVault()">All</span>
+          (click)="selectedTags.set([])">All</span>
         @for (tag of this.userService.vault_tags(); track tag) {
         <span>
           <span class="tag is-rounded ml-4 mt-2" style="cursor:pointer"
@@ -363,27 +363,29 @@
           </a>
         </div>
         }
-        @for (uuid of vaultUUIDs(); track uuid) {
+        @for (uuid of userService.vault().keys(); track uuid) {
+        @if(shouldDisplayCode(userService.vault().get(uuid)!, selectedTags(), searchBarValue())){
         <div class="column  is-full-mobile
             is-one-third-tablet
             is-one-third-desktop
             is-one-third-widescreen
             is-one-quarter-fullhd">
-          <div class="card totp-card" [ngClass]="{   'totp-card-green': vault()!.get(uuid)?.get('color') == 'success',
+          <div class="card totp-card" [ngClass]="{   'totp-card-green': userService.vault().get(uuid)!.color == 'success',
                                                                     
-                    'totp-card-red': vault()!.get(uuid)?.get('color') == 'danger',  
-                    'totp-card-blue': vault()!.get(uuid)?.get('color') == 'info', 
+                    'totp-card-red': userService.vault().get(uuid)!.color  == 'danger',  
+                    'totp-card-blue': userService.vault().get(uuid)!.color  == 'info', 
                                                                     
-                    'totp-card-yellow': vault()!.get(uuid)?.get('color') == 'warning',
+                    'totp-card-yellow': userService.vault().get(uuid)!.color  == 'warning',
                                                                 
                 }">
             <header class="card-header">
-              <p class="card-header-title  ">@if ((vault()!.get(uuid)?.get('favicon') == 'true' || faviconPolicy() ==
+              <p class="card-header-title  ">@if ((userService.vault().get(uuid)!.favicon || faviconPolicy()
+                ==
                 'always') && faviconPolicy() != 'never') {
-                <img src="{{get_favicon_url(vault()!.get(uuid)?.get('domain'))}}" alt="" width="25px" height="25px"
+                <img src="{{get_favicon_url(userService.vault().get(uuid)!.uri)}}" alt="" width="25px" height="25px"
                   style="margin-right: 6px;">
                 }
-                {{vault()!.get(uuid)?.get('name')}}
+                {{userService.vault().get(uuid)!.name}}
               </p>
               <button class="card-header-icon" aria-label="edit" (click)="edit(uuid)">
                 <span class="icon">
@@ -391,30 +393,34 @@
                 </span>
               </button>
               <button class="card-header-icon" aria-label="copy" (click)="copy()"
-                [cdkCopyToClipboard]="vault()!.get(uuid)?.get('code')!">
+                [cdkCopyToClipboard]="totpCodesMap().get(uuid) ?? 'An error occurred while copying the code. Try again or try to copy it manually.'">
                 <span class="icon">
                   <fa-icon [icon]="faCopy"></fa-icon>
                 </span>
               </button>
             </header>
-            <a class="noHover" (click)="copy()" [cdkCopyToClipboard]="vault()!.get(uuid)?.get('code')!">
+            <a class="noHover" (click)="copy()"
+              [cdkCopyToClipboard]="totpCodesMap().get(uuid) ?? 'An error occurred while copying the code. Try again or try to copy it manually.'">
               <div class="card-content " style="text-decoration: none;">
                 <div class="content is-flex is-align-items-center is-justify-content-center is-align-content-center">
-                    <div class="totp-ring mr-4 is-flex  is-align-items-center ">
-                      <svg width="2em" height="2em" viewBox="0 0 56 56">
-                        <circle class="totp-ring__track" cx="28" cy="28" r="24" />
-                        <circle class="totp-ring__progress" cx="28" cy="28" r="24" [style.stroke]="getColorFromTOTPColorType(vault()!.get(uuid)?.get('color')!)"
-                          [style.stroke-dashoffset]="150.796 * (1 - progress_bar_percent() / 100)" />
-                      </svg>
-                    </div>
-                 <div>
-<span class="is-size-2 has-text-weight-bold has-text-centered mr-4">{{vault()!.get(uuid)?.get('code')}}
-                  </span></div>
+                  <div class="totp-ring mr-4 is-flex  is-align-items-center ">
+                    <svg width="2em" height="2em" viewBox="0 0 56 56">
+                      <circle class="totp-ring__track" cx="28" cy="28" r="24" />
+                      <circle class="totp-ring__progress" cx="28" cy="28" r="24"
+                        [style.stroke]="getColorFromTOTPColorType(userService.vault().get(uuid)!.color)"
+                        [style.stroke-dashoffset]="150.796 * (1 - progress_bar_percent() / 100)" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span class="is-size-2 has-text-weight-bold has-text-centered mr-4">{{totpCodesMap().get(uuid)}}
+                    </span>
+                  </div>
                 </div>
               </div>
             </a>
           </div>
         </div>
+        }
         }
       </div>
       }
