@@ -11,7 +11,7 @@ import { Utils } from '../common/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { formatDate } from '@angular/common';
-import { UserService } from '../services/User/user.service';
+import { UserService, TOTPEntry } from '../services/User/user.service';
 import { Crypto } from '../common/Crypto/crypto';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 
@@ -55,7 +55,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   is_continue_disabled = signal(false);
   is_importing = signal(false);
   file_name = signal("");
-  decrypted_vault = signal<Map<string, Map<string, string>> | undefined>(undefined);
+  decrypted_vault = signal<Map<string, TOTPEntry> | undefined>(undefined);
   decryption_error = signal("");
   is_vault_successfully_decrypted = signal(false);
   uploading = signal(false);
@@ -408,8 +408,14 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     if (this.local_vault_service() != null) {
       this.vaultService.derivePassphrase(this.local_vault_service()!.get_derived_key_salt()!, this.imported_vault_passphrase()).then((derivedKey) => {
         this.vaultService.decryptZKEKey(this.local_vault_service()!.get_zke_key_enc()!, derivedKey, true).then((zke_key) => {
-          this.vaultService.decryptVault(this.local_vault_service()!.get_enc_secrets()!, zke_key).then((decrypted_vault) => {
-            this.decrypted_vault.set(decrypted_vault);
+          this.vaultService.decryptVault(this.local_vault_service()!.get_enc_secrets()!, zke_key).then((vault_decryption_result) => {
+            if (vault_decryption_result.errors.length > 0) {
+              this.translate.get("import_vault.errors.decryption_failure").subscribe((translation) => {
+                this.decryption_error.set(translation + ". Error: " + vault_decryption_result.errors.join(". "));
+              });
+              return
+            }
+            this.decrypted_vault.set(vault_decryption_result.vault);
             this.is_continue_disabled.set(false);
             this.is_vault_successfully_decrypted.set(true)
             this.selected_uuid.set(Array.from((this.decrypted_vault()!.keys())))
@@ -444,7 +450,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
 
   async upload() {
-    document.getElementById("enc-upload-title")?.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
+    document.getElementById("enc-upload-title")?.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
     this.uploading.set(true);
     this.upload_error_uuid.set([]);
     this.import_had_error.set(false);
@@ -453,10 +459,10 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     });
     const batches = await this.encryptAndBatch();
     await this.uploadBatches(batches);
-    
+
     this.uploading.set(false);
 
-    if (!this.import_had_error()){
+    if (!this.import_had_error()) {
       this.importSuccess.set(true);
     }
   }
@@ -514,9 +520,9 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     return batches;
   }
 
-  encryptSecret(secret_properties: Map<string, string>): Promise<string> {
+  encryptSecret(secret_properties: TOTPEntry): Promise<string> {
     return new Promise((resolve, reject) => {
-      const jsonProperty = this.utils.mapToJson(secret_properties);
+      const jsonProperty = this.userService.TOTPEntryToJSON(secret_properties)
       try {
         this.crypto.encrypt(jsonProperty, this.userService.zke_key()!).then((enc_jsonProperty) => {
           resolve(enc_jsonProperty);
