@@ -138,4 +138,39 @@ export class UserService {
         : totpEntryDefault.tags,
     };
   }
+
+  getUserEncryptedVault(): Promise<Array<Map<string, string>>> {
+    return new Promise<Array<Map<string, string>>>((resolve, reject) => {
+      this.http.get("/api/v1/all_secrets", { withCredentials: true, observe: 'response' }).subscribe({
+        next: (response) => {
+          const data = JSON.parse(JSON.stringify(response.body))
+          let encrypted_secret_vault = new Array<Map<string, string>>();
+          for (let secret of data.enc_secrets) {
+            let secret_map = new Map<string, string>();
+            secret_map.set("uuid", secret.uuid);
+            secret_map.set("enc_secret", secret.enc_secret);
+            encrypted_secret_vault.push(secret_map);
+          }
+          resolve(encrypted_secret_vault)
+        },
+        error: (error) => {
+          if (error.status == 404) {
+            resolve(new Array<Map<string, string>>());
+          } else {
+            let errorMessage = "";
+            if (error.error.message != null) {
+              errorMessage = error.error.message;
+            } else if (error.error.detail != null) {
+              errorMessage = error.error.detail;
+            }
+            if (error.status == 0) {
+              errorMessage = "vault.error.server_unreachable"
+            }
+            reject(errorMessage)
+          }
+          reject(error)
+        }
+      });
+    });
+  }
 }
