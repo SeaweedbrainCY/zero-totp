@@ -92,23 +92,23 @@ export class VaultService {
       const promises = encrypted_vault.map((secret) => {
         const uuid = secret.get("uuid");
         const enc_secret = secret.get("enc_secret");
-        if (uuid != null) {
-          if (enc_secret != null) {
-            this.crypto.decrypt(enc_secret, zke_key).then((dec_secret) => {
-              if (dec_secret != null) {
-                decrypted_vault.set(uuid, this.userServive.TOTPEntryFromJSON(dec_secret))
-              } else {
-                decrypted_vault.set(uuid, fakeProperty);
-                errors.push("Decrypted secret null.")
-              }
-            }, (error) => {
-              decrypted_vault.set(uuid, fakeProperty);
-              errors.push(error)
-            });
+        if (uuid == null) return Promise.resolve();
+
+        if (enc_secret == null) {
+          decrypted_vault.set(uuid, fakeProperty);
+          return Promise.resolve();
+        }
+        return this.crypto.decrypt(enc_secret, zke_key).then((dec_secret) => {
+          if (dec_secret != null) {
+            decrypted_vault.set(uuid, this.userServive.TOTPEntryFromJSON(dec_secret))
           } else {
             decrypted_vault.set(uuid, fakeProperty);
+            errors.push("Decrypted secret null.")
           }
-        }
+        }, (error) => {
+          decrypted_vault.set(uuid, fakeProperty);
+          errors.push(error)
+        });
       })
 
       Promise.all(promises)
