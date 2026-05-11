@@ -133,10 +133,9 @@ export class VaultComponent implements OnInit, OnDestroy {
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation, result.errors.join(". "));
           });
-        } else {
-          this.userService.vault.set(result.vault)
-          this.startDisplayingCode()
         }
+        this.userService.vault.set(result.vault)
+        this.startDisplayingCode()
       },
         error => {
           this.reloadSpin.set(false)
@@ -169,11 +168,10 @@ export class VaultComponent implements OnInit, OnDestroy {
             if (result.errors.length != 0) {
               this.translate.get("vault.error.decryption").subscribe((translation: string) => {
                 this.utils.toastError(this.toastr, translation, result.errors.join(". "));
-                return
               });
-              this.userService.vault.set(result.vault)
-              this.startDisplayingCode()
             }
+            this.userService.vault.set(result.vault)
+            this.startDisplayingCode()
           },
             error => {
               this.reloadSpin.set(false)
@@ -212,7 +210,6 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.generateCode()
       this.totpGenerationIntervalID = window.setInterval(() => {
         this.generateCode()
-        console.log("code generated at " + Date.now())
       }, 30_000)
     }, msUntilNextGeneration)
   }
@@ -373,7 +370,6 @@ export class VaultComponent implements OnInit, OnDestroy {
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
             this.utils.toastError(this.toastr, translation, result.errors.join(". "));
           });
-          return
         }
         this.userService.vault.set(result.vault)
       },
@@ -628,7 +624,6 @@ export class VaultComponent implements OnInit, OnDestroy {
                           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
                             this.utils.toastError(this.toastr, translation, result.errors.join(". "));
                           });
-                          return
                         }
                         this.userService.vault.set(result.vault)
                         this.startDisplayingCode()
