@@ -135,6 +135,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           });
         } else {
           this.userService.vault.set(result.vault)
+          this.startDisplayingCode()
         }
       },
         error => {
@@ -171,6 +172,7 @@ export class VaultComponent implements OnInit, OnDestroy {
                 return
               });
               this.userService.vault.set(result.vault)
+              this.startDisplayingCode()
             }
           },
             error => {
@@ -203,6 +205,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   startTOTPGenerationInterval() {
+    this.generateCode()
     // TOTP generation interval. Every 30 s
     let msUntilNextGeneration = this.getNextTOTPGenerationEpochTime() - Date.now()
     window.setTimeout(() => {
@@ -628,6 +631,7 @@ export class VaultComponent implements OnInit, OnDestroy {
                           return
                         }
                         this.userService.vault.set(result.vault)
+                        this.startDisplayingCode()
                       },
                         error => {
                           this.reloadSpin.set(false)
