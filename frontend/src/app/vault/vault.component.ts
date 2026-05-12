@@ -62,6 +62,8 @@ export class VaultComponent implements OnInit, OnDestroy {
   currentURL = ""
   totpGenerationIntervalID: number = 0
   totpValidityUIAnimationIntervalID = 0
+  totpGenerationTimeoutID = 0
+  totpValidityUIAnimationTimeoutID = 0
 
 
   // Signals 
@@ -170,8 +172,14 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    console.log("clearing interval " + this.totpGenerationIntervalID + " " + this.totpValidityUIAnimationIntervalID)
+    clearTimeout(this.totpGenerationTimeoutID)
     clearInterval(this.totpGenerationIntervalID)
+
+    clearTimeout(this.totpValidityUIAnimationTimeoutID)
     clearInterval(this.totpValidityUIAnimationIntervalID)
+
+    console.log("interval cleared " + this.totpGenerationIntervalID + " " + this.totpValidityUIAnimationIntervalID)
     // Hide the add button
     document.getElementById("add-code-button")!.style.display = "none";
   }
@@ -217,10 +225,10 @@ export class VaultComponent implements OnInit, OnDestroy {
 
 
   startDisplayingCode() {
-    if (this.totpValidityUIAnimationIntervalID == undefined || this.totpValidityUIAnimationIntervalID == 0) {
+    if (this.totpValidityUIAnimationIntervalID == 0 && this.totpValidityUIAnimationTimeoutID == 0) {
       this.startTOTPValidityUIAnimation()
     }
-    if (this.totpGenerationIntervalID == undefined || this.totpGenerationIntervalID == 0) {
+    if (this.totpGenerationIntervalID == 0 && this.totpValidityUIAnimationTimeoutID == 0) {
       this.startTOTPGenerationInterval()
     }
   }

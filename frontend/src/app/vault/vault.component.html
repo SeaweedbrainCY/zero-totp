@@ -414,8 +414,11 @@
                     </svg>
                   </div>
                   <div>
-                    <span class="is-size-2 has-text-weight-bold has-text-centered mr-4">{{totpCodesMap().get(uuid)}}
+                    <span class="is-size-2 has-text-weight-bold has-text-centered mr-4"
+                      [ngClass]="{'is-skeleton': totpCodesMap().get(uuid) == undefined}">{{totpCodesMap().get(uuid) ??
+                      "000000"}}
                     </span>
+
                   </div>
                 </div>
               </div>
