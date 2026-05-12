@@ -161,43 +161,22 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.get_google_drive_option();
       this.get_preferences();
       if (this.userService.zke_key() == null || !this.userService.is_vault_in_memory) {
-        // We need to download and decrypt the vault
-        this.reloadSpin.set(true)
-        this.getUserEncryptedVault().then(encrypted_vault => {
-          this.vaultService.decryptVault(encrypted_vault, this.userService.zke_key()!).then(result => {
-            this.reloadSpin.set(false)
-            if (result.errors.length != 0) {
-              this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-                this.utils.toastError(this.toastr, translation, result.errors.join(". "));
-              });
-            }
-            this.userService.vault.set(result.vault)
-            this.userService.is_vault_in_memory = true
-            this.startDisplayingCode()
-          },
-            error => {
-              this.reloadSpin.set(false)
-              this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-                this.utils.toastError(this.toastr, translation, error);
-              });
-            })
-        })
+        this.refreshUserData()
       } else {
         // The vault is in memory no need to download/decrypt it
         this.startDisplayingCode()
       }
-
     }
-
   }
 
   ngOnDestroy() {
-    if (this.totp_code_generation_interval != undefined) {
-      clearInterval(this.totp_code_generation_interval);
-    }
+    clearInterval(this.totpGenerationIntervalID)
+    clearInterval(this.totpValidityUIAnimationIntervalID)
     // Hide the add button
     document.getElementById("add-code-button")!.style.display = "none";
   }
+
+
 
   // Return epoch time a totp codes needs to be generated
   getNextTOTPGenerationEpochTime(): number {
@@ -222,6 +201,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   startTOTPValidityUIAnimation() {
+    this.updateTOTPValidationUI()
     // Update TOTP validity animation. Every 1s
 
     // TOTP codes generate on exact second, like 14:30:00,000. So validity animation should update every plain second, ie ms=000
@@ -237,8 +217,12 @@ export class VaultComponent implements OnInit, OnDestroy {
 
 
   startDisplayingCode() {
-    this.startTOTPGenerationInterval()
-    this.startTOTPValidityUIAnimation()
+    if (this.totpValidityUIAnimationIntervalID == undefined || this.totpValidityUIAnimationIntervalID == 0) {
+      this.startTOTPValidityUIAnimation()
+    }
+    if (this.totpGenerationIntervalID == undefined || this.totpGenerationIntervalID == 0) {
+      this.startTOTPGenerationInterval()
+    }
   }
 
 
@@ -361,7 +345,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.utils.toastSuccess(this.toastr, this.translate.instant("copied"), "");
   }
 
-  reload() {
+  refreshUserData() {
     this.get_google_drive_option();
     this.get_preferences();
     this.reloadSpin.set(true)
@@ -375,6 +359,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         }
         this.userService.vault.set(result.vault)
         this.userService.is_vault_in_memory = true
+        this.startDisplayingCode()
       },
         error => {
           this.reloadSpin.set(false)
@@ -619,26 +604,7 @@ export class VaultComponent implements OnInit, OnDestroy {
                     document.getElementById("add-code-button")!.style.display = "flex";
                     document.getElementById("add-code-button")!.onclick = () => { this.isModalActive.set(true); };
                     this.isDecryptingLockedVaut = false;
-                    this.reloadSpin.set(true)
-                    this.getUserEncryptedVault().then(encrypted_vault => {
-                      this.vaultService.decryptVault(encrypted_vault, this.userService.zke_key()!).then(result => {
-                        this.reloadSpin.set(false)
-                        if (result.errors.length != 0) {
-                          this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-                            this.utils.toastError(this.toastr, translation, result.errors.join(". "));
-                          });
-                        }
-                        this.userService.vault.set(result.vault)
-                        this.userService.is_vault_in_memory = true
-                        this.startDisplayingCode()
-                      },
-                        error => {
-                          this.reloadSpin.set(false)
-                          this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-                            this.utils.toastError(this.toastr, translation, error);
-                          });
-                        })
-                    })
+                    this.refreshUserData()
                   }, (error) => {
                     console.log(error);
                     this.isDecryptingLockedVaut = false;

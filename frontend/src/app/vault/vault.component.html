@@ -147,7 +147,8 @@
                     }
                   </div>
                   <div class="is-flex is-flex-wrap-wrap is-justify-content-center">
-                    <button class="button " (click)="reload()"><fa-icon [icon]="faRotateRight" class="mr-3"></fa-icon>
+                    <button class="button " (click)="refreshUserData()"><fa-icon [icon]="faRotateRight"
+                        class="mr-3"></fa-icon>
                       {{ 'vault.storage.zero_totp.reload' | translate
                       }}</button>
                   </div>
@@ -326,7 +327,8 @@
       </div>
 
       @if (!this.userService.isVaultLocal()) {
-      <span class="tag mb-4 is-light is-info" (click)="reload()" id="reloadVault">{{ 'vault.button.reload' | translate
+      <span class="tag mb-4 is-light is-info" (click)="refreshUserData()" id="reloadVault">{{ 'vault.button.reload' |
+        translate
         }} <fa-icon [icon]="faRotateRight" class="pl-1"
           [animation]="reloadSpin() ? 'spin' : undefined"></fa-icon></span>
       }
