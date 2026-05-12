@@ -29,6 +29,8 @@ export class UserService {
   public googleDriveSync: WritableSignal<boolean | null> = signal(null);
   public vault_tags: WritableSignal<string[]> = signal([]);
 
+  public is_vault_in_memory: boolean = false;
+
   constructor(
     private http: HttpClient
   ) {
