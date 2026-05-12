@@ -213,7 +213,8 @@ export class VaultComponent implements OnInit, OnDestroy {
     // Update TOTP validity animation. Every 1s
 
     // TOTP codes generate on exact second, like 14:30:00,000. So validity animation should update every plain second, ie ms=000
-    let msUntilPlainSecond = (Math.floor(Date.now()) / 1000 + 1) * 1000 - Date.now()
+    const now = Date.now()
+    let msUntilPlainSecond = (Math.floor(now / 1000) + 1) * 1000 - now
     window.setTimeout(() => {
       this.updateTOTPValidationUI()
       this.totpValidityUIAnimationIntervalID = window.setInterval(() => {
