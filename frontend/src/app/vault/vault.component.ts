@@ -135,6 +135,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           });
         }
         this.userService.vault.set(result.vault)
+        this.userService.is_vault_in_memory = true
         this.startDisplayingCode()
       },
         error => {
@@ -159,7 +160,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       this.isVaultEncrypted.set(false);
       this.get_google_drive_option();
       this.get_preferences();
-      if (this.userService.zke_key() == null || this.currentURL == "/vault/reload") {
+      if (this.userService.zke_key() == null || !this.userService.is_vault_in_memory) {
         // We need to download and decrypt the vault
         this.reloadSpin.set(true)
         this.getUserEncryptedVault().then(encrypted_vault => {
@@ -171,6 +172,7 @@ export class VaultComponent implements OnInit, OnDestroy {
               });
             }
             this.userService.vault.set(result.vault)
+            this.userService.is_vault_in_memory = true
             this.startDisplayingCode()
           },
             error => {
@@ -372,6 +374,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           });
         }
         this.userService.vault.set(result.vault)
+        this.userService.is_vault_in_memory = true
       },
         error => {
           this.reloadSpin.set(false)
@@ -626,6 +629,7 @@ export class VaultComponent implements OnInit, OnDestroy {
                           });
                         }
                         this.userService.vault.set(result.vault)
+                        this.userService.is_vault_in_memory = true
                         this.startDisplayingCode()
                       },
                         error => {
