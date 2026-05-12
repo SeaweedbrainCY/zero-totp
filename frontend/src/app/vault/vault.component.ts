@@ -367,6 +367,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           });
         }
         this.userService.vault.set(result.vault)
+        this.userService.updateVaultTagsList()
         this.userService.is_vault_in_memory = true
         this.startDisplayingCode()
       },
