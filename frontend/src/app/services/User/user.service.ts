@@ -175,4 +175,17 @@ export class UserService {
       });
     });
   }
+
+  // Triggered to update the vault_tags list
+  updateVaultTagsList() {
+    let tags: string[] = []
+    for (const properties of this.vault().values()) {
+      for (const tag of properties.tags) {
+        if (!tags.includes(tag)) {
+          tags.push(tag)
+        }
+      }
+    }
+    this.vault_tags.set(tags)
+  }
 }
