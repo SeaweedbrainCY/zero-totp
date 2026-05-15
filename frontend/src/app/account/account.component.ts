@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { faEnvelope, faLock, faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash, faVault, faExclamationTriangle, faEye, faEyeSlash, faCircleExclamation, faCircleNotch, faLightbulb, faL } from '@fortawesome/free-solid-svg-icons';
-import { TOTPEntry, UserService } from '../services/User/user.service';
+import { TOTPEntry, UserService, CommonError as UserServiceCommonError } from '../services/User/user.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Utils } from '../common/Utils/utils';
@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { Writable } from 'node_modules/@angular/core/types/_chrome_dev_tools_performance-chunk';
 import { VaultService } from '../services/VaultService/vault.service';
+import { TrailingSlashPathLocationStrategy } from '@angular/common';
 
 type LoadingButtons = {
   email: WritableSignal<boolean>;
@@ -259,7 +260,7 @@ export class AccountComponent implements OnInit {
   deleteAccount() {
     this.buttonLoading.deletion.set(true)
     this.deletionErrorMessage.set("");
-    this.hashPassword().then(hashed => {
+    this.userService.getUserPreHashedPassphrase(this.password).then(hashed => {
       this.verifyPassword(hashed).then(_ => {
         this.hashedOldPassword = hashed;
         this.sendDeleteAccountRequest().then(_ => {
@@ -267,15 +268,23 @@ export class AccountComponent implements OnInit {
           this.utils.toastSuccess(this.toastr, this.translate.instant("account.delete.success"), "");
         }, error => {
           this.buttonLoading.deletion.set(false)
-          this.deletionErrorMessage = this.translate.instant("account.delete.error.aborted");
+          this.deletionErrorMessage.set(this.translate.instant("account.delete.error.aborted"));
         });
       }, error => {
         this.buttonLoading.deletion.set(false)
-        this.deletionErrorMessage = this.translate.instant("account.delete.error.wrong_passphrase");
+        this.deletionErrorMessage.set(this.translate.instant("account.delete.error.wrong_passphrase"));
       });
     }, error => {
       this.buttonLoading.deletion.set(false)
-      this.deletionErrorMessage = this.translate.instant("account.delete.error.aborted");
+      switch (error) {
+        case UserServiceCommonError.UserNeedToLoginAgain:
+          this.router.navigate(["/login/sessionKilled"], { relativeTo: this.route.root });
+          break;
+        default:
+          this.utils.toastError(this.toastr, error, "")
+          this.deletionErrorMessage.set(this.translate.instant("account.delete.error.aborted"));
+          break;
+      }
     });
 
   }
@@ -360,7 +369,7 @@ export class AccountComponent implements OnInit {
     }
     this.buttonLoading.passphrase.set(true)
     this.stepsDone.set([""]);
-    this.hashPassword().then(hashed => {
+    this.userService.getUserPreHashedPassphrase(this.password).then(hashed => {
       this.verifyPassword(hashed).then(_ => {
         this.hashedOldPassword = hashed;
         this.stepsDone.update(steps => [...steps, "verifyOldPassword"])
@@ -449,23 +458,6 @@ export class AccountComponent implements OnInit {
 
 
 
-  hashPassword(): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      const salt = this.userService.passphraseSalt();
-      if (salt == null) {
-        this.router.navigate(["/login/sessionKilled"], { relativeTo: this.route.root });
-      } else {
-        this.crypto.hashPassphrase(this.password, salt).then(hashed => {
-          if (hashed != null) {
-            resolve(hashed);
-          } else {
-            this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.hashing"), "");
-            reject("hashed is null");
-          }
-        });
-      }
-    });
-  }
 
   verifyPassword(hashedPassword: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
