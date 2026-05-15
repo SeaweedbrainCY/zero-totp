@@ -3,6 +3,7 @@ import { LocalVaultV1Service } from '../upload-vault/LocalVaultv1Service.service
 import { HttpClient } from '@angular/common/http';
 import { Crypto } from '../../common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
+import { Buffer } from 'buffer';
 
 
 export interface TOTPEntry {
@@ -13,6 +14,12 @@ export interface TOTPEntry {
   favicon: boolean;
   tags: string[];
 }
+
+export interface getZKEKeyResult {
+  derivedKeySalt: string;
+  zkeKey: CryptoKey;
+}
+
 const VALID_COLORS = new Set(['success', 'danger', 'info', 'warning']);
 
 export enum CommonError {
@@ -40,7 +47,7 @@ export class UserService {
   constructor(
     private http: HttpClient,
     private crypto: Crypto,
-    private translate: TranslateService
+    private translate: TranslateService,
   ) {
   }
 
@@ -181,6 +188,110 @@ export class UserService {
           reject(error)
         }
       });
+    });
+  }
+
+  decryptZKEKey(zke_key_encrypted: string, derivedKey: CryptoKey, isVaultLocal: Boolean = false): Promise<CryptoKey> {
+    return new Promise((resolve, reject) => {
+      this.crypto.decrypt(zke_key_encrypted, derivedKey).then(zke_key_b64 => {
+        if (zke_key_b64 != null) {
+          const zke_key_raw = Buffer.from(zke_key_b64!, 'base64');
+
+          window.crypto.subtle.importKey(
+            "raw",
+            zke_key_raw,
+            "AES-GCM",
+            true,
+            ["encrypt", "decrypt"]
+          ).then((zke_key) => {
+            resolve(zke_key);
+          }, (error) => {
+            this.translate.get("login.errors.import_vault.key_dec").subscribe((translation) => {
+              reject(translation + " " + error);
+            });
+          });;
+        } else {
+          if (isVaultLocal) {
+            this.translate.get("login.errors.import_vault.wrong_passphrase").subscribe((translation) => {
+              reject(translation);
+            });
+          } else {
+            this.translate.get("login.errors.import_vault.key_dec").subscribe((translation) => {
+              reject(translation);
+            });
+          }
+
+        }
+
+      });
+    });
+  }
+
+  derivePassphrase(derivedKeySalt: string, passphrase: string): Promise<CryptoKey> {
+    return new Promise((resolve, reject) => {
+      if (derivedKeySalt != null) {
+        this.crypto.deriveKey(derivedKeySalt, passphrase).then(key => {
+          resolve(key);
+        });
+      } else {
+        reject("Impossible to retrieve enough data to decrypt your vault");
+      }
+    });
+  }
+
+
+  // Returns derivedKeySalt and decrypted zke key
+  getUserZKEKey(passphrase: string): Promise<getZKEKeyResult> {
+    return new Promise<getZKEKeyResult>((resolve, reject) => {
+      this.http.get("/api/v1/user/derived-key-salt", { withCredentials: true, observe: 'response' }).subscribe({
+        next: (response) => {
+          if (response.status === 200) {
+            const derived_key_salt_req_data = response.body as { derived_key_salt: string };
+            const derived_key_salt = derived_key_salt_req_data.derived_key_salt
+            this.http.get("/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe({
+              next: (response) => {
+                if (response.status === 200) {
+                  const zke_req_data = response.body as { zke_encrypted_key: string };
+                  const zke_encrypted_key = zke_req_data.zke_encrypted_key;
+                  this.derivePassphrase(derived_key_salt, passphrase).then((derivedKey) => {
+                    this.decryptZKEKey(zke_encrypted_key, derivedKey).then((zke_key) => {
+                      resolve({
+                        derivedKeySalt: derived_key_salt,
+                        zkeKey: zke_key
+                      })
+                    }, (error) => {
+                      reject("generic_errors.invalid_creds");
+                    });
+                  }, (error) => {
+                    this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+                      reject(translation + " " + "U5");
+                    });
+                  });
+
+                } else {
+                  this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+                    reject(translation + " " + "U3-" + response.status);
+                  });
+                }
+
+              }, error: (error) => {
+                this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+                  reject(translation + " " + "U4");
+                });
+
+              }
+            });
+          } else {
+            this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+              reject(translation + " " + "U1-" + response.status);
+            });
+          }
+        }, error: (error) => {
+          this.translate.get("vault.error.unlock").subscribe((translation: string) => {
+            reject(translation + " " + "U2");
+          });
+        }
+      })
     });
   }
 
