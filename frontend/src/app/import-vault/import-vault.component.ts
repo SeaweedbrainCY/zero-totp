@@ -406,8 +406,8 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     }
     this.decryption_error.set("");
     if (this.local_vault_service() != null) {
-      this.vaultService.derivePassphrase(this.local_vault_service()!.get_derived_key_salt()!, this.imported_vault_passphrase()).then((derivedKey) => {
-        this.vaultService.decryptZKEKey(this.local_vault_service()!.get_zke_key_enc()!, derivedKey, true).then((zke_key) => {
+      this.userService.derivePassphrase(this.local_vault_service()!.get_derived_key_salt()!, this.imported_vault_passphrase()).then((derivedKey) => {
+        this.userService.decryptZKEKey(this.local_vault_service()!.get_zke_key_enc()!, derivedKey, true).then((zke_key) => {
           this.vaultService.decryptVault(this.local_vault_service()!.get_enc_secrets()!, zke_key).then((vault_decryption_result) => {
             if (vault_decryption_result.errors.length > 0) {
               this.translate.get("import_vault.errors.decryption_failure").subscribe((translation) => {

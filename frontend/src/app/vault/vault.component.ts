@@ -605,8 +605,8 @@ export class VaultComponent implements OnInit, OnDestroy {
               if (response.status === 200) {
                 const zke_req_data = response.body as { zke_encrypted_key: string };
                 const zke_encrypted_key = zke_req_data.zke_encrypted_key;
-                this.vaultService.derivePassphrase(this.userService.derivedKeySalt()!, this.passphrase).then((derivedKey) => {
-                  this.vaultService.decryptZKEKey(zke_encrypted_key, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
+                this.userService.derivePassphrase(this.userService.derivedKeySalt()!, this.passphrase).then((derivedKey) => {
+                  this.userService.decryptZKEKey(zke_encrypted_key, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
                     this.userService.zke_key.set(zke_key!);
                     this.isVaultEncrypted.set(false);
                     document.getElementById("add-code-button")!.style.display = "flex";

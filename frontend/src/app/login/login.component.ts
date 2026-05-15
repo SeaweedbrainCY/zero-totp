@@ -297,8 +297,8 @@ export class LoginComponent implements OnInit {
     this.userService.isVaultLocal.set(true);
     this.userService.local_vault_service.set(this.local_vault_service!);
     this.userService.derivedKeySalt.set(this.local_vault_service!.get_derived_key_salt()!);
-    this.vaultService.derivePassphrase(this.userService.derivedKeySalt()!, this.password()).then((derivedKey) => {
-      this.vaultService.decryptZKEKey(this.local_vault_service!.get_zke_key_enc()!, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
+    this.userService.derivePassphrase(this.userService.derivedKeySalt()!, this.password()).then((derivedKey) => {
+      this.userService.decryptZKEKey(this.local_vault_service!.get_zke_key_enc()!, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
         this.userService.zke_key.set(zke_key!);
         this.router.navigate(["/vault"], { relativeTo: this.route.root });
       }, (error) => {
@@ -414,9 +414,9 @@ export class LoginComponent implements OnInit {
   }
 
   final_zke_flow() {
-    this.vaultService.derivePassphrase(this.userService.derivedKeySalt()!, this.password()).then((derivedKey) => {
+    this.userService.derivePassphrase(this.userService.derivedKeySalt()!, this.password()).then((derivedKey) => {
       this.getZKEKey().then((zke_key_encrypted) => {
-        this.vaultService.decryptZKEKey(zke_key_encrypted, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
+        this.userService.decryptZKEKey(zke_key_encrypted, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
           this.userService.zke_key.set(zke_key!);
           if (this.is_oauth_flow()) {
             this.router.navigate(["/oauth/synchronize"], { relativeTo: this.route.root });
