@@ -373,72 +373,78 @@ export class AccountComponent implements OnInit {
       this.verifyPassword(hashed).then(_ => {
         this.hashedOldPassword = hashed;
         this.stepsDone.update(steps => [...steps, "verifyOldPassword"])
-        this.get_all_secret().then(vault => {
-          this.stepsDone.update(steps => [...steps, "getVault"])
-          const derivedKeySalt = this.crypto.generateRandomSalt();
-          this.deriveNewPassphrase(derivedKeySalt).then(derivedKey => {
-            const zke_key_str = this.crypto.generateZKEKey();
-            this.stepsDone.update(steps => [...steps, "derivation"])
-            this.encryptVault(vault, zke_key_str).then(enc_vault => {
-              this.crypto.encrypt(zke_key_str, derivedKey).then((enc_zke_key) => {
-                this.stepsDone.update(steps => [...steps, "encryption"])
-                this.verifyEncryption(derivedKey, enc_zke_key, enc_vault, vault).then(_ => {
-                  this.stepsDone.update(steps => [...steps, "verification"])
-                  this.uploadNewVault(enc_vault, enc_zke_key, derivedKeySalt).then(_ => {
-                    this.stepsDone.update(steps => [...steps, "upload"])
-                    if (this.isGoogleDriveBackupEnabled() && this.deleteGoogleDriveBackup()) {
-                      this.deleteAllGoogleDriveBackup().then(_ => {
-                        this.stepsDone.update(steps => [...steps, "deleteBackup"])
+        this.userService.getUserZKEKey(this.password).then(zke_result => {
+          this.userService.derivedKeySalt.set(zke_result.derivedKeySalt)
+          this.userService.zke_key.set(zke_result.zkeKey)
+          this.get_all_secret().then(vault => {
+            this.stepsDone.update(steps => [...steps, "getVault"])
+            const derivedKeySalt = this.crypto.generateRandomSalt();
+            this.deriveNewPassphrase(derivedKeySalt).then(derivedKey => {
+              const zke_key_str = this.crypto.generateZKEKey();
+              this.stepsDone.update(steps => [...steps, "derivation"])
+              this.encryptVault(vault, zke_key_str).then(enc_vault => {
+                this.crypto.encrypt(zke_key_str, derivedKey).then((enc_zke_key) => {
+                  this.stepsDone.update(steps => [...steps, "encryption"])
+                  this.verifyEncryption(derivedKey, enc_zke_key, enc_vault, vault).then(_ => {
+                    this.stepsDone.update(steps => [...steps, "verification"])
+                    this.uploadNewVault(enc_vault, enc_zke_key, derivedKeySalt).then(_ => {
+                      this.stepsDone.update(steps => [...steps, "upload"])
+                      if (this.isGoogleDriveBackupEnabled() && this.deleteGoogleDriveBackup()) {
+                        this.deleteAllGoogleDriveBackup().then(_ => {
+                          this.stepsDone.update(steps => [...steps, "deleteBackup"])
+                          if (this.isGoogleDriveBackupEnabled()) {
+                            this.backup().then(_ => {
+                              this.stepsDone.update(steps => [...steps, "backup"])
+                              this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success"), "");
+                              this.router.navigate(["/login"], { relativeTo: this.route.root });
+                            }, error => {
+                              this.updateAbortedWithSuccess('#8 Backup of your vault on Google drive. Reason : ' + error)
+                              this.router.navigate(["/login"], { relativeTo: this.route.root });
+                            });
+                          }
+                          this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success"), "");
+                          this.router.navigate(["/login"], { relativeTo: this.route.root });
+                        }, error => {
+                          this.updateAbortedWithSuccess('#7 Deletion of your all google drive backup. Reason : ' + error)
+                          this.router.navigate(["/login"], { relativeTo: this.route.root });
+                        });
+                      } else {
                         if (this.isGoogleDriveBackupEnabled()) {
                           this.backup().then(_ => {
+
                             this.stepsDone.update(steps => [...steps, "backup"])
                             this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success"), "");
                             this.router.navigate(["/login"], { relativeTo: this.route.root });
                           }, error => {
-                            this.updateAbortedWithSuccess('#8 Backup of your vault on Google drive. Reason : ' + error)
+                            this.updateAbortedWithSuccess('#8 Backup of your vault on Google drive. . Reason : ' + error.message)
                             this.router.navigate(["/login"], { relativeTo: this.route.root });
                           });
-                        }
-                        this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success"), "");
-                        this.router.navigate(["/login"], { relativeTo: this.route.root });
-                      }, error => {
-                        this.updateAbortedWithSuccess('#7 Deletion of your all google drive backup. Reason : ' + error)
-                        this.router.navigate(["/login"], { relativeTo: this.route.root });
-                      });
-                    } else {
-                      if (this.isGoogleDriveBackupEnabled()) {
-                        this.backup().then(_ => {
-
-                          this.stepsDone.update(steps => [...steps, "backup"])
+                        } else {
                           this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success"), "");
                           this.router.navigate(["/login"], { relativeTo: this.route.root });
-                        }, error => {
-                          this.updateAbortedWithSuccess('#8 Backup of your vault on Google drive. . Reason : ' + error.message)
-                          this.router.navigate(["/login"], { relativeTo: this.route.root });
-                        });
-                      } else {
-                        this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success"), "");
-                        this.router.navigate(["/login"], { relativeTo: this.route.root });
+                        }
                       }
-                    }
+                    }, error => {
+                      this.buttonLoading.passphrase.set(false)
+                    });
                   }, error => {
-                    this.buttonLoading.passphrase.set(false)
+                    this.updateAborted('#6. Reason : ' + error)
                   });
                 }, error => {
-                  this.updateAborted('#6. Reason : ' + error)
+                  console.log(error)
+                  this.updateAborted('#5')
                 });
               }, error => {
-                console.log(error)
-                this.updateAborted('#5')
+                this.updateAborted('#4')
               });
             }, error => {
-              this.updateAborted('#4')
+              this.updateAborted('#3')
             });
           }, error => {
-            this.updateAborted('#3')
+            this.updateAborted('#2')
           });
         }, error => {
-          this.updateAborted('#2')
+          this.updateAborted("#2")
         });
       });
     }, error => {
@@ -479,6 +485,11 @@ export class AccountComponent implements OnInit {
 
   get_all_secret(): Promise<Map<string, TOTPEntry>> {
     return new Promise<Map<string, TOTPEntry>>((resolve, reject) => {
+      if (this.userService.zke_key() == null) {
+        console.log("zke key is null")
+        this.router.navigate(["/login/sessionKilled"], { relativeTo: this.route.root });
+        reject("zke key is null")
+      }
       this.userService.getUserEncryptedVault().then(encrypted_vault => {
         this.vaultService.decryptVault(encrypted_vault, this.userService.zke_key()!).then(result => {
           if (result.errors.length != 0) {
