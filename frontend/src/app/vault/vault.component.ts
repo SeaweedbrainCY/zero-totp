@@ -172,14 +172,12 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log("clearing interval " + this.totpGenerationIntervalID + " " + this.totpValidityUIAnimationIntervalID)
     clearTimeout(this.totpGenerationTimeoutID)
     clearInterval(this.totpGenerationIntervalID)
 
     clearTimeout(this.totpValidityUIAnimationTimeoutID)
     clearInterval(this.totpValidityUIAnimationIntervalID)
 
-    console.log("interval cleared " + this.totpGenerationIntervalID + " " + this.totpValidityUIAnimationIntervalID)
     // Hide the add button
     document.getElementById("add-code-button")!.style.display = "none";
   }
