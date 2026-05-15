@@ -139,15 +139,16 @@ export class LoginComponent implements OnInit {
   get_user_email_oauth_flow() {
     this.http.get("/api/v1/whoami", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
-      const data = JSON.parse(JSON.stringify(response.body))
-      this.email.set(data.email);
-    }, 
-    error: (error) => {
-      this.translate.get("login.errors.no_session").subscribe((translation) => {
-        this.utils.toastError(this.toastr, translation, "");
-        this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
-      });
-    }});
+        const data = JSON.parse(JSON.stringify(response.body))
+        this.email.set(data.email);
+      },
+      error: (error) => {
+        this.translate.get("login.errors.no_session").subscribe((translation) => {
+          this.utils.toastError(this.toastr, translation, "");
+          this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
+        });
+      }
+    });
   }
 
 
@@ -310,45 +311,50 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  // DEPRECATED. 
+  // userService pre-hashed 
   hashPassword() {
-    this.http.get("/api/v1/login/specs?username=" + encodeURIComponent(this.email()), { withCredentials: true, observe: 'response' }).subscribe({
-      next: (response) => {
-
-      try {
-        const data = JSON.parse(JSON.stringify(response.body))
-        const salt = data.passphrase_salt
-        this.crypto.hashPassphrase(this.password(), salt).then(hashed => {
-          if (hashed != null) {
-            this.hashedPassword = hashed;
-            this.userService.passphraseSalt.set(salt);
-            this.postLoginRequest();
-          } else {
+    return new Promise<string>((resolve, reject) => {
+      this.http.get("/api/v1/login/specs?username=" + encodeURIComponent(this.email()), { withCredentials: true, observe: 'response' }).subscribe({
+        next: (response) => {
+          try {
+            const data = JSON.parse(JSON.stringify(response.body))
+            const salt = data.passphrase_salt
+            this.crypto.hashPassphrase(this.password(), salt).then(hashed => {
+              if (hashed != null) {
+                this.hashedPassword = hashed;
+                this.userService.passphraseSalt.set(salt);
+                this.postLoginRequest();
+              } else {
+                this.translate.get("login.errors.hashing").subscribe((translation) => {
+                  this.utils.toastError(this.toastr, translation, "")
+                });
+                this.isLoading.set(false);
+              }
+            });
+          } catch {
             this.translate.get("login.errors.hashing").subscribe((translation) => {
               this.utils.toastError(this.toastr, translation, "")
             });
             this.isLoading.set(false);
           }
-        });
-      } catch {
-        this.translate.get("login.errors.hashing").subscribe((translation) => {
-          this.utils.toastError(this.toastr, translation, "")
-        });
-        this.isLoading.set(false);
-      }
-    }, error: error => {
-      if (error.status == 429) {
-        const ban_time = error.error.ban_time || "few";
-        this.translate.get("login.errors.rate_limited", { time: String(ban_time) }).subscribe((translation) => {
-          this.utils.toastError(this.toastr, translation, "")
-        });
-      } else {
-        this.translate.get("login.errors.no_connection").subscribe((translation) => {
-          this.utils.toastError(this.toastr, translation, "")
-        });
-      }
-      this.isLoading.set(false);
-    }});
+        }, error: error => {
+          if (error.status == 429) {
+            const ban_time = error.error.ban_time || "few";
+            this.translate.get("login.errors.rate_limited", { time: String(ban_time) }).subscribe((translation) => {
+              this.utils.toastError(this.toastr, translation, "")
+            });
+          } else {
+            this.translate.get("login.errors.no_connection").subscribe((translation) => {
+              this.utils.toastError(this.toastr, translation, "")
+            });
+          }
+          this.isLoading.set(false);
+        }
+      });
+    })
   }
+
 
 
   postLoginRequest() {
@@ -358,27 +364,27 @@ export class LoginComponent implements OnInit {
     }
     this.http.post("/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
-      try {
-        const data = JSON.parse(JSON.stringify(response.body))
-        this.userService.id.set(data.id);
-        this.userService.email.set(this.email());
-        this.userService.derivedKeySalt.set(data.derivedKeySalt);
-        if (data.isVerified == false) {
-          this.router.navigate(["/emailVerification"], { relativeTo: this.route.root });
-        } else {
+        try {
+          const data = JSON.parse(JSON.stringify(response.body))
+          this.userService.id.set(data.id);
+          this.userService.email.set(this.email());
+          this.userService.derivedKeySalt.set(data.derivedKeySalt);
+          if (data.isVerified == false) {
+            this.router.navigate(["/emailVerification"], { relativeTo: this.route.root });
+          } else {
 
-          this.userService.googleDriveSync.set(data.isGoogleDriveSync);
-          this.final_zke_flow();
+            this.userService.googleDriveSync.set(data.isGoogleDriveSync);
+            this.final_zke_flow();
+          }
+        } catch (e) {
+          this.isLoading.set(false);
+          console.log(e);
+          this.translate.get("login.errors.server_error").subscribe((translation) => {
+            this.utils.toastError(this.toastr, translation, "")
+          });
         }
-      } catch (e) {
-        this.isLoading.set(false);
-        console.log(e);
-        this.translate.get("login.errors.server_error").subscribe((translation) => {
-          this.utils.toastError(this.toastr, translation, "")
-        });
-      }
 
-    },
+      },
       error: (error) => {
         console.log(error);
         console.log(error.error.message)
@@ -403,7 +409,8 @@ export class LoginComponent implements OnInit {
           });
         }
 
-      }});
+      }
+    });
   }
 
   final_zke_flow() {
@@ -452,7 +459,7 @@ export class LoginComponent implements OnInit {
   }
 
   zero_totp_instance_button_click() {
-    if(this.utils.isDeviceMobile()){
+    if (this.utils.isDeviceMobile()) {
       this.instance_dropdown_active.update(v => !v);
     }
   }
