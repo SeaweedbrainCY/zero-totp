@@ -200,7 +200,7 @@ export class UserService {
   // During login phase, the user's password is pre-hashed before being sent in the login request. 
   // This pre-hash rely on a salt returned by the API. 
   // Promise the user's hashed passphrase or reject with an error. Error can be a CommonError or a generic textual error.
-  getPreHashUserPassphrase(passphrase: string): Promise<string> {
+  getUserPreHashedPassphrase(passphrase: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       if (this.email() == null) {
         reject(CommonError.UserNeedToLoginAgain)
