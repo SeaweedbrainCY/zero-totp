@@ -1,6 +1,9 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
 import { LocalVaultV1Service } from '../upload-vault/LocalVaultv1Service.service';
 import { HttpClient } from '@angular/common/http';
+import { Crypto } from '../../common/Crypto/crypto';
+import { TranslateService } from '@ngx-translate/core';
+
 
 export interface TOTPEntry {
   name: string;
@@ -12,6 +15,9 @@ export interface TOTPEntry {
 }
 const VALID_COLORS = new Set(['success', 'danger', 'info', 'warning']);
 
+export enum CommonError {
+  UserNeedToLoginAgain = "Please login again."
+}
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -32,7 +38,9 @@ export class UserService {
   public is_vault_in_memory: boolean = false;
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private crypto: Crypto,
+    private translate: TranslateService
   ) {
   }
 
@@ -187,5 +195,49 @@ export class UserService {
       }
     }
     this.vault_tags.set(tags)
+  }
+
+  // During login phase, the user's password is pre-hashed before being sent in the login request. 
+  // This pre-hash rely on a salt returned by the API. 
+  // Promise the user's hashed passphrase or reject with an error. Error can be a CommonError or a generic textual error.
+  getPreHashUserPassphrase(passphrase: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      if (this.email() == null) {
+        reject(CommonError.UserNeedToLoginAgain)
+      }
+      this.http.get("/api/v1/login/specs?username=" + encodeURIComponent(this.email()!), { withCredentials: true, observe: 'response' }).subscribe({
+        next: (response) => {
+          try {
+            const data = JSON.parse(JSON.stringify(response.body))
+            const salt = data.passphrase_salt as string
+            this.crypto.hashPassphrase(passphrase, salt).then(hashed => {
+              if (hashed != null) {
+                resolve(hashed)
+              } else {
+                this.translate.get("login.errors.no_connection").subscribe((translation) => {
+                  reject(translation)
+                })
+              }
+            });
+          } catch {
+            this.translate.get("login.errors.hashing").subscribe((translation) => {
+              reject(translation)
+            })
+          }
+        }, error: error => {
+          if (error.status == 429) {
+            reject()
+            const ban_time = error.error.ban_time || "few";
+            this.translate.get("login.errors.rate_limited", { time: String(ban_time) }).subscribe((translation) => {
+              reject(translation)
+            });
+          } else {
+            this.translate.get("login.errors.no_connection").subscribe((translation) => {
+              reject(error)
+            });
+          }
+        }
+      });
+    })
   }
 }
