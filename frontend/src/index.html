@@ -1,18 +1,20 @@
 <!doctype html>
 <html lang="en" data-theme="light">
+
 <head>
   <meta charset="utf-8">
   <title>Zero-TOTP</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="favicon.ico">
-  <meta property="og:title" content="Trust no one, except YOU. Take back control of your privacy."/>
-  <meta property="og:description" content="Zero-TOTP is a 100% open-source TOTP generator. You have full control of every step of your secrets security."/>
-  <meta property="og:image" content="https://zero-totp.com/assets/about.png"/>
-  <meta property="og:image:width" content="2400"/>
-  <meta property="og:image:height" content="1260"/>
-  <meta property="og:url" content="https://zero-totp.com"/>
-  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="Trust no one, except YOU. Take back control of your privacy." />
+  <meta property="og:description"
+    content="Zero-TOTP is a 100% open-source TOTP generator. You have full control of every step of your secrets security." />
+  <meta property="og:image" content="https://zero-totp.com/assets/about.png" />
+  <meta property="og:image:width" content="2400" />
+  <meta property="og:image:height" content="1260" />
+  <meta property="og:url" content="https://zero-totp.com" />
+  <meta property="og:type" content="website" />
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#1976d2">
   <link rel="manifest" href="manifest.webmanifest">
@@ -22,55 +24,65 @@
 
 <body>
   <div id="static_links">
-  <a href="https://github.com/seaweedbrainCY/zero-totp" class="github-button" target="_blank" style=" z-index: 99 !important;" rel="noopener noreferrer">
-    <img src="assets/github.svg" alt="Zero-TOTP Github logo">
-  </a><br>
-  <a href="https://www.buymeacoffee.com/seaweedbrainCY" class="coffee-button" target="_blank" style=" z-index: 99 !important;" rel="noopener noreferrer">
-    <img src="assets/coffee_cup.svg" alt="Buy Me a Coffee">
-</a><br>
-<a  id="add-code-button"  style=" z-index: 99 !important;">
-    <img src="assets/plus-solid.svg" alt="Add a TOTP code">
-</a>
-</div>
+    <a href="https://github.com/seaweedbrainCY/zero-totp" class="github-button" target="_blank"
+      style=" z-index: 99 !important;" rel="noopener noreferrer">
+      <img src="assets/github.svg" alt="Zero-TOTP Github logo">
+    </a><br>
+    <a href="https://www.buymeacoffee.com/seaweedbrainCY" class="coffee-button" target="_blank"
+      style=" z-index: 99 !important;" rel="noopener noreferrer">
+      <img src="assets/coffee_cup.svg" alt="Buy Me a Coffee">
+    </a><br>
+    <a id="add-code-button" style=" z-index: 99 !important;">
+      <img src="assets/plus-solid.svg" alt="Add a TOTP code">
+    </a>
+  </div>
   <noscript>
     <section class="hero  is-halfheight mt-6 " style="min-height: 70vh;">
       <article class="hero hero-body is-flex is-justify-content-center is-flex-direction-column">
-          <div class="box">
-              <p class="has-text-centered">
-          <img src="assets/logo_zero_totp_dark.png" alt="logo" width="200" height="200"/>
-      </p>
-          <h1 class="is-size-1 has-text-weight-bold has-text-info">Hello there !<fa-icon [icon]="faPaperPlane"></fa-icon></h1>
+        <div class="box">
+          <p class="has-text-centered">
+            <img src="assets/logo_zero_totp_dark.png" alt="logo" width="200" height="200" />
+          </p>
+          <h1 class="is-size-1 has-text-weight-bold has-text-info">Hello there !<fa-icon
+              [icon]="faPaperPlane"></fa-icon></h1>
           <div>
-            Zero-TOTP is based on Zero-Knowledge encryption which means that your are the one that perform the encryption and decryption of your secrets.<br><br>
+            Zero-TOTP is based on Zero-Knowledge encryption which means that your are the one that perform the
+            encryption and decryption of your secrets.<br><br>
 
-            <strong class="has-text-danger">Your are using a browser that doesn't support Javascript. For the reasons above, you can't use Zero-TOTP without javascript</strong>. <br><br>
-        
-            You can use the following ressources to re-enable javascript on your browser : 
+            <strong class="has-text-danger">Your are using a browser that doesn't support Javascript. For the reasons
+              above, you can't use Zero-TOTP without javascript</strong>. <br><br>
+
+            You can use the following ressources to re-enable javascript on your browser :
             <ul style=" list-style-type: circle;list-style-position: inside;">
               <li>
-                <a href="https://support.google.com/adsense/answer/12654?hl=en" target="_blank" rel="noopener noreferrer">Enable JavaScript on Chrome-based browsers</a>
+                <a href="https://support.google.com/adsense/answer/12654?hl=en" target="_blank"
+                  rel="noopener noreferrer">Enable JavaScript on Chrome-based browsers</a>
               </li>
               <li>
-                <a href="https://support.mozilla.org/en-US/kb/javascript-settings-for-interactive-web-pages" target="_blank" rel="noopener noreferrer">Enable JavaScript on firefox-based browsers</a>
-                </li>
+                <a href="https://support.mozilla.org/en-US/kb/javascript-settings-for-interactive-web-pages"
+                  target="_blank" rel="noopener noreferrer">Enable JavaScript on firefox-based browsers</a>
+              </li>
               <li>
-                <a href="https://support.apple.com/en-mn/guide/safari/ibrw1032/16.0/mac/11.0" target="_blank" rel="noopener noreferrer">Enable JavaScript on Safari browsers</a>
-                </li>
+                <a href="https://support.apple.com/en-mn/guide/safari/ibrw1032/16.0/mac/11.0" target="_blank"
+                  rel="noopener noreferrer">Enable JavaScript on Safari browsers</a>
+              </li>
               <li>
-                <a href="https://support.microsoft.com/en-au/office/enable-javascript-7bb9ee74-6a9e-4dd1-babf-b0a1bb136361" target="_blank" rel="noopener noreferrer">Enable Javascript on Edge browsers</a>
+                <a href="https://support.microsoft.com/en-au/office/enable-javascript-7bb9ee74-6a9e-4dd1-babf-b0a1bb136361"
+                  target="_blank" rel="noopener noreferrer">Enable Javascript on Edge browsers</a>
               </li>
             </ul>
             <p>Thanks for using Zero-TOTP.</p><br>
             <p>Have a safe day.</p><br>
             <p>The Zero-TOTP team ❤️</p><br>
-              </div>
-      </div>
+          </div>
+        </div>
       </article>
-  </section>
+    </section>
   </noscript>
   <app>
-  <app-root></app-root>
-</app>
+    <app-root></app-root>
+  </app>
 
 </body>
+
 </html>
