@@ -1,0 +1,32 @@
+{
+  "name": "zero_totp_mobile",
+  "version": "1.0.0",
+  "description": "Zero-TOTP for mobiles",
+  "keywords": [
+    "totp",
+    "zero",
+    "knowledge",
+    "encryption"
+  ],
+  "homepage": "https://github.com/SeaweedbrainCY/zero-totp#readme",
+  "bugs": {
+    "url": "https://github.com/SeaweedbrainCY/zero-totp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SeaweedbrainCY/zero-totp.git"
+  },
+  "license": "GPL-3.0",
+  "author": "Seaweedbrain",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.3.4",
+    "@capacitor/core": "^8.3.4",
+    "@capacitor/ios": "^8.3.4"
+  }
+}

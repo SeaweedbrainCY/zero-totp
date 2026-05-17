@@ -1,0 +1,5 @@
+{
+  "appId": "com.zero_totp.app",
+  "appName": "Zero-TOTP",
+  "webDir": "../frontend/dist/frontend/browser"
+}
