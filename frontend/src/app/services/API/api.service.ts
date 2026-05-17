@@ -11,7 +11,7 @@ export class ApiService {
     if (environment.mobile) {
       this.baseURL = "https://zero-totp.com"
     } else {
-      this.baseURL = "https://" + window.location.hostname
+      this.baseURL = "" // Use the global base URL for the webapp
     }
   }
 }
