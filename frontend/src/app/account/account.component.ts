@@ -388,9 +388,7 @@ export class AccountComponent implements OnInit {
               this.deriveNewPassphrase(derivedKeySalt).then(derivedKey => {
                 const zke_key_str = this.crypto.generateZKEKey();
                 this.stepsDone.update(steps => [...steps, "derivation"])
-                console.log(decrypted_vault.vault.size)
                 this.encryptVault(decrypted_vault.vault, zke_key_str).then(enc_vault => {
-                  console.log(enc_vault.size)
                   this.crypto.encrypt(zke_key_str, derivedKey).then((enc_zke_key) => {
                     this.stepsDone.update(steps => [...steps, "encryption"])
                     this.verifyEncryption(derivedKey, enc_zke_key, enc_vault, decrypted_vault.vault).then(_ => {
@@ -497,7 +495,6 @@ export class AccountComponent implements OnInit {
   get_all_secret(): Promise<Map<string, TOTPEntry>> {
     return new Promise<Map<string, TOTPEntry>>((resolve, reject) => {
       if (this.userService.zke_key() == null) {
-        console.log("zke key is null")
         this.router.navigate(["/login/sessionKilled"], { relativeTo: this.route.root });
         reject("zke key is null")
       }
@@ -591,14 +588,14 @@ export class AccountComponent implements OnInit {
 
   uploadNewVault(enc_vault: Map<string, string>, zke_enc: string, derivedKeySalt: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      console.log(enc_vault)
-      console.log(JSON.stringify(enc_vault))
       const salt = this.crypto.generateRandomSalt();
+      let newVault = new Array<{ uuid: string, enc_secret: string }>()
+      enc_vault.forEach((item: string, uuid: string) => {
+        newVault.push({ "uuid": uuid, "enc_secret": item })
+      })
       this.crypto.hashPassphrase(this.newPassword, salt).then(hashed => {
-        console.log(enc_vault)
-        console.log(JSON.stringify(enc_vault))
         const data = {
-          enc_vault: JSON.stringify(enc_vault),
+          enc_vault: newVault,
           old_passphrase: this.hashedOldPassword,
           new_passphrase: hashed,
           zke_enc: zke_enc,
