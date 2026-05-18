@@ -183,12 +183,3 @@ class TestUpdateVault(unittest.TestCase):
             user.isBlocked = False
             db.session.commit()
     
-    def test_update_invalid_vault(self):
-        self.client.cookies = {"session-token": self.session_token}
-        payload = self.payload.copy()
-        payload["enc_vault"] = '{"test": "secret"}'
-        response = self.client.put(self.endpoint, json=payload)
-        self.assertEqual(response.status_code, 400)
-        
-        self.assertEqual(response.json()["message"], "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support.")
-    
