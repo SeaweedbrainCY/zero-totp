@@ -77,7 +77,7 @@ def update_vault(user_id, body):
 
     for item in enc_vault:
         if item["uuid"] not in uuids_from_old_vault:
-            logging.warning(f"FORBIDDEN. The user {user_id} tried to update but the secret {item["uuid"]} was not in his vault. The update is rejected.")
+            logging.warning(f"FORBIDDEN. The user {user_id} tried to update but the secret {item['uuid']} was not in his vault. The update is rejected.")
             return {"message": "Forbidden action. Zero-TOTP detected that you were updating object you don't have access to. The request is rejected."}, 403
 
 
