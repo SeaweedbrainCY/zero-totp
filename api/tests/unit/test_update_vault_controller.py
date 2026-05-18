@@ -82,7 +82,7 @@ class TestUpdateVault(unittest.TestCase):
             for code in codes:
                 self.assertEqual(code.secret_enc, sent_vault_secret_by_uuid[code.uuid])
 
-            self.assertEqual(len(codes), len(self.payload))
+            self.assertEqual(len(codes), len(self.totp_codes))
             user = db.session.query(User).filter_by(id=self.user_id).first()
             self.assertEqual(user.passphraseSalt, self.payload["passphrase_salt"])
             self.assertTrue(hash_func.Bcrypt(self.payload["new_passphrase"]).checkpw(user.password.decode('utf-8')))
@@ -125,7 +125,7 @@ class TestUpdateVault(unittest.TestCase):
 
     def test_update_vault_unknown_totp(self):
         self.totp_codes[0] = {"uuid": str(uuid4()), "enc_secret": "code"}
-        self.payload["enc_vault"] = json.dumps(self.totp_codes)
+        self.payload["enc_vault"] = self.totp_codes
         self.client.cookies = {"session-token": self.session_token}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 403)
@@ -133,7 +133,7 @@ class TestUpdateVault(unittest.TestCase):
 
     def test_update_vault_of_another_user(self):
         self.totp_codes[0] = {"uuid": self.foreign_totp_id, "enc_secret": "code"}
-        self.payload["enc_vault"] = json.dumps(self.totp_codes)
+        self.payload["enc_vault"] = self.totp_codes
         self.client.cookies = {"session-token": self.session_token}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 403)
@@ -141,7 +141,7 @@ class TestUpdateVault(unittest.TestCase):
     
     def test_update_vault_too_many_totp(self):
         self.totp_codes.append({"uuid": str(uuid4()), "enc_secret": "code"})
-        self.payload["enc_vault"] = json.dumps(self.totp_codes)
+        self.payload["enc_vault"] = self.totp_codes
         self.client.cookies = {"session-token": self.session_token}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 400)
@@ -149,7 +149,7 @@ class TestUpdateVault(unittest.TestCase):
     
     def test_update_vault_too_few_totp(self):
         self.totp_codes.pop(0)
-        self.payload["enc_vault"] = json.dumps(self.totp_codes)
+        self.payload["enc_vault"] = self.totp_codes
         self.client.cookies = {"session-token": self.session_token}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 400)
