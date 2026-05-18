@@ -12,26 +12,28 @@ class UpdatePassphraseRepo:
 
     def updatePassphrase(self, user_id:str,  newPassphrase:str, newVault: list[dict[str, str]], newZKEKey: str, newPassphraseSalt:str, newDerivedKeySalt:str)  :
         try:
-            with db.session.begin():
-                for item in newVault:
-                    secret_item = db.session.query(TOTP_secret_model).filter_by(uuid=item["uuid"], user_id=user_id).first()
-                    if secret_item is None:
-                        raise Exception(f"Secret {item['uuid']} not found for user {user_id}. Transaction aborted.")
-                    secret_item.secret_enc = item["enc_secret"]
+            for item in newVault:
+                secret_item = db.session.query(TOTP_secret_model).filter_by(uuid=item["uuid"], user_id=user_id).first()
+                if secret_item is None:
+                    raise Exception(f"Secret {item['uuid']} not found for user {user_id}. Transaction aborted.")
+                secret_item.secret_enc = item["enc_secret"]
 
-                zke_key = db.session.query(ZKEModel).filter_by(user_id=user_id).first()
-                if zke_key is None:
-                    raise Exception(f"ZKE key for user {user_id} not found. Transaction aborted.")
+            zke_key = db.session.query(ZKEModel).filter_by(user_id=user_id).first()
+            if zke_key is None:
+                raise Exception(f"ZKE key for user {user_id} not found. Transaction aborted.")
 
-                zke_key.ZKE_key = newZKEKey
+            zke_key.ZKE_key = newZKEKey
 
-                user = db.session.query(UserModel).filter_by(id=user_id).first()
-                if user == None:
-                    raise Exception(f"{user_id} not found. Transaction aborted.")
-                user.password = newPassphrase
-                user.passphraseSalt = newPassphraseSalt
-                user.derivedKeySalt = newDerivedKeySalt
-        
+            user = db.session.query(UserModel).filter_by(id=user_id).first()
+            if user == None:
+                raise Exception(f"{user_id} not found. Transaction aborted.")
+            user.password = newPassphrase
+            user.passphraseSalt = newPassphraseSalt
+            user.derivedKeySalt = newDerivedKeySalt
+
+            db.session.commit()
+    
+
         except Exception:
             db.session.rollback()
             raise
