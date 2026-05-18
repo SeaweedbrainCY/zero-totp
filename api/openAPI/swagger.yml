@@ -430,7 +430,16 @@ paths:
                 new_passphrase:
                   type: string
                 enc_vault:
-                  type: string
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      uuid:
+                        type: string
+                        example: "5cb7f86f-afe9-4666-9728-47ea2f505957"
+                      enc_secret:
+                        type: string
+                        example: "AAAAAA="
                 zke_enc:
                   type: string
                 passphrase_salt:
