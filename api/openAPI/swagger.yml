@@ -221,7 +221,7 @@ paths:
                   type: array
                   items:
                     type: string
-                  
+
       responses:
         "201": # status code
           description: Return the uuid list of the new secret
@@ -234,7 +234,11 @@ paths:
                     type: array
                     items:
                       type: string
-                      example:   ["5cb7f86f-afe9-4666-9728-47ea2f505957",  "c16e12f9-63cb-4235-b780-64a67632ccb8"]
+                      example:
+                        [
+                          "5cb7f86f-afe9-4666-9728-47ea2f505957",
+                          "c16e12f9-63cb-4235-b780-64a67632ccb8",
+                        ]
                   message:
                     type: string
                     example: "OK"
@@ -403,7 +407,7 @@ paths:
           description: Access denied
   /update/vault:
     put:
-      operationId: controllers.update_vault
+      operationId: endpoints_controllers.user.update_vault
       tags:
         - User
       summary: Update the user's passphrase, encrypted vault and zke ecrypted key
@@ -478,9 +482,6 @@ paths:
                     type: string
                     example: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQ...\n-----END PUBLIC KEY-----"
 
-
-
-
   /google-drive/oauth/authorization-flow:
     get:
       operationId: controllers.get_authorization_flow
@@ -488,13 +489,13 @@ paths:
         - Google Drive
       summary: Get the OAuth authorization flow URI
       responses:
-        "200": 
+        "200":
           description: Return the authorization URI
         "401":
           description: Unauthorized
         "403":
           description: Access denied
-  
+
   /google-drive/oauth/callback:
     get:
       operationId: controllers.oauth_callback
@@ -502,9 +503,9 @@ paths:
         - Google Drive
       summary: OAuth callback endpoint for the authorization flow
       responses:
-        "302": 
+        "302":
           description: Callback successful
-  
+
   /google-drive/option:
     get:
       operationId: controllers.get_google_drive_option
@@ -512,7 +513,7 @@ paths:
         - Google Drive
       summary: Check if the google drive option as a backup is enabled
       responses:
-        "200": 
+        "200":
           description: Return the sync status
           content:
             application/json:
@@ -533,7 +534,7 @@ paths:
         - Google Drive
       summary: Disable the google drive option as a backup. Delete the oauth token.
       responses:
-        "200": 
+        "200":
           description: Google drive option disabled
         "401":
           description: Unauthorized
@@ -546,7 +547,7 @@ paths:
         - Google Drive
       summary: Back up the encrypted vault to Google Drive
       responses:
-        "200": 
+        "200":
           description: Return the backup status
         "401":
           description: Unauthorized
@@ -560,7 +561,7 @@ paths:
         - Google Drive
       summary: Delete all backups from Google Drive
       responses:
-        "200": 
+        "200":
           description: All backups deleted
         "401":
           description: Unauthorized
@@ -617,7 +618,7 @@ paths:
                   field_name2:
                     type: string
                     example: value2
-                  
+
         "400":
           description: Bad request
         "401":
@@ -642,7 +643,7 @@ paths:
                 id:
                   type: string
                   description: The preference id
-                  example:  favicon_policy || derivation_iteration || backup_lifetime || backup_minimum || autolock_delay
+                  example: favicon_policy || derivation_iteration || backup_lifetime || backup_minimum || autolock_delay
                 value:
                   oneOf:
                     - type: string
@@ -667,7 +668,7 @@ paths:
         - Google Drive
       summary: Verify the last backup checksum to determine if the last backup is up to date.
       responses:
-        "200": 
+        "200":
           description: Return the last backup date and if it's up to date. If an error occurs during the verification, the status contains the error key.
           content:
             application/json:
@@ -692,13 +693,13 @@ paths:
         "500":
           description: Internal server error
   /whoami:
-    get: 
+    get:
       operationId: controllers.get_whoami
       tags:
         - User
       summary: Return the user basic account information (id, username, email)
       responses:
-        "200": 
+        "200":
           description: Return the user's account
           content:
             application/json:
@@ -727,7 +728,7 @@ paths:
         - User
       summary: Delete the user's account. WARNING The hashed passphrase is required in x-hash-passphrase header !
       responses:
-        "200": 
+        "200":
           description: Account deleted
         "401":
           description: Unauthorized
@@ -753,7 +754,7 @@ paths:
                 token:
                   type: string
       responses:
-        "200": 
+        "200":
           description: Return the email verification token
         "401":
           description: Unauthorized
@@ -768,7 +769,7 @@ paths:
         - User
       summary: Send the email verification email
       responses:
-        "200": 
+        "200":
           description: Email sent
         "401":
           description: Unauthorized
@@ -777,14 +778,14 @@ paths:
         "500":
           description: Internal server error
   /notification/global:
-    get: 
+    get:
       operationId: controllers.get_global_notification
       tags:
         - Notification
       summary: Return the user's last global notification
       security: []
       responses:
-        "200": 
+        "200":
           description: Return the user's notifications
           content:
             application/json:
@@ -806,13 +807,13 @@ paths:
         "500":
           description: Internal server error
   /notification/internal:
-    get: 
+    get:
       operationId: controllers.get_internal_notification
       tags:
         - Notification
       summary: Return the user's last internal notification
       responses:
-        "200": 
+        "200":
           description: Return the user's notifications
           content:
             application/json:
@@ -838,11 +839,11 @@ paths:
       summary: Check the health of the API
       security: []
       responses:
-        "200": 
+        "200":
           description: API is healthy
         "500":
           description: API is unhealthy
-  
+
   /privacy-policy:
     get:
       operationId: endpoints_controllers.general.get_privacy_policy
@@ -850,7 +851,7 @@ paths:
         - General
       parameters:
         - in: query
-          name: lang 
+          name: lang
           required: true
           schema:
             type: string
@@ -859,7 +860,7 @@ paths:
       summary: Return the privacy policy formatted in Markdown
       security: []
       responses:
-        "200": 
+        "200":
           description: Privacy policy in Markdown format
           content:
             text/markdown:
@@ -879,7 +880,7 @@ paths:
       summary: Get public information related to the API configuration
       security: []
       responses:
-        "200": 
+        "200":
           description: Return the API configuration
           content:
             application/json:
@@ -891,7 +892,6 @@ paths:
                     example: true
         "500":
           description: Internal server error
-        
 
   /backup/configuration:
     get:
@@ -905,9 +905,9 @@ paths:
           description: Default Value (dv). If dv=true, then the default configuration value are also returned to the user
       tags:
         - Backup
-      summary: Get the configuration of the maximum age and minimum count of backups.  If the backup is older than the max age value, and if the minimum backup number if reach, the backup is deleted. 
+      summary: Get the configuration of the maximum age and minimum count of backups.  If the backup is older than the max age value, and if the minimum backup number if reach, the backup is deleted.
       responses:
-        "200": 
+        "200":
           description: Return the user's backup configuration
           content:
             application/json:
@@ -931,55 +931,55 @@ paths:
         "403":
           description: Access forbidden
         "500":
-          description: Internal server error 
-  
+          description: Internal server error
+
   /backup/configuration/{option}:
-      put:
-        operationId: endpoints_controllers.backup.set_backup_configuration
-        tags:
-          - Backup
-        summary: Set the configuration backups. Option can be "max_age_in_days" or "backup_minimum_count".
-        parameters:
-          - in: path
-            name: option
-            schema:
-              type: string
-            required: true
-            description: The option to update. Can be "max_age_in_days" or "backup_minimum_count"
-        requestBody:
+    put:
+      operationId: endpoints_controllers.backup.set_backup_configuration
+      tags:
+        - Backup
+      summary: Set the configuration backups. Option can be "max_age_in_days" or "backup_minimum_count".
+      parameters:
+        - in: path
+          name: option
+          schema:
+            type: string
           required: true
+          description: The option to update. Can be "max_age_in_days" or "backup_minimum_count"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - value
+              properties:
+                value:
+                  type: number
+                  example: 30
+      responses:
+        "201":
+          description: Return the user's backup configuration
           content:
             application/json:
               schema:
                 type: object
-                required:
-                  - value
                 properties:
-                  value:
+                  max_age_in_days:
                     type: number
                     example: 30
-        responses:
-          "201": 
-            description: Return the user's backup configuration
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    max_age_in_days:
-                      type: number
-                      example: 30
-                    backup_minimum_count:
-                      type: number
-                      example: 20
-          "400":
-            description: Bad request
-          "401":
-            description: Unauthorized
-          "403":
-            description: Access forbidden
-          "500":
-            description: Internal server error
+                  backup_minimum_count:
+                    type: number
+                    example: 20
+        "400":
+          description: Bad request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Access forbidden
+        "500":
+          description: Internal server error
 
   /backup/server/options:
     get:
@@ -988,7 +988,7 @@ paths:
         - Backup
       summary: Get the server backup options
       responses:
-        "200": 
+        "200":
           description: Return the server backup options
           content:
             application/json:
@@ -1000,15 +1000,15 @@ paths:
                     example: true
         "500":
           description: Internal server error
-  
+
   /user/derived-key-salt:
-    get: 
+    get:
       operationId: endpoints_controllers.user.get_derived_key_salt
       tags:
         - User
       summary: Return the user's derived key salt
       responses:
-        "200": 
+        "200":
           description: Return the user's derived key salt
           content:
             application/json:
@@ -1023,7 +1023,6 @@ paths:
         "403":
           description: Access denied
 
-    
 components:
   securitySchemes:
     SessionToken:
@@ -1031,4 +1030,3 @@ components:
       in: cookie
       name: session-token
       x-apikeyInfoFunc: CryptoClasses.session_verification.verify_session
-      
