@@ -212,6 +212,7 @@ test('Import vault', async ({ page }) => {
   await page.getByRole('button', { name: 'Zero-TOTP logo Import from' }).click();
   await page.locator('span').filter({ hasText: 'Vault backup' }).first().click();
   await page.getByRole('button', { name: 'Vault backup' }).setInputFiles('./zero-totp/fixtures/fake_Zero-TOTP_backup_e2e_test_import.txt');
+  await page.getByRole('button', { name: 'I trust this backup' }).click();
   await page.getByRole('button', { name: 'Continue' }).click();
   await page.getByRole('textbox', { name: 'Passphrase' }).click();
   await page.getByRole('textbox', { name: 'Passphrase' }).fill('test_secret_this_is_not_a_real_secret_dont_crashout_A1');
