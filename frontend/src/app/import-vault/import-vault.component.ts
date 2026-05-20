@@ -461,7 +461,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     await this.uploadBatches(batches);
 
     this.uploading.set(false);
-
+    this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it 
     if (!this.import_had_error()) {
       this.importSuccess.set(true);
     }
