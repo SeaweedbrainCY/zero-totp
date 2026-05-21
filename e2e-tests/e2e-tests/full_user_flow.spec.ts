@@ -5,6 +5,8 @@ test.use({
   ignoreHTTPSErrors: true
 });
 
+test.describe.configure({ mode: 'serial' });
+
 
 let seed = Math.random().toString(36)
 let seed2 = Math.random().toString(36).substring(2, 15);
@@ -226,7 +228,7 @@ test('Import vault', async ({ page }) => {
   await expect(page.getByText('Imported TOTP code 2')).toBeVisible();
   await expect(page.getByText('Imported TOTP code 1')).toBeVisible();
   await page.getByRole('button', { name: 'Confirm' }).click();
-  
+
   await expect(page.locator('app-import-vault')).toContainText('Import successful 🎉');
   await page.getByRole('button', { name: 'Open my vault' }).click();
   await expect(page.locator('app-vault')).toContainText('Imported TOTP code 2');
