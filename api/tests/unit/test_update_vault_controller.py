@@ -27,7 +27,7 @@ class TestUpdateVault(unittest.TestCase):
         user = User(id=self.user_id,username='user1', mail="user1@test.com", password=self.password.hashpw().decode('utf-8'), derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAA", createdAt="01/01/2001", isBlocked=False)
         other_user = User(id=self.other_user_id,username='user2', mail="user2@test.com", password=self.password.hashpw().decode('utf-8'), derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAA", createdAt="01/01/2001", isBlocked=False)
 
-        self.totp_codes = {}
+        self.totp_codes = []
         zke = ZKE_encryption_key(user_id=self.user_id, ZKE_key="zke_enc")
 
 
@@ -39,7 +39,7 @@ class TestUpdateVault(unittest.TestCase):
             for i in range(self.nb_totp):
                 id = str(uuid4())
                 totp = TOTP_secret(uuid=id, user_id=self.user_id, secret_enc = f"enc_{i}")
-                self.totp_codes[id] = f"code_{i}-2"
+                self.totp_codes.append({"uuid": id, "enc_secret":f"code_{i}-2" })
                 db.session.add(totp)
             self.foreign_totp = TOTP_secret(uuid=self.foreign_totp_id, user_id=self.other_user_id, secret_enc = "enc")
             db.session.add(self.foreign_totp)
@@ -54,7 +54,7 @@ class TestUpdateVault(unittest.TestCase):
         self.payload = {
             "new_passphrase" : "new_passphrase", 
             "old_passphrase":self.password.password, 
-            "enc_vault": json.dumps(self.totp_codes), 
+            "enc_vault": self.totp_codes, 
             "zke_enc":"zke_enc", 
             "passphrase_salt": "pasphrase_salt", 
             "derived_key_salt":"derived_key_salt"}
@@ -74,8 +74,15 @@ class TestUpdateVault(unittest.TestCase):
             response = self.client.put(self.endpoint, json=self.payload)
             self.assertEqual(response.status_code, 201)
             codes = db.session.query(TOTP_secret).filter_by(user_id=self.user_id).all()
+            
+            sent_vault_secret_by_uuid = {}
+            for item in self.totp_codes:
+                sent_vault_secret_by_uuid[item["uuid"]] = item["enc_secret"]
+
             for code in codes:
-                self.assertEqual(code.secret_enc, self.totp_codes[code.uuid])
+                self.assertEqual(code.secret_enc, sent_vault_secret_by_uuid[code.uuid])
+
+            self.assertEqual(len(codes), len(self.totp_codes))
             user = db.session.query(User).filter_by(id=self.user_id).first()
             self.assertEqual(user.passphraseSalt, self.payload["passphrase_salt"])
             self.assertTrue(hash_func.Bcrypt(self.payload["new_passphrase"]).checkpw(user.password.decode('utf-8')))
@@ -117,34 +124,32 @@ class TestUpdateVault(unittest.TestCase):
     
 
     def test_update_vault_unknown_totp(self):
-        self.totp_codes.pop(list(self.totp_codes.keys())[0])
-        self.totp_codes[str(uuid4())] = "code"
-        self.payload["enc_vault"] = json.dumps(self.totp_codes)
+        self.totp_codes[0] = {"uuid": str(uuid4()), "enc_secret": "code"}
+        self.payload["enc_vault"] = self.totp_codes
         self.client.cookies = {"session-token": self.session_token}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json(), {"message": "Forbidden action. Zero-TOTP detected that you were updating object you don't have access to. The request is rejected."}, 403)
 
     def test_update_vault_of_another_user(self):
-        self.totp_codes.pop(list(self.totp_codes.keys())[0])
-        self.totp_codes[self.foreign_totp_id] = "code"
-        self.payload["enc_vault"] = json.dumps(self.totp_codes)
+        self.totp_codes[0] = {"uuid": self.foreign_totp_id, "enc_secret": "code"}
+        self.payload["enc_vault"] = self.totp_codes
         self.client.cookies = {"session-token": self.session_token}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.json(), {"message": "Forbidden action. Zero-TOTP detected that you were updating object you don't have access to. The request is rejected."}, 403)
     
     def test_update_vault_too_many_totp(self):
-        self.totp_codes[str(uuid4())] = "code"
-        self.payload["enc_vault"] = json.dumps(self.totp_codes)
+        self.totp_codes.append({"uuid": str(uuid4()), "enc_secret": "code"})
+        self.payload["enc_vault"] = self.totp_codes
         self.client.cookies = {"session-token": self.session_token}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {"message": "To avoid the loss of your information, Zero-TOTP is rejecting this request because it has detected that you might lose data. Please contact quickly Zero-TOTP developers to fix issue."}, 400)
     
     def test_update_vault_too_few_totp(self):
-        self.totp_codes.pop(list(self.totp_codes.keys())[0])
-        self.payload["enc_vault"] = json.dumps(self.totp_codes)
+        self.totp_codes.pop(0)
+        self.payload["enc_vault"] = self.totp_codes
         self.client.cookies = {"session-token": self.session_token}
         response = self.client.put(self.endpoint, json=self.payload)
         self.assertEqual(response.status_code, 400)
@@ -177,13 +182,4 @@ class TestUpdateVault(unittest.TestCase):
             user = db.session.query(User).filter_by(id=self.user_id).first()
             user.isBlocked = False
             db.session.commit()
-    
-    def test_update_invalid_vault(self):
-        self.client.cookies = {"session-token": self.session_token}
-        payload = self.payload.copy()
-        payload["enc_vault"] = '{"test": "secret"}'
-        response = self.client.put(self.endpoint, json=payload)
-        self.assertEqual(response.status_code, 400)
-        
-        self.assertEqual(response.json()["message"], "The vault submitted is invalid. If you submitted this vault through the web interface, please report this issue to the support.")
     

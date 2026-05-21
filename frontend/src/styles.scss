@@ -22,7 +22,6 @@ $grey-lighter:#E5E4E2;
 
 
 
-
 @use "../node_modules/bulma/sass" with (
   $info:  $blue,
   $link: $blue,
@@ -52,6 +51,16 @@ Note: The following codes is an alternative design. Not currently in use.
 .totp-card-yellow {
   background: linear-gradient(135deg, lighten(#FFCF56, 8%) 0%, darken(#FFCF56, 8%) 100%);
 }*/
+
+:root {
+  --color-blue:         #5AA9E6;
+  --color-red:          #FE6847;
+  --color-yellow:       #FFCF56;
+  --color-dark:         #16262E;
+  --color-green:        #63A375;
+  --color-grey-light:   #D3D3D3;
+  --color-grey-lighter: #E5E4E2;
+}
 
 
 

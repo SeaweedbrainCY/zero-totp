@@ -477,6 +477,7 @@
         "warning": "Encryption and upload in progress. Do not close your browser"
       },
       "import": "Import a backup of your Zero-TOTP vault",
+      "items": "items",
       "select": "Merging method",
       "will_be_deleted": "To delete",
       "will_be_kept": "Will be added"
@@ -783,6 +784,7 @@
       "fav_empty": "URI cannot be empty",
       "fetch_secret": "An error occured while getting your secret",
       "fetch_secret_server": "An error occured while getting your secret from the server",
+      "get": "An error occured while getting your secret. Got undefined.",
       "invalid_domain": "Invalid domain name",
       "invalid_uri": "Invalid URI",
       "missing_https": "Missing http(s)://",
@@ -851,6 +853,7 @@
         "part2": "Please, try to re-sync your Google Drive account."
       },
       "decryption": "An error occurred while decrypting your secrets.",
+      "decryption_one": "An error occured while decrypting one of your TOTP secret. Displayed information will not be complete.",
       "decryption_vault": "Impossible to decrypt your vault. Please log out and log in again.",
       "google": {
         "disable": "Error : Impossible to disable Google Drive. ",

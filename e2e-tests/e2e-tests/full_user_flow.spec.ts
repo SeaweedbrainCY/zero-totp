@@ -71,9 +71,8 @@ test('Add TOTP code', async ({ page }) => {
     - paragraph: Github
     - button "edit"
     - button "copy"
-    - paragraph:
-      - text: /\\d+/
-      - progressbar: /\\d+\\.\\d+%/
+    - img
+    - text: /\\d+/
     `);
 });
 
@@ -106,9 +105,8 @@ test('Add several TOTP code', async ({ page }) => {
     - paragraph: Amazon
     - button "edit"
     - button "copy"
-    - paragraph:
-      - text: /\\d+/
-      - progressbar: /\\d+\\.\\d+%/
+    - img
+    - text: /\\d+/
     `);
   await page.locator('a').filter({ hasText: 'Add a new TOTP code' }).click();
   await page.getByRole('button', { name: 'Enter it manually' }).click();
@@ -128,9 +126,8 @@ test('Add several TOTP code', async ({ page }) => {
     - paragraph: Apple
     - button "edit"
     - button "copy"
-    - paragraph:
-      - text: /\\d+/
-      - progressbar: /\\d+\\.\\d+%/
+    - img
+    - text: /\\d+/
     `);
   await page.locator('a').filter({ hasText: 'Add a new TOTP code' }).click();
   await page.getByRole('button', { name: 'Enter it manually' }).click();
@@ -150,9 +147,8 @@ test('Add several TOTP code', async ({ page }) => {
     - paragraph: Microsoft
     - button "edit"
     - button "copy"
-    - paragraph:
-      - text: /\\d+/
-      - progressbar: /\\d+\\.\\d+%/
+    - img
+    - text: /\\d+/
     `);
 });
 
@@ -178,9 +174,8 @@ test('Edit TOTP code', async ({ page }) => {
     - paragraph: Github
     - button "edit"
     - button "copy"
-    - paragraph:
-      - text: /\\d+/
-      - progressbar: /\\d+\\.\\d+%/
+    - img
+    - text: /\\d+/
     `);
 });
 
@@ -202,10 +197,47 @@ test('Delete TOTP code', async ({ page }) => {
   await expect(page.getByLabel('TOTP code deleted !')).toContainText('TOTP code deleted !');
 });
 
+test('Import vault', async ({ page }) => {
+  await page.goto('https://localhost/login');
+  await page.getByRole('textbox', { name: 'Email' }).click();
+  await page.getByRole('textbox', { name: 'Email' }).fill(email);
+  await page.getByRole('textbox', { name: 'Passphrase' }).click();
+  await page.getByRole('textbox', { name: 'Passphrase' }).fill(passphrase);
+  await page.getByRole('button', { name: 'Open my vault' }).click();
+  await page.waitForURL('**/vault');
+  await expect(page.getByLabel('Vault decrypted ✅')).toContainText('Vault decrypted ✅');
+  await page.getByText('Backup locally', { exact: true }).click();
+  await page.getByRole('button', { name: 'Open a local Vault' }).click();
+  await page.getByRole('link', { name: 'Restore a backup' }).click();
+  await page.getByRole('button', { name: 'Zero-TOTP logo Import from' }).click();
+  await page.locator('span').filter({ hasText: 'Vault backup' }).first().click();
+  await page.getByRole('button', { name: 'Vault backup' }).setInputFiles('./zero-totp/fixtures/fake_Zero-TOTP_backup_e2e_test_import.txt');
+  await page.getByRole('button', { name: 'I trust this backup' }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByRole('textbox', { name: 'Passphrase' }).click();
+  await page.getByRole('textbox', { name: 'Passphrase' }).fill('test_secret_this_is_not_a_real_secret_dont_crashout_A1');
+  await page.getByRole('button', { name: 'Decrypt' }).click();
+  await expect(page.getByRole('button', { name: 'decrypted' })).toBeVisible();
+  await page.getByText('decrypted').first().click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.locator('app-import-vault')).toContainText('Will be added (2) items');
+  await page.getByText('Import the backup of 20/05/2026').click();
+  await expect(page.getByText('Import the backup of 20/05/2026')).toBeVisible();
+  await expect(page.getByText('Imported TOTP code 2')).toBeVisible();
+  await expect(page.getByText('Imported TOTP code 1')).toBeVisible();
+  await page.getByRole('button', { name: 'Confirm' }).click();
+  
+  await expect(page.locator('app-import-vault')).toContainText('Import successful 🎉');
+  await page.getByRole('button', { name: 'Open my vault' }).click();
+  await expect(page.locator('app-vault')).toContainText('Imported TOTP code 2');
+  await page.getByText('Imported TOTP code 1').click();
+  await expect(page.locator('app-vault')).toContainText('Imported TOTP code 1');
+  await expect(page.locator('app-vault')).toContainText('imported_tag');
+});
 
 
 test('Edit preferences', async ({ page }) => {
-   await page.goto('https://localhost/login');
+  await page.goto('https://localhost/login');
   await page.getByRole('textbox', { name: 'Email' }).click();
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
   await page.getByRole('textbox', { name: 'Passphrase' }).click();

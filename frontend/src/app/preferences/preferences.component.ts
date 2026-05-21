@@ -44,7 +44,6 @@ export class PreferencesComponent implements OnInit{
   isDisplayingAdvancedSettings = signal(false);
   faviconPolicy = signal(""); // never, always, enabledOnly
   loadingPreferences = signal(true);
-  loadingPreferencesError = signal(false);
   notification_message = signal<string | undefined>(undefined);
   autolock_delay = signal(10);
   autolock_display_error = signal(false);
@@ -90,7 +89,6 @@ export class PreferencesComponent implements OnInit{
     this.http.get("/api/v1/preferences?fields=all", {withCredentials: true, observe: 'response'}).subscribe({
       next: (response) => {
       if(response.body != null){
-        this.loadingPreferences.set(false);
         const data = JSON.parse(JSON.stringify(response.body));
         if(data.autolock_delay != null){
           if(Math.floor(data.autolock_delay/60) == data.autolock_delay/60){
@@ -100,14 +98,16 @@ export class PreferencesComponent implements OnInit{
             this.autolock_delay.set(data.autolock_delay);
             this.duration_unit.set("minute");
           }
+          this.loadingPreferences.set(false);
         } else {
+          this.loadingPreferences.set(false);
           this.autolock_delay.set(10);
           this.duration_unit.set("minute");
         }
         if(data.favicon_policy != null){
           this.faviconPolicy.set(data.favicon_policy);
+          this.loadingPreferences.set(false);
         } else {
-          this.loadingPreferencesError.set(true);
           this.faviconPolicy.set("enabledOnly");
           this.translate.get('preference.error.fetch').subscribe((translation: string) => {
             this.utils.toastError(this.toastr,translation,"")
@@ -116,8 +116,6 @@ export class PreferencesComponent implements OnInit{
       }
     }, 
     error: (error) => {
-      this.loadingPreferencesError.set(true);
-      this.loadingPreferences.set(false);
         let errorMessage = "";
           if(error.error.message != null){
             errorMessage = error.error.message;
@@ -158,16 +156,12 @@ export class PreferencesComponent implements OnInit{
           this.default_backup_minimum_count.set(data.default_backup_minimum_count);
           this.loading_backup_configuration.set(false);
         } else {
-          this.loadingPreferencesError.set(true);
-          this.loading_backup_configuration.set(false);
           this.translate.get('preference.error.fetch').subscribe((translation: string) => {
             this.utils.toastError(this.toastr,translation,"")
           });
         }
       },
       error: (error)=>{
-        this.loadingPreferencesError.set(true);
-        this.loading_backup_configuration.set(false);
         this.translate.get('preference.error.fetch').subscribe((translation: string) => {
           this.utils.toastError(this.toastr,translation,error.error.message)
         });

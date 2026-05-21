@@ -6,13 +6,12 @@ services:
   api:
     container_name: api
     image: ghcr.io/seaweedbraincy/zero-totp-api:dev
-    command: ./entrypoint.sh auto-upgrade 
+    command: ./entrypoint.sh auto-upgrade
     environment:
       USER_UID: 1001
       USER_GID: 1001
     volumes:
       - ./zero-totp/config/:/api/config/
-      - ./secret:/api/secret
       - ./zero-totp-logs:/api/logs/
     depends_on:
       - database
@@ -23,11 +22,10 @@ services:
       MYSQL_DATABASE: zero_totp
       MYSQL_USER: api
       MYSQL_PASSWORD: tmppassword
-    image:  mariadb:11
+    image: mariadb:11
     container_name: database
 
-
-  caddy: 
+  caddy:
     container_name: caddy
     image: caddy:latest
     ports:
