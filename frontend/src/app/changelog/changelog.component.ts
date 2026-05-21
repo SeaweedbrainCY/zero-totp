@@ -3,10 +3,10 @@ import { faCirclePlus, faTruckMedical } from '@fortawesome/free-solid-svg-icons'
 import { environment } from 'src/environments/environment';
 
 @Component({
-    selector: 'app-changelog',
-    templateUrl: './changelog.component.html',
-    styleUrls: ['./changelog.component.css'],
-    standalone: false
+  selector: 'app-changelog',
+  templateUrl: './changelog.component.html',
+  styleUrls: ['./changelog.component.css'],
+  standalone: false
 })
 export class ChangelogComponent {
   faCirclePlus = faCirclePlus;
@@ -14,13 +14,26 @@ export class ChangelogComponent {
   imageHash = environment.imageHash;
 
   changelogs = [
-        {
-      date: "20/01/2025",
+    {
+      date: "20/05/2026",
+      version: "1.13",
+      added: [
+        "This version brings some UI improvement, mainly in your vault. The timers until code expiration has been redisgned to be smoother and prettier. You will see less pages loading. Instead only the dynamic content is shown as loading",
+        "The UX has been improved as well, with less buggy interface and a smoother experience",
+        "Improve the overall application efficiency. Same design, same feature, far less ressources consumed."
+      ],
+      fixed: [
+        "Fix a bug in the passphrase update causing some update to be rejected.",
+        "Dependencies security upgrade"
+      ]
+    },
+    {
+      date: "20/01/2026",
       version: "1.12",
       added: [
-       "This version brings very important changes on how users session are managed. Since this version you will see your session being extended. While you connects to your Zero-TOTP vault at least 1 time every 3 days, you won't have to re-authenticate yourself for a maximum of 1 month. You still may have to re-enter your passphrase to decrypt your vault."
+        "This version brings very important changes on how users session are managed. Since this version you will see your session being extended. While you connects to your Zero-TOTP vault at least 1 time every 3 days, you won't have to re-authenticate yourself for a maximum of 1 month. You still may have to re-enter your passphrase to decrypt your vault."
       ],
-      fixed:[
+      fixed: [
         "Update API dependencies to fix non-impacting 3 CVEs.",
         "Fix an issue causing the account deletion to be impossible in some scenarios."
       ]
@@ -32,7 +45,7 @@ export class ChangelogComponent {
         "Divide by 3 the size of the API docker image to improve the deployment time and reduce the attack surface.",
         "Optimize and improve the docker image build process to be more secure and reliable.",
       ],
-      fixed:[
+      fixed: [
         "Fix a non-impacting high CVE in one of the API dependencies."
       ]
     },
@@ -42,17 +55,17 @@ export class ChangelogComponent {
       added: [
         "Remove an external dependency to improve the privacy of the users.",
       ],
-      fixed:[
+      fixed: [
         "Improve the geolocation function for informational emails sent to the users."
       ]
     },
-        {
+    {
       date: "17/07/2025",
       version: "1.9",
       added: [
         "This version introduces necessary breaking changes in order to prepare Zero-TOTP for the self-hosted version.",
       ],
-      fixed:[
+      fixed: [
         "Upgrade various dependencies to fix CVE and improve the security of the application.",
       ]
     },
@@ -64,11 +77,11 @@ export class ChangelogComponent {
         "A FAQ section dedicated to Zero-TOTP.",
         "For self-hosted instances, signup can be disabled, as well as automatic backups with Google Drive."
       ],
-      fixed:[
-       "When a user de-associated their google drive account not from Zero-TOTP, Zero-TOTP wasn't correctly unapproved in google drive, therefore creating issues when the user tried to re-associate the account. Now the API catch this kind of issue, and the frontend display to the user a way to fix this."
+      fixed: [
+        "When a user de-associated their google drive account not from Zero-TOTP, Zero-TOTP wasn't correctly unapproved in google drive, therefore creating issues when the user tried to re-associate the account. Now the API catch this kind of issue, and the frontend display to the user a way to fix this."
       ]
     },
-     {
+    {
       date: "23/06/2025",
       version: "1.7",
       added: [
@@ -76,7 +89,7 @@ export class ChangelogComponent {
         "You can now easily add a new TOTP code from the little '+' button in the bottom left corner of your vault page.",
 
       ],
-      fixed:[
+      fixed: [
         "Dependencies upgraded and CVE fixed.",
       ]
     },
@@ -87,18 +100,18 @@ export class ChangelogComponent {
         "The privacy policy is now more easily accessible on github as a Markdown file.",
         "For self hosted instances, the privacy policy can easily be updated."
       ],
-      fixed:[
+      fixed: [
         "API docker image hardening has been done to improve the stability of the application while still restricting it run as a non-root user.",
         "End tp end tests have been improved"
       ]
     },
-     {
+    {
       date: "09/06/2025",
       version: "1.5.0",
       added: [
         "This is another big step towards the self-hosted version of Zero-TOTP. In the login and signup pages you are now aware of what kind of Zero-TOTP instance you are using. zero-totp.com is the official instance and for now all the users are marked as 'self-hosted'. This is important to keep the users aware of why this is important.",
       ],
-      fixed:[
+      fixed: [
         "The signup process doesn't require anymore the user to re-type the phrase 'My passphrase is strong and I won't forger it'. Instead a more user-friendly pop-up is displayed to ensure the user understands the importance of the passphrase and that it is strong enough.",
       ]
     },
@@ -106,7 +119,7 @@ export class ChangelogComponent {
       date: "04/06/2025",
       version: "1.4.0",
       added: [],
-      fixed:[
+      fixed: [
         "A lot of packages have been updated on the frontend and API side to improve the stability and security of the application.",
       ]
     },
@@ -117,7 +130,7 @@ export class ChangelogComponent {
         "Several features have been added under the hood to prepare Zero-TOTP for the self-hosted version. This version is a major step towards the self-hosted version of Zero-TOTP.",
         "Further automated tests have been added to ensure the stability and reliability of the application.",
       ],
-      fixed:[
+      fixed: [
         "A bug causing the account deletion to be impossible when the user had custom backup settings"
       ]
     },
@@ -127,8 +140,8 @@ export class ChangelogComponent {
       added: [
         "When verifying the authenticity of an imported vault, the frontend now fetches the public key from the API.  This feature has been implemented to allow self hosted version of Zero-TOTP to be able to verify their own exported vault. As backup, if the API is now available, a official zero-totp public key is still hardcoded in Zero-TOTP frontend"
       ],
-      fixed:[
-        
+      fixed: [
+
       ]
     },
     {
@@ -137,7 +150,7 @@ export class ChangelogComponent {
       added: [
         "Email verification codes are now restricted to hexadecimal characters to make to manual typing easier.",
       ],
-      fixed:[
+      fixed: [
         "Fix a bug that might create issue when trying to delete the Zero-TOTP account.",
         "Fix several UI issues",
         "Fix 3 moderate CVE in the API dependencies.",
@@ -149,10 +162,10 @@ export class ChangelogComponent {
       date: "25/04/2025",
       version: "1.1.0",
       added: [
-       "An important code optimization has been made to improve the performance of the application, especially of your vault and edit page. With this version, the application will use between 3 and 10 times less CPU, save up to 30% of memory and will compute 6 times less data to display your vault. This will improve the performance of the application.",
-       "A new way of Zero-TOTP images deployment has been made to continue the preparation of the self-hosted version.",
+        "An important code optimization has been made to improve the performance of the application, especially of your vault and edit page. With this version, the application will use between 3 and 10 times less CPU, save up to 30% of memory and will compute 6 times less data to display your vault. This will improve the performance of the application.",
+        "A new way of Zero-TOTP images deployment has been made to continue the preparation of the self-hosted version.",
       ],
-      fixed:[
+      fixed: [
         "Fix a critical CVE in the API dependencies.",
         "Upgrade dependencies to maintain the security of the application.",
       ]
@@ -161,9 +174,9 @@ export class ChangelogComponent {
       date: "25/03/2025",
       version: "1.0.3",
       added: [
-       
+
       ],
-      fixed:[
+      fixed: [
         "Upgrade API dependencies to fix a moderate CVE.",
       ]
     },
@@ -171,9 +184,9 @@ export class ChangelogComponent {
       date: "24/03/2025",
       version: "1.0.2",
       added: [
-       
+
       ],
-      fixed:[
+      fixed: [
         "Upgrade API dependencies to fix a high CVE.",
       ]
     },
@@ -184,7 +197,7 @@ export class ChangelogComponent {
         "You can now customize how Zero-TOTP retains your google drive backups. Go into your preferences and update the max age of your backups and the minimum number of backup you want to always keep.",
         "We are very proud to announce that Zero-TOTP is now out of beta and is now a stable version. Zero-TOTP now has all the necessary features to be a nice, reliable and secure Zero-TOTP client, available on all devices via webapp or PWA. Many new features will come in the future, but the core of Zero-TOTP is now stable and ready for production.",
       ],
-      fixed:[
+      fixed: [
       ]
     },
     {
@@ -193,7 +206,7 @@ export class ChangelogComponent {
       added: [
         "You can now customize how Zero-TOTP retains your google drive backups. Go into your preferences and update the max age of your backups and the minimum number of backup you want to always keep."
       ],
-      fixed:[
+      fixed: [
         "We fixed a low CVE in the API dependencies."
       ]
     },
@@ -203,7 +216,7 @@ export class ChangelogComponent {
       added: [
         "New Year, new me, Zero-TOTP now has a dark mode ! The global design of all the application has also been improved to be more user-friendly and more modern.",
       ],
-      fixed:[
+      fixed: [
         "We fixed a medium CVE in the frontend dependencies."
       ]
     },
@@ -213,7 +226,7 @@ export class ChangelogComponent {
       added: [
         "A healthcheck endpoint to enable a better monitoring of the API",
       ],
-      fixed:[
+      fixed: [
       ]
     },
     {
@@ -222,9 +235,9 @@ export class ChangelogComponent {
       added: [
         "Whole new feature : you can now import a backup of your Zero-TOTP vault directly in your current vault. This helps you to easily restore a backup or migrate an account. This feature is available in the Account page and storage option of your vault page",
       ],
-      fixed:[
-       "We fixed a medium CVE in the API dependencies.", 
-       "We fixed an issue in the parsing of imported vaults to avoid any potential security issue.",
+      fixed: [
+        "We fixed a medium CVE in the API dependencies.",
+        "We fixed an issue in the parsing of imported vaults to avoid any potential security issue.",
       ]
     },
     {
@@ -234,10 +247,10 @@ export class ChangelogComponent {
         "The global attack surface of Zero-TOTP has been widely reduced by removing the admin capabilities from the main application and by improving substantially the session management.",
         "The whole session management has been reviewed and rewritten to offer more control on the session, reduce unnecessary attack surface and enabling a very strict session management.",
       ],
-      fixed:[
-       "We fixed a CVE in the API dependencies.", 
-       "We fixed an issue on API side causing inconsistency in the remote IP computation, causing rate limiting to be less effective.",
-       "We fixed 2 low security design that might cause some security issues in the future."
+      fixed: [
+        "We fixed a CVE in the API dependencies.",
+        "We fixed an issue on API side causing inconsistency in the remote IP computation, causing rate limiting to be less effective.",
+        "We fixed 2 low security design that might cause some security issues in the future."
       ]
     },
     {
@@ -246,7 +259,7 @@ export class ChangelogComponent {
       added: [
         "You can now extend the maximum inactivity time before your vault autolocks to 24h. You can customize this time in your preferences page. This enables you to keep your vault open for a longer period of time, especially when you are using installed Zero-TOTP as a PWA.",
       ],
-      fixed:[
+      fixed: [
         "Alongside with new duration, the overall security of the application has been improved with new very short session access tokens.",
         "2 moderate CVEs in the API dependencies has been fixed."
       ]
@@ -255,11 +268,11 @@ export class ChangelogComponent {
       date: "23/10/2024",
       version: "b4.0.1",
       added: [
-        
+
       ],
-      fixed:[
+      fixed: [
         "Fix the issue causing the favicon to not load properly in the vault page.",
-       "Fix a low CVE in frontend dependencies."
+        "Fix a low CVE in frontend dependencies."
       ]
     },
     {
@@ -268,8 +281,8 @@ export class ChangelogComponent {
       added: [
         "Zero-TOTP is now available as a PWA (Progressive Web App) ! You can now install Zero-TOTP on your device and use it as a native application. You can install Zero-TOTP on your device by clicking on the install button in the address bar of your browser or Add to Home Screen in the settings of your browser.",
       ],
-      fixed:[
-       "Fix a high CVE in api dependencies."
+      fixed: [
+        "Fix a high CVE in api dependencies."
       ]
     },
     {
@@ -278,8 +291,8 @@ export class ChangelogComponent {
       added: [
         "You can now choose yourself the maximum inactivity time before your vault autolocks. The auto-lock can occur from 1min of inactivity to 1h of inactivity. In future releases, this maximum time will be increased to 24h. You can customize this time in your preferences page.",
       ],
-      fixed:[
-       
+      fixed: [
+
       ]
     },
     {
@@ -292,7 +305,7 @@ export class ChangelogComponent {
         "The security of how Zero-TOTP communicates with its API and how the API handles each client has been reviewed to be more efficient and more strict.",
         "Zero-TOTP is more reliable, resilient and secure than ever."
       ],
-      fixed:[
+      fixed: [
         "The issue causing some backend request to fail while opening the vault have been definitively fixed by design improvement.",
         "Update of our dependencies to fix 1 moderate CVE.",
         "The issue causing the french translation to come a bit after the page load has been fixed.",
@@ -300,18 +313,18 @@ export class ChangelogComponent {
       ]
     },
     {
-      
+
       date: "03/09/2024",
       version: "b2.11.3",
       added: [
 
       ],
-      fixed:[
+      fixed: [
         "Some dependencies have been updated to fix 2 moderate CVE.",
       ]
     },
     {
-      
+
       date: "11/08/2024",
       version: "b2.11",
       added: [
@@ -319,12 +332,12 @@ export class ChangelogComponent {
         "Zero-TOTP is expanding with a new replication node in Europe to improve the availability of the application.",
         "Zero-TOTP is still preparing it-self to be self-hosted. We are working on the last features to make it possible.",
       ],
-      fixed:[
-       
+      fixed: [
+
       ]
     },
     {
-      
+
       date: "20/06/2024",
       version: "b2.10.6",
       added: [
@@ -333,13 +346,13 @@ export class ChangelogComponent {
         "Validation codes are now valid for 30min instead of 10min.",
 
       ],
-      fixed:[
+      fixed: [
         "Huge improvement of the security and the reliability of the application.",
         "Zero-TOTP removed all its frontend dependencies to BuyMeACoffee API, leading to a better privacy for the users.",
         "Improve loading UX for low internet connection.",
         "Some dependencies have been updated to fix 2 moderate CVE.",
         "We fixed a bug when creating your accounting replacing the password by its hash in the password field when an error occurs.",
-         "We fixed an error that made the passphrase update impossible due to a vault parsing error"
+        "We fixed an error that made the passphrase update impossible due to a vault parsing error"
       ]
     },
     {
@@ -348,7 +361,7 @@ export class ChangelogComponent {
       added: [
         "A lot of new invisible features have been added to prepare Zero-TOTP so it can easily be self-hosted.",
       ],
-      fixed:[
+      fixed: [
         "We improved the error message handling of the frontend.",
         "We updated our dependencies to fix 2 moderate CVE.",
       ]
@@ -360,7 +373,7 @@ export class ChangelogComponent {
         "You can now add tags to your secrets to easily finds them in your vault.",
         "We improved the login flow to be less confusing when the user successfully logs in after several failed attempts.",
       ],
-      fixed:[
+      fixed: [
         "We updated our dependencies to fix a moderate CVE.",
       ]
     },
@@ -370,7 +383,7 @@ export class ChangelogComponent {
       added: [
         "The signup flow has been improved to be less heavy and don't require the user to enter too much their passphrase",
       ],
-      fixed:[
+      fixed: [
         "We updated our dependencies to fix 2 moderate CVE.",
         "We fixed a bug causing the session to timeout before 10min of inactivity."
       ]
@@ -381,7 +394,7 @@ export class ChangelogComponent {
       added: [
         "We improve the style and options of informational and errors toasts and reduce the code complexity.",
       ],
-      fixed:[
+      fixed: [
         "We improve the edit TOTP code page, especially when the TOTP secret is invalid or malformed in a way the user understands the problem and can fix it more easily.",
         "We updated our dependencies to fix a moderate CVE."
       ]
@@ -392,8 +405,8 @@ export class ChangelogComponent {
       added: [
         "You can now ask your browser to remember your email address when you log in.",
       ],
-      fixed:[
-       
+      fixed: [
+
       ]
     },
     {
@@ -402,8 +415,8 @@ export class ChangelogComponent {
       added: [
         "We added a new search bar in the vault page to easily find your TOTP codes.",
       ],
-      fixed:[
-       
+      fixed: [
+
       ]
     },
     {
@@ -411,7 +424,7 @@ export class ChangelogComponent {
       version: "b2.4",
       added: [
       ],
-      fixed:[
+      fixed: [
         "We upgrade some of our dependencies to fix 2 vulnerabilities."
       ]
     },
@@ -420,7 +433,7 @@ export class ChangelogComponent {
       version: "b2.3",
       added: [
       ],
-      fixed:[
+      fixed: [
         "We improve the 'add new TOTP code' UX to be more user-friendly and to avoid any confusion in the application.",
       ]
     },
@@ -428,9 +441,9 @@ export class ChangelogComponent {
       date: "22/01/2024",
       version: "b2.2",
       added: [
-       "We improved the protection of your accounts with rate limiting for abusing user or attack attempts.",
+        "We improved the protection of your accounts with rate limiting for abusing user or attack attempts.",
       ],
-      fixed:[
+      fixed: [
         "We fixed potential injection of css class while displaying your vault.",
         "Improvement of the handling of favicon domain name to prevent any attempt of side-attack.",
         "We fixed a bug in the Google Drive integration causing the synchronization to be ephemeral when the user had previously revoked the access to Zero-TOTP directly from their Google Drive account instead of in the application.",
@@ -440,9 +453,9 @@ export class ChangelogComponent {
       date: "20/01/2024",
       version: "b2.1",
       added: [
-       "You can now update your username in your account settings.",
+        "You can now update your username in your account settings.",
       ],
-      fixed:[
+      fixed: [
         "We fixed the behavior of Google Drive backups if the backup folder is trashed. If you trash the backup folder, Zero-TOTP will create a new one and continue to backup your vault in the new folder. To disable the backup, just tap 'stop sync', below the Google Drive storage option, in your vault page.",
       ]
     },
@@ -450,19 +463,19 @@ export class ChangelogComponent {
       date: "19/01/2024",
       version: "b2.0",
       added: [
-       "We added the support of french language in the application. You can now switch between english and french in the preferences page.",
-       "We improved our app structure to facilitate the integration of new languages in the future.",
+        "We added the support of french language in the application. You can now switch between english and french in the preferences page.",
+        "We improved our app structure to facilitate the integration of new languages in the future.",
       ],
-      fixed:[
+      fixed: [
       ]
     },
     {
       date: "11/01/2024",
       version: "b1.10",
       added: [
-       "We added a warning page for browsers that doesn't support javascript. Without javascript, Zero-TOTP is not usable.",
+        "We added a warning page for browsers that doesn't support javascript. Without javascript, Zero-TOTP is not usable.",
       ],
-      fixed:[
+      fixed: [
         "We fixed a bug in the TOTP editing page causing the saving to be impossible if the secret contained one or multiple whitespaces.",
         "We fixed 3 moderate vulnerabilities in our dependencies.",
         "We improved the security of the email verification process with a shorter code to be more easy to type with a limit of time and a new limit of attempts.",
@@ -476,7 +489,7 @@ export class ChangelogComponent {
         "You can now visualize your passphrase while typing it in every inputs.",
         "We added a little tag to feature not yet implemented in the application."
       ],
-      fixed:[
+      fixed: [
         "We fixed the minimum length of the passphrase to 12 characters.",
         "We fixed a bug in the TOTP editing page form validation causing the saving to be possible even if some data were invalid.",
         "Fixed a bug in the buy me a coffee page"
@@ -488,7 +501,7 @@ export class ChangelogComponent {
       added: [
         "We now send security information by mail for security events such as password change, email change.",
       ],
-      fixed:[]
+      fixed: []
     },
     {
       date: "06/12/2023",
@@ -496,7 +509,7 @@ export class ChangelogComponent {
       added: [
         "We added a new layer of security : the email verification. It is now mandatory for every user to verify their email address. This process will limit the creation of automatic accounts and will improve the security of the application. In case of some critical actions, such as changing the master passphrase or the email address, this contact can be used in the future as a second factor of authentication.",
       ],
-      fixed:[]
+      fixed: []
     },
     {
       date: "01/12/2023",
@@ -504,24 +517,24 @@ export class ChangelogComponent {
       added: [
         "We added a new page to list and be transparent about the open-source libraries we use in Zero-TOTP. You can find this page in the footer."
       ],
-      fixed:[]
+      fixed: []
     },
     {
       date: "20/11/2023",
       version: "b1.5",
       added: [
         "You can now completely delete your account, including all your data. You can delete your account in your account settings.",
-       "We improved the security surrounding admins.",
+        "We improved the security surrounding admins.",
         "Rescue Zero-TOTP is now available for all. This version includes the integration of rescue.zero-totp.com in case of problems."
       ],
-      fixed:["We patched CVE-2023-49083 (critical) from the python 'cryptography' library."]
+      fixed: ["We patched CVE-2023-49083 (critical) from the python 'cryptography' library."]
     },
     {
       date: "20/11/2023",
       version: "b1.4",
       added: [
       ],
-      fixed:[
+      fixed: [
         "A bug when opening the vault for the first time, the google drive status was stuck in loading status.",
         "We improve the database initialization on app startup.",
         "We improve the vault import via a zero-totp backup file.",
@@ -537,7 +550,7 @@ export class ChangelogComponent {
         "We migrated the API from an WSGI server to a ASGI server to improve the performance of the application. As for now, the API is 20% faster and can handle more requests at the same time.",
         "We upgraded Zero-TOTP's API to Flask 3.0, connexion 3.0 to improve the performance and security of the application. This is an important upgrade in the maintainability and futur development of the application."
       ],
-      fixed:[
+      fixed: [
         "We upgraded all the dependencies of the API to keep Zero-TOTP secure. In particular, the API is now protected against CVE-2023-46136 (moderate), CVE-2023-45803 (moderate) and CVE-2023-43804 (moderate)."]
     },
     {
@@ -548,8 +561,8 @@ export class ChangelogComponent {
         "We added a whole new feature to Zero-TOTP : the favicon preview. You can now see the favicon of the website you are adding to your vault. It is easier to identify the website you are adding to your vault.",
         "You can enable or disable the favicon preview for each website in their settings. If you want to define a global setting for all your websites, you can do it in the preferences page. You can enable the favicon preview for all your websites or disable it for all your websites. This setting overriddes the website settings."
       ],
-      fixed:[
-       ]
+      fixed: [
+      ]
     },
     {
       date: "09/11/2023 ",
@@ -567,20 +580,20 @@ export class ChangelogComponent {
         "We updated the privacy policy to be more clearer about the google drive integration.",
         "This version brings a whole new dimension to Zero-TOTP and include a very important security layer for your vault to keep your data safe."
       ],
-      fixed:[
-       ]
+      fixed: [
+      ]
     },
     {
       date: "31/10/2023",
       version: "b0.49",
       added: [
-       
+
       ],
-      fixed:[
+      fixed: [
         "We've made some improvement to the published docker images to be more secure and stable.",
         "You can now retrieve a specific version in dockerhub with its appropriate tag.",
         "We deleted a lot of debug logs to improve the application performance and avoid any security leak in your logs."
-       ]
+      ]
     },
     {
       date: "27/10/2023",
@@ -590,43 +603,43 @@ export class ChangelogComponent {
         "This strict new policy is applied to all pages of Zero-TOTP and may cause some visual perturbations on some browsers. If you encounter any issue, please contact us. We will deeply test the application and apply some fixes if needed in futur releases.",
         "We upgraded our base image for the Zero-TOTP API's to improve the security of the application.",
       ],
-      fixed:[
-       ]
+      fixed: [
+      ]
     },
     {
       date: "24/10/2023",
       version: "b0.47",
       added: [
-       
+
       ],
-      fixed:[
+      fixed: [
         'We added a better verification of your inputs to improve the application security at a very global scale.',
         'We added a strong sanitizing of all inputs to avoid any security issue.',
         'The "confirm your passphrase is strong" pop-up is now showed only once, even if your signup form has an error.You can now re-submit a signup without having to fill the pop-up again.',
         'As for now, if your session is expired or if you don\'t have internet anymore, the frontend can adapt to display more accurate error message and send you to the login page if your 1h session is ended.',
         'The "Create my vault" button on the home page is now "Open my vault" and leads to the login page instead. It is more convenient for most of users.',
 
-       ]
+      ]
     },
     {
       date: "23/10/2023",
       version: "b0.46",
       added: [
-       "A very basic admin dashboard to visualize users (for admins only). Admins will never be able to modify view or modify users' data.",
-       "We added a new login flow to secure the admin authentification."
+        "A very basic admin dashboard to visualize users (for admins only). Admins will never be able to modify view or modify users' data.",
+        "We added a new login flow to secure the admin authentification."
       ],
-      fixed:[
+      fixed: [
         "We've made some upgrades to always use the most stable packages.",
-       ]
+      ]
     },
     {
       date: "18/10/2023",
       version: "b0.45",
       added: [
       ],
-      fixed:[
+      fixed: [
         "We've made some update of our dependencies to keep Zero-TOTP secure.",
-       ]
+      ]
     },
     {
       date: "16/10/2023",
@@ -634,9 +647,9 @@ export class ChangelogComponent {
       added: [
         "This changelog page.",
       ],
-      fixed:[
-       
-       ]
+      fixed: [
+
+      ]
     },
     {
       date: "16/10/2023",
@@ -644,9 +657,9 @@ export class ChangelogComponent {
       added: [
         "Zero-TOTP servers are now hosted in France and in Canada to improve the data redundancy.",
       ],
-      fixed:[
-       
-       ]
+      fixed: [
+
+      ]
     },
   ]
 

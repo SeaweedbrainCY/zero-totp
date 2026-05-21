@@ -226,6 +226,7 @@ test('Import vault', async ({ page }) => {
   await expect(page.getByText('Imported TOTP code 2')).toBeVisible();
   await expect(page.getByText('Imported TOTP code 1')).toBeVisible();
   await page.getByRole('button', { name: 'Confirm' }).click();
+  
   await expect(page.locator('app-import-vault')).toContainText('Import successful 🎉');
   await page.getByRole('button', { name: 'Open my vault' }).click();
   await expect(page.locator('app-vault')).toContainText('Imported TOTP code 2');
