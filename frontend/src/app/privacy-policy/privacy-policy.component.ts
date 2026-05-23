@@ -1,7 +1,8 @@
 import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import {faCircleNotch, faArrowUpRightFromSquare, faCircleXmark }  from '@fortawesome/free-solid-svg-icons';
+import { faCircleNotch, faArrowUpRightFromSquare, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ApiService } from '../services/API/api.service';
 
 @Component({
     selector: 'app-privacy-policy',
@@ -11,23 +12,24 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class PrivacyPolicyComponent implements OnInit {
 
-    current_language:string = localStorage.getItem('language') || 'en-uk';
-    privacy_policy_url_base_url = "/api/v1/privacy-policy?lang="
+    current_language: string = localStorage.getItem('language') || 'en-uk';
+    privacy_policy_url_base_url = this.apiService.baseURL + "/api/v1/privacy-policy?lang="
     privacy_policy_url = ""
     is_privacy_policy_loaded = signal(false);
     loading_error = signal(false);
-    faCircleNotch=faCircleNotch;
-    faArrowUpRightFromSquare=faArrowUpRightFromSquare;
-    faCircleXmark=faCircleXmark;
+    faCircleNotch = faCircleNotch;
+    faArrowUpRightFromSquare = faArrowUpRightFromSquare;
+    faCircleXmark = faCircleXmark;
     privacy_policy_md: WritableSignal<string | undefined> = signal(undefined);
 
     constructor(
         public translate: TranslateService,
-        private http: HttpClient
-    ){
-        
-       this.langChanged();
-       this.translate.onLangChange.subscribe(() => {
+        private http: HttpClient,
+        private apiService: ApiService
+    ) {
+
+        this.langChanged();
+        this.translate.onLangChange.subscribe(() => {
             this.langChanged();
         });
 
@@ -42,11 +44,11 @@ export class PrivacyPolicyComponent implements OnInit {
         this.is_privacy_policy_loaded.set(false);
         this.loading_error.set(false);
 
-        this.http.get(this.privacy_policy_url, {observe:'response', responseType: 'text'})
+        this.http.get(this.privacy_policy_url, { observe: 'response', responseType: 'text' })
             .subscribe({
                 next: (response) => {
-                    if(response.status == 200){
-                        if(response.headers.get('Content-Type')?.includes('text/markdown')){
+                    if (response.status == 200) {
+                        if (response.headers.get('Content-Type')?.includes('text/markdown')) {
                             this.privacy_policy_md.set(response.body!);
                         } else {
                             console.error('Unexpected content type:', response.headers.get('Content-Type'));
@@ -68,7 +70,7 @@ export class PrivacyPolicyComponent implements OnInit {
     }
 
     langChanged() {
-         if (this.translate.currentLang === 'fr-fr') {
+        if (this.translate.currentLang === 'fr-fr') {
             this.privacy_policy_url = this.privacy_policy_url_base_url + 'fr';
             this.load_privacy_policy();
         } else {

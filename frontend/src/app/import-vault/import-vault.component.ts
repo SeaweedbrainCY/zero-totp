@@ -14,6 +14,7 @@ import { formatDate } from '@angular/common';
 import { UserService, TOTPEntry } from '../services/User/user.service';
 import { Crypto } from '../common/Crypto/crypto';
 import { HttpClient, HttpResponse } from '@angular/common/http';
+import { ApiService } from '../services/API/api.service';
 
 
 
@@ -89,7 +90,8 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     private vaultService: VaultService,
     private userService: UserService,
     private crypto: Crypto,
-    private http: HttpClient
+    private http: HttpClient,
+    private apiService: ApiService
   ) {
     this.vault_steps.set("zero-totp", ["import", "decrypt", "encrypt"])
     this.setSize();
@@ -306,7 +308,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
             } else if (version == 1) {
               this.local_vault_service.set(this.localVaultv1);
-              this.http.get("/api/v1/vault/signature/public-key", { withCredentials: true, observe: 'response' }).subscribe({
+              this.http.get(this.apiService.baseURL + "/api/v1/vault/signature/public-key", { withCredentials: true, observe: 'response' }).subscribe({
                 next: (response) => {
                   const data = JSON.parse(JSON.stringify(response.body))
                   this.api_public_key = data.public_key;
@@ -533,4 +535,30 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     });
   }
 
+  uploadSecret(uuid: string, enc_jsonProperty: string): Promise<HttpResponse<Object>> {
+    return new Promise((resolve, reject) => {
+      this.http.post(this.apiService.baseURL + "/api/v1/encrypted_secret", { enc_secret: enc_jsonProperty }, { withCredentials: true, observe: 'response' }).subscribe({
+        next: (response) => {
+          resolve(response);
+        },
+        error: (error) => {
+          reject(error.message + error.error.message);
+        }
+      });
+    });
+  }
+
+  retryFailedOnes() {
+    for (let uuid of this.decrypted_vault()!.keys()) {
+      if (!this.upload_error_uuid().includes(uuid)) {
+        this.decrypted_vault()!.delete(uuid);
+      }
+    }
+    this.uploading.set(true);
+    this.upload_error_uuid.set([]);
+    this.uploaded_uuid.set([]);
+    this.import_had_error.set(false);
+    this.importSuccess.set(false);
+    this.upload();
+  }
 }

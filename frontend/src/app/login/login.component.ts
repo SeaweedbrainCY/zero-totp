@@ -9,7 +9,7 @@ import { Buffer } from 'buffer';
 import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
 import { Utils } from '../common/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
-
+import { ApiService } from '../services/API/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 @Component({
@@ -66,7 +66,8 @@ export class LoginComponent implements OnInit {
     private translate: TranslateService,
     private toastr: ToastrService,
     public utils: Utils,
-    private vaultService: VaultService
+    private vaultService: VaultService,
+    private apiService: ApiService
   ) {
   }
 
@@ -137,7 +138,7 @@ export class LoginComponent implements OnInit {
   }
 
   get_user_email_oauth_flow() {
-    this.http.get("/api/v1/whoami", { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.get(this.apiService.baseURL + "/api/v1/whoami", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         this.email.set(data.email);
@@ -254,7 +255,7 @@ export class LoginComponent implements OnInit {
 
           } else if (version == 1) {
             this.local_vault_service = this.localVaultv1
-            this.http.get("/api/v1/vault/signature/public-key", { withCredentials: true, observe: 'response' }).subscribe({
+            this.http.get(this.apiService.baseURL + "/api/v1/vault/signature/public-key", { withCredentials: true, observe: 'response' }).subscribe({
               next: (response) => {
                 const data = JSON.parse(JSON.stringify(response.body))
                 this.api_public_key = data.public_key;
@@ -314,45 +315,44 @@ export class LoginComponent implements OnInit {
   // DEPRECATED. 
   // userService pre-hashed 
   hashPassword() {
-    return new Promise<string>((resolve, reject) => {
-      this.http.get("/api/v1/login/specs?username=" + encodeURIComponent(this.email()), { withCredentials: true, observe: 'response' }).subscribe({
-        next: (response) => {
-          try {
-            const data = JSON.parse(JSON.stringify(response.body))
-            const salt = data.passphrase_salt
-            this.crypto.hashPassphrase(this.password(), salt).then(hashed => {
-              if (hashed != null) {
-                this.hashedPassword = hashed;
-                this.userService.passphraseSalt.set(salt);
-                this.postLoginRequest();
-              } else {
-                this.translate.get("login.errors.hashing").subscribe((translation) => {
-                  this.utils.toastError(this.toastr, translation, "")
-                });
-                this.isLoading.set(false);
-              }
-            });
-          } catch {
-            this.translate.get("login.errors.hashing").subscribe((translation) => {
-              this.utils.toastError(this.toastr, translation, "")
-            });
-            this.isLoading.set(false);
-          }
-        }, error: error => {
-          if (error.status == 429) {
-            const ban_time = error.error.ban_time || "few";
-            this.translate.get("login.errors.rate_limited", { time: String(ban_time) }).subscribe((translation) => {
-              this.utils.toastError(this.toastr, translation, "")
-            });
-          } else {
-            this.translate.get("login.errors.no_connection").subscribe((translation) => {
-              this.utils.toastError(this.toastr, translation, "")
-            });
-          }
+    this.http.get(this.apiService.baseURL + "/api/v1/login/specs?username=" + encodeURIComponent(this.email()), { withCredentials: true, observe: 'response' }).subscribe({
+      next: (response) => {
+
+        try {
+          const data = JSON.parse(JSON.stringify(response.body))
+          const salt = data.passphrase_salt
+          this.crypto.hashPassphrase(this.password(), salt).then(hashed => {
+            if (hashed != null) {
+              this.hashedPassword = hashed;
+              this.userService.passphraseSalt.set(salt);
+              this.postLoginRequest();
+            } else {
+              this.translate.get("login.errors.hashing").subscribe((translation) => {
+                this.utils.toastError(this.toastr, translation, "")
+              });
+              this.isLoading.set(false);
+            }
+          });
+        } catch {
+          this.translate.get("login.errors.hashing").subscribe((translation) => {
+            this.utils.toastError(this.toastr, translation, "")
+          });
           this.isLoading.set(false);
         }
-      });
-    })
+      }, error: error => {
+        if (error.status == 429) {
+          const ban_time = error.error.ban_time || "few";
+          this.translate.get("login.errors.rate_limited", { time: String(ban_time) }).subscribe((translation) => {
+            this.utils.toastError(this.toastr, translation, "")
+          });
+        } else {
+          this.translate.get("login.errors.no_connection").subscribe((translation) => {
+            this.utils.toastError(this.toastr, translation, "")
+          });
+        }
+        this.isLoading.set(false);
+      }
+    });
   }
 
 
@@ -362,7 +362,7 @@ export class LoginComponent implements OnInit {
       email: this.email(),
       password: this.hashedPassword
     }
-    this.http.post("/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.post(this.apiService.baseURL + "/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         try {
           const data = JSON.parse(JSON.stringify(response.body))
@@ -447,7 +447,7 @@ export class LoginComponent implements OnInit {
 
   getZKEKey(): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.http.get("/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe((response) => {
+      this.http.get(this.apiService.baseURL + "/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe((response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         const zke_key_encrypted = data.zke_encrypted_key
         resolve(zke_key_encrypted);
