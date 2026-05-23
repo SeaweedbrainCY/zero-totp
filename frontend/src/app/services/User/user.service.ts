@@ -49,7 +49,7 @@ export class UserService {
   constructor(
     private http: HttpClient,
     private crypto: Crypto,
-    private translate: TranslateService,,
+    private translate: TranslateService,
     private apiService: ApiService
   ) {
   }

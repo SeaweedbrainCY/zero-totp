@@ -556,7 +556,6 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     }
     this.uploading.set(true);
     this.upload_error_uuid.set([]);
-    this.uploaded_uuid.set([]);
     this.import_had_error.set(false);
     this.importSuccess.set(false);
     this.upload();
