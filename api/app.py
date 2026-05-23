@@ -21,6 +21,7 @@ def create_app():
     app_instance.add_api("swagger.yml")
 
     app = app_instance.app
+    CORS(app, origins=[f"https://{conf.environment.domain}", "capacitor://localhost"], supports_credentials=True)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = conf.database.database_uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
