@@ -108,8 +108,9 @@ jobs:
       - name: Create frontend environment file
         working-directory: ./frontend/src/environments
         env:
-          API_PUBLIC_KEY: ${{secrets.RSA_PUBLIC_KEY}}
-        run: envsubst < environment.prod.ts.tpl > environment.prod.ts {{secrets.RSA_PUBLIC_KEY}}'
+          API_PUBLIC_KEY: "Fake data"
+          REF_NAME: ${github.sha}
+        run: envsubst < environment.prod.ts.tpl > environment.prod.ts
       - name: Build
         uses: actions/setup-node@v6
         with:

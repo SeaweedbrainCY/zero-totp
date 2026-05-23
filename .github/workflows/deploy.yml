@@ -86,7 +86,7 @@ jobs:
         working-directory: ./frontend/src/environments
         env:
           API_PUBLIC_KEY: ${{secrets.RSA_PUBLIC_KEY}}
-        run: envsubst < environment.prod.ts.tpl > environment.prod.ts {{secrets.RSA_PUBLIC_KEY}}'
+        run: envsubst < environment.prod.ts.tpl > environment.prod.ts
 
       - name: Adapt webmanifest for dev app
         if: needs.setup.outputs.is_prod != 'true'
