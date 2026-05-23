@@ -3,88 +3,85 @@ name: "Test and Coverage"
 permissions:
   contents: read
 
-on: 
+on:
   push:
     branches:
-      - '*'
-      - '**'
-      - '*/*'
-      - '**/**'
-      - '!dev'
+      - "*"
+      - "**"
+      - "*/*"
+      - "**/**"
+      - "!dev"
     tags-ignore:
-      - '**'
+      - "**"
   workflow_call:
-      secrets:
-        GITGUARDIAN_API_KEY:
-          required: true
-        MAXMIND_PERMALINK:
-          required: true
-  
-  
+    secrets:
+      GITGUARDIAN_API_KEY:
+        required: true
+      MAXMIND_PERMALINK:
+        required: true
 
 jobs:
   security_scan_analysis:
     name: Smegrep Scan Analysis
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.13
-    
-    - name: Install semgrep
-      run: python3 -m pip install semgrep
-    
-    - name: Run semgrep
-      #  exclude dockerfile.security.missing-user.missing-user : the entrypoint must be ran as root for setup purposes but will ALWAYS switch to a non-root user for the rest of the execution.
-      run:  semgrep scan --error --exclude-rule dockerfile.security.missing-user.missing-user  --exclude-rule dockerfile.security.missing-user-entrypoint.missing-user-entrypoint
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.13
+
+      - name: Install semgrep
+        run: python3 -m pip install semgrep
+
+      - name: Run semgrep
+        #  exclude dockerfile.security.missing-user.missing-user : the entrypoint must be ran as root for setup purposes but will ALWAYS switch to a non-root user for the rest of the execution.
+        run: semgrep scan --error --exclude-rule dockerfile.security.missing-user.missing-user  --exclude-rule dockerfile.security.missing-user-entrypoint.missing-user-entrypoint
 
   python_test_and_coverage:
     name: Units tests and coverage
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Cache GeoLite2 DB
-      id: cache-geolite2
-      uses: actions/cache@v4
-      with:
-        path: ./api/geoip/GeoLite2-City.mmdb
-        key: geolite2
+      - name: Cache GeoLite2 DB
+        id: cache-geolite2
+        uses: actions/cache@v4
+        with:
+          path: ./api/geoip/GeoLite2-City.mmdb
+          key: geolite2
 
-    - if: ${{ steps.cache-geolite2.outputs.cache-hit != 'true' }}
-      name: Download GeoLite2 DB if missing
-      run: |
-        mkdir -p ./api/geoip
-        curl -L -o GeoLite2-City.tar.gz \
-            "${MAXMIND_PERMALINK}"
-        tar -xzf GeoLite2-City.tar.gz --strip-components=1 -C ./api/geoip 
-        rm GeoLite2-City.tar.gz
-      env:
-        MAXMIND_PERMALINK: ${{ secrets.MAXMIND_PERMALINK }}
+      - if: ${{ steps.cache-geolite2.outputs.cache-hit != 'true' }}
+        name: Download GeoLite2 DB if missing
+        run: |
+          mkdir -p ./api/geoip
+          curl -L -o GeoLite2-City.tar.gz \
+              "${MAXMIND_PERMALINK}"
+          tar -xzf GeoLite2-City.tar.gz --strip-components=1 -C ./api/geoip 
+          rm GeoLite2-City.tar.gz
+        env:
+          MAXMIND_PERMALINK: ${{ secrets.MAXMIND_PERMALINK }}
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
 
-    - name: Install dependencies
-      working-directory: ./api
-      run:  pip install --upgrade pip && pip install -r requirements.txt && pip install -r test-requirements.txt
-    
-    - name: Moving config file
-      run: cp api/tests/ressources/test-config.yml api/config/config.yml
+      - name: Install dependencies
+        working-directory: ./api
+        run: pip install --upgrade pip && pip install -r requirements.txt && pip install -r test-requirements.txt
 
-    - name: Run tests with pytest
-      working-directory: ./api
-      run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml  --cov-fail-under=90
-    - name: Upload coverage report
-      uses: coverallsapp/github-action@v2
-  
+      - name: Moving config file
+        run: cp api/tests/ressources/test-config.yml api/config/config.yml
+
+      - name: Run tests with pytest
+        working-directory: ./api
+        run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml  --cov-fail-under=90
+      - name: Upload coverage report
+        uses: coverallsapp/github-action@v2
 
   scanning:
     name: GitGuardian scan
@@ -102,21 +99,22 @@ jobs:
           GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-  
+
   frontend_build_check:
     name: Frontend build check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      - name: Create frontend environment file
+        working-directory: ./frontend/src/environments
+        env:
+          API_PUBLIC_KEY: ${{secrets.RSA_PUBLIC_KEY}}
+        run: envsubst < environment.prod.ts.tpl > environment.prod.ts {{secrets.RSA_PUBLIC_KEY}}'
       - name: Build
         uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: "24"
       - run: npm ci
         working-directory: ./frontend
       - run: npm run build
         working-directory: ./frontend
-
-
-
-
