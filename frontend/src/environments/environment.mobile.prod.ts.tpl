@@ -3,5 +3,5 @@ export let environment = {
   production: true,
   API_public_key: "${API_PUBLIC_KEY}",
   imageHash: "${IMAGE_HASH}",
-  mobile: true
+  isMobileApp: true
 };
