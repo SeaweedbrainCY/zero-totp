@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey, faCircleNotch, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
-
+import { environment } from 'src/environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../services/User/user.service';
 import { Crypto } from '../common/Crypto/crypto';
@@ -119,9 +119,14 @@ export class LoginComponent implements OnInit {
       this.email.set(localStorage.getItem("r_email")!);
       this.remember.set(true);
     }
-
-    this.current_domain.set(window.location.host);
-
+    if (environment.isMobileApp) {
+      // Mobile app, current domain is the one of the API
+      const baseURL = new URL(this.apiService.baseURL)
+      this.current_domain.set(baseURL.hostname)
+    } else {
+      // webapp we use the current location
+      this.current_domain.set(window.location.host);
+    }
   }
 
 
@@ -459,10 +464,16 @@ export class LoginComponent implements OnInit {
   }
 
   zero_totp_instance_button_click() {
-    if (this.utils.isDeviceMobile()) {
-      this.instance_dropdown_active.update(v => !v);
-    }
-  }
+    if (environment.isMobileApp) {
 
+    } else {
+      // Webapp consulted on a mobile
+      if (this.utils.isDeviceMobile()) {
+        // On nonMobileDevice, it's just hoverable 
+        this.instance_dropdown_active.update(v => !v);
+      }
+    }
+
+  }
 
 }
