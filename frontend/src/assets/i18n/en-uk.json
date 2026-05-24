@@ -9,6 +9,8 @@
   "Search": "Search",
   "abort": "Abort",
   "about": "About",
+  "invalid_url": "Invalid URL",
+  "general_error": "An error occured. Please, try again.",
   "account": {
     "delete": {
       "button": "Delete\n                                your account",
@@ -542,13 +544,20 @@
       "session_timeout": "For your safety, you have been disconnected after due to inactivity. You can customize this delay in your preferences"
     },
     "instance": {
+      "confirm": "Confirm",
+      "recent": "Recent instances",
       "select": {
+        "subtitle": "Choose your Zero-TOTP server",
         "title": "Select a Zero-TOTP instance",
         "why": {
           "p1": "Zero-TOTP is open-source, meaning anyone can run their own Zero-TOTP. Only signup or login to a Zero-TOTP instance that you trust.",
           "p2": "If you have any doubt, use the official instance, zero-totp.com.",
           "title": "Why is this important ?"
         }
+      },
+      "url": {
+        "hint": "Enter the URL of your self-hosted Zero-TOTP instance",
+        "label": "Instance URL"
       },
       "you_are_using": "You are using"
     },
