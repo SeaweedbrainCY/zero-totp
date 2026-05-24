@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey, faCircleNotch, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey, faCircleNotch, faCircleQuestion, faPen, faShieldHalved, faGlobe, faLink, faCircleInfo, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -12,6 +12,7 @@ import { VaultService } from '../services/VaultService/vault.service';
 import { ApiService } from '../services/API/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
+import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -22,7 +23,12 @@ import { TranslateService } from '@ngx-translate/core';
 export class LoginComponent implements OnInit {
   faEnvelope = faEnvelope;
   faLock = faLock;
+  faArrowRight = faArrowRight;
   faCheck = faCheck;
+  faCircleInfo = faCircleInfo;
+  faLink = faLink;
+  faShieldHalved = faShieldHalved;
+  faGlobe = faGlobe;
   faCircleQuestion = faCircleQuestion;
   faXmark = faXmark;
   faCircleNotch = faCircleNotch;
@@ -32,6 +38,8 @@ export class LoginComponent implements OnInit {
   faEye = faEye;
   faEyeSlash = faEyeSlash;
   faBriefcaseMedical = faBriefcaseMedical;
+  faPen = faPen;
+  environment = environment
 
   // Read in template — signals
   email = signal("");
@@ -49,6 +57,10 @@ export class LoginComponent implements OnInit {
   loading_file = signal(false);
   current_domain = signal("");
   instance_dropdown_active = signal(false);
+  instance_modal_active = signal(false)
+  instance_modal_error = signal("")
+  instance_modal_loading = signal(false)
+  instance_modal_apiBaseURL_input = signal(this.apiService.baseURL)
 
   // Not read in template — plain properties
   hashedPassword: string = "";
@@ -67,7 +79,8 @@ export class LoginComponent implements OnInit {
     private toastr: ToastrService,
     public utils: Utils,
     private vaultService: VaultService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private persistentStorage: CapacitorPersistentStorageService
   ) {
   }
 
@@ -122,7 +135,7 @@ export class LoginComponent implements OnInit {
     if (environment.isMobileApp) {
       // Mobile app, current domain is the one of the API
       const baseURL = new URL(this.apiService.baseURL)
-      this.current_domain.set(baseURL.hostname)
+      this.current_domain.set(baseURL.host)
     } else {
       // webapp we use the current location
       this.current_domain.set(window.location.host);
@@ -465,7 +478,7 @@ export class LoginComponent implements OnInit {
 
   zero_totp_instance_button_click() {
     if (environment.isMobileApp) {
-
+      this.instance_modal_active.update(v => !v);
     } else {
       // Webapp consulted on a mobile
       if (this.utils.isDeviceMobile()) {
@@ -473,7 +486,31 @@ export class LoginComponent implements OnInit {
         this.instance_dropdown_active.update(v => !v);
       }
     }
-
   }
 
+  validateNewAPIBaseURL() {
+    this.instance_modal_error.set("")
+    this.instance_modal_loading.set(true)
+    console.log(this.instance_modal_apiBaseURL_input())
+    this.persistentStorage.setAPIBaseURL(this.instance_modal_apiBaseURL_input()).then(_ => {
+      this.apiService.updateBaseURL().then(success => {
+        this.instance_modal_loading.set(false)
+        if (success) {
+          this.instance_modal_active.set(false)
+          const baseURL = new URL(this.apiService.baseURL)
+          this.current_domain.set(baseURL.host)
+        } else {
+          this.translate.get("general_error").subscribe(t => {
+            this.instance_modal_error.set(t)
+          })
+        }
+      })
+    }).catch(error => {
+      console.log(error)
+      this.translate.get("invalid_url").subscribe(t => {
+        this.instance_modal_error.set(t)
+      })
+    })
+  }
 }
+
