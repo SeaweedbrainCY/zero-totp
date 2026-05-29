@@ -21,7 +21,7 @@ def create_app():
 
     app_instance.add_middleware(
         CORSMiddleware,
-        allow_origins=[conf.environment.frontend_URI, "capacitor://localhost"],
+        allow_origins=[conf.environment.frontend_URI, "capacitor://localhost", "https://localhost"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
