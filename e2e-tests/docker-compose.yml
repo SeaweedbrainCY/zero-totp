@@ -15,7 +15,6 @@ services:
       - ./zero-totp-logs:/api/logs/
     depends_on:
       - database
-    restart: always
   database:
     environment:
       MYSQL_ROOT_PASSWORD: tmppassword
