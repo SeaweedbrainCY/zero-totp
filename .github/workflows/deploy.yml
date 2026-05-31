@@ -426,17 +426,27 @@ jobs:
       - name: Display current images
         run: docker images
 
-      - name: Verify if the API is healthy
+      - name: Wait for API to be ready
+        timeout-minutes: 2
         run: |
-          response=$(curl -ks https://localhost/api/v1/healthcheck)
-          health_status=$(echo "$response" | jq .health)
-          if [[ $health_status != '"OK"' ]]; then
-            echo "API is not healthy: $response"
-            docker logs -f --tail 100 api
-            exit 1
-          else
-            echo "API is healthy"
-          fi
+          echo "Waiting for API to be ready..."
+          until curl -ks https://localhost/api/v1/healthcheck | jq -e '.health == "OK"' > /dev/null 2>&1; do
+            echo "API not ready yet, retrying in 5s..."
+            sleep 5
+          done
+          echo "API is ready"
+
+      - name: Dump API logs on failure
+        if: failure()
+        run: docker logs --tail 100 api
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !failure() }}
+        with:
+          name: zero-totp-api-logs
+          path: ./e2e-tests/zero-totp-logs/
+          retention-days: 3
+
       - name: Run Playwright tests
         working-directory: ./e2e-tests
         run: npx playwright test
