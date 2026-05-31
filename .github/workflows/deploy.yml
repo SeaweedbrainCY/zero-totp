@@ -403,7 +403,7 @@ jobs:
           node-version: lts/*
 
         #- name: Install chromium
-        run: sudo apt-get install chromium -y
+        #run: sudo apt-get install chromium -y
       - name: Install dependencies
         working-directory: ./e2e-tests
         run: npm ci
