@@ -25,7 +25,7 @@ def create_app():
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
-        position=MiddlewarePosition.BEFORE_ROUTING,
+        position=MiddlewarePosition.BEFORE_EXCEPTION,
     )
 
     app = app_instance.app
