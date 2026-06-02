@@ -7,6 +7,7 @@ servers:
   - url: /api/v1
 security:
   - SessionToken: []
+  - BearerToken: []
 paths:
   /signup:
     post:
@@ -1039,3 +1040,7 @@ components:
       in: cookie
       name: session-token
       x-apikeyInfoFunc: CryptoClasses.session_verification.verify_session
+    BearerToken:
+      type: http
+      scheme: bearer
+      x-bearerInfoFunc: CryptoClasses.session_verification.verify_session
