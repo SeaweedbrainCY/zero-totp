@@ -115,7 +115,14 @@ def signup():
                     send_verification_email(user=user.id, context_={"user":user.id}, token_info={"user":user.id})
                 except Exception as e:
                     logging.error("Unknown error while sending verification email" + str(e))
-            response = Response(status=201, mimetype="application/json", response=json.dumps({"message": "User created", "email_verification_required":conf.features.emails.require_email_validation}))
+            answer_body = {"message": "User created", "email_verification_required":conf.features.emails.require_email_validation}
+            if connexion.request.headers.get("Origin") == "capacitor://localhost":
+                # For requests coming from iOS application, we return the tokens in the body. 
+                # Browsers don't need them, so we don't bother to send them. It wouldn't be a risk to do it though?
+                # Origin is a safe header for non-hijacked browser.
+                answer_body["session_token"] = session_token
+                answer_body["refresh_token"] = refresh_token
+            response = Response(status=201, mimetype="application/json", response=json.dumps(answer_body))
             response.set_auth_cookies(session_token, refresh_token)
             return response
         else :
@@ -159,12 +166,22 @@ def login(ip, body):
     rate_limiting_db.flush_login_limit(ip)
 
     session_token, refresh_token = utils.generate_new_session(user=user, ip_address=ip)
+    bearer_tokens_body = {}
+    if connexion.request.headers.get("Origin") == "capacitor://localhost":
+        # For requests coming from iOS application, we return the tokens in the body. 
+        # Browsers don't need them, so we don't bother to send them. It wouldn't be a risk to do it though?
+        # Origin is a safe header for non-hijacked browser.
+        bearer_tokens_body["session_token"] = session_token
+        bearer_tokens_body["refresh_token"] = refresh_token
     if not conf.features.emails.require_email_validation: # we fake the isVerified status if email validation is not required
-        response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True}))
+        body = {"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":True} | bearer_tokens_body
+        response = Response(status=200, mimetype="application/json", response=json.dumps(body))
     elif user.isVerified:
-        response = Response(status=200, mimetype="application/json", response=json.dumps({"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":user.isVerified}))
+        body = {"username": user.username, "id":user.id, "derivedKeySalt":user.derivedKeySalt, "isGoogleDriveSync": GoogleDriveIntegrationDB().is_google_drive_enabled(user.id), "role":user.role, "isVerified":user.isVerified} | bearer_tokens_body
+        response = Response(status=200, mimetype="application/json", response=json.dumps(body))
     else:
-        response = Response(status=200, mimetype="application/json", response=json.dumps({"isVerified":user.isVerified}))
+        body = {"isVerified":user.isVerified} | bearer_tokens_body
+        response = Response(status=200, mimetype="application/json", response=json.dumps(body))
     userDB.update_last_login_date(user.id)
     response.set_auth_cookies(session_token, refresh_token)
     return response
