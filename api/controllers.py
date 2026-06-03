@@ -840,7 +840,14 @@ def auth_refresh_token(ip, *args, **kwargs):
         logging.warning(f"Session of user {session_token.user_id} tried to be refreshed with an refresh token (not present in the db)")
         return {"message": "Access denied"}, 403
     new_session_token, new_refresh_token = refresh_token_func.refresh_token_flow(refresh_token=refresh_token, session_token=session_token, ip=ip)
-    response = Response(status=200, mimetype="application/json", response=json.dumps({"challenge":"ok"}))
+    answer_body = {"challenge":"ok"}
+    if connexion.request.headers.get("Origin") == "capacitor://localhost":
+        # For requests coming from iOS application, we return the tokens in the body. 
+        # Browsers don't need them, so we don't bother to send them. It wouldn't be a risk to do it though?
+        # Origin is a safe header for non-hijacked browser.
+        answer_body["session_token"] = session_token
+        answer_body["refresh_token"] = refresh_token
+    response = Response(status=200, mimetype="application/json", response=json.dumps(answer_body))
     response.set_auth_cookies(new_session_token, new_refresh_token)
     return response
 
