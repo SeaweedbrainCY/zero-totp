@@ -380,20 +380,22 @@ export class LoginComponent implements OnInit {
       email: this.email(),
       password: this.hashedPassword
     }
-    this.http.post(this.apiService.baseURL + "/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.post<{ id: number | undefined, isVerified: boolean, username: string | undefined, derivedKeySalt: string | undefined, role: string | undefined, isGoogleDriveSync: boolean | undefined, session_token: string | undefined, refresh_token: string | undefined }>(this.apiService.baseURL + "/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         try {
-          const data = JSON.parse(JSON.stringify(response.body))
-          this.userService.id.set(data.id);
-          this.userService.email.set(this.email());
-          this.userService.derivedKeySalt.set(data.derivedKeySalt);
-          if (data.isVerified == false) {
+          if (!response.body!.isVerified) {
             this.router.navigate(["/emailVerification"], { relativeTo: this.route.root });
-          } else {
-
-            this.userService.googleDriveSync.set(data.isGoogleDriveSync);
-            this.final_zke_flow();
+            return;
           }
+
+          this.userService.id.set(response.body!.id!);
+          this.userService.email.set(this.email());
+          this.userService.derivedKeySalt.set(response.body!.derivedKeySalt!);
+          if (environment.isMobileApp && response.body!.session_token != undefined && response.body!.refresh_token != undefined) {
+            // We retrieve and store the session token
+          }
+          this.userService.googleDriveSync.set(response.body!.isGoogleDriveSync!);
+          this.final_zke_flow();
         } catch (e) {
           this.isLoading.set(false);
           console.log(e);
