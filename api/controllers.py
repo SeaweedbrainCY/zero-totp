@@ -817,11 +817,17 @@ def get_internal_notification(user_id):
         }
 
 
-# PUT /auth/refresh
+# PUT /auth
+# Warning: This endpoint is not protected by OpenAPI/connexion authentication protection. Indeed expired session tokens are allowed to be passed.abs
+# This endpoint re-implements some of the authentication mechanism.
 @ip_rate_limit
-def auth_refresh_token(ip, *args, **kwargs):
+def auth_refresh_token(ip, body, *args, **kwargs):
     session_token_cookie = request.cookies.get("session-token")
     refresh_token_cookie = request.cookies.get("refresh-token")
+    if request.headers.get("Origin") == "capacitor://localhost" and session_token_cookie == None and refresh_token_cookie == None: 
+        # Capacitor i.e. mobile app use bearer token instead
+        session_token_cookie = body.get("session-token")
+        refresh_token_cookie = body.get("refresh-token")
     rate_limiting = Rate_Limiting_DB()
     if not session_token_cookie or not refresh_token_cookie:
         rate_limiting.add_failed_login(ip)
@@ -842,7 +848,7 @@ def auth_refresh_token(ip, *args, **kwargs):
     answer_body = {"challenge":"ok"}
     if connexion.request.headers.get("Origin") == "capacitor://localhost":
         # For requests coming from iOS application, we return the tokens in the body. 
-        # Browsers don't need them, so we don't bother to send them. It wouldn't be a risk to do it though?
+        # Browsers don't need them, so we don't bother to send them. It wouldn't be a risk to do it though.
         # Origin is a safe header for non-hijacked browser.
         answer_body["session_token"] = session_token
         answer_body["refresh_token"] = refresh_token

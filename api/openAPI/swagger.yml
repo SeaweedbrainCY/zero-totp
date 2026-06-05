@@ -169,6 +169,19 @@ paths:
       tags:
         - Auth
       summary: Refresh the user's session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                session-token:
+                  type: string
+                  description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp. Will be ignored if the session token is already passed through cookies.
+                refresh-token:
+                  type: string
+                  description: Optional. If refresh token can't be passed through cookies, passed through body. Will be ignored if the refresh token is already passed through cookies.
       responses:
         "200": # status code
           description: Return the new session and refresh tokens
