@@ -188,10 +188,9 @@ def login(ip, body):
 
 #POST logout
 @require_valid_user
-def logout(_):
-    session_token = request.cookies.get("session-token")
+def logout(token_info):
     session_repo = SessionTokenRepo()
-    session = session_repo.get_session_token(session_token)
+    session = session_repo.get_session_token(token_info)
     if not session:
         return {"message": "Session not found"}, 404
     utils.revoke_session(session_id=session.session.id)
