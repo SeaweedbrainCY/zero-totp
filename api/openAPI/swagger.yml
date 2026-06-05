@@ -57,6 +57,14 @@ paths:
                   email_verification_required:
                     type: boolean
                     example: true
+                  session_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
+                  refresh_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
         "400":
           description: Missing required parameters
         "403":
@@ -95,15 +103,33 @@ paths:
                   username:
                     type: string
                     example: "foo"
+                  isVerified:
+                    type: boolean
+                    example: true
                   id:
                     type: integer
+                    description: Optional. Not sent if isVerified is false. User's id.
                     example: 1
                   derivedKeySalt:
                     type: string
+                    description: Optional. Not sent if isVerified is false.
                     example: "AAAAA="
                   role:
                     type: string
+                    description: Optional. Not sent if isVerified is false.
                     example: "user"
+                  isGoogleDriveSync:
+                    type: boolean
+                    description: Optional. Not sent if isVerified is false.
+                    example: true
+                  session_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
+                  refresh_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
         "400":
           description: Missing required parameters
         "403":
@@ -146,6 +172,19 @@ paths:
       responses:
         "200": # status code
           description: Return the new session and refresh tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
+                  refresh_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
         "401":
           description: Unauthorized
   /zke_encrypted_key:
