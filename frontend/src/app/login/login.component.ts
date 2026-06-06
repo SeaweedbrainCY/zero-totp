@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../services/User/user.service';
 import { Crypto } from '../common/Crypto/crypto';
-import { Buffer } from 'buffer';
+import { iOSSecureStorage } from 'src/capacitor/plugins/ios-secure-storage.plugin';
 import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
 import { Utils } from '../common/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
@@ -80,7 +80,7 @@ export class LoginComponent implements OnInit {
     public utils: Utils,
     private vaultService: VaultService,
     private apiService: ApiService,
-    private persistentStorage: CapacitorPersistentStorageService
+    private persistentStorage: CapacitorPersistentStorageService,
   ) {
   }
 
@@ -393,6 +393,14 @@ export class LoginComponent implements OnInit {
           this.userService.derivedKeySalt.set(response.body!.derivedKeySalt!);
           if (environment.isMobileApp && response.body!.session_token != undefined && response.body!.refresh_token != undefined) {
             // We retrieve and store the session token
+            iOSSecureStorage.set({
+              key: this.apiService.baseURL + "/refresh-token",
+              value: response.body!.refresh_token ?? ""
+            })
+            iOSSecureStorage.set({
+              key: this.apiService.baseURL + "/session-token",
+              value: response.body!.session_token ?? ""
+            })
           }
           this.userService.googleDriveSync.set(response.body!.isGoogleDriveSync!);
           this.final_zke_flow();
