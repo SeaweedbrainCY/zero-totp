@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import Capacitor
 
-class MyViewController: UIViewController {
+class MyViewController: CAPBridgeViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,7 +16,9 @@ class MyViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
-
+    override open func capacitorDidLoad() {
+        bridge?.registerPluginInstance(SecureStoragePlugin())
+    }
     /*
     // MARK: - Navigation
 

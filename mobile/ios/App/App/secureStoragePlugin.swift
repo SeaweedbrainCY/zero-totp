@@ -16,6 +16,7 @@ public class SecureStoragePlugin: CAPPlugin, CAPBridgedPlugin {
         service: Bundle.main.bundleIdentifier ?? "capacitor.securestorage"
     )
 
+
     // MARK: - Plugin Methods
 
     @objc func set(_ call: CAPPluginCall) {
