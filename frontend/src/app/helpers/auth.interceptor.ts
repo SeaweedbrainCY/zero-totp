@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HTTP_INTERCEPTORS, HttpErrorResponse,  } from '@angular/common/http';
+import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HTTP_INTERCEPTORS, HttpErrorResponse, } from '@angular/common/http';
 
 import { AuthServiceService } from '../services/AuthService/auth-service.service';
 import { BehaviorSubject } from 'rxjs';
 
 import { Observable, throwError, filter } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class HttpRequestInterceptor implements HttpInterceptor {
@@ -15,12 +16,22 @@ export class HttpRequestInterceptor implements HttpInterceptor {
 
   constructor(
     private authService: AuthServiceService
-  ) {}
+  ) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     req = req.clone({
       withCredentials: true,
     });
+
+    if (environment.isMobileApp) {
+      const destinationURL = new URL(req.url)
+      if (this.authService.auth_token()?.domain == destinationURL.host && destinationURL.protocol == "https:") {
+        req = req.clone({
+          setHeaders: { Authorization: `Bearer ${this.authService.auth_token()?.session_token}` },
+        });
+      }
+    }
+
 
     return next.handle(req).pipe(
       catchError((error) => {
@@ -34,7 +45,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
     );
   }
 
-  private waitForTokenRefresh(){
+  private waitForTokenRefresh() {
     return new Observable((observer) => {
       const interval = setInterval(() => {
         if (!this.isRefreshing) {
@@ -46,32 +57,32 @@ export class HttpRequestInterceptor implements HttpInterceptor {
     });
   }
 
-  
 
-  private handleExpiration(request: HttpRequest<any>, next: HttpHandler) : Observable<HttpEvent<any>> {
+
+  private handleExpiration(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
       return this.authService.refreshToken().pipe(
-          switchMap(() => {
-            this.isRefreshing = false;
-            return next.handle(request);
-          }),
-          catchError((error) => {
-            console.log(error);
-            this.isRefreshing = false;
-            return throwError(() => error);
-          })
-        );
-      } else {
-        return this.waitForTokenRefresh().pipe(
-          switchMap(() => {
-              return next.handle(request);
-          }), catchError((error) => {
-            console.log(error);
-            return throwError(() => error);
-          })
-        );
-      }
+        switchMap(() => {
+          this.isRefreshing = false;
+          return next.handle(request);
+        }),
+        catchError((error) => {
+          console.log(error);
+          this.isRefreshing = false;
+          return throwError(() => error);
+        })
+      );
+    } else {
+      return this.waitForTokenRefresh().pipe(
+        switchMap(() => {
+          return next.handle(request);
+        }), catchError((error) => {
+          console.log(error);
+          return throwError(() => error);
+        })
+      );
+    }
   }
 }
 
