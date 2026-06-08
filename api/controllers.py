@@ -821,7 +821,7 @@ def get_internal_notification(user_id):
 # Warning: This endpoint is not protected by OpenAPI/connexion authentication protection. Indeed expired session tokens are allowed to be passed.abs
 # This endpoint re-implements some of the authentication mechanism.
 @ip_rate_limit
-def auth_refresh_token(ip, body, *args, **kwargs):
+def auth_refresh_token(ip, body={}, *args, **kwargs):
     session_token_cookie = request.cookies.get("session-token")
     refresh_token_cookie = request.cookies.get("refresh-token")
     if request.headers.get("Origin") == "capacitor://localhost" and session_token_cookie == None and refresh_token_cookie == None: 

@@ -175,6 +175,7 @@ paths:
           application/json:
             schema:
               type: object
+              nullable: true
               properties:
                 session-token:
                   type: string
