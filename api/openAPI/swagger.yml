@@ -170,7 +170,7 @@ paths:
         - Auth
       summary: Refresh the user's session
       requestBody:
-        required: true
+        required: false
         content:
           application/json:
             schema:
