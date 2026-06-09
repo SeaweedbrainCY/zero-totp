@@ -16,7 +16,6 @@ from database.session_repo import SessionRepo
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging, conf
 from database.oauth_tokens_repo import Oauth_tokens as Oauth_tokens_db
-from CryptoClasses.hash_func import Bcrypt
 from Oauth import google_drive_api
 import random
 import string
@@ -270,7 +269,7 @@ def delete_encrypted_secret(src_ip, user_obj, uuid):
         logging.debug("User " + str(user_obj.id) + " tried to delete secret " + str(uuid) + " which does not exist")
         return {"message": "Forbidden"}, 403
     else:
-        if totp.user_id != user.id:
+        if totp.user_id != user_obj.id:
             logging.warning("User " + str(user_obj.id) + " tried to delete secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
         if totp_secretDB.delete(uuid=uuid, user_id= user_obj.id):
@@ -333,7 +332,7 @@ def update_email(src_ip, user_obj, body):
         if conf.features.emails.require_email_validation:
             try:
            
-                send_verification_email(user=updated_user.id, context_={"user":updated_user.id}, token_info={"user":updated_user.id})
+                send_verification_email(user_id=updated_user.id, context_={"user":updated_user.id}, token_info={"user":updated_user.id})
             except Exception as e:
                 logging.error("Unknown error while sending verification email" + str(e))
             return {"message":user_obj.mail},201
@@ -491,7 +490,7 @@ def backup_to_google_drive(src_ip, user_obj, *args, **kwargs):
         return {"message": "Error while decrypting credentials"}, 500
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
     try:
-        exported_vault,_ = export_vault(user=user_obj.id, context_={"user":user_obj.id}, token_info={"user":user_obj.id})
+        exported_vault,_ = export_vault(src_ip=src_ip, user_obj=user_obj, context_={"user":user_obj.id}, token_info={"user":user_obj.id})
         google_drive_api.backup(credentials=credentials, vault=exported_vault)
         google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_obj.id)
         return {"message": "Backup done"}, 201
@@ -549,7 +548,7 @@ def delete_google_drive_option(src_ip, user_obj):
     oauth_tokens = token_db.get_by_user_id(user_obj.id)
     
     if google_integration.get_by_user_id(user_obj.id) is None:
-        google_integration.create(user.id, 0)
+        google_integration.create(user_obj.id, 0)
     if not oauth_tokens:
         GoogleDriveIntegrationDB().update_google_drive_sync(user_obj.id, 0)
         return {"message": "Google drive sync is not enabled"}, 200
@@ -589,7 +588,7 @@ def get_preferences(src_ip, user_obj,fields):
     
     user_preferences = {}
     preferences_db = PreferencesDB()
-    preferences = preferences_db.get_preferences_by_user_id(user.id)
+    preferences = preferences_db.get_preferences_by_user_id(user_obj.id)
     if "favicon_policy" in fields_asked or all_field:
         user_preferences["favicon_policy"] = preferences.favicon_preview_policy
     if  "derivation_iteration" in fields_asked or all_field:
@@ -703,15 +702,20 @@ def delete_google_drive_backup(src_ip, user_obj):
         return {"message": "Error while deleting backups"}, 500
     
 
-@require_passphrase_verification
-def delete_account(src_ip, user_obj):
+# POST /account/delete
+@require_active_user
+def delete_account(src_ip, user_obj, body):
+    user_passphrase = body.get("passphrase","")
+    bcrypt = Bcrypt(user_passphrase)
+    if not bcrypt.checkpw(user_obj.password):
+        return {"error": "Unauthorized"}, 403
     logging.info("Deleting account for user " + str(user_obj.id))
     if user_obj.role == "admin":
         return {"message": "Admin cannot be deleted"}, 403
     try: # we try to delete the user backups if possible. If not, this is not a blocking error.
         context = {"user": user_obj.id}
-        delete_google_drive_backup(context, user.id, context)
-        delete_google_drive_option(context, user.id, context)
+        delete_google_drive_backup(context, user_obj.id, context)
+        delete_google_drive_option(context, user_obj.id, context)
     except Exception as e:
         logging.warning("Error while deleting backups for user " + str(user_obj.id) + ". Exception : " + str(e))
     try:

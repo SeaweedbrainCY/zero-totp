@@ -784,12 +784,23 @@ paths:
           description: Access disabled
         "500":
           description: Internal server error
-  /account:
-    delete:
+  /account/delete:
+    post:
       operationId: controllers.delete_account
       tags:
         - User
-      summary: Delete the user's account. WARNING The hashed passphrase is required in x-hash-passphrase header !
+      summary: Delete the user's account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - passphrase
+              properties:
+                passphrase:
+                  type: string
       responses:
         "200":
           description: Account deleted
