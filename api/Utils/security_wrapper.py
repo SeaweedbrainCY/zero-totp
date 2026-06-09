@@ -66,6 +66,6 @@ def ip_rate_limit(func):
         if ip and Rate_Limiting_DB().is_login_rate_limited(ip):
             return {"message": "Too many requests",
                     "ban_time": conf.features.rate_limiting.login_ban_time}, 429
-        kwargs["_ip"] = ip
+        kwargs["src_ip"] = ip
         return func(*args, **kwargs)
     return wrapper

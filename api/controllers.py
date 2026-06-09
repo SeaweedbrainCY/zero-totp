@@ -136,7 +136,7 @@ def signup():
 
 # POST /login
 @ip_rate_limit
-def login(ip, body):
+def login(src_ip, body):
     passphrase = body["password"].strip()
     email = utils.sanitize_input(body["email"]).strip()
     rate_limiting_db = Rate_Limiting_DB()
@@ -152,19 +152,19 @@ def login(ip, body):
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fakePassword)
         
-        rate_limiting_db.add_failed_login(ip)
+        rate_limiting_db.add_failed_login(src_ip)
         return {"message": "generic_errors.invalid_creds"}, 403
-    logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {ip}. X-Forwarded-For header is {request.headers.get('X-Forwarded-For')}")
+    logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {src_ip}. X-Forwarded-For header is {request.headers.get('X-Forwarded-For')}")
     checked = bcrypt.checkpw(user.password)
     if not checked:
-        rate_limiting_db.add_failed_login(ip, user.id)
+        rate_limiting_db.add_failed_login(src_ip)
         return {"message": "generic_errors.invalid_creds"}, 403
     if user.isBlocked: # only authenticated users can see the blocked status
         return {"message": "blocked"}, 403
     
-    rate_limiting_db.flush_login_limit(ip)
+    rate_limiting_db.flush_login_limit(src_ip)
 
-    session_token, refresh_token = utils.generate_new_session(user=user, ip_address=ip)
+    session_token, refresh_token = utils.generate_new_session(user=user, ip_address=src_ip)
     bearer_tokens_body = {}
     if connexion.request.headers.get("Origin") == "capacitor://localhost":
         # For requests coming from iOS application, we return the tokens in the body. 
@@ -819,7 +819,7 @@ def get_internal_notification(src_ip, user_obj):
 # Warning: This endpoint is not protected by OpenAPI/connexion authentication protection. Indeed expired session tokens are allowed to be passed.abs
 # This endpoint re-implements some of the authentication mechanism.
 @ip_rate_limit
-def auth_refresh_token(ip, body={}, *args, **kwargs):
+def auth_refresh_token(src_ip, body={}, *args, **kwargs):
     session_token_cookie = request.cookies.get("session-token")
     refresh_token_cookie = request.cookies.get("refresh-token")
     if request.headers.get("Origin") == "capacitor://localhost" and session_token_cookie == None and refresh_token_cookie == None: 
@@ -828,21 +828,21 @@ def auth_refresh_token(ip, body={}, *args, **kwargs):
         refresh_token_cookie = body.get("refresh-token")
     rate_limiting = Rate_Limiting_DB()
     if not session_token_cookie or not refresh_token_cookie:
-        rate_limiting.add_failed_login(ip)
+        rate_limiting.add_failed_login(src_ip)
         return {"message": "Missing token"}, 401
     session_token = SessionTokenRepo().get_session_token(session_token_cookie)
     if not session_token:
-        rate_limiting.add_failed_login(ip)
+        rate_limiting.add_failed_login(src_ip)
         return {"message": "Invalid token"}, 401
     if session_token.revoke_timestamp is not None:
-        rate_limiting.add_failed_login(ip)
+        rate_limiting.add_failed_login(src_ip)
         return {"message": "Token revoked"}, 401
     refresh_token = RefreshToken_db().get_refresh_token_by_hash(sha256(refresh_token_cookie.encode("utf-8")).hexdigest())
     if not refresh_token:
-        rate_limiting.add_failed_login(ip, user_id=session_token.user_id)
+        rate_limiting.add_failed_login(src_ip, user_id=session_token.user_id)
         logging.warning(f"Session of user {session_token.user_id} tried to be refreshed with an refresh token (not present in the db)")
         return {"message": "Access denied"}, 403
-    new_session_token, new_refresh_token = refresh_token_func.refresh_token_flow(refresh_token=refresh_token, session_token=session_token, ip=ip)
+    new_session_token, new_refresh_token = refresh_token_func.refresh_token_flow(refresh_token=refresh_token, session_token=session_token, ip=src_ip)
     answer_body = {"challenge":"ok"}
     if connexion.request.headers.get("Origin") == "capacitor://localhost":
         # For requests coming from iOS application, we return the tokens in the body. 
