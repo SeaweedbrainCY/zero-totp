@@ -28,7 +28,7 @@ import Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import require_active_user, require_passphrase_verification, require_userid, ip_rate_limit
+from Utils.security_wrapper import require_active_user, require_userid, ip_rate_limit
 import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 

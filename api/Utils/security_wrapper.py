@@ -29,7 +29,7 @@ def require_userid(func):
         if user_obj.isBlocked:
                 return {"error": "User is blocked"}, 403
 
-        return func(user_obj.id, *args, **kwargs)
+        return func(user_obj, *args, **kwargs)
     return wrapper
 
 # Check that the user is verified, not blocked and inject context info
