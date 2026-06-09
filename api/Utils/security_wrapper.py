@@ -58,27 +58,6 @@ def require_active_user(func):
         return func(*args, **kwargs)
     return wrapper
 
-# By design, the user id is required and checked before the user token.
-# Require x-hash-passphrase header and check it against the user's hashed passphrase
-def require_passphrase_verification(func):
-    @functools.wraps(func)
-    @require_active_user
-    def wrapper(*args, **kwargs):
-        try:
-            passphrase = connexion.request.headers["x-hash-passphrase"]
-        except KeyError:
-            return {"error": "Unauthorized"}, 401
-
-        user = UserDB().getById(user_id)
-        if user == None:
-            return {"error": "Unauthorized"}, 401
-        bcrypt = Bcrypt(passphrase)
-
-        if not bcrypt.checkpw(user.password):
-            return {"error": "Unauthorized"}, 403
-        return func(*args, **kwargs)
-    return wrapper
-
 
 def ip_rate_limit(func):
     @functools.wraps(func)
