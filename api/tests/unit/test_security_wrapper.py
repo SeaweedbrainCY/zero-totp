@@ -85,7 +85,7 @@ class TestSecurityWrapper(unittest.TestCase):
         def test_require_userid_blocked(self):
             security_wrapper.conf.features.emails.require_email_validation = True
             @security_wrapper.require_userid
-            def wrapped_function(user_id):
+            def wrapped_function(src_ip, user_id):
                 return True, 200
             with TestContext(context={"token_info": {"uid": self.blocked_user_id}}):
                 with self.flask_application.app.app_context():

@@ -28,8 +28,10 @@ def require_userid(func):
             return {"error": "Unauthorized"}, 401
         if user_obj.isBlocked:
                 return {"error": "User is blocked"}, 403
-
-        return func(user_obj, *args, **kwargs)
+        src_ip = utils.get_ip(connexion.request)
+        kwargs["user_obj"] = user_obj
+        kwargs["src_ip"] = src_ip
+        return func(*args, **kwargs)
     return wrapper
 
 # Check that the user is verified, not blocked and inject context info

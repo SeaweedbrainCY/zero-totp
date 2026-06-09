@@ -386,13 +386,10 @@ def export_vault(src_ip, user_obj):
 
 # GET /role
 @require_userid
-def get_role(user_id, *args, **kwargs):
-    user = UserDB().getById(user_id=user_id)
-    if not user:
-        return {"message" : "User not found"}, 404
-    elif not user.isVerified and conf.features.emails.require_email_validation:
+def get_role(src_ip, user_obj, *args, **kwargs):
+    if not user_obj.isVerified and conf.features.emails.require_email_validation:
         return {"role" : "not_verified"}, 200
-    return {"role": user.role}, 200
+    return {"role": user_obj.role}, 200
 
 
     
@@ -730,51 +727,47 @@ def delete_account(src_ip, user_obj, body):
 
 
 @require_userid
-def send_verification_email(user_id):
+def send_verification_email(src_ip, user_obj):
     if not conf.features.emails.require_email_validation:
         return {"message": "not implemented"}, 501
     rate_limiting = Rate_Limiting_DB()
-    if(rate_limiting.is_send_verification_email_rate_limited(user_id=user_id)):
+    if(rate_limiting.is_send_verification_email_rate_limited(user_id=user_obj.id)):
             return {"message": "Rate limited",  'ban_time':conf.features.rate_limiting.email_ban_time}, 429
-    logging.info("Sending verification email to user " + str(user_id))
-    user = UserDB().getById(user_id)
-    if user == None:
-        return {"message": "User not found"}, 404
-    token = utils.generate_new_email_verification_token(user_id=user_id)
+    logging.info("Sending verification email to user " + str(user_obj.id))
+    token = utils.generate_new_email_verification_token(user_id=user_obj.id)
     try:
-        send_email.send_verification_email(user.mail, token)
-        logging.info("Verification email sent to user " + str(user_id))
-        ip = utils.get_ip(request=request)
-        rate_limiting.add_send_verification_email(ip=ip, user_id=user_id)
+        send_email.send_verification_email(user_obj.mail, token)
+        logging.info("Verification email sent to user " + str(user_obj.id))
+        rate_limiting.add_send_verification_email(ip=src_ip, user_id=user_obj.id)
         return {"message": "Verification email sent"}, 200
     except Exception as e:
-        logging.error("Error while sending verification email to user " + str(user_id) + ". Exception : " + str(e))
+        logging.error("Error while sending verification email to user " + str(user_obj.id) + ". Exception : " + str(e))
         return {"message": "Error while sending verification email"}, 500
 
 @require_userid
-def verify_email(user_id,body):
-    user = UserDB().getById(user_id)
+def verify_email(src_ip, user_obj,body):
+    user = UserDB().getById(user_obj.id)
     if user == None:
         return {"message": "generic_errors.user_not_found"}, 404
     if user.isVerified:
         return {"message": "email_verif.error.already_verified"}, 200
     token_db = EmailVerificationToken_db()
-    token_obj = token_db.get_by_user_id(user_id)
+    token_obj = token_db.get_by_user_id(user_obj.id)
     if token_obj == None:
         return {"message": "email_verif.error.no_active_code"}, 403
     if datetime.datetime.now(tz=datetime.timezone.utc).timestamp() > float(token_obj.expiration) :
-        token_db.delete(user_id)
+        token_db.delete(user_obj.id)
         return {"message": "email_verif.error.expired"}, 403
     if int(token_obj.failed_attempts >= 5):
-        logging.warning("User " + str(user_id) + " denied verification because of too many failed attempts.")
+        logging.warning("User " + str(user_obj.id) + " denied verification because of too many failed attempts.")
         return {"message":  "email_verif.error.too_many_failed"}, 403
     if token_obj.token != body["token"]:
-        token_db.increase_fail_attempts(user_id)
-        logging.warning("User " + str(user_id) + " tried to verify email with wrong token.")
+        token_db.increase_fail_attempts(user_obj.id)
+        logging.warning("User " + str(user_obj.id) + " tried to verify email with wrong token.")
         return {"message": "email_verif.error.failed", "attempt_left":5-(int(token_obj.failed_attempts))}, 403
-    token_db.delete(user_id)
-    Rate_Limiting_DB().flush_email_verification_limit(user_id)
-    user = UserDB().update_email_verification(user_id, True)
+    token_db.delete(user_obj.id)
+    Rate_Limiting_DB().flush_email_verification_limit(user_obj.id)
+    user = UserDB().update_email_verification(user_obj.id, True)
     if user:
         return {"message": "Email verified"}, 200
     else:# pragma: no cover
