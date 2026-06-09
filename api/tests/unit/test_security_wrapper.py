@@ -36,7 +36,7 @@ class TestSecurityWrapper(unittest.TestCase):
         
         def test_valid_user_not_verified_and_require(self):
             security_wrapper.conf.features.emails.require_email_validation = True
-            @security_wrapper.require_valid_user
+            @security_wrapper.require_active_user
             def wrapped_function(user_id):
                 return True, 200
             with self.flask_application.app.app_context():
@@ -45,7 +45,7 @@ class TestSecurityWrapper(unittest.TestCase):
         
         def test_valid_user_verified_and_require(self):
             security_wrapper.conf.features.emails.require_email_validation = True
-            @security_wrapper.require_valid_user
+            @security_wrapper.require_active_user
             def wrapped_function(user_id):
                 return True, 200
             with self.flask_application.app.app_context():
@@ -54,7 +54,7 @@ class TestSecurityWrapper(unittest.TestCase):
         
         def test_valid_user_not_verified_and_not_require(self):
             security_wrapper.conf.features.emails.require_email_validation = False
-            @security_wrapper.require_valid_user
+            @security_wrapper.require_active_user
             def wrapped_function(user_id):
                 return True, 200
             with self.flask_application.app.app_context():
@@ -63,7 +63,7 @@ class TestSecurityWrapper(unittest.TestCase):
         
         def test_valid_user_verified_and_not_require(self):
             security_wrapper.conf.features.emails.require_email_validation = False
-            @security_wrapper.require_valid_user
+            @security_wrapper.require_active_user
             def wrapped_function(user_id):
                 return True, 200
             with self.flask_application.app.app_context():
@@ -72,7 +72,7 @@ class TestSecurityWrapper(unittest.TestCase):
 
         
         def test_valid_user_blocked(self):
-            @security_wrapper.require_valid_user
+            @security_wrapper.require_active_user
             def wrapped_function(user_id):
                 return True, 200
             with self.flask_application.app.app_context():

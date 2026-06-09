@@ -29,7 +29,7 @@ import Utils.utils as utils
 import os
 import base64
 import datetime
-from Utils.security_wrapper import  require_valid_user, require_passphrase_verification,require_valid_user, require_userid, ip_rate_limit
+from Utils.security_wrapper import require_active_user, require_passphrase_verification, require_userid, ip_rate_limit
 import traceback
 from hashlib import sha256
 from CryptoClasses.encryption import ServiceSideEncryption 
@@ -187,10 +187,10 @@ def login(ip, body):
     return response
 
 #POST logout
-@require_valid_user
-def logout(token_info):
+@require_active_user
+def logout(src_ip, user_obj, token_info):
     session_repo = SessionTokenRepo()
-    session = session_repo.get_session_token(token_info)
+    session = session_repo.get_session_token(token_info.get("token"))
     if not session:
         return {"message": "Session not found"}, 404
     utils.revoke_session(session_id=session.session.id)
@@ -223,68 +223,68 @@ def get_login_specs(username):
     
     
 #GET /encrypted_secret/{uuid}
-@require_valid_user
-def get_encrypted_secret(user_id, uuid):
+@require_active_user
+def get_encrypted_secret(src_ip, user_obj, uuid):
     totp_secretDB =  TOTP_secretDB()
-    enc_secret = totp_secretDB.get_enc_secret_of_user_by_uuid(user_id, uuid)
+    enc_secret = totp_secretDB.get_enc_secret_of_user_by_uuid(user_obj.id, uuid)
     if not enc_secret:
         return {"message": "Forbidden"}, 403
     else:
-        if enc_secret.user_id == user_id:
+        if enc_secret.user_id == user_obj.id:
             return {"enc_secret": enc_secret.secret_enc}, 200
         else :    
-            logging.warning("User " + str(user_id) + " tried to access secret " + str(uuid) + " which is not his")
+            logging.warning("User " + str(user_obj.id) + " tried to access secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
         
 
 
 #PUT /encrypted_secret/{uuid}
-@require_valid_user
-def update_encrypted_secret(user_id,uuid, body):
-    enc_secret = body["enc_secret"]
+@require_active_user
+def update_encrypted_secret(src_ip, user_obj,uuid, body):
+    enc_secret = body.get("enc_secret")
     
     totp_secretDB =  TOTP_secretDB()
-    totp = totp_secretDB.get_enc_secret_of_user_by_uuid(user_id, uuid)
+    totp = totp_secretDB.get_enc_secret_of_user_by_uuid(user_obj.id, uuid)
     if not totp:
-        logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " which does not exist")
+        logging.warning("User " + str(user_obj.id) + " tried to update secret " + str(uuid) + " which does not exist")
         return {"message": "Forbidden"}, 403
     else:
-        if totp.user_id != user_id:
-            logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " which is not his")
+        if totp.user_id != user_obj.id:
+            logging.warning("User " + str(user_obj.id) + " tried to update secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
-        totp = totp_secretDB.update_secret(uuid=uuid, enc_secret=enc_secret, user_id=user_id)
+        totp = totp_secretDB.update_secret(uuid=uuid, enc_secret=enc_secret, user_id=user_obj.id)
         if totp == None:
-                logging.warning("User " + str(user_id) + " tried to update secret " + str(uuid) + " but an error occurred server side while storing your encrypted secret")
+                logging.warning("User " + str(user_obj.id) + " tried to update secret " + str(uuid) + " but an error occurred server side while storing your encrypted secret")
                 return {"message": "An error occurred server side while storing your encrypted secret"}, 500
         else:
                 return {"message": "Encrypted secret updated"}, 201
 
 #DELETE /encrypted_secret/{uuid}
-@require_valid_user
-def delete_encrypted_secret(user_id,uuid):
+@require_active_user
+def delete_encrypted_secret(src_ip, user_obj, uuid):
     if(uuid == ""):
         return {"message": "Invalid request"}, 400
     totp_secretDB =  TOTP_secretDB()
-    totp = totp_secretDB.get_enc_secret_of_user_by_uuid(user_id, uuid)
+    totp = totp_secretDB.get_enc_secret_of_user_by_uuid(user_obj.id, uuid)
     if not totp:
-        logging.debug("User " + str(user_id) + " tried to delete secret " + str(uuid) + " which does not exist")
+        logging.debug("User " + str(user_obj.id) + " tried to delete secret " + str(uuid) + " which does not exist")
         return {"message": "Forbidden"}, 403
     else:
-        if totp.user_id != user_id:
-            logging.warning("User " + str(user_id) + " tried to delete secret " + str(uuid) + " which is not his")
+        if totp.user_id != user.id:
+            logging.warning("User " + str(user_obj.id) + " tried to delete secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
-        if totp_secretDB.delete(uuid=uuid, user_id= user_id):
+        if totp_secretDB.delete(uuid=uuid, user_id= user_obj.id):
             return {"message": "Encrypted secret deleted"}, 201
         else:
-            logging.warning("Unknown error while deleting encrypted secret for user " + str(user_id) )
+            logging.warning("Unknown error while deleting encrypted secret for user " + str(user_obj.id) )
             return {"message": "Unknown error while deleting encrypted secret"}, 500
         
 
 #GET /all_secrets
-@require_valid_user
-def get_all_secrets(user_id):
+@require_active_user
+def get_all_secrets(src_ip, user_obj):
     totp_secretDB =  TOTP_secretDB()
-    enc_secrets = totp_secretDB.get_all_enc_secret_by_user_id(user_id)
+    enc_secrets = totp_secretDB.get_all_enc_secret_by_user_id(user_obj.id)
     if not enc_secrets:
         return {"message": "No secret found"}, 404
     else:
@@ -296,11 +296,10 @@ def get_all_secrets(user_id):
 
 
 #GET /zke_encrypted_key
-@require_valid_user
-def get_ZKE_encrypted_key(user_id):
-        logging.info(user_id)
+@require_active_user
+def get_ZKE_encrypted_key(src_ip, user_obj):
         zke_db = ZKE_DB()
-        zke_key = zke_db.getByUserId(user_id)
+        zke_key = zke_db.getByUserId(user_obj.id)
         if zke_key:
                 return {"zke_encrypted_key": zke_key.ZKE_key}, 200
         else:
@@ -310,44 +309,43 @@ def get_ZKE_encrypted_key(user_id):
 
 #PUT /update/email
 @require_userid
-def update_email(user_id,body):
+def update_email(src_ip, user_obj, body):
    
-    email = utils.sanitize_input(body["email"]).strip()
+    email = utils.sanitize_input(body.get("email", "")).strip()
     if not utils.check_email(email):
         return {"message": "This email doesn't have the right format. Check it and try again"}, 400
          
     userDb = UserDB()
     already_existing_user = userDb.getByEmail(email)
     if already_existing_user:
-        if already_existing_user.id == user_id:
+        if already_existing_user.id == user_obj.id:
             return {"message":email},201
         else:
             return {"message": "This email already exists"}, 403
-    old_mail = userDb.getById(user_id).mail
-    user = userDb.update_email(user_id=user_id, email=email, isVerified=0)
-    if user:
+    old_mail = userDb.getById(user_obj.id).mail
+    updated_user = userDb.update_email(user_id=user_obj.id, email=email, isVerified=0)
+    if updated_user:
         try:
-            ip = utils.get_ip(request)
-            thread = threading.Thread(target=utils.send_information_email,args=(ip, old_mail, "Your email address has been updated"))
+            thread = threading.Thread(target=utils.send_information_email,args=(src_ip, old_mail, "Your email address has been updated"))
             thread.start()
         except Exception as e:
             logging.error("Unknown error while sending information email" + str(e))
         if conf.features.emails.require_email_validation:
             try:
            
-                send_verification_email(user=user_id, context_={"user":user_id}, token_info={"user":user_id})
+                send_verification_email(user=updated_user.id, context_={"user":updated_user.id}, token_info={"user":updated_user.id})
             except Exception as e:
                 logging.error("Unknown error while sending verification email" + str(e))
-            return {"message":user.mail},201
+            return {"message":user_obj.mail},201
         else:
-            return {"message":user.mail},201
+            return {"message":user_obj.mail},201
     else :
-        logging.warning("An error occured while updating email of user " + str(user_id))
+        logging.warning("An error occured while updating email of user " + str(updated_user.id))
         return {"message": "Unknown error while updating email"}, 500
 
 #PUT /update/username
-@require_valid_user
-def update_username(user_id,body):
+@require_active_user
+def update_username(src_ip, user_obj,body):
     username = utils.sanitize_input(body["username"].strip())
     if not username:
         return {"message": "generic_errors.missing_params"}, 400
@@ -356,30 +354,28 @@ def update_username(user_id,body):
         return {"message": "Username is too long"}, 400
     already_existing_user = userDb.getByUsername(username)
     if already_existing_user:
-        if already_existing_user.id == user_id:
+        if already_existing_user.id == user.id:
             return {"message":username},201
         else:
             return {"message": "generic_errors.username_exists"}, 409
-    user = userDb.update_username(user_id=user_id, username=username)
-    if user:
-        return {"message":user.username},201
+    updated_user = userDb.update_username(user_id=user_obj.id, username=username)
+    if updated_user:
+        return {"message":updated_user.username},201
     else :
-        logging.warning("An error occured while updating username of user " + str(user_id))
+        logging.warning("An error occured while updating username of user " + str(updated_user.id))
         return {"message": "Unknown error while updating username"}, 500
    
 
 
-@require_valid_user
-def export_vault(user_id):
-    
+@require_active_user
+def export_vault(src_ip, user_obj):
     vault = {"version":1, "date": str(datetime.datetime.utcnow())}
-    user = UserDB().getById(user_id=user_id)
-    zkeKey = ZKE_DB().getByUserId(user_id=user_id)
-    totp_secrets_list = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user_id)
-    if not user or not zkeKey:
+    zkeKey = ZKE_DB().getByUserId(user_id=user_obj.id)
+    totp_secrets_list = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user_obj.id)
+    if not zkeKey:
         return {"message" : "User not found"}, 404
     
-    vault["derived_key_salt"] = user.derivedKeySalt
+    vault["derived_key_salt"] = user_obj.derivedKeySalt
     vault["zke_key_enc"] = zkeKey.ZKE_key
     secrets = utils.get_all_secrets_sorted(totp_secrets_list)
     vault["secrets"] = secrets
@@ -411,8 +407,8 @@ def get_authorization_flow():
     return {"authorization_url": authorization_url, "state":state}, 200
 
 # GET /google-drive/oauth/callback
-@require_valid_user
-def oauth_callback(user_id):
+@require_active_user
+def oauth_callback(src_ip, user_obj):
     if not conf.features.google_drive.enabled:
         return {"message": "Oauth is disabled on this tenant. Contact the tenant administrator to enable it."}, 403
     frontend_URI = conf.environment.frontend_URI
@@ -430,27 +426,27 @@ def oauth_callback(user_id):
         encrypted_cipher = sse.encrypt(creds_b64)
         expires_at = int(datetime.datetime.strptime(credentials["expiry"], "%Y-%m-%d %H:%M:%S.%f").timestamp())
         token_db = Oauth_tokens_db()
-        tokens = token_db.get_by_user_id(user_id)
+        tokens = token_db.get_by_user_id(user_obj.id)
         if tokens:
-            tokens = token_db.update(user_id=user_id, enc_credentials=encrypted_cipher["ciphertext"] ,expires_at=expires_at, nonce=encrypted_cipher["nonce"], tag=encrypted_cipher["tag"])
+            tokens = token_db.update(user_id=user_obj.id, enc_credentials=encrypted_cipher["ciphertext"] ,expires_at=expires_at, nonce=encrypted_cipher["nonce"], tag=encrypted_cipher["tag"])
         else:
-            tokens = token_db.add(user_id=user_id, enc_credentials=encrypted_cipher["ciphertext"], expires_at=expires_at, nonce=encrypted_cipher["nonce"], tag=encrypted_cipher["tag"])
+            tokens = token_db.add(user_id=user_obj.id, enc_credentials=encrypted_cipher["ciphertext"], expires_at=expires_at, nonce=encrypted_cipher["nonce"], tag=encrypted_cipher["tag"])
         if tokens:
             google_drive_int = GoogleDriveIntegrationDB()
-            integration = google_drive_int.get_by_user_id(user_id)
+            integration = google_drive_int.get_by_user_id(user_obj.id)
             if integration == None:
-                google_drive_int.create(user_id=user_id, google_drive_sync=1)
+                google_drive_int.create(user_id=user_obj.id, google_drive_sync=1)
             else :
-                google_drive_int.update_google_drive_sync(user_id=user_id, google_drive_sync=1)
+                google_drive_int.update_google_drive_sync(user_id=user_obj.id, google_drive_sync=1)
             flask.session.pop("state")
             return response
         else:
-            logging.warning("Unknown error while storing encrypted tokens for user " + str(user_id))
+            logging.warning("Unknown error while storing encrypted tokens for user " + str(user_obj.id))
             response = make_response(redirect(frontend_URI + "/oauth/callback?status=error&state="+flask.session.get('state'),  code=302))
             flask.session.pop("state")
             return response
     except oauth_flow.NoRefreshTokenError as e:
-        logging.warning(f"Oauth callback for user {user_id} failed because no refresh token was provided.")
+        logging.warning(f"Oauth callback for user {user_obj.id} failed because no refresh token was provided.")
         return make_response(redirect(frontend_URI + "/oauth/callback?status=refresh-token-error&state=none",  code=302))
     except Exception as e:
         logging.error("Error while exchanging the authorization code " + str(e))
@@ -465,39 +461,39 @@ def oauth_callback(user_id):
 
 
 #GET /google-drive/option
-@require_valid_user
-def get_google_drive_option(user_id):
+@require_active_user
+def get_google_drive_option(src_ip, user_obj):
     if not conf.features.google_drive.enabled:
         return {"message": "Google drive sync is not enabled on this tenant."}, 403
     google_drive_integrations = GoogleDriveIntegrationDB()
-    status = google_drive_integrations.is_google_drive_enabled(user_id)
+    status = google_drive_integrations.is_google_drive_enabled(user_obj.id)
     if status:
         return {"status": "enabled"}, 200
     else:
         return {"status": "disabled"}, 200
     
 #PUT /google-drive/backup
-@require_valid_user
-def backup_to_google_drive(user_id, *args, **kwargs):
+@require_active_user
+def backup_to_google_drive(src_ip, user_obj, *args, **kwargs):
     if not conf.features.google_drive.enabled:
         return {"message": "Google drive sync is not enabled on this tenant."}, 403
     
     token_db = Oauth_tokens_db()
-    oauth_tokens = token_db.get_by_user_id(user_id)
+    oauth_tokens = token_db.get_by_user_id(user_obj.id)
     google_drive_integrations = GoogleDriveIntegrationDB()
 
-    if not oauth_tokens or not google_drive_integrations.is_google_drive_enabled(user_id):
+    if not oauth_tokens or not google_drive_integrations.is_google_drive_enabled(user_obj.id):
         return {"message": "Google drive sync is not enabled"}, 403
     sse = ServiceSideEncryption()
     creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce, tag=oauth_tokens.cipher_tag)
     if creds_b64 == None:
-        logging.warning("Error while decrypting credentials for user " + str(user_id))
+        logging.warning("Error while decrypting credentials for user " + str(user_obj.id))
         return {"message": "Error while decrypting credentials"}, 500
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
     try:
-        exported_vault,_ = export_vault(user=user_id, context_={"user":user_id}, token_info={"user":user_id})
+        exported_vault,_ = export_vault(user=user_obj.id, context_={"user":user_obj.id}, token_info={"user":user_obj.id})
         google_drive_api.backup(credentials=credentials, vault=exported_vault)
-        google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_id)
+        google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_obj.id)
         return {"message": "Backup done"}, 201
     except Exception as e:
         logging.error("Error while backing up to google drive " + str(e))
@@ -505,25 +501,25 @@ def backup_to_google_drive(user_id, *args, **kwargs):
 
 
 # GET /google-drive/last-backup/verify
-@require_valid_user
-def verify_last_backup(user_id):
+@require_active_user
+def verify_last_backup(src_ip, user_obj):
     if not conf.features.google_drive.enabled:
         return {"message": "Google drive sync is not enabled on this tenant."}, 403
     token_db = Oauth_tokens_db()
-    oauth_tokens = token_db.get_by_user_id(user_id)
+    oauth_tokens = token_db.get_by_user_id(user_obj.id)
     google_drive_integrations = GoogleDriveIntegrationDB()
-    if not oauth_tokens or not google_drive_integrations.is_google_drive_enabled(user_id):
+    if not oauth_tokens or not google_drive_integrations.is_google_drive_enabled(user_obj.id):
         return {"message": "Google drive sync is not enabled"}, 403
     sse = ServiceSideEncryption()
     creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce, tag=oauth_tokens.cipher_tag)
     if creds_b64 == None:
-        logging.error("Error while decrypting credentials for user " + str(user_id) + ". creds_b64 = " + str(creds_b64))
+        logging.error("Error while decrypting credentials for user " + str(user_obj.id) + ". creds_b64 = " + str(creds_b64))
         return {"error": "Error while connecting to the Google API"}, 500
     
     
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
     if credentials.get("refresh_token") is None:
-        logging.warning(f"User {user_id} tried to verify last backup but no refresh token was found in the credentials. This is a blocking error.")
+        logging.warning(f"User {user_obj.id} tried to verify last backup but no refresh token was found in the credentials. This is a blocking error.")
         return {"message": "Error while connecting to the Google API", "error_id": "3c071611-744a-4c93-95c8-c87ee3fce00d"}, 400
     try:
         last_backup_checksum, last_backup_date = google_drive_api.get_last_backup_checksum(credentials)
@@ -533,50 +529,50 @@ def verify_last_backup(user_id):
     except utils.FileNotFound as e:
         logging.warning("Error while getting last backup checksum " + str(e))
         return {"error": "file_not_found"}, 404
-    totp_secrets_list = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user_id)
+    totp_secrets_list = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user_obj.id)
     secrets = utils.get_all_secrets_sorted(totp_secrets_list)
     sha256sum = sha256(json.dumps(secrets,  sort_keys=True).encode("utf-8")).hexdigest()
     if last_backup_checksum == sha256sum:
-        google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_id)
+        google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_obj.id)
         return {"status": "ok", "is_up_to_date": True, "last_backup_date": last_backup_date }, 200
     else:
         return {"status": "ok", "is_up_to_date": False, "last_backup_date": "" }, 200
 
 
 # DELETE /google-drive/option
-@require_valid_user
-def delete_google_drive_option(user_id):
+@require_active_user
+def delete_google_drive_option(src_ip, user_obj):
     if not conf.features.google_drive.enabled:
         return {"message": "Google drive sync is not enabled on this tenant."}, 403
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
-    oauth_tokens = token_db.get_by_user_id(user_id)
+    oauth_tokens = token_db.get_by_user_id(user_obj.id)
     
-    if google_integration.get_by_user_id(user_id) is None:
-        google_integration.create(user_id, 0)
+    if google_integration.get_by_user_id(user_obj.id) is None:
+        google_integration.create(user.id, 0)
     if not oauth_tokens:
-        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_obj.id, 0)
         return {"message": "Google drive sync is not enabled"}, 200
     sse = ServiceSideEncryption()
     try:
         creds_b64 = sse.decrypt( ciphertext=oauth_tokens.enc_credentials, nonce=oauth_tokens.cipher_nonce,  tag=oauth_tokens.cipher_tag)
         if creds_b64 == None:
-            token_db.delete(user_id)
-            GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+            token_db.delete(user_obj.id)
+            GoogleDriveIntegrationDB().update_google_drive_sync(user_obj.id, 0)
             return {"message": "Error while decrypting credentials"}, 200
         credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
         google_drive_api.revoke_credentials(credentials)
-        token_db.delete(user_id)
-        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        token_db.delete(user_obj.id)
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_obj.id, 0)
         return {"message": "Google drive sync disabled"}, 200
     except Exception as e:
         logging.error("Error while deleting backup from google drive " + str(e))
-        token_db.delete(user_id)
-        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        token_db.delete(user_obj.id)
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_obj.id, 0)
         return {"message": "Error while revoking credentials"}, 200
 
-@require_valid_user
-def get_preferences(user_id,fields):
+@require_active_user
+def get_preferences(src_ip, user_obj,fields):
     valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum", "autolock_delay"]
     all_field = fields == "all" 
     fields_asked = []
@@ -593,7 +589,7 @@ def get_preferences(user_id,fields):
     
     user_preferences = {}
     preferences_db = PreferencesDB()
-    preferences = preferences_db.get_preferences_by_user_id(user_id)
+    preferences = preferences_db.get_preferences_by_user_id(user.id)
     if "favicon_policy" in fields_asked or all_field:
         user_preferences["favicon_policy"] = preferences.favicon_preview_policy
     if  "derivation_iteration" in fields_asked or all_field:
@@ -607,8 +603,8 @@ def get_preferences(user_id,fields):
     return user_preferences, 200
 
 
-@require_valid_user
-def set_preference(user_id, body):
+@require_active_user
+def set_preference(src_ip, user_obj, body):
     field = body["id"]
     value = body["value"]
     
@@ -619,7 +615,7 @@ def set_preference(user_id, body):
     if field == "favicon_policy":
         if value not in ["always", "never", "enabledOnly"]:
             return {"message": "Invalid request"}, 400
-        preferences = preferences_db.update_favicon(user_id, value)
+        preferences = preferences_db.update_favicon(user_obj.id, value)
         if preferences:
             return {"message": "Preference updated"}, 201
         else:# pragma: no cover
@@ -631,7 +627,7 @@ def set_preference(user_id, body):
             return {"message": "Invalid request"}, 400
         if value < 1000 or value > 1000000:
             return {"message": "iteration must be between 1000 and 1000000 "}, 400
-        preferences = preferences_db.update_derivation_iteration(user_id, value)
+        preferences = preferences_db.update_derivation_iteration(user_obj.id, value)
         if preferences:
             return {"message": "Preference updated"}, 201
         else:# pragma: no cover
@@ -643,7 +639,7 @@ def set_preference(user_id, body):
             return {"message": "Invalid request"}, 400
         if value < 1 :
             return {"message": "backup lifetime must be at least day"}, 400
-        preferences = preferences_db.update_backup_lifetime(user_id, value)
+        preferences = preferences_db.update_backup_lifetime(user_obj.id, value)
         if preferences:
             return {"message": "Preference updated"}, 201
         else:# pragma: no cover
@@ -655,7 +651,7 @@ def set_preference(user_id, body):
             return {"message": "Invalid request"}, 400
         if value < 1 :
             return {"message": "minimum backup kept must be at least of 1"}, 400
-        preferences = preferences_db.update_minimum_backup_kept(user_id, value)
+        preferences = preferences_db.update_minimum_backup_kept(user_obj.id, value)
         if preferences:
             return {"message": "Preference updated"}, 201
         else:# pragma: no cover
@@ -669,7 +665,7 @@ def set_preference(user_id, body):
             return {"message": "Invalid request"}, 400
         if value < 1 or value > maximum_delay:
             return {"message": "invalid_duration", "minimum_duration_min":minimum_delay, "maximum_duration_min": maximum_delay}, 400
-        preferences = preferences_db.update_autolock_delay(user_id, value)
+        preferences = preferences_db.update_autolock_delay(user_obj.id, value)
         if preferences:# pragma: no cover
             return {"message": "Preference updated"}, 201
         return {"message": "Unknown error while updating preference"}, 500
@@ -677,14 +673,14 @@ def set_preference(user_id, body):
         return {"message": "Invalid request"}, 400
 
 # DELETE /google-drive/backup
-@require_valid_user
-def delete_google_drive_backup(user_id):
+@require_active_user
+def delete_google_drive_backup(src_ip, user_obj):
     if not conf.features.google_drive.enabled:
         return {"message": "Google drive sync is not enabled on this tenant."}, 403
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
-    oauth_tokens = token_db.get_by_user_id(user_id)
-    google_drive_option =google_integration.get_by_user_id(user_id) 
+    oauth_tokens = token_db.get_by_user_id(user_obj.id)
+    google_drive_option =google_integration.get_by_user_id(user_obj.id) 
     if google_drive_option == None:
         return {"message": "Google drive sync is not enabled"}, 403
     if google_drive_option.isEnabled == 0:
@@ -702,29 +698,28 @@ def delete_google_drive_backup(user_id):
             return {"message": "Error while deleting backups"}, 500
     except Exception as e:
         logging.error("Error while deleting backup from google drive " + str(e))
-        token_db.delete(user_id)
-        GoogleDriveIntegrationDB().update_google_drive_sync(user_id, 0)
+        token_db.delete(user_obj.id)
+        GoogleDriveIntegrationDB().update_google_drive_sync(user_obj.id, 0)
         return {"message": "Error while deleting backups"}, 500
     
 
 @require_passphrase_verification
-def delete_account(user_id):
-    logging.info("Deleting account for user " + str(user_id))
-    user_obj = UserDB().getById(user_id)
+def delete_account(src_ip, user_obj):
+    logging.info("Deleting account for user " + str(user_obj.id))
     if user_obj.role == "admin":
         return {"message": "Admin cannot be deleted"}, 403
     try: # we try to delete the user backups if possible. If not, this is not a blocking error.
-        context = {"user": user_id}
-        delete_google_drive_backup(context, user_id, context)
-        delete_google_drive_option(context, user_id, context)
+        context = {"user": user_obj.id}
+        delete_google_drive_backup(context, user.id, context)
+        delete_google_drive_option(context, user.id, context)
     except Exception as e:
-        logging.warning("Error while deleting backups for user " + str(user_id) + ". Exception : " + str(e))
+        logging.warning("Error while deleting backups for user " + str(user_obj.id) + ". Exception : " + str(e))
     try:
-        UserDB().delete(user_id)
-        logging.info("Account deleted for user " + str(user_id))
+        UserDB().delete(user_obj.id)
+        logging.info("Account deleted for user " + str(user_obj.id))
         return {"message": "Account deleted"}, 200
     except Exception as e:
-        logging.warning("Error while deleting user from database for user " + str(user_id) + ". Exception : " + str(e))
+        logging.warning("Error while deleting user from database for user " + str(user_obj.id) + ". Exception : " + str(e))
         return {"message": "Error while deleting account"}, 500
     
     
@@ -782,10 +777,9 @@ def verify_email(user_id,body):
         return {"message": "Error while verifying email"}, 500
 
 
-@require_valid_user
-def get_whoami(user_id):
-    user = UserDB().getById(user_id)
-    return {"username": user.username, "email": user.mail, "id":user_id}, 200
+@require_active_user
+def get_whoami(src_ip, user_obj):
+    return {"username": user_obj.username, "email": user_obj.mail, "id":user_obj.id}, 200
 
 
 def get_global_notification():
@@ -803,8 +797,8 @@ def get_global_notification():
         }
     
     
-@require_valid_user
-def get_internal_notification(user_id):
+@require_active_user
+def get_internal_notification(src_ip, user_obj):
     notif = Notifications_db().get_last_active_notification()
     if notif is None : 
         return {"display_notification":False}

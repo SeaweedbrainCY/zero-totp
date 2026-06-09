@@ -21,4 +21,4 @@ def verify_session(token):
         if session_token.revoke_timestamp is not None:
             logging.info(f"Rejected session token {session_token.id} because it was revoked. User {session_token.user_id}")
             raise Forbidden("Invalid session token")
-        return  {"uid" : session_token.user_id}
+        return  {"uid" : session_token.user_id, "token": token}
