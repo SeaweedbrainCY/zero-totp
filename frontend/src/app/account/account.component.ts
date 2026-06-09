@@ -631,8 +631,8 @@ export class AccountComponent implements OnInit {
 
   sendDeleteAccountRequest(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      let headers = new HttpHeaders().set('x-hash-passphrase', this.hashedOldPassword);
-      this.http.delete(this.apiService.baseURL + "/api/v1/account", { headers: headers, withCredentials: true, observe: 'response' }).subscribe({
+      const body = { passphrase: this.hashedOldPassword }
+      this.http.post(this.apiService.baseURL + "/api/v1/account/delete", body, { withCredentials: true, observe: 'response' },).subscribe({
         next: () => {
           resolve("ok")
         },
