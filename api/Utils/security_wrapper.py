@@ -14,26 +14,28 @@ import functools
 def require_userid(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        try:
-            user_id = kwargs.get("token_info", {}).get("uid") \
-                      or kwargs.get("user")
-            if not user_id:
-                return {"error": "Unauthorized"}, 401
-            user = UserDB().getById(user_id)
-            if user is None:
-                return {"error": "Unauthorized"}, 401
-            if user.isBlocked:
-                return {"error": "User is blocked"}, 403
-        except Exception:
+        token_info = context.context.get("token_info")
+        if token_info == None:
+            logging.debug("Request denied because token info is null")
             return {"error": "Unauthorized"}, 401
-        return func(user_id, *args, **kwargs)
+        user_id = token_info.get("uid")
+        if user_id == None:
+            logging.debug("Request denied because token uid is null")
+            return {"error": "Unauthorized"}, 401
+        user_obj = UserDB().getById(user_id)
+        if user_obj == None:
+            logging.debug("Request denied because the user failed to be retrieved")
+            return {"error": "Unauthorized"}, 401
+        if user_obj.isBlocked:
+                return {"error": "User is blocked"}, 403
+
+        return func(user_obj.id, *args, **kwargs)
     return wrapper
 
 # Check that the user is verified, not blocked and inject context info
 def require_active_user(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        print("kwargs", kwargs)
         token_info = context.context.get("token_info")
         if token_info == None:
             logging.debug("Request denied because token info is null")
@@ -51,7 +53,9 @@ def require_active_user(func):
         if not user_obj.isVerified and conf.features.emails.require_email_validation:
             return {"error": "Not verified"}, 403
         src_ip = utils.get_ip(connexion.request)
-        return func(src_ip, user_obj, *args, **kwargs)
+        kwargs["user_obj"] = user_obj
+        kwargs["src_ip"] = src_ip
+        return func(*args, **kwargs)
     return wrapper
 
 # By design, the user id is required and checked before the user token.
