@@ -74,6 +74,7 @@ class TestZKEEncryptedKey(unittest.TestCase):
         with self.application.app.app_context():
             self.client.cookies = {"session-token": self.session_token_user_blocked}
             response = self.client.get(self.endpoint)
+            print("response", response.json())
             self.assertEqual(response.status_code, 403)
     
     def test_get_ZKE_unverified_user(self):

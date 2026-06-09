@@ -1,5 +1,6 @@
 from database.user_repo import User as UserDB
 import connexion
+from connexion import context
 from environment import logging, conf
 from CryptoClasses.hash_func import Bcrypt
 import random
@@ -25,21 +26,25 @@ def require_userid(func):
                 return {"error": "User is blocked"}, 403
         except Exception:
             return {"error": "Unauthorized"}, 401
-        return func(*args, **kwargs)
+        return func(user_id, *args, **kwargs)
     return wrapper
 
 # Check that the user is verified, not blocked and inject context info
 def require_active_user(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        token_info = kwargs.get("token_info")
+        print("kwargs", kwargs)
+        token_info = context.context.get("token_info")
         if token_info == None:
+            logging.debug("Request denied because token info is null")
             return {"error": "Unauthorized"}, 401
-        user_id = token_info.get("uid") or kwargs.get("user")
+        user_id = token_info.get("uid")
         if user_id == None:
+            logging.debug("Request denied because token uid is null")
             return {"error": "Unauthorized"}, 401
         user_obj = UserDB().getById(user_id)
         if user_obj == None:
+            logging.debug("Request denied because the user failed to be retrieved")
             return {"error": "Unauthorized"}, 401
         if user_obj.isBlocked:
                 return {"error": "User is blocked"}, 403

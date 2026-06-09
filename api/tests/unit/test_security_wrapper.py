@@ -37,16 +37,17 @@ class TestSecurityWrapper(unittest.TestCase):
         def test_valid_user_not_verified_and_require(self):
             security_wrapper.conf.features.emails.require_email_validation = True
             @security_wrapper.require_active_user
-            def wrapped_function(user_id):
+            def wrapped_function(src_ip, user_obj):
                 return True, 200
             with self.flask_application.app.app_context():
-                _, status = wrapped_function({"user": self.not_verified_user_id},self.not_verified_user_id, {"user": self.not_verified_user_id})
-                self.assertEqual(status, 403)
+                with patch("app.auth.connexion.context", {"token_info": {"uid": "some-user-id"}}):
+                    _, status = wrapped_function({"user": self.not_verified_user_id},self.not_verified_user_id, {"user": self.  not_verified_user_id})
+                    self.assertEqual(status, 403)
         
         def test_valid_user_verified_and_require(self):
             security_wrapper.conf.features.emails.require_email_validation = True
             @security_wrapper.require_active_user
-            def wrapped_function(user_id):
+            def wrapped_function(src_ip, user_obj):
                 return True, 200
             with self.flask_application.app.app_context():
                 _, status = wrapped_function({"user": self.verified_user_id},self.verified_user_id, {"user": self.verified_user_id})
@@ -55,7 +56,7 @@ class TestSecurityWrapper(unittest.TestCase):
         def test_valid_user_not_verified_and_not_require(self):
             security_wrapper.conf.features.emails.require_email_validation = False
             @security_wrapper.require_active_user
-            def wrapped_function(user_id):
+            def wrapped_function(src_ip, user_obj):
                 return True, 200
             with self.flask_application.app.app_context():
                 _, status = wrapped_function({"user": self.not_verified_user_id},self.not_verified_user_id, {"user": self.not_verified_user_id})
@@ -64,7 +65,7 @@ class TestSecurityWrapper(unittest.TestCase):
         def test_valid_user_verified_and_not_require(self):
             security_wrapper.conf.features.emails.require_email_validation = False
             @security_wrapper.require_active_user
-            def wrapped_function(user_id):
+            def wrapped_function(src_ip, user_obj):
                 return True, 200
             with self.flask_application.app.app_context():
                 _, status = wrapped_function({"user": self.verified_user_id},self.verified_user_id, {"user": self.verified_user_id})
@@ -73,7 +74,7 @@ class TestSecurityWrapper(unittest.TestCase):
         
         def test_valid_user_blocked(self):
             @security_wrapper.require_active_user
-            def wrapped_function(user_id):
+            def wrapped_function(src_ip, user_obj):
                 return True, 200
             with self.flask_application.app.app_context():
                 _, status = wrapped_function({"user": self.blocked_user_id},self.blocked_user_id, {"user": self.blocked_user_id})
