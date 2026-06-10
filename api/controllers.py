@@ -487,7 +487,7 @@ def backup_to_google_drive(src_ip, user_obj, *args, **kwargs):
         return {"message": "Error while decrypting credentials"}, 500
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
     try:
-        exported_vault,_ = export_vault(src_ip=src_ip, user_obj=user_obj, context_={"user":user_obj.id}, token_info={"user":user_obj.id})
+        exported_vault,_ = export_vault(src_ip=src_ip, user_obj=user_obj)
         google_drive_api.backup(credentials=credentials, vault=exported_vault)
         google_drive_api.clean_backup_retention(credentials=credentials, user_id=user_obj.id)
         return {"message": "Backup done"}, 201
