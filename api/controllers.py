@@ -353,7 +353,7 @@ def update_username(src_ip, user_obj,body):
         return {"message": "Username is too long"}, 400
     already_existing_user = userDb.getByUsername(username)
     if already_existing_user:
-        if already_existing_user.id == user.id:
+        if already_existing_user.id == user_obj.id:
             return {"message":username},201
         else:
             return {"message": "generic_errors.username_exists"}, 409
