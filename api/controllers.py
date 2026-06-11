@@ -841,8 +841,8 @@ def auth_refresh_token(src_ip, body={}, *args, **kwargs):
         # For requests coming from iOS application, we return the tokens in the body. 
         # Browsers don't need them, so we don't bother to send them. It wouldn't be a risk to do it though.
         # Origin is a safe header for non-hijacked browser.
-        answer_body["session_token"] = session_token
-        answer_body["refresh_token"] = refresh_token
+        answer_body["session_token"] = new_session_token
+        answer_body["refresh_token"] = new_refresh_token
     response = Response(status=200, mimetype="application/json", response=json.dumps(answer_body))
     response.set_auth_cookies(new_session_token, new_refresh_token)
     return response
