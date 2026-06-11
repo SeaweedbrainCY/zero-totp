@@ -2,11 +2,12 @@ import unittest
 from app import app
 import controllers
 from unittest.mock import patch
-from zero_totp_db_model.model import User, ZKE_encryption_key
+from zero_totp_db_model.model import User, ZKE_encryption_key, SessionToken, RefreshToken
 from database.user_repo import User as UserRepo
 from environment import conf
 from database.db import db 
 from datetime import datetime
+from hashlib import sha256
 
 class TestSignupController(unittest.TestCase):
 
@@ -49,6 +50,8 @@ class TestSignupController(unittest.TestCase):
             user = db.session.query(User).filter(User.mail == self.json_payload["email"]).first()
             self.assertIsNotNone(user)
             self.assertIsNotNone(db.session.query(ZKE_encryption_key).filter(ZKE_encryption_key.user_id == user.id).first())
+            self.assertNotIn("session_token", response.json())
+            self.assertNotIn("refresh_token", response.json())
     
     def test_signup_error_while_sending_verification_email(self):
         self.send_verification_email.side_effect = Exception("error")
@@ -133,6 +136,23 @@ class TestSignupController(unittest.TestCase):
                 self.assertEqual(response.status_code, 403)
                 self.assertEqual(response.json()["code"], "signup_disabled")
                 self.assertIsNone(db.session.query(User).filter(User.mail == self.json_payload["email"]).first())
+
+    def test_signup_from_mobile(self):
+        payload = self.json_payload.copy()
+        payload["username"] = "username_mobile"
+        payload["email"] = "mobile@test.py"
+        with self.application.app.app_context():
+            headers = {"Origin": "capacitor://localhost"}
+            response = self.client.post(self.endpoint, json=self.json_payload, headers=headers)
+            self.assertEqual(response.status_code, 201)
+            self.assertIn("session_token", response.json())
+            self.assertIn("refresh_token", response.json())
+
+            session_token_obj = db.session.query(SessionToken).filter_by(token=response.json()["session_token"]).first()
+            refresh_token_obj = db.session.query(RefreshToken).filter_by(hashed_token=sha256(response.json()["refresh_token"].encode()).hexdigest()).first()
+            self.assertIsNotNone(session_token_obj)
+            self.assertIsNotNone(refresh_token_obj)
+
 
     
 
