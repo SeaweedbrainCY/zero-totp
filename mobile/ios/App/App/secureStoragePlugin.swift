@@ -9,7 +9,9 @@ public class SecureStoragePlugin: CAPPlugin, CAPBridgedPlugin {
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "set",    returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "get",    returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "remove", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "remove", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setProtected", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getProtected", returnType: CAPPluginReturnPromise)
     ]
 
     private lazy var implementation = SecureStorage(
@@ -17,7 +19,7 @@ public class SecureStoragePlugin: CAPPlugin, CAPBridgedPlugin {
     )
 
 
-    // MARK: - Plugin Methods
+    // MARK: - Unprotected
 
     @objc func set(_ call: CAPPluginCall) {
         guard let key = call.getString("key") else {
@@ -67,4 +69,48 @@ public class SecureStoragePlugin: CAPPlugin, CAPBridgedPlugin {
             call.reject(error.localizedDescription)
         }
     }
+    
+    // MARK: - Biometric-protected
+
+        @objc func setProtected(_ call: CAPPluginCall) {
+            guard let key   = call.getString("key")   else { call.reject("'key' is required");   return }
+            guard let value = call.getString("value") else { call.reject("'value' is required"); return }
+            // Writing never triggers the biometric sheet, so no background dispatch needed.
+            do {
+                try implementation.setProtected(key: key, value: value)
+                call.resolve()
+            } catch {
+                call.reject(error.localizedDescription)
+            }
+        }
+
+        @objc func getProtected(_ call: CAPPluginCall) {
+            guard let key = call.getString("key") else { call.reject("'key' is required"); return }
+            let prompt = call.getString("prompt") ?? "Authenticate to continue"
+
+            // keepAlive prevents Capacitor from releasing the call while the
+            // biometric sheet is visible (which blocks the thread).
+            call.keepAlive = true
+
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                guard let self else { return }
+                do {
+                    let value = try self.implementation.getProtected(key: key, prompt: prompt)
+                    call.resolve(["value": value])
+                } catch KeychainError.notFound {
+                    call.resolve(["value": NSNull()])
+                } catch KeychainError.operationFailed(let status) {
+                    switch status {
+                    case errSecUserCanceled:   // user dismissed the sheet
+                        call.reject("User cancelled authentication", "USER_CANCELLED")
+                    case errSecAuthFailed:     // biometry exhausted / locked out
+                        call.reject("Authentication failed", "AUTH_FAILED")
+                    default:
+                        call.reject("Keychain operation failed (OSStatus \(status))")
+                    }
+                } catch {
+                    call.reject(error.localizedDescription)
+                }
+            }
+        }
 }
