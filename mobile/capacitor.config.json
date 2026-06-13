@@ -4,5 +4,6 @@
   "webDir": "../frontend/dist/frontend/browser",
   "plugins": {
     "iOSSecureStorage": {}
-  }
+  },
+  "loggingBehavior": "none"
 }
