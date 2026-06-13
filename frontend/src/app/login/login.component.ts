@@ -13,6 +13,7 @@ import { ApiService } from '../services/API/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
+import { ProtectedKeychainStorageService } from '../services/Capacitor/protected-keychain-storage.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -81,7 +82,8 @@ export class LoginComponent implements OnInit {
     private vaultService: VaultService,
     private apiService: ApiService,
     private persistentStorage: CapacitorPersistentStorageService,
-    private authService: AuthServiceService
+    private authService: AuthServiceService,
+    private secureProtectedStorage: ProtectedKeychainStorageService
   ) {
   }
 
@@ -461,6 +463,9 @@ export class LoginComponent implements OnInit {
               localStorage.removeItem("r_email");
             }
             this.toastr.clear();
+            if (this.environment.isMobileApp) {
+              this.secureProtectedStorage.storeZKEKey(zke_key!)
+            }
             this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
             this.router.navigate(["/vault"], { relativeTo: this.route.root });
           }
