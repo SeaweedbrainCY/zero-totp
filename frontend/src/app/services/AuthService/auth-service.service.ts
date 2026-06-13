@@ -4,6 +4,7 @@ import { ApiService } from '../API/api.service';
 import { signal } from '@angular/core';
 import { iOSSecureStorage } from 'src/capacitor/plugins/ios-secure-storage.plugin';
 import { Buffer } from 'buffer';
+import { environment } from 'src/environments/environment';
 
 export interface AuthToken {
   domain: string,
@@ -30,7 +31,14 @@ export class AuthServiceService {
   ) { }
 
   refreshToken() {
-    return this.http.put(this.apiService.baseURL + '/api/v1/auth/refresh', {}, { withCredentials: true, observe: 'response' });
+    let body = {}
+    if (environment.isMobileApp) {
+      body = {
+        "session-token": this._auth_token()?.session_token,
+        "refresh-token": this._auth_token()?.refresh_token
+      }
+    }
+    return this.http.put<{ session_token: string | undefined, refresh_token: string | undefined }>(this.apiService.baseURL + '/api/v1/auth/refresh', body, { withCredentials: true, observe: 'response' });
   }
 
   // Called once at app init (e.g. APP_INITIALIZER)
