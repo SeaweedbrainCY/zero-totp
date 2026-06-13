@@ -13,7 +13,7 @@ import { ApiService } from '../services/API/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
-import { ProtectedKeychainStorageService } from '../services/Capacitor/protected-keychain-storage.service';
+import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
