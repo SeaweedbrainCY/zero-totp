@@ -1,3 +1,19 @@
+@if(isAppLoading()){
+<div class="hero is-dark is-fullheight loading-screen">
+    <div class="hero-body">
+        <div class="logo-container">
+            <img class="logo-img" src="https://zero-totp.com/assets/logo_zero_totp_light.png" alt="Zero-TOTP" />
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill"></div>
+            </div>
+            <p class="loading-label">Loading</p>
+        </div>
+    </div>
+</div>
+}
+
+@if (!isAppLoading()){
 <app-navbar> </app-navbar>
 <router-outlet></router-outlet>
 <app-footer></app-footer>
+}
