@@ -1,3 +1,64 @@
+@if(isMobileDevice()){
+
+<nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+
+  <a class="nav-item" routerLink="/vault" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <span class="nav-pill">
+      <fa-icon [icon]="faVault" aria-hidden="true" />
+    </span>
+  </a>
+
+  <a class="nav-item" routerLink="/vault/add" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <span class="nav-pill">
+      <fa-icon [icon]="faPlus" aria-hidden="true" />
+    </span>
+  </a>
+
+  <a class="nav-item" routerLink="/preferences" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <span class="nav-pill">
+      <fa-icon [icon]="faGears" aria-hidden="true" />
+    </span>
+  </a>
+
+  <a class="nav-item" routerLink="/account" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <span class="nav-pill">
+      <fa-icon [icon]="faUser" aria-hidden="true" />
+    </span>
+  </a>
+
+  <div class="dropdown is-up is-right" [ngClass]="{' is-active':isMobileNavBarDropDownActive()}">
+    <div class="dropdown-trigger">
+      <button class="button is-ghost" aria-haspopup="true" aria-controls="dropdown-menu7"
+        (click)="isMobileNavBarDropDownActive.update(v => !v)">
+        <a class="nav-item" routerLinkActive="active" ariaCurrentWhenActive="page">
+          <span class="nav-pill">
+            <fa-icon [icon]="faBars" aria-hidden="true" />
+          </span>
+        </a>
+      </button>
+    </div>
+    <div class="dropdown-menu" id="dropdown-menu7" role="menu">
+      <div class="dropdown-content">
+        <a href="#" class="dropdown-item"> Dropdown item </a>
+        <a class="dropdown-item"> Other dropdown item </a>
+        <a href="#" class="dropdown-item is-active"> Active dropdown item </a>
+        <a href="#" class="dropdown-item"> Other dropdown item </a>
+        <hr class="dropdown-divider" />
+        <a routlerLink="/logout" class="dropdown-item"> <fa-icon [icon]="faRightFromBracket" aria-hidden="true" /> {{
+          'logout' | translate }} </a>
+      </div>
+    </div>
+  </div>
+
+</nav>
+
+
+<!-- push page content above the nav bar -->
+<div class="bottom-nav-spacer"></div>
+}
+
+
+@if(!isMobileDevice()){
 <nav style="position: sticky; top: 0; z-index: 1000;">
   @if (notification_message() != undefined) {
   <div class="notification is-link is-light mb-0 is-flex is-justify-content-space-between">
@@ -151,3 +212,4 @@
     </div>
   </div>
 </nav>
+}

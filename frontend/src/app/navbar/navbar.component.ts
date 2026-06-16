@@ -4,10 +4,10 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
-import { faLightbulb, faXmark, faVault, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook } from '@fortawesome/free-solid-svg-icons';
+import { faLightbulb, faXmark, faVault, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook, faPlus, faBars, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
-
+import { Utils } from '../common/Utils/utils';
 
 
 @Component({
@@ -25,6 +25,9 @@ export class NavbarComponent implements OnInit {
   faUser = faUser;
   faHome = faHome;
   faSun = faSun;
+  faRightFromBracket=faRightFromBracket;
+  faPlus = faPlus;
+  faBars = faBars;
   faKey = faKey;
   faBook = faBook;
   faGears = faGears;
@@ -40,6 +43,9 @@ export class NavbarComponent implements OnInit {
   is_waiting_for_internal_notif = false;
   last_notification_check_date = 0;
   current_theme = signal(window.document.documentElement.getAttribute('data-theme'));
+  isMobileDevice = signal(false)
+  isMobileNavBarDropDownActive=signal(false)
+
   languages = [
     {
       name: "English", // default one
@@ -59,7 +65,8 @@ export class NavbarComponent implements OnInit {
     public translate: TranslateService,
     private idle: Idle,
     private http: HttpClient,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private utils: Utils
   ) {
     router.events.subscribe((url: any) => {
       this.check_notification()
@@ -101,6 +108,7 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     this.get_global_notification();
     this.last_notification_check_date = Math.floor(Date.now() / 1000);
+    this.isMobileDevice.set(this.utils.isDeviceMobile())
   }
 
   check_notification() {
