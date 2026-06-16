@@ -9,6 +9,18 @@
             <p class="loading-label">Loading</p>
         </div>
     </div>
+    @if (displayTroubleshootingMessage()){
+    <div class="hero-foot rescue-zero-totp  has-text-grey-light has-text-centered">
+        <p class="has-text-weight-bold">{{'app.troubleshootingmessage.title' | translate}} </p>
+        <p><a href="https://status.zero-totp.com" target="_blank" rel="noopener" class="button is-ghost is-small">
+                <fa-icon [icon]="faSignal" class="mr-2"></fa-icon><span>{{'app.troubleshootingmessage.status' | translate}} </span></a>
+        </p>
+        <p class="mb-5"><a href="https://rescue.zero-totp.com" target="_blank" rel="noopener"
+                class="button is-ghost is-small">
+                <fa-icon [icon]="faBriefcaseMedical" class="mr-2"></fa-icon><span>{{'app.troubleshootingmessage.rescue.zero-totp' | translate}}</span></a>
+        </p>
+    </div>
+    }
 </div>
 }
 

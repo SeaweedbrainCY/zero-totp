@@ -9,8 +9,6 @@
   "Search": "Search",
   "abort": "Abort",
   "about": "About",
-  "invalid_url": "Invalid URL",
-  "general_error": "An error occured. Please, try again.",
   "account": {
     "delete": {
       "button": "Delete\n                                your account",
@@ -145,6 +143,15 @@
   },
   "add": "Add",
   "always": "Always",
+  "app": {
+    "troubleshootingmessage": {
+      "rescue": {
+        "zero-totp": "Open a backup on rescue.zero-totp.com"
+      },
+      "status": "Check Zero-TOTP status",
+      "title": " Trouble loading Zero-TOTP ?"
+    }
+  },
   "available_soon": "Available soon !",
   "blue": "Blue",
   "callback": {
@@ -310,6 +317,7 @@
     "bug": "Report a bug",
     "opensource": "Open-Source Component"
   },
+  "general_error": "An error occured. Please, try again.",
   "generic_errors": {
     "bad_email": "Invalid email",
     "email_exists": "Email already exists",
@@ -485,6 +493,7 @@
       "will_be_kept": "Will be added"
     }
   },
+  "invalid_url": "Invalid URL",
   "less": "Less",
   "loading": "Loading ...",
   "log_in": "Log in",

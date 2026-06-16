@@ -5,6 +5,7 @@ import { AuthServiceService } from './services/AuthService/auth-service.service'
 import { UserService } from './services/User/user.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProtectedKeychainStorageService } from './services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
+import { faSignal, faBriefcaseMedical } from '@fortawesome/free-solid-svg-icons';
 
 
 @Component({
@@ -15,7 +16,10 @@ import { ProtectedKeychainStorageService } from './services/Capacitor/ProtectedK
 })
 export class AppComponent implements OnInit {
   title = 'frontend';
+  faSignal = faSignal;
+  faBriefcaseMedical = faBriefcaseMedical;
   isAppLoading = signal(true)
+  displayTroubleshootingMessage = signal(false)
 
   constructor(
     private renderer: Renderer2,
@@ -40,7 +44,9 @@ export class AppComponent implements OnInit {
     }
     if (this.userService.zke_key() == null) {
       try {
+        console.log("before")
         await this.userService.refresh_user_id()
+        console.log("after")
         if (environment.isMobileApp) {
           // Try to load the zke_key from keychain
           const zke_key = await this.protectedKeychainStorageService.getZKEKey()
@@ -58,6 +64,11 @@ export class AppComponent implements OnInit {
 
 
   ngOnInit(): void {
+    setTimeout(() => {
+      if (this.isAppLoading()) {
+        this.displayTroubleshootingMessage.set(true)
+      }
+    }, 5000)
     this.loadUserData().then((isSuccess) => {
       if (isSuccess) {
         if (this.router.url == "/") {
@@ -69,7 +80,6 @@ export class AppComponent implements OnInit {
       this.isAppLoading.set(false)
     })
   }
-
 }
 
 

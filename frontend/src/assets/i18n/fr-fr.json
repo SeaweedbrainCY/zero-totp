@@ -143,6 +143,15 @@
   },
   "add": "Ajouter",
   "always": "Toujours",
+  "app": {
+    "troubleshootingmessage": {
+      "rescue": {
+        "zero-totp": "Ouvrir une sauvegarde sur rescue.zero-totp.com"
+      },
+      "status": "Vérifier le statut de Zero-TOTP",
+      "title": "Des problèmes pour charger Zero-TOTP ? "
+    }
+  },
   "available_soon": "Disponible bientôt !",
   "blue": "Bleu",
   "callback": {
