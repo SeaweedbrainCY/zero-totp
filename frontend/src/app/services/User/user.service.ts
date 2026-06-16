@@ -65,7 +65,7 @@ export class UserService {
             localStorage.setItem("email", userData.email);
             resolve(true);
           } else {
-            console.error('Failed to fetch user data:', response.statusText);
+            console.error('Failed to fetch user data:', response.status);
             resolve(false);
           }
         },
