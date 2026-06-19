@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
-import { faLightbulb, faXmark, faVault, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook, faPlus, faBars, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faLightbulb, faXmark, faVault, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook, faPlus, faBars, faRightFromBracket, faUpRightFromSquare, faChevronRight, faChevronDown, faGlobe, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
 import { Utils } from '../common/Utils/utils';
@@ -23,12 +23,17 @@ export class NavbarComponent implements OnInit {
   isIdleWatchingEnabled = false;
   faXmark = faXmark
   faUser = faUser;
+  faUpRightFromSquare = faUpRightFromSquare;
+  faChevronRight = faChevronRight;
+  faChevronDown = faChevronDown;
   faHome = faHome;
   faSun = faSun;
-  faRightFromBracket=faRightFromBracket;
+  faRightFromBracket = faRightFromBracket;
   faPlus = faPlus;
   faBars = faBars;
+  faGlobe = faGlobe;
   faKey = faKey;
+  faCheck = faCheck;
   faBook = faBook;
   faGears = faGears;
   faCircleQuestion = faCircleQuestion;
@@ -44,7 +49,8 @@ export class NavbarComponent implements OnInit {
   last_notification_check_date = 0;
   current_theme = signal(window.document.documentElement.getAttribute('data-theme'));
   isMobileDevice = signal(false)
-  isMobileNavBarDropDownActive=signal(false)
+  isMobileNavBarDropDownActive = signal(false)
+  isMobileLangDevelopped = signal(false)
 
   languages = [
     {
@@ -228,6 +234,18 @@ export class NavbarComponent implements OnInit {
 
   toggleThemeButton() {
     if (this.current_theme() == 'light') {
+      window.document.documentElement.setAttribute('data-theme', 'dark');
+      this.current_theme.set('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      window.document.documentElement.setAttribute('data-theme', 'light');
+      this.current_theme.set('light');
+      localStorage.setItem('theme', 'light');
+    }
+  }
+
+  changeTheme(newTheme: string) {
+    if (newTheme == 'dark') {
       window.document.documentElement.setAttribute('data-theme', 'dark');
       this.current_theme.set('dark');
       localStorage.setItem('theme', 'dark');

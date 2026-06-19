@@ -115,3 +115,18 @@ nav {
 .bottom-nav-spacer {
   height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
 }
+
+/* ── Mobile Dark/light theme selection ─────────────────────────────────── */
+
+
+#dark_theme_button.selected {
+  background-color: rgba(90, 169, 230, 0.4);
+}
+
+#dark_theme_icon.selected {
+  color: #cc9aff
+}
+
+#light_theme_button.selected {
+  background-color: rgba(90, 169, 230, 0.4);
+}

@@ -2,7 +2,8 @@
 
 <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
 
-  <a class="nav-item" routerLink="/vault" routerLinkActive="active" ariaCurrentWhenActive="page">
+  <a class="nav-item" routerLink="/vault" routerLinkActive="active" ariaCurrentWhenActive="page"
+    [routerLinkActiveOptions]="{exact: true}">
     <span class="nav-pill">
       <fa-icon [icon]="faVault" aria-hidden="true" />
     </span>
@@ -39,13 +40,49 @@
     </div>
     <div class="dropdown-menu" id="dropdown-menu7" role="menu">
       <div class="dropdown-content">
-        <a href="#" class="dropdown-item"> Dropdown item </a>
-        <a class="dropdown-item"> Other dropdown item </a>
-        <a href="#" class="dropdown-item is-active"> Active dropdown item </a>
-        <a href="#" class="dropdown-item"> Other dropdown item </a>
+        <a class="navbar-item" href="https://docs.zero-totp.com" target="_blank" rel="noopener">
+          <fa-icon [icon]="faBook" aria-hidden="true"></fa-icon> Docs <fa-icon [icon]="faUpRightFromSquare"
+            aria-hidden="true"></fa-icon>
+        </a>
+        <a class="navbar-item" (click)="navigateToRoute('faq')"
+          [ngClass]="{'has-text-weight-bold':currentUrl() == '/faq'}">
+          <fa-icon [icon]="faCircleQuestion" aria-hidden="true"></fa-icon> FAQ
+        </a>
         <hr class="dropdown-divider" />
-        <a routlerLink="/logout" class="dropdown-item"> <fa-icon [icon]="faRightFromBracket" aria-hidden="true" /> {{
-          'logout' | translate }} </a>
+        <a class="navbar-item" (click)="isMobileLangDevelopped.update(v => !v)">
+          <fa-icon [icon]="faGlobe" aria-hidden="true"></fa-icon> {{ 'Language' | translate }}
+          @if(isMobileLangDevelopped()){
+          <fa-icon [icon]="faChevronDown" aria-hidden="true"></fa-icon>
+          }
+          @if(!isMobileLangDevelopped()){
+          <fa-icon [icon]="faChevronRight" aria-hidden="true"></fa-icon>
+          }
+        </a>
+        @if(isMobileLangDevelopped()){
+        @for (lang of languages; track lang) {
+        <a class="navbar-item" [ngClass]="{'ml-5':get_current_language_info().name != lang.name}"
+          (click)="changeLanguage(lang.code)">
+          @if(get_current_language_info().name == lang.name){
+          <fa-icon [icon]="faCheck" aria-hidden="true"></fa-icon>
+          }
+          {{lang.name}}
+        </a>
+
+        }
+        }
+
+        <hr class="dropdown-divider" />
+        <div class="is-flex is-justify-content-space-around mt-4 mb-2">
+          <button class="pt-2 pb-2 pr-4 pl-4" style="border-radius: 30px; "
+            [ngClass]="{'selected':current_theme() == 'light'}" id="light_theme_button" (click)="changeTheme('light')">
+            <fa-icon [icon]="faSun" [ngClass]="{'has-text-warning':current_theme() == 'light'}" size="xl"></fa-icon>
+          </button>
+          <button class="pt-2 pb-2 pr-4 pl-4" style="border-radius: 30px;"
+            [ngClass]="{'selected':current_theme() == 'dark'}" id="dark_theme_button" (click)="changeTheme('dark')">
+            <fa-icon [icon]=" faMoon" [ngClass]="{'selected':current_theme() == 'dark'}" size="xl"
+              id="dark_theme_icon"></fa-icon>
+          </button>
+        </div>
       </div>
     </div>
   </div>
