@@ -116,6 +116,10 @@ nav {
   height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
 }
 
+.top-nav-spacer {
+  height: calc(var(--bulma-navbar-height) + env(safe-area-inset-top, 0px));
+}
+
 /* ── Mobile Dark/light theme selection ─────────────────────────────────── */
 
 

@@ -1,4 +1,4 @@
-<section class="hero is-halfheight mt-6 pb-6 " style="min-height: 70vh;">
+<section class="hero is-halfheight pb-6 " style="min-height: 70vh;">
   <div class="container is-fluid ">
     <div>
       <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6" style="line-height: normal;">{{
@@ -170,28 +170,28 @@
                 <label class="label is-size-4">{{ 'preference.backup.minimum.title' | translate }}
                   <span class="tag is-rounded is-info"> {{ 'preference.tag.sync_only' | translate
                     }} </span></label>
-                  <div [ngClass]="{'is-skeleton': loading_backup_configuration()}">
+                <div [ngClass]="{'is-skeleton': loading_backup_configuration()}">
 
-                <div class="field is-flex-tablet " [style.opacity]="loading_backup_configuration() ? 0 : 1">
-                  <div class="control has-icons-left mb-3">
-                    <input class="input" type="number" placeholder="Default : {{default_backup_minimum_count()}}"
-                      name="backup_minimum_count" [ngModel]="backup_minimum_count()"
-                      (ngModelChange)="backup_minimum_count.set($event)">
-                    @if (false) {
-                    <span class="help has-text-left is-danger"></span>
-                    }
-                    <span class="icon is-small is-left">
-                      <fa-icon [icon]="faArrowsRotate"></fa-icon>
-                    </span>
+                  <div class="field is-flex-tablet " [style.opacity]="loading_backup_configuration() ? 0 : 1">
+                    <div class="control has-icons-left mb-3">
+                      <input class="input" type="number" placeholder="Default : {{default_backup_minimum_count()}}"
+                        name="backup_minimum_count" [ngModel]="backup_minimum_count()"
+                        (ngModelChange)="backup_minimum_count.set($event)">
+                      @if (false) {
+                      <span class="help has-text-left is-danger"></span>
+                      }
+                      <span class="icon is-small is-left">
+                        <fa-icon [icon]="faArrowsRotate"></fa-icon>
+                      </span>
+                    </div>
+                    <div class="has-text-centered">
+                      <button class="button is-info is-centered ml-3"
+                        [ngClass]="buttonLoading().backup_conf_min_count ? 'is-loading':'is-outlined'"
+                        (click)="updateBackupConfiguration('backup_minimum_count')"
+                        [disabled]="buttonLoading().backup_conf_min_count">{{"update" |
+                        translate}}</button>
+                    </div>
                   </div>
-                  <div class="has-text-centered">
-                    <button class="button is-info is-centered ml-3"
-                      [ngClass]="buttonLoading().backup_conf_min_count ? 'is-loading':'is-outlined'"
-                      (click)="updateBackupConfiguration('backup_minimum_count')"
-                      [disabled]="buttonLoading().backup_conf_min_count">{{"update" |
-                      translate}}</button>
-                  </div>
-                </div>
                 </div>
                 <div class="notification is-info is-light">
                   <fa-icon [icon]="faCircleInfo"></fa-icon> {{ 'preference.backup.minimum.desc1' |
@@ -205,25 +205,25 @@
                   </span></label>
                 <div [ngClass]="{'is-skeleton': loading_backup_configuration()}">
 
-                <div class="field is-flex-tablet " [style.opacity]="loading_backup_configuration() ? 0 : 1">
-                  <div class="control has-icons-left mb-3">
-                    <input class="input" type="number" placeholder="Default : {{default_backup_max_age()}}"
-                      name="backup_max_age" [ngModel]="backup_max_age()" (ngModelChange)="backup_max_age.set($event)">
-                    @if (false) {
-                    <span class="help has-text-left is-danger"></span>
-                    }
-                    <span class="icon is-small is-left">
-                      <fa-icon [icon]="faArrowsRotate"></fa-icon>
-                    </span>
+                  <div class="field is-flex-tablet " [style.opacity]="loading_backup_configuration() ? 0 : 1">
+                    <div class="control has-icons-left mb-3">
+                      <input class="input" type="number" placeholder="Default : {{default_backup_max_age()}}"
+                        name="backup_max_age" [ngModel]="backup_max_age()" (ngModelChange)="backup_max_age.set($event)">
+                      @if (false) {
+                      <span class="help has-text-left is-danger"></span>
+                      }
+                      <span class="icon is-small is-left">
+                        <fa-icon [icon]="faArrowsRotate"></fa-icon>
+                      </span>
+                    </div>
+                    <div class="has-text-centered">
+                      <button class="button is-info is-centered ml-3"
+                        [ngClass]="buttonLoading().backup_conf_max_age ? 'is-loading':'is-outlined'"
+                        (click)="updateBackupConfiguration('max_age_in_days')"
+                        [disabled]="buttonLoading().backup_conf_max_age">{{"update" |
+                        translate}}</button>
+                    </div>
                   </div>
-                  <div class="has-text-centered">
-                    <button class="button is-info is-centered ml-3"
-                      [ngClass]="buttonLoading().backup_conf_max_age ? 'is-loading':'is-outlined'"
-                      (click)="updateBackupConfiguration('max_age_in_days')"
-                      [disabled]="buttonLoading().backup_conf_max_age">{{"update" |
-                      translate}}</button>
-                  </div>
-                </div>
                 </div>
                 <div class="notification is-info is-light">
                   <fa-icon [icon]="faCircleInfo"></fa-icon> {{ 'preference.backup.eol.desc1' |
