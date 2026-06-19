@@ -1,7 +1,7 @@
 @if(isMobileDevice()){
 
 <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
-
+  @if(userService.id()!=null){
   <a class="nav-item" routerLink="/vault" routerLinkActive="active" ariaCurrentWhenActive="page"
     [routerLinkActiveOptions]="{exact: true}">
     <span class="nav-pill">
@@ -26,6 +26,19 @@
       <fa-icon [icon]="faUser" aria-hidden="true" />
     </span>
   </a>
+  }
+  @if(userService.id()==null){
+  <a class="nav-item" routerLink="/signup" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <span class="nav-pill">
+      <fa-icon [icon]="faUserPlus" aria-hidden="true" />
+    </span>
+  </a>
+  <a class="nav-item" routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <span class="nav-pill">
+      <fa-icon [icon]="faUserCheck" aria-hidden="true" />
+    </span>
+  </a>
+  }
 
   <div class="dropdown is-up is-right" [ngClass]="{' is-active':isMobileNavBarDropDownActive()}">
     <div class="dropdown-trigger">
