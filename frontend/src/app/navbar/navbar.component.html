@@ -1,6 +1,31 @@
 @if(isMobileDevice()){
-
-<nav class="bottom-nav" role="navigation" aria-label="Main navigation">
+<nav class="pt-0">
+  @if (notification_message() != undefined) {
+  <div class="notification is-link is-light mb-0 is-flex is-justify-content-space-between"
+    style="padding-top: env(safe-area-inset-top);">
+    <div class="is-flex is-justify-content-center is-flex-direction-column">
+      <div class="is-flex">
+        <div class="is-flex is-justify-content-center is-flex-direction-column mr">
+          <fa-icon [icon]="faLightbulb" class="mr-4"></fa-icon>
+        </div>
+        <strong>{{notification_message()}}</strong>
+      </div>
+    </div>
+    <div class="is-flex is-justify-content-center is-flex-direction-column"
+      [ngClass]='{"is-fixed-top":notification_message() == undefined}'>
+      <button class="button is-ghost has-text-grey-light" (click)="hide_notification()"> <fa-icon [icon]="faXmark"
+          size="xl"></fa-icon></button>
+    </div>
+  </div>
+  }
+  <div class="navbar is-dark  is-flex is-justify-content-center is-align-items-center"
+    style="padding-top: env(safe-area-inset-top);">
+    <div class="navbar-item is-flex is-justify-content-center is-align-items-center">
+      <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
+    </div>
+  </div>
+</nav>
+<nav class="bottom-nav pt-0 pb-0" role="navigation" aria-label="Main navigation">
   @if(userService.id()!=null){
   <a class="nav-item" routerLink="/vault" routerLinkActive="active" ariaCurrentWhenActive="page"
     [routerLinkActiveOptions]="{exact: true}">
