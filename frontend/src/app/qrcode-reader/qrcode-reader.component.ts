@@ -5,13 +5,14 @@ import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Utils } from '../common/Utils/utils';
 import { ToastrService } from 'ngx-toastr';
-
+import { environment } from 'src/environments/environment';
+import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner'
 @Component({
-    selector: 'app-qrcode-reader',
-    templateUrl: './qrcode-reader.component.html',
-    styleUrls: ['./qrcode-reader.component.css'],
-    standalone: false,
-    changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-qrcode-reader',
+  templateUrl: './qrcode-reader.component.html',
+  styleUrls: ['./qrcode-reader.component.css'],
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QrcodeReaderComponent implements OnInit {
   scannerEnabled = signal(true);
@@ -22,6 +23,7 @@ export class QrcodeReaderComponent implements OnInit {
   hasDevices = signal<boolean | undefined>(undefined);
   scannerStarted = signal(false);
   currentUrl = signal('');
+  isBuiltForMobileApp = signal(false)
 
   constructor(
     private router: Router,
@@ -50,6 +52,18 @@ export class QrcodeReaderComponent implements OnInit {
         },
       );
     }
+
+    if (environment.isMobileApp) {
+      this.isBuiltForMobileApp.set(true)
+      this.mobileScanQRCode()
+    }
+  }
+
+  async mobileScanQRCode() {
+    const result = await CapacitorBarcodeScanner.scanBarcode({
+      hint: CapacitorBarcodeScannerTypeHint.QR_CODE
+    });
+    this.onCodeResult(result.ScanResult)
   }
 
   onCamerasFound(devices: MediaDeviceInfo[]): void {
