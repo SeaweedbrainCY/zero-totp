@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@capacitor/assets": "^3.0.5",
+    "@capacitor/barcode-scanner": "^3.0.2",
     "@capacitor/cli": "^8.3.4",
     "@capacitor/core": "^8.3.4",
     "@capacitor/ios": "^8.3.4",
