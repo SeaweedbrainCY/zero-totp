@@ -120,7 +120,7 @@ jobs:
 
       - name: Populate docker image metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 #v6.1.0
         with:
           images: "ghcr.io/$REPOSITORY-frontend"
           labels: |
@@ -219,7 +219,7 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 #v6.1.0
         with:
           images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
           labels: |
@@ -292,7 +292,7 @@ jobs:
       - name: Generate development docker metadata
         if: needs.setup.outputs.is_dev == 'true'
         id: meta-dev
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 #v6.1.0
         with:
           images: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
           tags: |
@@ -305,7 +305,7 @@ jobs:
       - name: Generate production docker metadata
         id: meta-prod
         if: needs.setup.outputs.is_prod == 'true'
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 #v6.1.0
         with:
           images: ghcr.io/${{ env.REPOSITORY_NAME }}-frontend
           tags: |
@@ -357,7 +357,7 @@ jobs:
 
       - name: Generate development docker metadata
         id: meta-dev
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 #v6.1.0
         with:
           images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
           tags: |
@@ -370,7 +370,7 @@ jobs:
       - name: Generate production docker metadata
         if: needs.setup.outputs.is_prod == 'true'
         id: meta-prod
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 #v6.1.0
         with:
           images: ghcr.io/${{ env.REPOSITORY_NAME }}-api
           tags: |
