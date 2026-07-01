@@ -81,7 +81,7 @@ jobs:
         working-directory: ./api
         run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml  --cov-fail-under=90
       - name: Upload coverage report
-        uses: coverallsapp/github-action@v2
+        uses: coverallsapp/github-action@648a8eb78e6d50909eff900e4ec85cab4524a45b # v2.3.6
 
   scanning:
     name: GitGuardian scan
