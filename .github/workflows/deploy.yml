@@ -273,7 +273,7 @@ jobs:
           echo "CURRENT_VERSION=$(echo "$REF_NAME" | sed 's/^v//')"  >> $GITHUB_ENV
 
       - name: Download digests
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c #v8.0.1
         with:
           path: ${{ runner.temp }}/digests
           pattern: frontend-digests-*
@@ -339,7 +339,7 @@ jobs:
           echo "CURRENT_VERSION=$(echo "$REF_NAME" | sed 's/^v//')"  >> $GITHUB_ENV
 
       - name: Download digests
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c #v8.0.1
         with:
           path: ${{ runner.temp }}/digests
           pattern: api-digests-*
@@ -521,9 +521,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: SW deployment
-        uses: distributhor/workflow-webhook@v3
-        env:
-          webhook_url: ${{ secrets.WEBHOOK_URL_SW }}
+        run: curl  ${{ secrets.WEBHOOK_URL_SW }}
 
   deploy-production-ca:
     if: needs.setup.outputs.is_prod == 'true'
@@ -541,9 +539,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: CA deployment
-        uses: distributhor/workflow-webhook@v3
-        env:
-          webhook_url: ${{ secrets.WEBHOOK_URL_CA }}
+        run: curl ${{ secrets.WEBHOOK_URL_CA }}
 
   deploy-production-themis:
     if: needs.setup.outputs.is_prod == 'true'
@@ -561,9 +557,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: TH deployment
-        uses: distributhor/workflow-webhook@v3
-        env:
-          webhook_url: ${{ secrets.WEBHOOK_URL_TH }}
+        run: curl ${{ secrets.WEBHOOK_URL_TH }}
 
   deploy-dev-env:
     if: needs.setup.outputs.is_dev == 'true'
