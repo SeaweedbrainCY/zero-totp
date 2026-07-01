@@ -572,6 +572,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Dev env deployment
-        uses: distributhor/workflow-webhook@v3
-        env:
-          webhook_url: ${{ secrets.WEBHOOK_URL_DEV }}
+        run: curl ${{ secrets.WEBHOOK_URL_DEV }}
