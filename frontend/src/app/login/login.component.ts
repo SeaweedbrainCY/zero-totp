@@ -1,17 +1,19 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey, faCircleNotch, faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey, faCircleNotch, faCircleQuestion, faPen, faShieldHalved, faGlobe, faLink, faCircleInfo, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
-
+import { environment } from 'src/environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../services/User/user.service';
 import { Crypto } from '../common/Crypto/crypto';
-import { Buffer } from 'buffer';
+import { AuthServiceService, AuthToken } from '../services/AuthService/auth-service.service';
 import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
 import { Utils } from '../common/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
-
+import { ApiService } from '../services/API/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
+import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
+import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -22,7 +24,12 @@ import { TranslateService } from '@ngx-translate/core';
 export class LoginComponent implements OnInit {
   faEnvelope = faEnvelope;
   faLock = faLock;
+  faArrowRight = faArrowRight;
   faCheck = faCheck;
+  faCircleInfo = faCircleInfo;
+  faLink = faLink;
+  faShieldHalved = faShieldHalved;
+  faGlobe = faGlobe;
   faCircleQuestion = faCircleQuestion;
   faXmark = faXmark;
   faCircleNotch = faCircleNotch;
@@ -32,6 +39,8 @@ export class LoginComponent implements OnInit {
   faEye = faEye;
   faEyeSlash = faEyeSlash;
   faBriefcaseMedical = faBriefcaseMedical;
+  faPen = faPen;
+  environment = environment
 
   // Read in template — signals
   email = signal("");
@@ -49,6 +58,10 @@ export class LoginComponent implements OnInit {
   loading_file = signal(false);
   current_domain = signal("");
   instance_dropdown_active = signal(false);
+  instance_modal_active = signal(false)
+  instance_modal_error = signal("")
+  instance_modal_loading = signal(false)
+  instance_modal_apiBaseURL_input = signal(this.apiService.baseURL)
 
   // Not read in template — plain properties
   hashedPassword: string = "";
@@ -66,7 +79,11 @@ export class LoginComponent implements OnInit {
     private translate: TranslateService,
     private toastr: ToastrService,
     public utils: Utils,
-    private vaultService: VaultService
+    private vaultService: VaultService,
+    private apiService: ApiService,
+    private persistentStorage: CapacitorPersistentStorageService,
+    private authService: AuthServiceService,
+    private secureProtectedStorage: ProtectedKeychainStorageService
   ) {
   }
 
@@ -118,9 +135,14 @@ export class LoginComponent implements OnInit {
       this.email.set(localStorage.getItem("r_email")!);
       this.remember.set(true);
     }
-
-    this.current_domain.set(window.location.host);
-
+    if (environment.isMobileApp) {
+      // Mobile app, current domain is the one of the API
+      const baseURL = new URL(this.apiService.baseURL)
+      this.current_domain.set(baseURL.host)
+    } else {
+      // webapp we use the current location
+      this.current_domain.set(window.location.host);
+    }
   }
 
 
@@ -137,7 +159,7 @@ export class LoginComponent implements OnInit {
   }
 
   get_user_email_oauth_flow() {
-    this.http.get("/api/v1/whoami", { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.get(this.apiService.baseURL + "/api/v1/whoami", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         this.email.set(data.email);
@@ -254,7 +276,7 @@ export class LoginComponent implements OnInit {
 
           } else if (version == 1) {
             this.local_vault_service = this.localVaultv1
-            this.http.get("/api/v1/vault/signature/public-key", { withCredentials: true, observe: 'response' }).subscribe({
+            this.http.get(this.apiService.baseURL + "/api/v1/vault/signature/public-key", { withCredentials: true, observe: 'response' }).subscribe({
               next: (response) => {
                 const data = JSON.parse(JSON.stringify(response.body))
                 this.api_public_key = data.public_key;
@@ -314,45 +336,44 @@ export class LoginComponent implements OnInit {
   // DEPRECATED. 
   // userService pre-hashed 
   hashPassword() {
-    return new Promise<string>((resolve, reject) => {
-      this.http.get("/api/v1/login/specs?username=" + encodeURIComponent(this.email()), { withCredentials: true, observe: 'response' }).subscribe({
-        next: (response) => {
-          try {
-            const data = JSON.parse(JSON.stringify(response.body))
-            const salt = data.passphrase_salt
-            this.crypto.hashPassphrase(this.password(), salt).then(hashed => {
-              if (hashed != null) {
-                this.hashedPassword = hashed;
-                this.userService.passphraseSalt.set(salt);
-                this.postLoginRequest();
-              } else {
-                this.translate.get("login.errors.hashing").subscribe((translation) => {
-                  this.utils.toastError(this.toastr, translation, "")
-                });
-                this.isLoading.set(false);
-              }
-            });
-          } catch {
-            this.translate.get("login.errors.hashing").subscribe((translation) => {
-              this.utils.toastError(this.toastr, translation, "")
-            });
-            this.isLoading.set(false);
-          }
-        }, error: error => {
-          if (error.status == 429) {
-            const ban_time = error.error.ban_time || "few";
-            this.translate.get("login.errors.rate_limited", { time: String(ban_time) }).subscribe((translation) => {
-              this.utils.toastError(this.toastr, translation, "")
-            });
-          } else {
-            this.translate.get("login.errors.no_connection").subscribe((translation) => {
-              this.utils.toastError(this.toastr, translation, "")
-            });
-          }
+    this.http.get(this.apiService.baseURL + "/api/v1/login/specs?username=" + encodeURIComponent(this.email()), { withCredentials: true, observe: 'response' }).subscribe({
+      next: (response) => {
+
+        try {
+          const data = JSON.parse(JSON.stringify(response.body))
+          const salt = data.passphrase_salt
+          this.crypto.hashPassphrase(this.password(), salt).then(hashed => {
+            if (hashed != null) {
+              this.hashedPassword = hashed;
+              this.userService.passphraseSalt.set(salt);
+              this.postLoginRequest();
+            } else {
+              this.translate.get("login.errors.hashing").subscribe((translation) => {
+                this.utils.toastError(this.toastr, translation, "")
+              });
+              this.isLoading.set(false);
+            }
+          });
+        } catch {
+          this.translate.get("login.errors.hashing").subscribe((translation) => {
+            this.utils.toastError(this.toastr, translation, "")
+          });
           this.isLoading.set(false);
         }
-      });
-    })
+      }, error: error => {
+        if (error.status == 429) {
+          const ban_time = error.error.ban_time || "few";
+          this.translate.get("login.errors.rate_limited", { time: String(ban_time) }).subscribe((translation) => {
+            this.utils.toastError(this.toastr, translation, "")
+          });
+        } else {
+          this.translate.get("login.errors.no_connection").subscribe((translation) => {
+            this.utils.toastError(this.toastr, translation, "")
+          });
+        }
+        this.isLoading.set(false);
+      }
+    });
   }
 
 
@@ -362,20 +383,35 @@ export class LoginComponent implements OnInit {
       email: this.email(),
       password: this.hashedPassword
     }
-    this.http.post("/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.post<{ id: number | undefined, isVerified: boolean, username: string | undefined, derivedKeySalt: string | undefined, role: string | undefined, isGoogleDriveSync: boolean | undefined, session_token: string | undefined, refresh_token: string | undefined }>(this.apiService.baseURL + "/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         try {
-          const data = JSON.parse(JSON.stringify(response.body))
-          this.userService.id.set(data.id);
-          this.userService.email.set(this.email());
-          this.userService.derivedKeySalt.set(data.derivedKeySalt);
-          if (data.isVerified == false) {
+          if (!response.body!.isVerified) {
             this.router.navigate(["/emailVerification"], { relativeTo: this.route.root });
-          } else {
-
-            this.userService.googleDriveSync.set(data.isGoogleDriveSync);
-            this.final_zke_flow();
+            return;
           }
+
+          this.userService.id.set(response.body!.id!);
+          this.userService.email.set(this.email());
+          this.userService.derivedKeySalt.set(response.body!.derivedKeySalt!);
+          if (environment.isMobileApp && response.body!.session_token != undefined && response.body!.refresh_token != undefined) {
+            const domain = new URL(this.apiService.baseURL).host
+            if (domain == undefined) {
+              console.log(this.apiService.baseURL + " gives an undefined host")
+            } else {
+
+              const authToken: AuthToken = {
+                domain,
+                session_token: response.body!.session_token,
+                refresh_token: response.body!.refresh_token,
+              }
+              this.authService.setToken(authToken).catch((error) => {
+                console.log("Failed to save auth token:", error)
+              });
+            }
+          }
+          this.userService.googleDriveSync.set(response.body!.isGoogleDriveSync!);
+          this.final_zke_flow();
         } catch (e) {
           this.isLoading.set(false);
           console.log(e);
@@ -427,6 +463,9 @@ export class LoginComponent implements OnInit {
               localStorage.removeItem("r_email");
             }
             this.toastr.clear();
+            if (this.environment.isMobileApp) {
+              this.secureProtectedStorage.storeZKEKey(zke_key!)
+            }
             this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
             this.router.navigate(["/vault"], { relativeTo: this.route.root });
           }
@@ -447,7 +486,7 @@ export class LoginComponent implements OnInit {
 
   getZKEKey(): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.http.get("/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe((response) => {
+      this.http.get(this.apiService.baseURL + "/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe((response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         const zke_key_encrypted = data.zke_encrypted_key
         resolve(zke_key_encrypted);
@@ -459,10 +498,40 @@ export class LoginComponent implements OnInit {
   }
 
   zero_totp_instance_button_click() {
-    if (this.utils.isDeviceMobile()) {
-      this.instance_dropdown_active.update(v => !v);
+    if (environment.isMobileApp) {
+      this.instance_modal_active.update(v => !v);
+    } else {
+      // Webapp consulted on a mobile
+      if (this.utils.isDeviceMobile()) {
+        // On nonMobileDevice, it's just hoverable 
+        this.instance_dropdown_active.update(v => !v);
+      }
     }
   }
 
-
+  validateNewAPIBaseURL() {
+    this.instance_modal_error.set("")
+    this.instance_modal_loading.set(true)
+    console.log(this.instance_modal_apiBaseURL_input())
+    this.persistentStorage.setAPIBaseURL(this.instance_modal_apiBaseURL_input()).then(_ => {
+      this.apiService.updateBaseURL().then(success => {
+        this.instance_modal_loading.set(false)
+        if (success) {
+          this.instance_modal_active.set(false)
+          const baseURL = new URL(this.apiService.baseURL)
+          this.current_domain.set(baseURL.host)
+        } else {
+          this.translate.get("general_error").subscribe(t => {
+            this.instance_modal_error.set(t)
+          })
+        }
+      })
+    }).catch(error => {
+      console.log(error)
+      this.translate.get("invalid_url").subscribe(t => {
+        this.instance_modal_error.set(t)
+      })
+    })
+  }
 }
+

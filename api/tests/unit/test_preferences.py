@@ -173,7 +173,6 @@ class TestPreferences(unittest.TestCase):
     
     def test_get_preference_unverified_user(self):
         with self.application.app.app_context():
-            print("bite", db.session.query(User).filter_by(id=4).first().isVerified )
             self.client.cookies = {'session-token': self.session_token_user_unverified}
             response = self.client.get(self.endpoint+"?fields=all")
             self.assertEqual(response.status_code, 403)

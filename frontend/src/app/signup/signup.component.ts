@@ -9,14 +9,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../services/User/user.service';
+import { ApiService } from '../services/API/api.service';
 
 
 @Component({
-    selector: 'app-signup',
-    templateUrl: './signup.component.html',
-    styleUrls: ['./signup.component.css'],
-    standalone: false,
-    changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-signup',
+  templateUrl: './signup.component.html',
+  styleUrls: ['./signup.component.css'],
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignupComponent implements OnInit {
   // Icons (static, no need for signals)
@@ -65,7 +66,8 @@ export class SignupComponent implements OnInit {
     private translate: TranslateService,
     private toastr: ToastrService,
     private userService: UserService,
-  ) {}
+    private apiService: ApiService
+  ) { }
 
   ngOnInit(): void {
     this.current_domain.set(window.location.host);
@@ -116,7 +118,7 @@ export class SignupComponent implements OnInit {
   }
 
   get_api_configuration() {
-    this.http.get('/api/v1/configuration', { withCredentials: true }).subscribe({
+    this.http.get(this.apiService.baseURL + '/api/v1/configuration', { withCredentials: true }).subscribe({
       next: (response) => {
         const response_data = response as { signup_enabled: boolean };
         this.signup_enabled.set(response_data.signup_enabled);
@@ -196,7 +198,7 @@ export class SignupComponent implements OnInit {
       passphraseSalt: this.passphraseSalt(),
     };
 
-    this.http.post('/api/v1/signup', data, { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.post(this.apiService.baseURL + '/api/v1/signup', data, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         this.isLoading.set(false);
         this.utils.toastSuccess(this.toastr, this.translate.instant('signup.success'), '');

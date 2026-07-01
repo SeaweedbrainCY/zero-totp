@@ -1,6 +1,8 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
 import { LocalVaultV1Service } from '../upload-vault/LocalVaultv1Service.service';
 import { HttpClient } from '@angular/common/http';
+import { ApiService } from '../API/api.service';
+
 import { Crypto } from '../../common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
 import { Buffer } from 'buffer';
@@ -48,12 +50,13 @@ export class UserService {
     private http: HttpClient,
     private crypto: Crypto,
     private translate: TranslateService,
+    private apiService: ApiService
   ) {
   }
 
   refresh_user_id(): Promise<Boolean> {
     return new Promise((resolve, reject) => {
-      this.http.get('/api/v1/whoami', { withCredentials: true, observe: 'response' }).subscribe({
+      this.http.get(this.apiService.baseURL + '/api/v1/whoami', { withCredentials: true, observe: 'response' }).subscribe({
         next: (response) => {
           if (response.status === 200) {
             const userData = response.body as { id: number, email: string, username: string };
@@ -62,7 +65,7 @@ export class UserService {
             localStorage.setItem("email", userData.email);
             resolve(true);
           } else {
-            console.error('Failed to fetch user data:', response.statusText);
+            console.error('Failed to fetch user data:', response.status);
             resolve(false);
           }
         },

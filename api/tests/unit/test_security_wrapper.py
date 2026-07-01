@@ -5,6 +5,7 @@ import unittest
 from unittest.mock import patch
 from zero_totp_db_model.model import User as UserModel
 from database.db import db
+from connexion.testing import TestContext
 
 
 
@@ -25,6 +26,7 @@ class TestSecurityWrapper(unittest.TestCase):
                 db.session.add(verified_user_id)
                 db.session.add(blocked_user_id)
                 db.session.commit()
+
         
         def tearDown(self):
             with self.flask_application.app.app_context():
@@ -32,58 +34,61 @@ class TestSecurityWrapper(unittest.TestCase):
                 db.drop_all()
                 patch.stopall()
         
+        @security_wrapper.require_active_user
+        def wrapped_function(self,src_ip, user_obj):
+            return {"user_id" : user_obj.id}, 200
+        
         
         
         def test_valid_user_not_verified_and_require(self):
             security_wrapper.conf.features.emails.require_email_validation = True
-            @security_wrapper.require_valid_user
-            def wrapped_function(user_id):
-                return True, 200
-            with self.flask_application.app.app_context():
-                _, status = wrapped_function({"user": self.not_verified_user_id},self.not_verified_user_id, {"user": self.not_verified_user_id})
-                self.assertEqual(status, 403)
+            with TestContext(context={"token_info": {"uid": self.not_verified_user_id}}):
+                    with self.flask_application.app.app_context():
+                        response, status = self.wrapped_function()
+                        self.assertEqual(status, 403)
+                        self.assertEqual(response, {'error': 'Not verified'})
+
         
         def test_valid_user_verified_and_require(self):
             security_wrapper.conf.features.emails.require_email_validation = True
-            @security_wrapper.require_valid_user
-            def wrapped_function(user_id):
-                return True, 200
-            with self.flask_application.app.app_context():
-                _, status = wrapped_function({"user": self.verified_user_id},self.verified_user_id, {"user": self.verified_user_id})
-                self.assertEqual(status, 200)
+            with TestContext(context={"token_info": {"uid": self.verified_user_id}}):
+                with self.flask_application.app.app_context():
+                    response, status = self.wrapped_function()
+                    self.assertEqual(status, 200)
+                    self.assertEqual(response, {"user_id":self.verified_user_id})
         
         def test_valid_user_not_verified_and_not_require(self):
             security_wrapper.conf.features.emails.require_email_validation = False
-            @security_wrapper.require_valid_user
-            def wrapped_function(user_id):
-                return True, 200
-            with self.flask_application.app.app_context():
-                _, status = wrapped_function({"user": self.not_verified_user_id},self.not_verified_user_id, {"user": self.not_verified_user_id})
-                self.assertEqual(status, 200)
+            with TestContext(context={"token_info": {"uid": self.not_verified_user_id}}):
+                 with self.flask_application.app.app_context():
+                    response, status = self.wrapped_function()
+                    self.assertEqual(status, 200)
+                    self.assertEqual(response, {"user_id":self.not_verified_user_id})
+                    
         
         def test_valid_user_verified_and_not_require(self):
             security_wrapper.conf.features.emails.require_email_validation = False
-            @security_wrapper.require_valid_user
-            def wrapped_function(user_id):
-                return True, 200
-            with self.flask_application.app.app_context():
-                _, status = wrapped_function({"user": self.verified_user_id},self.verified_user_id, {"user": self.verified_user_id})
-                self.assertEqual(status, 200)
+            with TestContext(context={"token_info": {"uid": self.verified_user_id}}):
+                with self.flask_application.app.app_context():
+                    response, status = self.wrapped_function()
+                    self.assertEqual(status, 200)
+                    self.assertEqual(response, {"user_id":self.verified_user_id})
 
         
         def test_valid_user_blocked(self):
-            @security_wrapper.require_valid_user
-            def wrapped_function(user_id):
-                return True, 200
-            with self.flask_application.app.app_context():
-                _, status = wrapped_function({"user": self.blocked_user_id},self.blocked_user_id, {"user": self.blocked_user_id})
-                self.assertEqual(status, 403)
+            with TestContext(context={"token_info": {"uid": self.blocked_user_id}}):
+                with self.flask_application.app.app_context():
+                    response, status = self.wrapped_function()
+                    self.assertEqual(status, 403)
+                    self.assertEqual(response, {'error': 'User is blocked'})
 
         def test_require_userid_blocked(self):
             security_wrapper.conf.features.emails.require_email_validation = True
             @security_wrapper.require_userid
-            def wrapped_function(user_id):
+            def wrapped_function(src_ip, user_id):
                 return True, 200
-            with self.flask_application.app.app_context():
-                _, status = wrapped_function({"user": self.blocked_user_id},self.blocked_user_id, {"user": self.blocked_user_id})
-                self.assertEqual(status, 403)
+            with TestContext(context={"token_info": {"uid": self.blocked_user_id}}):
+                with self.flask_application.app.app_context():
+                    response, status = wrapped_function({"user": self.blocked_user_id},self.blocked_user_id, {"user": self.blocked_user_id})
+                    self.assertEqual(status, 403)
+                    self.assertEqual(response, {'error': 'User is blocked'})

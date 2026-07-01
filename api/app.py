@@ -1,5 +1,4 @@
 import connexion
-from flask_cors import CORS
 from environment import conf
 from database.db import db
 from zero_totp_db_model.model_init import init_db
@@ -20,8 +19,17 @@ def create_app():
     app_instance = connexion.FlaskApp(__name__, specification_dir="./openAPI/")
     app_instance.add_api("swagger.yml")
 
-    app = app_instance.app
+    app_instance.add_middleware(
+        CORSMiddleware,
+        allow_origins=[conf.environment.frontend_URI, "capacitor://localhost", "https://localhost"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        position=MiddlewarePosition.BEFORE_EXCEPTION,
+    )
 
+    app = app_instance.app
+    
     app.config["SQLALCHEMY_DATABASE_URI"] = conf.database.database_uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["PROPAGATE_EXCEPTIONS"] = True

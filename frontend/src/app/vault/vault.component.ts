@@ -14,6 +14,7 @@ import { ToastrService } from 'ngx-toastr';
 import { TOTP } from "totp-generator"
 import { VaultService, DecryptedVaultResult } from '../services/VaultService/vault.service';
 import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
+import { ApiService } from '../services/API/api.service';
 
 
 @Component({
@@ -101,7 +102,8 @@ export class VaultComponent implements OnInit, OnDestroy {
     private translate: TranslateService,
     private toastr: ToastrService,
     private vaultService: VaultService,
-    public globalConfigurationService: GlobalConfigurationService
+    public globalConfigurationService: GlobalConfigurationService,
+    private apiService: ApiService
   ) {
     this.current_domain.set(window.location.host);
     router.events.subscribe((url: any) => {
@@ -238,7 +240,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     return new Promise<Array<Map<string, string>>>((resolve, reject) => {
       this.reloadSpin.set(true)
       this.userService.vault_tags.set([]);
-      this.http.get("/api/v1/all_secrets", { withCredentials: true, observe: 'response' }).subscribe({
+      this.http.get(this.apiService.baseURL + "/api/v1/all_secrets", { withCredentials: true, observe: 'response' }).subscribe({
         next: (response) => {
           const data = JSON.parse(JSON.stringify(response.body))
           let encrypted_secret_vault = new Array<Map<string, string>>();
@@ -280,7 +282,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   get_preferences() {
-    this.http.get("/api/v1/preferences?fields=favicon_policy", { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.get(this.apiService.baseURL + "/api/v1/preferences?fields=favicon_policy", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         if (response.body != null) {
           const data = JSON.parse(JSON.stringify(response.body));
@@ -379,7 +381,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   downloadVault() {
-    this.http.get("/api/v1/vault/export", { withCredentials: true, observe: 'response', responseType: 'blob' },).subscribe({
+    this.http.get(this.apiService.baseURL + "/api/v1/vault/export", { withCredentials: true, observe: 'response', responseType: 'blob' },).subscribe({
       next: (response) => {
         const blob = new Blob([response.body!], { type: 'text/plain' });
         const url = window.URL.createObjectURL(blob);
@@ -414,7 +416,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   get_oauth_authorization_url() {
-    this.http.get("/api/v1/google-drive/oauth/authorization-flow", { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.get(this.apiService.baseURL + "/api/v1/google-drive/oauth/authorization-flow", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         sessionStorage.setItem("oauth_state", data.state);
@@ -441,7 +443,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     this.globalConfigurationService.is_google_drive_enabled_on_this_tenant().then((enabled) => {
       this.is_google_drive_enabled_on_this_tenant.set(enabled);
       if (enabled) {
-        this.http.get("/api/v1/google-drive/option", { withCredentials: true, observe: 'response' }).subscribe({
+        this.http.get(this.apiService.baseURL + "/api/v1/google-drive/option", { withCredentials: true, observe: 'response' }).subscribe({
           next: (response) => {
             const data = JSON.parse(JSON.stringify(response.body))
             if (data.status == "enabled") {
@@ -468,7 +470,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   backup_vault_to_google_drive() {
-    this.http.put("/api/v1/google-drive/backup", {}, { withCredentials: true, observe: 'response' },).subscribe({
+    this.http.put(this.apiService.baseURL + "/api/v1/google-drive/backup", {}, { withCredentials: true, observe: 'response' },).subscribe({
       next: (response) => {
         this.isGoogleDriveSync.set("uptodate");
         this.lastBackupDate.set(String(formatDate(new Date(), 'dd/MM/yyyy HH:mm:ss', 'en')));
@@ -489,7 +491,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   check_last_backup() {
-    this.http.get("/api/v1/google-drive/last-backup/verify", { withCredentials: true, observe: 'response' },).subscribe({
+    this.http.get(this.apiService.baseURL + "/api/v1/google-drive/last-backup/verify", { withCredentials: true, observe: 'response' },).subscribe({
       next: (response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         if (data.status == "ok") {
@@ -540,7 +542,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   disable_google_drive() {
-    this.http.delete("/api/v1/google-drive/option", { withCredentials: true, observe: 'response' },).subscribe({
+    this.http.delete(this.apiService.baseURL + "/api/v1/google-drive/option", { withCredentials: true, observe: 'response' },).subscribe({
       next: (response) => {
         this.isGoogleDriveEnabled = false;
         this.isGoogleDriveSync.set("false");
@@ -595,12 +597,12 @@ export class VaultComponent implements OnInit, OnDestroy {
   unlockVault() {
     this.isDecryptingLockedVaut = true;
     this.vaultDecryptionErrorMessage.set("");
-    this.http.get("/api/v1/user/derived-key-salt", { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.get(this.apiService.baseURL + "/api/v1/user/derived-key-salt", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         if (response.status === 200) {
           const derived_key_salt_req_data = response.body as { derived_key_salt: string };
           this.userService.derivedKeySalt.set(derived_key_salt_req_data.derived_key_salt);
-          this.http.get("/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe({
+          this.http.get(this.apiService.baseURL + "/api/v1/zke_encrypted_key", { withCredentials: true, observe: 'response' }).subscribe({
             next: (response) => {
               if (response.status === 200) {
                 const zke_req_data = response.body as { zke_encrypted_key: string };

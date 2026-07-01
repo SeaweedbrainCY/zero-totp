@@ -41,3 +41,9 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name "pycache" -exec rm -rf {} +
 	find . -type f -name "*.pyc" -exec rm -f {} +
+
+
+run_ios:
+	echo "Building and running iOS application"
+	cd frontend && ng build --configuration mobile-development --subresource-integrity
+	cd mobile && npx cap sync ios && npx cap open ios

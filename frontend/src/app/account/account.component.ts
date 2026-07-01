@@ -9,9 +9,10 @@ import { Crypto } from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
-import { Writable } from 'node_modules/@angular/core/types/_chrome_dev_tools_performance-chunk';
+import { ApiService } from '../services/API/api.service';
 import { VaultService } from '../services/VaultService/vault.service';
 import { TrailingSlashPathLocationStrategy } from '@angular/common';
+
 
 type LoadingButtons = {
   email: WritableSignal<boolean>;
@@ -87,6 +88,7 @@ export class AccountComponent implements OnInit {
     public translate: TranslateService,
     private toastr: ToastrService,
     private vaultService: VaultService,
+    private apiService: ApiService,
   ) { }
 
 
@@ -103,7 +105,7 @@ export class AccountComponent implements OnInit {
   }
 
   get_whoami() {
-    this.http.get("/api/v1/whoami", { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.get(this.apiService.baseURL + "/api/v1/whoami", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         this.loadingAccount.set(false);
         const data = JSON.parse(JSON.stringify(response.body))
@@ -146,7 +148,7 @@ export class AccountComponent implements OnInit {
     this.checkUsername();
     if (this.usernameErrorMessage() == "") {
       this.buttonLoading.username.set(true)
-      this.http.put("/api/v1/update/username", { username: this.username }, { withCredentials: true, observe: 'response' }).subscribe({
+      this.http.put(this.apiService.baseURL + "/api/v1/update/username", { username: this.username }, { withCredentials: true, observe: 'response' }).subscribe({
         next: () => {
           this.buttonLoading.username.set(false)
           this.utils.toastSuccess(this.toastr, this.translate.instant('account.username.success'), "");
@@ -197,7 +199,7 @@ export class AccountComponent implements OnInit {
     const data = {
       email: this.email
     }
-    this.http.put("/api/v1/update/email", data, { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.put(this.apiService.baseURL + "/api/v1/update/email", data, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         this.buttonLoading.email.set(false)
         this.utils.toastSuccess(this.toastr, this.translate.instant('account.email.success'), "");
@@ -300,7 +302,7 @@ export class AccountComponent implements OnInit {
   }
 
   getGoogleDriveOption() {
-    this.http.get("/api/v1/google-drive/option", { withCredentials: true, observe: 'response' }).subscribe((response) => {
+    this.http.get(this.apiService.baseURL + "/api/v1/google-drive/option", { withCredentials: true, observe: 'response' }).subscribe((response) => {
       const data = JSON.parse(JSON.stringify(response.body))
       if (data.status == "enabled") {
         this.isGoogleDriveBackupEnabled.set(true);
@@ -326,7 +328,7 @@ export class AccountComponent implements OnInit {
 
   deleteAllGoogleDriveBackup(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      this.http.delete("/api/v1/google-drive/backup", { withCredentials: true, observe: 'response' }).subscribe({
+      this.http.delete(this.apiService.baseURL + "/api/v1/google-drive/backup", { withCredentials: true, observe: 'response' }).subscribe({
         next: () => resolve(true),
         error: (error) => {
           let errorMessage = "";
@@ -344,7 +346,7 @@ export class AccountComponent implements OnInit {
 
   backup(): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      this.http.put("/api/v1/google-drive/backup", {}, { withCredentials: true, observe: 'response' }).subscribe((response) => {
+      this.http.put(this.apiService.baseURL + "/api/v1/google-drive/backup", {}, { withCredentials: true, observe: 'response' }).subscribe((response) => {
         resolve(true);
       }, (error) => {
         let errorMessage = "";
@@ -480,7 +482,7 @@ export class AccountComponent implements OnInit {
         email: this.userService.email(),
         password: hashedPassword
       }
-      this.http.post("/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
+      this.http.post(this.apiService.baseURL + "/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
         next: () => resolve("ok"),
         error: (error) => {
           this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.incorrect"), "");
@@ -602,7 +604,7 @@ export class AccountComponent implements OnInit {
           passphrase_salt: salt,
           derived_key_salt: derivedKeySalt
         }
-        this.http.put("/api/v1/update/vault", data, { withCredentials: true, observe: 'response' }).subscribe({
+        this.http.put(this.apiService.baseURL + "/api/v1/update/vault", data, { withCredentials: true, observe: 'response' }).subscribe({
           next: () => {
             resolve("ok");
           }, error: (error) => {
@@ -629,8 +631,8 @@ export class AccountComponent implements OnInit {
 
   sendDeleteAccountRequest(): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      let headers = new HttpHeaders().set('x-hash-passphrase', this.hashedOldPassword);
-      this.http.delete("/api/v1/account", { headers: headers, withCredentials: true, observe: 'response' }).subscribe({
+      const body = { passphrase: this.hashedOldPassword }
+      this.http.post(this.apiService.baseURL + "/api/v1/account/delete", body, { withCredentials: true, observe: 'response' },).subscribe({
         next: () => {
           resolve("ok")
         },
@@ -650,7 +652,7 @@ export class AccountComponent implements OnInit {
   }
 
   get_internal_notification() {
-    this.http.get("/api/v1/notification/internal", { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.get(this.apiService.baseURL + "/api/v1/notification/internal", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         if (response.status == 200) {
           try {

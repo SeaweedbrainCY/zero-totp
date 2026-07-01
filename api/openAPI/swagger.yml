@@ -7,6 +7,7 @@ servers:
   - url: /api/v1
 security:
   - SessionToken: []
+  - BearerToken: []
 paths:
   /signup:
     post:
@@ -56,6 +57,14 @@ paths:
                   email_verification_required:
                     type: boolean
                     example: true
+                  session_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
+                  refresh_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
         "400":
           description: Missing required parameters
         "403":
@@ -94,15 +103,33 @@ paths:
                   username:
                     type: string
                     example: "foo"
+                  isVerified:
+                    type: boolean
+                    example: true
                   id:
                     type: integer
+                    description: Optional. Not sent if isVerified is false. User's id.
                     example: 1
                   derivedKeySalt:
                     type: string
+                    description: Optional. Not sent if isVerified is false.
                     example: "AAAAA="
                   role:
                     type: string
+                    description: Optional. Not sent if isVerified is false.
                     example: "user"
+                  isGoogleDriveSync:
+                    type: boolean
+                    description: Optional. Not sent if isVerified is false.
+                    example: true
+                  session_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
+                  refresh_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
         "400":
           description: Missing required parameters
         "403":
@@ -142,9 +169,36 @@ paths:
       tags:
         - Auth
       summary: Refresh the user's session
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              nullable: true
+              properties:
+                session-token:
+                  type: string
+                  description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp. Will be ignored if the session token is already passed through cookies.
+                refresh-token:
+                  type: string
+                  description: Optional. If refresh token can't be passed through cookies, passed through body. Will be ignored if the refresh token is already passed through cookies.
       responses:
         "200": # status code
           description: Return the new session and refresh tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
+                  refresh_token:
+                    type: string
+                    description: Optional. Sent to request made from mobile app only. The session token is automatically sent in cookies for requests made by Webapp.
+                    example: "000000-0000-0000-0000-000000000000"
         "401":
           description: Unauthorized
   /zke_encrypted_key:
@@ -730,12 +784,23 @@ paths:
           description: Access disabled
         "500":
           description: Internal server error
-  /account:
-    delete:
+  /account/delete:
+    post:
       operationId: controllers.delete_account
       tags:
         - User
-      summary: Delete the user's account. WARNING The hashed passphrase is required in x-hash-passphrase header !
+      summary: Delete the user's account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - passphrase
+              properties:
+                passphrase:
+                  type: string
       responses:
         "200":
           description: Account deleted
@@ -1039,3 +1104,7 @@ components:
       in: cookie
       name: session-token
       x-apikeyInfoFunc: CryptoClasses.session_verification.verify_session
+    BearerToken:
+      type: http
+      scheme: bearer
+      x-bearerInfoFunc: CryptoClasses.session_verification.verify_session

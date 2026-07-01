@@ -98,6 +98,9 @@ class TestLoginController(unittest.TestCase):
 
             self.assertEqual(session_token_obj.session_id, refresh_token_obj.session_id)
 
+            self.assertNotIn("session_token", response.json())
+            self.assertNotIn("refresh_token", response.json())
+
 
 
 
@@ -267,6 +270,24 @@ class TestLoginController(unittest.TestCase):
             response = self.client.post(self.loginEndpoint, json=self.json_payload)
             self.assertEqual(response.status_code, 200)
             self.checkpw.assert_called_once()
+
+
+    def test_login_from_mobile_app(self):
+        with self.application.app.app_context():
+            headers = {"Origin": "capacitor://localhost"}
+            response = self.client.post(self.loginEndpoint, json=self.json_payload, headers=headers)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("session_token", response.json())
+            self.assertIn("refresh_token", response.json())
+
+            session_token_obj = db.session.query(SessionToken).filter_by(token=response.json()["session_token"]).first()
+            refresh_token_obj = db.session.query(RefreshToken).filter_by(hashed_token=sha256(response.json()["refresh_token"].encode()).hexdigest()).first()
+            self.assertIsNotNone(session_token_obj)
+            self.assertIsNotNone(refresh_token_obj)
+            
+            self.assertEqual(session_token_obj.user_id, 1)
+            self.assertEqual(refresh_token_obj.user_id, 1)
+            
 
             
 

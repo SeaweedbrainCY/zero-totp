@@ -25,7 +25,7 @@ class TestDeleteAccount(unittest.TestCase):
             raise Exception("Test must be run with in memory database")
         self.flask_application = app
         self.client = self.flask_application.test_client()
-        self.deleteEndpoint = "/api/v1/account"
+        self.deleteEndpoint = "/api/v1/account/delete"
         
         
         self.full_user_id =1
@@ -107,8 +107,7 @@ class TestDeleteAccount(unittest.TestCase):
     def test_delete_user_with_google_drive(self):
         with self.flask_application.app.app_context():
             self.client.cookies= {"session-token" :self.full_user_session_token}
-            self.client.headers = {"x-hash-passphrase": "passphrase"}
-            response = self.client.delete(self.deleteEndpoint)
+            response = self.client.post(self.deleteEndpoint, json={"passphrase": "hashed_passphrse"})
             self.assertEqual(response.status_code, 200)
             self.delete_google_drive_backup.assert_called_once_with({"user":self.full_user_id}, self.full_user_id, {"user":self.full_user_id})
             self.delete_google_drive_option.assert_called_once_with({"user":self.full_user_id}, self.full_user_id, {"user":self.full_user_id})
@@ -122,8 +121,7 @@ class TestDeleteAccount(unittest.TestCase):
     def test_delete_user_without_google_drive(self):
         with self.flask_application.app.app_context():
             self.client.cookies= {"session-token" :self.user_without_google_drive_session_token}
-            self.client.headers = {"x-hash-passphrase": "passphrase"}
-            response = self.client.delete(self.deleteEndpoint)
+            response = self.client.post(self.deleteEndpoint, json={"passphrase": "hashed_passphrse"})
             self.assertEqual(response.status_code, 200)
             self.delete_google_drive_backup.assert_called_once_with({"user":self.user_without_google_drive}, self.user_without_google_drive, {"user":self.user_without_google_drive})
             self.delete_google_drive_option.assert_called_once_with({"user":self.user_without_google_drive}, self.user_without_google_drive, {"user":self.user_without_google_drive})
@@ -137,8 +135,7 @@ class TestDeleteAccount(unittest.TestCase):
     def test_delete_admin(self):
          with self.flask_application.app.app_context():
             self.client.cookies= {"session-token" :self.user_admin_session_token}
-            self.client.headers = {"x-hash-passphrase": "passphrase"}
-            response = self.client.delete(self.deleteEndpoint)
+            response = self.client.post(self.deleteEndpoint, json={"passphrase": "hashed_passphrse"})
             self.assertEqual(response.status_code, 403, f'Expected 403, got {response.status_code}. Response: {response.json()}')
             self.assertEqual(response.json(),  {"message": "Admin cannot be deleted"})
             self.delete_google_drive_backup.assert_not_called()
@@ -148,33 +145,30 @@ class TestDeleteAccount(unittest.TestCase):
     def test_delete_bad_passphrase(self):
         with self.flask_application.app.app_context():
             self.client.cookies= {"session-token" :self.full_user_session_token}
-            self.client.headers = {"x-hash-passphrase": "badPassphrase"}
             self.checkpw.return_value = False
-            response = self.client.delete(self.deleteEndpoint)
+            response = self.client.post(self.deleteEndpoint, json={"passphrase": "hashed_passphrse"})
             self.assertEqual(response.status_code, 403)
             self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
     
-    def test_delete_no_passphrase_header(self):
+    def test_delete_no_passphrase(self):
         with self.flask_application.app.app_context():
             self.client.cookies= {"session-token" :self.full_user_session_token}
-            response = self.client.delete(self.deleteEndpoint)
-            self.assertEqual(response.status_code, 401)
+            response = self.client.post(self.deleteEndpoint)
+            self.assertEqual(response.status_code, 400)
             self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
 
     def test_delete_user_doesnt_exists(self):
         with self.flask_application.app.app_context():
             self.client.cookies= {"session-token" :str(uuid4())}
-            self.client.headers = {"x-hash-passphrase": "badPassphrase"}
-            response = self.client.delete(self.deleteEndpoint)
+            response = self.client.post(self.deleteEndpoint, json={"passphrase": "hashed_passphrse"})
             self.assertEqual(response.status_code, 403)
             self.assertNotEqual(self.user_repo.getById(self.full_user_id), None)
     
     def test_delete_user_error_with_google_drive(self):
         with self.flask_application.app.app_context():
             self.client.cookies= {"session-token" :self.full_user_session_token}
-            self.client.headers = {"x-hash-passphrase": "passphrase"}
             self.delete_google_drive_backup.side_effect = Exception("error")
-            response = self.client.delete(self.deleteEndpoint)
+            response = self.client.post(self.deleteEndpoint, json={"passphrase": "hashed_passphrse"})
             self.assertEqual(response.status_code, 200)
             self.assertEqual(self.user_repo.getById(self.full_user_id), None)
             self.assertEqual(self.totp_secret_repo.get_all_enc_secret_by_user_id(self.full_user_id), [])
@@ -187,25 +181,22 @@ class TestDeleteAccount(unittest.TestCase):
     def test_delete_user_error_while_deleting_from_db(self):
         with self.flask_application.app.app_context():
             self.client.cookies= {"session-token" :self.full_user_session_token}
-            self.client.headers = {"x-hash-passphrase": "passphrase"}
             self.secrets_delete_all = patch("database.user_repo.User.delete").start()
             self.secrets_delete_all.side_effect = Exception("error")
-            response = self.client.delete(self.deleteEndpoint)
+            response = self.client.post(self.deleteEndpoint, json={"passphrase": "hashed_passphrse"})
             self.assertEqual(response.status_code, 500)
     
     def test_delete_user_not_verified(self):
         with self.flask_application.app.app_context():
             self.client.cookies= {"session-token" :self.user_not_verified_session_token}
-            self.client.headers = {"x-hash-passphrase": "passphrase"}
-            response = self.client.delete(self.deleteEndpoint)
+            response = self.client.post(self.deleteEndpoint, json={"passphrase": "hashed_passphrse"})
             self.assertEqual(response.status_code, 403)
             self.assertNotEqual(self.user_repo.getById(self.user_not_verified), None)
     
     def test_delete_user_blocked(self):
         with self.flask_application.app.app_context():
             self.client.cookies= {"session-token" :self.user_blocked_session_token}
-            self.client.headers = {"x-hash-passphrase": "passphrase"}
-            response = self.client.delete(self.deleteEndpoint)
+            response = self.client.post(self.deleteEndpoint, json={"passphrase": "hashed_passphrse"})
             self.assertEqual(response.status_code, 403)
             self.assertNotEqual(self.user_repo.getById(self.user_blocked), None)
 

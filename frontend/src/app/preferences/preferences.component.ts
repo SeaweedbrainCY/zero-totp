@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { faEnvelope, faLock,  faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb, faVault, faSliders, faShieldHalved, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock, faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb, faVault, faSliders, faShieldHalved, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faHardDrive } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
@@ -10,33 +10,34 @@ import { Crypto } from '../common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
+import { ApiService } from '../services/API/api.service';
 
 @Component({
-    selector: 'app-preferences',
-    templateUrl: './preferences.component.html',
-    styleUrls: ['./preferences.component.css'],
-    standalone: false,
-    changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-preferences',
+  templateUrl: './preferences.component.html',
+  styleUrls: ['./preferences.component.css'],
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PreferencesComponent implements OnInit{
-  faUser=faUser;
-  faEnvelope=faEnvelope;
-  faLock=faLock;
-  faShield=faShield;
-  faCircleInfo=faCircleInfo;
-  faVault=faVault;
-  faArrowsRotate=faArrowsRotate;
-  faXmark=faXmark;
-  faHardDrive=faHardDrive;
-  faShieldHalved=faShieldHalved;
-  faSliders=faSliders;
-  faHourglassStart=faHourglassStart;
-  faCircleNotch=faCircleNotch;
-  faCircleExclamation=faCircleExclamation;
-  faLightbulb=faLightbulb;
-  faCheck=faCheck;
-  faCog=faCog;
-  faFlask=faFlask;
+export class PreferencesComponent implements OnInit {
+  faUser = faUser;
+  faEnvelope = faEnvelope;
+  faLock = faLock;
+  faShield = faShield;
+  faCircleInfo = faCircleInfo;
+  faVault = faVault;
+  faArrowsRotate = faArrowsRotate;
+  faXmark = faXmark;
+  faHardDrive = faHardDrive;
+  faShieldHalved = faShieldHalved;
+  faSliders = faSliders;
+  faHourglassStart = faHourglassStart;
+  faCircleNotch = faCircleNotch;
+  faCircleExclamation = faCircleExclamation;
+  faLightbulb = faLightbulb;
+  faCheck = faCheck;
+  faCog = faCog;
+  faFlask = faFlask;
 
   buttonLoading = signal({ favicon_policy: false, backup_conf_max_age: false, backup_conf_min_count: false });
   moreHelpDisplayed = signal({ favicon_settings: false });
@@ -61,7 +62,7 @@ export class PreferencesComponent implements OnInit{
   default_backup_minimum_count = signal(-1);
   is_google_drive_enabled_on_this_tenant = signal(false);
 
-  constructor( 
+  constructor(
     private http: HttpClient,
     public userService: UserService,
     private utils: Utils,
@@ -69,14 +70,15 @@ export class PreferencesComponent implements OnInit{
     private route: ActivatedRoute,
     private translate: TranslateService,
     private toastr: ToastrService,
-    private globalConfigurationService: GlobalConfigurationService
-    ){
-    }
+    private globalConfigurationService: GlobalConfigurationService,
+    private apiService: ApiService
+  ) {
+  }
 
-  
+
   ngOnInit(): void {
-     if(!this.userService.isUserLoggedIn()){
-      this.router.navigate(["/login/sessionKilled"], {relativeTo:this.route.root});
+    if (!this.userService.isUserLoggedIn()) {
+      this.router.navigate(["/login/sessionKilled"], { relativeTo: this.route.root });
     }
     this.get_preferences()
     this.get_internal_notification()
@@ -85,54 +87,55 @@ export class PreferencesComponent implements OnInit{
     this.duration_unit.set("hour");
   }
 
-  get_preferences(){
-    this.http.get("/api/v1/preferences?fields=all", {withCredentials: true, observe: 'response'}).subscribe({
+  get_preferences() {
+    this.http.get(this.apiService.baseURL + "/api/v1/preferences?fields=all", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
-      if(response.body != null){
-        const data = JSON.parse(JSON.stringify(response.body));
-        if(data.autolock_delay != null){
-          if(Math.floor(data.autolock_delay/60) == data.autolock_delay/60){
-            this.autolock_delay.set(data.autolock_delay/60);
-            this.duration_unit.set("hour");
+        if (response.body != null) {
+          const data = JSON.parse(JSON.stringify(response.body));
+          if (data.autolock_delay != null) {
+            if (Math.floor(data.autolock_delay / 60) == data.autolock_delay / 60) {
+              this.autolock_delay.set(data.autolock_delay / 60);
+              this.duration_unit.set("hour");
+            } else {
+              this.autolock_delay.set(data.autolock_delay);
+              this.duration_unit.set("minute");
+            }
+            this.loadingPreferences.set(false);
           } else {
-            this.autolock_delay.set(data.autolock_delay);
+            this.loadingPreferences.set(false);
+            this.autolock_delay.set(10);
             this.duration_unit.set("minute");
           }
-          this.loadingPreferences.set(false);
-        } else {
-          this.loadingPreferences.set(false);
-          this.autolock_delay.set(10);
-          this.duration_unit.set("minute");
+          if (data.favicon_policy != null) {
+            this.faviconPolicy.set(data.favicon_policy);
+            this.loadingPreferences.set(false);
+          } else {
+            this.faviconPolicy.set("enabledOnly");
+            this.translate.get('preference.error.fetch').subscribe((translation: string) => {
+              this.utils.toastError(this.toastr, translation, "")
+            });
+          }
         }
-        if(data.favicon_policy != null){
-          this.faviconPolicy.set(data.favicon_policy);
-          this.loadingPreferences.set(false);
-        } else {
-          this.faviconPolicy.set("enabledOnly");
-          this.translate.get('preference.error.fetch').subscribe((translation: string) => {
-            this.utils.toastError(this.toastr,translation,"")
-          });
-        }
-      }
-    }, 
-    error: (error) => {
+      },
+      error: (error) => {
         let errorMessage = "";
-          if(error.error.message != null){
-            errorMessage = error.error.message;
-          } else if(error.error.detail != null){
-            errorMessage = error.error.detail;
-          }
-          if(error.status == 0){
-            errorMessage = "vault.error.server_unreachable"
-          } else if (error.status == 401){
-            this.userService.clear();
-            this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
-            return;
-          }
-          this.translate.get('preference.error.update').subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
+        if (error.error.message != null) {
+          errorMessage = error.error.message;
+        } else if (error.error.detail != null) {
+          errorMessage = error.error.detail;
+        }
+        if (error.status == 0) {
+          errorMessage = "vault.error.server_unreachable"
+        } else if (error.status == 401) {
+          this.userService.clear();
+          this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
+          return;
+        }
+        this.translate.get('preference.error.update').subscribe((translation: string) => {
+          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
         });
-    }});
+      }
+    });
   }
 
 
@@ -145,10 +148,10 @@ export class PreferencesComponent implements OnInit{
     });
   }
 
-  get_backup_configuration(){
-    this.http.get("/api/v1/backup/configuration?dv=true",{withCredentials:true, observe: 'response'}).subscribe({
-      next:(response) => {
-        if(response.body != null){
+  get_backup_configuration() {
+    this.http.get(this.apiService.baseURL + "/api/v1/backup/configuration?dv=true", { withCredentials: true, observe: 'response' }).subscribe({
+      next: (response) => {
+        if (response.body != null) {
           const data = JSON.parse(JSON.stringify(response.body));
           this.backup_max_age.set(data.max_age_in_days);
           this.backup_minimum_count.set(data.backup_minimum_count);
@@ -157,120 +160,120 @@ export class PreferencesComponent implements OnInit{
           this.loading_backup_configuration.set(false);
         } else {
           this.translate.get('preference.error.fetch').subscribe((translation: string) => {
-            this.utils.toastError(this.toastr,translation,"")
+            this.utils.toastError(this.toastr, translation, "")
           });
         }
       },
-      error: (error)=>{
+      error: (error) => {
         this.translate.get('preference.error.fetch').subscribe((translation: string) => {
-          this.utils.toastError(this.toastr,translation,error.error.message)
+          this.utils.toastError(this.toastr, translation, error.error.message)
         });
       }
     });
   }
 
 
-  changeFaviconSettings(policy: string){
-    if(policy == "never" || policy == "always" || policy == "enabledOnly"){
+  changeFaviconSettings(policy: string) {
+    if (policy == "never" || policy == "always" || policy == "enabledOnly") {
       this.buttonLoading.update(b => ({ ...b, favicon_policy: true }));
-      const data = {"id" : "favicon_policy", "value" :policy}
-      this.http.put("/api/v1/preferences",  data, {withCredentials: true, observe: 'response'}).subscribe({
+      const data = { "id": "favicon_policy", "value": policy }
+      this.http.put(this.apiService.baseURL + "/api/v1/preferences", data, { withCredentials: true, observe: 'response' }).subscribe({
         next: () => {
           this.buttonLoading.update(b => ({ ...b, favicon_policy: false }));
           this.faviconPolicy.set(policy);
-        }, 
-        error:(error) => {
+        },
+        error: (error) => {
           this.buttonLoading.update(b => ({ ...b, favicon_policy: false }));
           let errorMessage = "";
-          if(error.error.message != null){
+          if (error.error.message != null) {
             errorMessage = error.error.message;
-          } else if(error.error.detail != null){
+          } else if (error.error.detail != null) {
             errorMessage = error.error.detail;
           }
-          if(error.status == 0){
+          if (error.status == 0) {
             errorMessage = "vault.error.server_unreachable"
-          } else if (error.status == 401){
+          } else if (error.status == 401) {
             this.userService.clear();
-            this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
+            this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
             return;
           }
           this.translate.get('preference.error.update').subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
+            this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
           });
         }
       });
     }
   }
 
-  updateBackupConfiguration(key:string){
+  updateBackupConfiguration(key: string) {
     let value = -1;
-    if(key == "max_age_in_days"){
+    if (key == "max_age_in_days") {
       this.buttonLoading.update(b => ({ ...b, backup_conf_max_age: true }));
       value = this.backup_max_age();
-    } else if(key == "backup_minimum_count"){
+    } else if (key == "backup_minimum_count") {
       this.buttonLoading.update(b => ({ ...b, backup_conf_min_count: true }));
       value = this.backup_minimum_count();
     } else {
       return;
     }
 
-    this.http.put("/api/v1/backup/configuration/"+key, {"value":value}, {withCredentials:true, observe: 'response'}).subscribe({
-      next:(response) => {
-        if(response.status == 200){
+    this.http.put(this.apiService.baseURL + "/api/v1/backup/configuration/" + key, { "value": value }, { withCredentials: true, observe: 'response' }).subscribe({
+      next: (response) => {
+        if (response.status == 200) {
           this.get_backup_configuration();
-          if(key == "max_age_in_days"){
+          if (key == "max_age_in_days") {
             this.buttonLoading.update(b => ({ ...b, backup_conf_max_age: false }));
-          } else if(key == "backup_minimum_count"){
+          } else if (key == "backup_minimum_count") {
             this.buttonLoading.update(b => ({ ...b, backup_conf_min_count: false }));
           }
         }
       },
-      error: (error)=>{
+      error: (error) => {
         this.get_backup_configuration();
-        if(key == "max_age_in_days"){
+        if (key == "max_age_in_days") {
           this.buttonLoading.update(b => ({ ...b, backup_conf_max_age: false }));
-        } else if(key == "backup_minimum_count"){
+        } else if (key == "backup_minimum_count") {
           this.buttonLoading.update(b => ({ ...b, backup_conf_min_count: false }));
         }
         let errorMessage = "";
-        if(error.error.message != null){
+        if (error.error.message != null) {
           errorMessage = error.error.message;
-        } else if(error.error.detail != null){
+        } else if (error.error.detail != null) {
           errorMessage = error.error.detail;
         }
-        if(error.status == 0){
+        if (error.status == 0) {
           errorMessage = "vault.error.server_unreachable"
-        } else if (error.status == 401){
+        } else if (error.status == 401) {
           this.userService.clear();
-          this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
+          this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
           return;
         }
         this.translate.get('preference.error.update').subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
+          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
         });
       }
     });
   }
 
 
-  displayAdvancedSettings(){
+  displayAdvancedSettings() {
     this.isDisplayingAdvancedSettings.set(true);
   }
 
-  get_internal_notification(){
-    this.http.get("/api/v1/notification/internal",  {withCredentials:true, observe: 'response'}).subscribe({
+  get_internal_notification() {
+    this.http.get(this.apiService.baseURL + "/api/v1/notification/internal", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
-        if(response.status == 200){
-          try{
+        if (response.status == 200) {
+          try {
             const data = JSON.parse(JSON.stringify(response.body))
-            if (data.display_notification){
+            if (data.display_notification) {
               this.notification_message.set(data.message);
             }
-          } catch (error){
+          } catch (error) {
             console.log(error);
           }
         }
-      }, 
+      },
       error: (error) => {
         console.log(error);
       }
@@ -278,56 +281,56 @@ export class PreferencesComponent implements OnInit{
   }
 
 
-  autolockDelayToMinutes(){
-    if(this.duration_unit() == "hour"){
+  autolockDelayToMinutes() {
+    if (this.duration_unit() == "hour") {
       return this.autolock_delay() * 60;
     } else {
       return this.autolock_delay();
     }
   }
 
-  autolockDelayUpdate(){
+  autolockDelayUpdate() {
     this.autolock_display_error.set(false);
     this.autolock_value_updated.set(false);
     this.autolock_is_updating.set(true);
     const autolock_delay_minutes = this.autolockDelayToMinutes();
-    this.http.put("/api/v1/preferences", {"id":"autolock_delay", "value":autolock_delay_minutes}, {withCredentials: true, observe: 'response'}).subscribe({
+    this.http.put(this.apiService.baseURL + "/api/v1/preferences", { "id": "autolock_delay", "value": autolock_delay_minutes }, { withCredentials: true, observe: 'response' }).subscribe({
       next: () => {
         this.autolock_value_updated.set(true);
         this.autolockDelayUpdateDone();
-      }, 
+      },
       error: (error) => {
         this.autolock_is_updating.set(false);
-        if(error.status == 400){
-          if(error.error.message == "invalid_duration"){
+        if (error.status == 400) {
+          if (error.error.message == "invalid_duration") {
             this.autolock_display_error.set(true);
             this.autolockDelayUpdateFailed();
             this.minimum_duration.set(error.error.minimum_duration_min);
-            this.maximum_duration.set(error.error.maximum_duration_min/60);
+            this.maximum_duration.set(error.error.maximum_duration_min / 60);
             return;
           }
         }
         let errorMessage = "";
-        if(error.error.message != null){
+        if (error.error.message != null) {
           errorMessage = error.error.message;
-        } else if(error.error.detail != null){
+        } else if (error.error.detail != null) {
           errorMessage = error.error.detail;
         }
-        if(error.status == 0){
+        if (error.status == 0) {
           errorMessage = "vault.error.server_unreachable"
-        } else if (error.status == 401){
+        } else if (error.status == 401) {
           this.userService.clear();
-          this.router.navigate(["/login/sessionEnd"], {relativeTo:this.route.root});
+          this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
           return;
         }
         this.translate.get('preference.error.update').subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage),"");
+          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
         });
       }
     });
   }
 
-  autolockDelayUpdateDone(){
+  autolockDelayUpdateDone() {
     this.autolock_is_updating.set(false);
     this.autolock_update_done_animation.set(true);
     setTimeout(() => {
@@ -335,7 +338,7 @@ export class PreferencesComponent implements OnInit{
     }, 1000);
   }
 
-  autolockDelayUpdateFailed(){
+  autolockDelayUpdateFailed() {
     this.autolock_is_updating.set(false);
     this.autolock_update_failed_animation.set(true);
     setTimeout(() => {
@@ -343,19 +346,19 @@ export class PreferencesComponent implements OnInit{
     }, 1000);
   }
 
-  input_auto_compute_size(value:any){
+  input_auto_compute_size(value: any) {
     let size = 5;
-    if(value != null){
+    if (value != null) {
       size += value.toString().length;
     }
     return size;
   }
 
-  change_duration_unit(value:string){
-    if(value == "minute"){
+  change_duration_unit(value: string) {
+    if (value == "minute") {
       this.duration_unit.set("minute");
-    } else if(value == "hour"){
+    } else if (value == "hour") {
       this.duration_unit.set("hour");
-    } 
+    }
   }
 }

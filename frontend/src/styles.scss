@@ -18,21 +18,19 @@ $yellow: #FFCF56;
 $dark: #16262E;
 $green: #63A375;
 $grey-light: #D3D3D3;
-$grey-lighter:#E5E4E2;
+$grey-lighter: #E5E4E2;
 
 
 
-@use "../node_modules/bulma/sass" with (
-  $info:  $blue,
+@use "../node_modules/bulma/sass" with ($info: $blue,
   $link: $blue,
-  $danger:$red,
-  $warning:$yellow,
-  $dark:$dark,
+  $danger: $red,
+  $warning: $yellow,
+  $dark: $dark,
   $success: $green,
-  $primary:$blue,
-  $black:$dark,
-  $grey-light:$grey-light
-);
+  $primary: $blue,
+  $black: $dark,
+  $grey-light: $grey-light);
 
 /*
 Note: The following codes is an alternative design. Not currently in use.
@@ -53,44 +51,63 @@ Note: The following codes is an alternative design. Not currently in use.
 }*/
 
 :root {
-  --color-blue:         #5AA9E6;
-  --color-red:          #FE6847;
-  --color-yellow:       #FFCF56;
-  --color-dark:         #16262E;
-  --color-green:        #63A375;
-  --color-grey-light:   #D3D3D3;
+  --color-blue: #5AA9E6;
+  --color-red: #FE6847;
+  --color-yellow: #FFCF56;
+  --color-dark: #16262E;
+  --color-green: #63A375;
+  --color-grey-light: #D3D3D3;
   --color-grey-lighter: #E5E4E2;
 }
 
 
 
 .totp-card {
-  background: rgba(255, 255, 255, 0.08); 
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-.totp-card-blue { border-left: 6px solid $blue; box-shadow: 0 0 12px rgba($blue, 0.5); color:$blue;}
-.totp-card-green{ border-left: 6px solid $green; box-shadow: 0 0 12px rgba($green, 0.5); color:$green;} 
-.totp-card-red { border-left: 6px solid $red; box-shadow: 0 0 12px rgba($red, 0.5); color:$red;} 
-.totp-card-yellow{ border-left: 6px solid $yellow; box-shadow: 0 0 12px rgba($yellow, 0.5);  color:$yellow;}
+.totp-card-blue {
+  border-left: 6px solid $blue;
+  box-shadow: 0 0 12px rgba($blue, 0.5);
+  color: $blue;
+}
+
+.totp-card-green {
+  border-left: 6px solid $green;
+  box-shadow: 0 0 12px rgba($green, 0.5);
+  color: $green;
+}
+
+.totp-card-red {
+  border-left: 6px solid $red;
+  box-shadow: 0 0 12px rgba($red, 0.5);
+  color: $red;
+}
+
+.totp-card-yellow {
+  border-left: 6px solid $yellow;
+  box-shadow: 0 0 12px rgba($yellow, 0.5);
+  color: $yellow;
+}
 
 .totp-card-blue .card-content {
-  color:$blue;
+  color: $blue;
 }
 
 .totp-card-green .card-content {
-  color:$green;
+  color: $green;
 }
 
 .totp-card-red .card-content {
-  color:$red;
+  color: $red;
 }
 
 .totp-card-yellow .card-content {
-  color:$yellow;
+  color: $yellow;
 }
 
 /*
@@ -128,20 +145,19 @@ Note: The following codes is an alternative design. Not currently in use.
   --bg: red; //linear-gradient(135deg, #f9fafb 0%, #f0f2f5 100%)
 }
 
-[data-theme=dark]  {
-      --faqbg: hsl(0, 0%, 0%);
-      --bg: linear-gradient(135deg, #0f1115 0%, #1a1d22 100%)
-
+[data-theme=dark] {
+  --faqbg: hsl(0, 0%, 0%);
+  --bg: linear-gradient(135deg, #0f1115 0%, #1a1d22 100%)
 }
 
 [data-theme=light] {
-      --faqbg: hsl(0, 0%, 98%);
-      --bg: linear-gradient(135deg, #f9fafb 0%, #f0f2f5 100%)
+  --faqbg: hsl(0, 0%, 98%);
+  --bg: linear-gradient(135deg, #f9fafb 0%, #f0f2f5 100%)
 }
 
 body {
   background: var(--bg);
-  
+
 }
 
 
@@ -152,35 +168,37 @@ body {
 }
 
 
-a:hover{
+a:hover {
   text-decoration: underline;
 }
 
 
-*, html {
+*,
+html {
 
   scroll-behavior: smooth !important;
 }
-.noHover{
+
+.noHover {
   text-decoration: none !important;
 }
 
 video {
   max-height: 50vh !important;
-  width:auto !important;
+  width: auto !important;
 }
 
-#reloadVault:hover{
+#reloadVault:hover {
   font-weight: bold;
 }
 
-#reloadVault{
+#reloadVault {
   cursor: pointer;
 }
 
-#static_links{
+#static_links {
   position: fixed;
-  bottom: 18px;
+  bottom: 90px;
   right: 18px;
   z-index: 99 !important;
 }
@@ -188,9 +206,10 @@ video {
 .coffee-button {
   width: 60px;
   height: 60px;
-  background-color: #ffdd57; /* Background color for the button */
+  background-color: #ffdd57;
+  /* Background color for the button */
   border-radius: 50%;
-  
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -217,9 +236,10 @@ video {
   width: 60px;
   height: 60px;
   padding: 10px;
-  background-color: #ffffff; /* Background color for the button */
+  background-color: #ffffff;
+  /* Background color for the button */
   border-radius: 50%;
-  
+
   display: none;
   justify-content: center;
   align-items: center;
@@ -229,7 +249,7 @@ video {
 }
 
 #add-code-button img {
-  width: 30px; 
+  width: 30px;
   height: 30px;
 }
 
@@ -239,8 +259,11 @@ video {
 }
 
 
-.coffee-button:hover, .github-button:hover, #add-code-button:hover {
-  transform: scale(1.1); /* Animation on hover */
+.coffee-button:hover,
+.github-button:hover,
+#add-code-button:hover {
+  transform: scale(1.1);
+  /* Animation on hover */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -249,16 +272,16 @@ video {
 #google-tag:hover,
 #google-status-tag:hover,
 #download-tag:hover,
-#download-status-tag:hover{
+#download-status-tag:hover {
   box-shadow: black 0px 0px 4px;
 }
 
-#totp-tag:hover ~ #totp-status-tag,
-#totp-status-tag:hover ~ #totp-tag,
-#google-tag:hover ~ #google-status-tag,
-#google-status-tag:hover ~ #google-tag,
-#download-tag:hover ~ #download-status-tag,
-#download-status-tag:hover ~ #download-tag {
+#totp-tag:hover~#totp-status-tag,
+#totp-status-tag:hover~#totp-tag,
+#google-tag:hover~#google-status-tag,
+#google-status-tag:hover~#google-tag,
+#download-tag:hover~#download-status-tag,
+#download-status-tag:hover~#download-tag {
   box-shadow: black 0px 0px 4px;
 }
 
@@ -274,17 +297,49 @@ video {
 }
 
 @keyframes shake_anim {
-  0% { transform: translate(1px, 1px) rotate(0deg); }
-  10% { transform: translate(-1px, -2px) rotate(-1deg); }
-  20% { transform: translate(-3px, 0px) rotate(1deg); }
-  30% { transform: translate(3px, 2px) rotate(0deg); }
-  40% { transform: translate(1px, -1px) rotate(1deg); }
-  50% { transform: translate(-1px, 2px) rotate(-1deg); }
-  60% { transform: translate(-3px, 1px) rotate(0deg); }
-  70% { transform: translate(3px, 1px) rotate(-1deg); }
-  80% { transform: translate(-1px, -1px) rotate(1deg); }
-  90% { transform: translate(1px, 2px) rotate(0deg); }
-  100% { transform: translate(1px, -2px) rotate(-1deg); }
+  0% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+
+  10% {
+    transform: translate(-1px, -2px) rotate(-1deg);
+  }
+
+  20% {
+    transform: translate(-3px, 0px) rotate(1deg);
+  }
+
+  30% {
+    transform: translate(3px, 2px) rotate(0deg);
+  }
+
+  40% {
+    transform: translate(1px, -1px) rotate(1deg);
+  }
+
+  50% {
+    transform: translate(-1px, 2px) rotate(-1deg);
+  }
+
+  60% {
+    transform: translate(-3px, 1px) rotate(0deg);
+  }
+
+  70% {
+    transform: translate(3px, 1px) rotate(-1deg);
+  }
+
+  80% {
+    transform: translate(-1px, -1px) rotate(1deg);
+  }
+
+  90% {
+    transform: translate(1px, 2px) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(1px, -2px) rotate(-1deg);
+  }
 }
 
 
@@ -303,38 +358,46 @@ video {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
 .toast-top-center {
   top: 0;
   right: 0;
   width: 100%;
 }
+
 .toast-bottom-center {
   bottom: 0;
   right: 0;
   width: 100%;
 }
+
 .toast-top-full-width {
   top: 0;
   right: 0;
   width: 100%;
 }
+
 .toast-bottom-full-width {
   bottom: 0;
   right: 0;
   width: 100%;
 }
+
 .toast-top-left {
   top: 12px;
   left: 12px;
 }
+
 .toast-top-right {
   top: 12px;
   right: 12px;
 }
+
 .toast-bottom-right {
   right: 12px;
   bottom: 12px;
 }
+
 .toast-bottom-left {
   bottom: 12px;
   left: 12px;
@@ -344,17 +407,21 @@ video {
 .toast-title {
   font-weight: bold;
 }
+
 .toast-message {
   word-wrap: break-word;
 }
+
 .toast-message a,
 .toast-message label {
   color: #FFFFFF;
 }
+
 .toast-message a:hover {
   color: #CCCCCC;
   text-decoration: none;
 }
+
 .toast-close-button {
   position: relative;
   right: -0.3em;
@@ -366,6 +433,7 @@ video {
   text-shadow: 0 1px 0 #ffffff;
   /* opacity: 0.8; */
 }
+
 .toast-close-button:hover,
 .toast-close-button:focus {
   color: #000000;
@@ -373,6 +441,7 @@ video {
   cursor: pointer;
   opacity: 0.4;
 }
+
 /*Additional properties for button version
  iOS requires the button element instead of an anchor tag.
  If you want the anchor version, it requires `href="#"`.*/
@@ -382,14 +451,17 @@ button.toast-close-button {
   background: transparent;
   border: 0;
 }
+
 .toast-container {
   pointer-events: none;
   position: fixed;
   z-index: 999999;
 }
+
 .toast-container * {
   box-sizing: border-box;
 }
+
 .toast-container .ngx-toastr {
   position: relative;
   overflow: hidden;
@@ -403,57 +475,70 @@ button.toast-close-button {
   box-shadow: 0 0 12px #999999;
   color: #FFFFFF;
 }
+
 .toast-container .ngx-toastr:hover {
   box-shadow: 0 0 12px #000000;
   opacity: 1;
   cursor: pointer;
 }
+
 .toast-info {
   background-image: url("/assets/circle-info-solid.svg");
 }
+
 .toast-error {
   background-image: url("/assets/circle-xmark-regular.svg");
 }
+
 .toast-success {
   background-image: url("/assets/circle-check-regular.svg");
 }
+
 .toast-warning {
   background-image: url("/assets/circle-exclamation-solid.svg");
 }
+
 .toast-container.toast-top-center .ngx-toastr,
 .toast-container.toast-bottom-center .ngx-toastr {
   width: 300px;
   margin-left: auto;
   margin-right: auto;
 }
+
 .toast-container.toast-top-full-width .ngx-toastr,
 .toast-container.toast-bottom-full-width .ngx-toastr {
   width: 96%;
   margin-left: auto;
   margin-right: auto;
 }
+
 .ngx-toastr {
   background-color: #16262E;
-  
+
   pointer-events: auto;
 }
+
 .toast-success {
   background-color: rgba(99, 163, 117, 0.9);
   backdrop-filter: blur(5px);
 }
+
 .toast-error {
   background-color: rgba(254, 105, 71, 0.9);
   backdrop-filter: blur(5px);
 }
+
 .toast-info {
   background-color: rgba(90, 169, 230, 0.9);
   backdrop-filter: blur(5px);
 }
+
 .toast-warning {
   background-color: rgba(255, 207, 86, 0.9);
-  color:#16262E !important;
+  color: #16262E !important;
   backdrop-filter: blur(5px);
 }
+
 .toast-progress {
   position: absolute;
   left: 0;
@@ -462,27 +547,32 @@ button.toast-close-button {
   background-color: #000000;
   opacity: 0.4;
 }
+
 /* Responsive Design */
 @media all and (max-width: 240px) {
   .toast-container .ngx-toastr.div {
     padding: 8px 8px 8px 50px;
     width: 11em;
   }
+
   .toast-container .toast-close-button {
     right: -0.2em;
     top: -0.2em;
   }
 }
+
 @media all and (min-width: 241px) and (max-width: 480px) {
   .toast-container .ngx-toastr.div {
     padding: 8px 8px 8px 50px;
     width: 18em;
   }
+
   .toast-container .toast-close-button {
     right: -0.2em;
     top: -0.2em;
   }
 }
+
 @media all and (min-width: 481px) and (max-width: 768px) {
   .toast-container .ngx-toastr.div {
     padding: 15px 15px 15px 50px;

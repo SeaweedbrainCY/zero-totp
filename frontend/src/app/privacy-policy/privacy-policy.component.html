@@ -1,38 +1,34 @@
-<section class="hero content is-halfheight m-6  has-text-weight-medium pb-6	" style="min-height: 70vh;">
+<section class="hero content is-halfheight ml-6 mr-6 mb-6  has-text-weight-medium pb-6	" style="min-height: 70vh;">
   @if (!is_privacy_policy_loaded() && !loading_error()) {
-    <article class="hero-body is-flex is-justify-content-center"
-      >
-      <div>
-        <p class="has-text-weight-bold has-text-centered">{{ 'privacy.loading' | translate }}<br>
-          <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#000000;"
+  <article class="hero-body is-flex is-justify-content-center">
+    <div>
+      <p class="has-text-weight-bold has-text-centered">{{ 'privacy.loading' | translate }}<br>
+        <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined" style="color:#000000;"
           size="2xl"></fa-icon>
-        </p>
-        <p class="has-text-weight-light has-text-centered">{{ 'privacy.fallback_message' | translate }}
-          <a href="https://github.com/SeaweedbrainCY/zero-totp/tree/main/api/assets/privacy_policy">GitHub <fa-icon
-          [icon]="faArrowUpRightFromSquare"></fa-icon></a>.
-        </p>
-      </div>
-    </article>
+      </p>
+      <p class="has-text-weight-light has-text-centered">{{ 'privacy.fallback_message' | translate }}
+        <a href="https://github.com/SeaweedbrainCY/zero-totp/tree/main/api/assets/privacy_policy">GitHub <fa-icon
+            [icon]="faArrowUpRightFromSquare"></fa-icon></a>.
+      </p>
+    </div>
+  </article>
   }
   @if (loading_error()) {
-    <article class="hero-body is-flex is-justify-content-center"
-      >
-      <div>
-        <p class="has-text-weight-bold has-text-centered">{{ 'privacy.error_loading' | translate }}<br>
-          <fa-icon [icon]="faCircleXmark" style="color:#FE6847;"size="2xl"></fa-icon>
-        </p>
-        <p class="has-text-weight-bold has-text-centered">{{ 'privacy.error_message' | translate }}
-          <a href="https://github.com/SeaweedbrainCY/zero-totp/tree/main/api/assets/privacy_policy">GitHub <fa-icon
-          [icon]="faArrowUpRightFromSquare"></fa-icon></a>.
-        </p>
-      </div>
-    </article>
+  <article class="hero-body is-flex is-justify-content-center">
+    <div>
+      <p class="has-text-weight-bold has-text-centered">{{ 'privacy.error_loading' | translate }}<br>
+        <fa-icon [icon]="faCircleXmark" style="color:#FE6847;" size="2xl"></fa-icon>
+      </p>
+      <p class="has-text-weight-bold has-text-centered">{{ 'privacy.error_message' | translate }}
+        <a href="https://github.com/SeaweedbrainCY/zero-totp/tree/main/api/assets/privacy_policy">GitHub <fa-icon
+            [icon]="faArrowUpRightFromSquare"></fa-icon></a>.
+      </p>
+    </div>
+  </article>
   }
   @if (privacy_policy_md() != undefined && !loading_error()) {
-    <markdown
-      [data]="privacy_policy_md()"
-      >
-    </markdown>
+  <markdown [data]="privacy_policy_md()">
+  </markdown>
   }
 
 </section>

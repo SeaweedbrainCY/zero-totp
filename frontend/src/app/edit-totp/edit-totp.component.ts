@@ -11,6 +11,7 @@ import URLParse from 'url-parse';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { TOTP } from 'totp-generator'
+import { ApiService } from '../services/API/api.service';
 
 @Component({
   selector: 'app-edit-totp',
@@ -70,6 +71,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
     private crypto: Crypto,
     private translate: TranslateService,
     private toastr: ToastrService,
+    private apiService: ApiService
   ) {
     router.events.subscribe((url: any) => {
       if (url instanceof NavigationEnd) {
@@ -252,7 +254,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
   }
 
   get_preferences() {
-    this.http.get("/api/v1/preferences?fields=favicon_policy", { withCredentials: true, observe: 'response' }).subscribe((response) => {
+    this.http.get(this.apiService.baseURL + "/api/v1/preferences?fields=favicon_policy", { withCredentials: true, observe: 'response' }).subscribe((response) => {
       if (response.body != null) {
         const data = JSON.parse(JSON.stringify(response.body));
         if (data.favicon_policy != null) {
@@ -284,7 +286,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
 
   getSecretTOTP() {
     this.uuid = this.secret_uuid!;
-    this.http.get("/api/v1/encrypted_secret/" + this.uuid, { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.get(this.apiService.baseURL + "/api/v1/encrypted_secret/" + this.uuid, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         try {
           const data = JSON.parse(JSON.stringify(response.body));
@@ -417,7 +419,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
   }
 
   addNewSecret(enc_property: string) {
-    this.http.post("/api/v1/encrypted_secret", { enc_secret: enc_property }, { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.post(this.apiService.baseURL + "/api/v1/encrypted_secret", { enc_secret: enc_property }, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         this.uuid = data.uuid;
@@ -450,7 +452,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
   }
 
   updateSecret(enc_property: string) {
-    this.http.put("/api/v1/encrypted_secret/" + this.uuid, { enc_secret: enc_property }, { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.put(this.apiService.baseURL + "/api/v1/encrypted_secret/" + this.uuid, { enc_secret: enc_property }, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.add.success"), "");
         this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it 
@@ -480,7 +482,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
 
   delete() {
     this.isDestroying.set(true);
-    this.http.delete("/api/v1/encrypted_secret/" + this.secret_uuid, { withCredentials: true, observe: 'response' }).subscribe({
+    this.http.delete(this.apiService.baseURL + "/api/v1/encrypted_secret/" + this.secret_uuid, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         if (response.status == 201) {
           this.isDestroying.set(false);

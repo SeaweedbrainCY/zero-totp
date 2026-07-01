@@ -6,6 +6,7 @@
     "oops": "Oups !"
   },
   "Home": "Accueil",
+  "Language": "Langue",
   "Search": "Rechercher",
   "abort": "Abandonner",
   "about": "À propos",
@@ -143,6 +144,15 @@
   },
   "add": "Ajouter",
   "always": "Toujours",
+  "app": {
+    "troubleshootingmessage": {
+      "rescue": {
+        "zero-totp": "Ouvrir une sauvegarde sur rescue.zero-totp.com"
+      },
+      "status": "Vérifier le statut de Zero-TOTP",
+      "title": "Des problèmes pour charger Zero-TOTP ? "
+    }
+  },
   "available_soon": "Disponible bientôt !",
   "blue": "Bleu",
   "callback": {
@@ -481,6 +491,7 @@
       "will_be_kept": "Sera ajouté"
     }
   },
+  "invalid_url": "URL invalide",
   "less": "Moins",
   "loading": "Chargement ...",
   "log_in": "Connexion",
@@ -540,13 +551,19 @@
       "session_timeout": "Pour ta sécurité, tu as été déconnecté car tu étais inactif. Tu peux personnaliser la durée d'inactivité maximum dans tes préférences."
     },
     "instance": {
+      "confirm": "Valider",
       "select": {
+        "subtitle": "Choisis ton serveur Zero-TOTP",
         "title": "Sélectionne une instance Zero-TOTP",
         "why": {
           "p1": "Zero-TOTP est open source, ce qui signifie que tout le monde peut héberger son propre Zero-TOTP. Ne te connecte que sur une instance de Zero-TOTP en laquelle tu as confiance.",
           "p2": "En cas de doute, utilise l'instance officielle, zero-totp.com",
           "title": "Pourquoi c'est important ?"
         }
+      },
+      "url": {
+        "hint": "Entre l'URL de ton serveur Zero-TOTP auto-hébergé",
+        "label": "URL du serveur"
       },
       "you_are_using": "Tu utilises"
     },

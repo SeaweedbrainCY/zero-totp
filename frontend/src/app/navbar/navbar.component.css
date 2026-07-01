@@ -1,35 +1,136 @@
 .navbar {
-    box-shadow: black 0px 0px 3px;
-  }
+  box-shadow: black 0px 0px 3px;
+}
 
-  .lang-dropdown {
-    .navbar-dropdown {
-      width: 180px;
-  
-      .navbar-item {
-        display: flex;
-        align-items: center;
-  
-        img {
-          display: block;
-          height: 26px;
-          width: 26px;
-          min-width: 26px;
-          border-radius: 50%;
-        }
-  
-        span {
-          display: block;
-          margin-left: 10px;
-        }
+.lang-dropdown {
+  .navbar-dropdown {
+    width: 180px;
+
+    .navbar-item {
+      display: flex;
+      align-items: center;
+
+      img {
+        display: block;
+        height: 26px;
+        width: 26px;
+        min-width: 26px;
+        border-radius: 50%;
+      }
+
+      span {
+        display: block;
+        margin-left: 10px;
       }
     }
   }
+}
 
 .navbar-dropdown:not(.is-active) {
   display: none;
 }
-.navbar-dropdown .is-active{
+
+.navbar-dropdown .is-active {
   display: block;
 }
-  
+
+nav {
+  padding-top: env(safe-area-inset-top);
+}
+
+
+:host {
+  --nav-bg: var(--color-dark);
+  --nav-icon-active: var(--color-blue);
+  --nav-pill-bg: rgba(29, 158, 117, 0.12);
+  --nav-icon-muted: #9ca3af;
+  --nav-border: rgba(0, 0, 0, 0.08);
+  --nav-height: 60px;
+  --nav-transition: 0.18s ease;
+}
+
+/* ── Bar ──────────────────────────────────────────── */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+
+  display: flex;
+  align-items: center;
+
+  height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+
+  background: var(--nav-bg);
+  border-top: 0.5px solid var(--nav-border);
+}
+
+/* ── Items ────────────────────────────────────────── */
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Pill ─────────────────────────────────────────── */
+
+.nav-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  border-radius: 999px;
+
+  background: transparent;
+  transition: background var(--nav-transition);
+
+  fa-icon {
+    font-size: 20px;
+    color: var(--nav-icon-muted);
+    transition: color var(--nav-transition);
+  }
+}
+
+/* ── Active state ─────────────────────────────────── */
+
+.nav-item.active .nav-pill {
+  background: var(--nav-pill-bg);
+
+  fa-icon {
+    color: var(--nav-icon-active);
+  }
+}
+
+/* ── Spacer ───────────────────────────────────────── */
+/*    Prevents page content from hiding under the bar  */
+
+.bottom-nav-spacer {
+  height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
+}
+
+.top-nav-spacer {
+  height: calc(var(--bulma-navbar-height) + env(safe-area-inset-top, 0px));
+}
+
+/* ── Mobile Dark/light theme selection ─────────────────────────────────── */
+
+
+#dark_theme_button.selected {
+  background-color: rgba(90, 169, 230, 0.4);
+}
+
+#dark_theme_icon.selected {
+  color: #cc9aff
+}
+
+#light_theme_button.selected {
+  background-color: rgba(90, 169, 230, 0.4);
+}

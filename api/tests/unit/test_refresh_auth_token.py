@@ -62,6 +62,8 @@ class TestRefreshAuthToken(unittest.TestCase):
             self.assertIn("Set-Cookie", response.headers)
             self.assertIn("session-token", response.headers["Set-Cookie"])
             self.assertIn("refresh-token", response.headers["Set-Cookie"])
+            self.assertNotIn("session_token", response.json())
+            self.assertNotIn("refresh_token", response.json())
             cookies = response.headers["Set-Cookie"].split("session-token=")
             self.assertEqual(len(cookies), 2, "Session-token found multiple times in the response")
             if "refresh-token" in cookies[1]:
@@ -447,6 +449,29 @@ class TestRefreshAuthToken(unittest.TestCase):
             response = self.client.put(self.endpoint)
             self.assertEqual(response.status_code, 429)
             self.assertTrue(RateLimitingRepo().is_login_rate_limited("1.1.1.1"))
+
+
+    def test_refresh_token_from_mobile(self):
+        with self.flask_application.app.app_context():
+            body =   {"session-token":self.session_token,"refresh-token": self.refresh_token}
+            headers = {"Origin": "capacitor://localhost"}
+            response = self.client.put(self.endpoint, headers=headers, json=body)
+
+            self.assertEqual(response.status_code, 200)
+
+            self.assertIn("session_token", response.json())
+            self.assertIn("refresh_token", response.json())
+            
+            old_session_token_entry = SessionTokenRepo().get_session_token(self.session_token)
+            new_hashed_refresh_token = sha256(response.json().get("refresh_token").encode('utf-8')).hexdigest()
+            new_refresh_token_entry = RefreshTokenRepo().get_refresh_token_by_hash(new_hashed_refresh_token)
+            new_session_token_entry = SessionTokenRepo().get_session_token(response.json().get("session_token"))
+            
+            self.assertEqual(old_session_token_entry.session.id, new_session_token_entry.session.id)
+            self.assertEqual(old_session_token_entry.session.id, new_refresh_token_entry.session.id)
+
+
+
             
 
     

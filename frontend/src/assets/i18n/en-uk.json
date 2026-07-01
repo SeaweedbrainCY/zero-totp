@@ -6,6 +6,7 @@
     "oops": "Oops!"
   },
   "Home": "Home",
+  "Language": "Language",
   "Search": "Search",
   "abort": "Abort",
   "about": "About",
@@ -143,6 +144,15 @@
   },
   "add": "Add",
   "always": "Always",
+  "app": {
+    "troubleshootingmessage": {
+      "rescue": {
+        "zero-totp": "Open a backup on rescue.zero-totp.com"
+      },
+      "status": "Check Zero-TOTP status",
+      "title": " Trouble loading Zero-TOTP ?"
+    }
+  },
   "available_soon": "Available soon !",
   "blue": "Blue",
   "callback": {
@@ -308,6 +318,7 @@
     "bug": "Report a bug",
     "opensource": "Open-Source Component"
   },
+  "general_error": "An error occured. Please, try again.",
   "generic_errors": {
     "bad_email": "Invalid email",
     "email_exists": "Email already exists",
@@ -483,6 +494,7 @@
       "will_be_kept": "Will be added"
     }
   },
+  "invalid_url": "Invalid URL",
   "less": "Less",
   "loading": "Loading ...",
   "log_in": "Log in",
@@ -542,13 +554,20 @@
       "session_timeout": "For your safety, you have been disconnected after due to inactivity. You can customize this delay in your preferences"
     },
     "instance": {
+      "confirm": "Confirm",
+      "recent": "Recent instances",
       "select": {
+        "subtitle": "Choose your Zero-TOTP server",
         "title": "Select a Zero-TOTP instance",
         "why": {
           "p1": "Zero-TOTP is open-source, meaning anyone can run their own Zero-TOTP. Only signup or login to a Zero-TOTP instance that you trust.",
           "p2": "If you have any doubt, use the official instance, zero-totp.com.",
           "title": "Why is this important ?"
         }
+      },
+      "url": {
+        "hint": "Enter the URL of your self-hosted Zero-TOTP instance",
+        "label": "Instance URL"
       },
       "you_are_using": "You are using"
     },

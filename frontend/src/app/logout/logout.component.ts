@@ -2,39 +2,41 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
-import {faCircleNotch} from '@fortawesome/free-solid-svg-icons';
+import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+import { ApiService } from '../services/API/api.service';
 
 
 @Component({
-    selector: 'app-logout',
-    templateUrl: './logout.component.html',
-    styleUrls: ['./logout.component.css'],
-    standalone: false
+  selector: 'app-logout',
+  templateUrl: './logout.component.html',
+  styleUrls: ['./logout.component.css'],
+  standalone: false
 })
-export class LogoutComponent implements OnInit{
+export class LogoutComponent implements OnInit {
   faCircleNotch = faCircleNotch;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private userService: UserService,
-    private http: HttpClient
-    ) { }
+    private http: HttpClient,
+    private apiService: ApiService
+  ) { }
 
   ngOnInit(): void {
     this.loggout();
   }
 
-  loggout(){
-    this.http.put('/api/v1/logout', {},{withCredentials: true, observe: 'response'}).subscribe({
+  loggout() {
+    this.http.put(this.apiService.baseURL + '/api/v1/logout', {}, { withCredentials: true, observe: 'response' }).subscribe({
       next: () => {
         this.userService.clear();
-        this.router.navigate(["/login"], {relativeTo:this.route.root});
+        this.router.navigate(["/login"], { relativeTo: this.route.root });
       },
       error: () => {
         this.userService.clear();
-        this.router.navigate(["/login"], {relativeTo:this.route.root});
+        this.router.navigate(["/login"], { relativeTo: this.route.root });
       }
     });
-    }
+  }
 }

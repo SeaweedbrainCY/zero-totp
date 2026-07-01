@@ -1,140 +1,291 @@
+@if(isMobileDevice()){
+<nav class="pt-0">
+  @if (notification_message() != undefined) {
+  <div class="notification is-link is-light mb-0 is-flex is-justify-content-space-between"
+    style="padding-top: env(safe-area-inset-top);">
+    <div class="is-flex is-justify-content-center is-flex-direction-column">
+      <div class="is-flex">
+        <div class="is-flex is-justify-content-center is-flex-direction-column mr">
+          <fa-icon [icon]="faLightbulb" class="mr-4"></fa-icon>
+        </div>
+        <strong>{{notification_message()}}</strong>
+      </div>
+    </div>
+    <div class="is-flex is-justify-content-center is-flex-direction-column"
+      [ngClass]='{"is-fixed-top":notification_message() == undefined}'>
+      <button class="button is-ghost has-text-grey-light" (click)="hide_notification()"> <fa-icon [icon]="faXmark"
+          size="xl"></fa-icon></button>
+    </div>
+  </div>
+  }
+  <div class="navbar is-dark  is-flex is-justify-content-center is-align-items-center"
+    style="padding-top: env(safe-area-inset-top);">
+    <div class="navbar-item is-flex is-justify-content-center is-align-items-center">
+      <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
+    </div>
+  </div>
+</nav>
+<nav class="bottom-nav pt-0 pb-0" role="navigation" aria-label="Main navigation">
+  @if(userService.id()!=null){
+  <a class="nav-item" routerLink="/vault" routerLinkActive="active" ariaCurrentWhenActive="page"
+    [routerLinkActiveOptions]="{exact: true}">
+    <span class="nav-pill">
+      <fa-icon [icon]="faVault" aria-hidden="true" />
+    </span>
+  </a>
+
+  <a class="nav-item" routerLink="/vault/add" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <span class="nav-pill">
+      <fa-icon [icon]="faPlus" aria-hidden="true" />
+    </span>
+  </a>
+
+  <a class="nav-item" routerLink="/preferences" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <span class="nav-pill">
+      <fa-icon [icon]="faGears" aria-hidden="true" />
+    </span>
+  </a>
+
+  <a class="nav-item" routerLink="/account" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <span class="nav-pill">
+      <fa-icon [icon]="faUser" aria-hidden="true" />
+    </span>
+  </a>
+  }
+  @if(userService.id()==null){
+  <a class="nav-item" routerLink="/signup" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <span class="nav-pill">
+      <fa-icon [icon]="faUserPlus" aria-hidden="true" />
+    </span>
+  </a>
+  <a class="nav-item" routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page">
+    <span class="nav-pill">
+      <fa-icon [icon]="faUserCheck" aria-hidden="true" />
+    </span>
+  </a>
+  }
+
+  <div class="dropdown is-up is-right" [ngClass]="{' is-active':isMobileNavBarDropDownActive()}">
+    <div class="dropdown-trigger">
+      <button class="button is-ghost" aria-haspopup="true" aria-controls="dropdown-menu7"
+        (click)="isMobileNavBarDropDownActive.update(v => !v)">
+        <a class="nav-item" routerLinkActive="active" ariaCurrentWhenActive="page">
+          <span class="nav-pill">
+            <fa-icon [icon]="faBars" aria-hidden="true" />
+          </span>
+        </a>
+      </button>
+    </div>
+    <div class="dropdown-menu" id="dropdown-menu7" role="menu">
+      <div class="dropdown-content">
+        <a class="navbar-item" href="https://docs.zero-totp.com" target="_blank" rel="noopener">
+          <fa-icon [icon]="faBook" aria-hidden="true"></fa-icon> Docs <fa-icon [icon]="faUpRightFromSquare"
+            aria-hidden="true"></fa-icon>
+        </a>
+        <a class="navbar-item" (click)="navigateToRoute('faq')"
+          [ngClass]="{'has-text-weight-bold':currentUrl() == '/faq'}">
+          <fa-icon [icon]="faCircleQuestion" aria-hidden="true"></fa-icon> FAQ
+        </a>
+        <hr class="dropdown-divider" />
+        <a class="navbar-item" (click)="isMobileLangDevelopped.update(v => !v)">
+          <fa-icon [icon]="faGlobe" aria-hidden="true"></fa-icon> {{ 'Language' | translate }}
+          @if(isMobileLangDevelopped()){
+          <fa-icon [icon]="faChevronDown" aria-hidden="true"></fa-icon>
+          }
+          @if(!isMobileLangDevelopped()){
+          <fa-icon [icon]="faChevronRight" aria-hidden="true"></fa-icon>
+          }
+        </a>
+        @if(isMobileLangDevelopped()){
+        @for (lang of languages; track lang) {
+        <a class="navbar-item" [ngClass]="{'ml-5':get_current_language_info().name != lang.name}"
+          (click)="changeLanguage(lang.code)">
+          @if(get_current_language_info().name == lang.name){
+          <fa-icon [icon]="faCheck" aria-hidden="true"></fa-icon>
+          }
+          {{lang.name}}
+        </a>
+
+        }
+        }
+
+        <hr class="dropdown-divider" />
+        <div class="is-flex is-justify-content-space-around mt-4 mb-2">
+          <button class="pt-2 pb-2 pr-4 pl-4" style="border-radius: 30px; "
+            [ngClass]="{'selected':current_theme() == 'light'}" id="light_theme_button" (click)="changeTheme('light')">
+            <fa-icon [icon]="faSun" [ngClass]="{'has-text-warning':current_theme() == 'light'}" size="xl"></fa-icon>
+          </button>
+          <button class="pt-2 pb-2 pr-4 pl-4" style="border-radius: 30px;"
+            [ngClass]="{'selected':current_theme() == 'dark'}" id="dark_theme_button" (click)="changeTheme('dark')">
+            <fa-icon [icon]=" faMoon" [ngClass]="{'selected':current_theme() == 'dark'}" size="xl"
+              id="dark_theme_icon"></fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</nav>
+
+
+<!-- push page content above the nav bar -->
+<!--<div class="bottom-nav-spacer"></div>-->
+}
+
+@if(!isMobileDevice()){
 <nav style="position: sticky; top: 0; z-index: 1000;">
   @if (notification_message() != undefined) {
-    <div class="notification is-link is-light mb-0 is-flex is-justify-content-space-between">
-      <div class="is-flex is-justify-content-center is-flex-direction-column">
-        <div class="is-flex">
-          <div class="is-flex is-justify-content-center is-flex-direction-column mr">
-            <fa-icon [icon]="faLightbulb" class="mr-4"></fa-icon>
-          </div>
-          <strong>{{notification_message()}}</strong></div>
+  <div class="notification is-link is-light mb-0 is-flex is-justify-content-space-between">
+    <div class="is-flex is-justify-content-center is-flex-direction-column">
+      <div class="is-flex">
+        <div class="is-flex is-justify-content-center is-flex-direction-column mr">
+          <fa-icon [icon]="faLightbulb" class="mr-4"></fa-icon>
         </div>
-        <div class="is-flex is-justify-content-center is-flex-direction-column" [ngClass]='{"is-fixed-top":notification_message() == undefined}'>
-          <button class="button is-ghost has-text-grey-light" (click)="hide_notification()"> <fa-icon [icon]="faXmark" size="xl" ></fa-icon></button>
-        </div>
+        <strong>{{notification_message()}}</strong>
       </div>
-    }
-    <div class="navbar is-dark " role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        @if (userService.id()!=null) {
-          <a class="navbar-item" (click)="navigateToRoute('/')">
-            <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
-          </a>
-        }
-        @if (userService.id()==null) {
-          <a class="navbar-item"  href="#">
-            <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
-          </a>
-        }
+    </div>
+    <div class="is-flex is-justify-content-center is-flex-direction-column"
+      [ngClass]='{"is-fixed-top":notification_message() == undefined}'>
+      <button class="button is-ghost has-text-grey-light" (click)="hide_notification()"> <fa-icon [icon]="faXmark"
+          size="xl"></fa-icon></button>
+    </div>
+  </div>
+  }
+  <div class="navbar is-dark " role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      @if (userService.id()!=null) {
+      <a class="navbar-item" (click)="navigateToRoute('/')">
+        <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
+      </a>
+      }
+      @if (userService.id()==null) {
+      <a class="navbar-item" href="#">
+        <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP">
+      </a>
+      }
 
-        <a role="button" class="navbar-burger"  id="navbarBurger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" (click)="isNavbarExpanded.update(v => !v)" [ngClass]="{'is-active': isNavbarExpanded()}" >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
+      <a role="button" class="navbar-burger" id="navbarBurger" aria-label="menu" aria-expanded="false"
+        data-target="navbarBasicExample" (click)="isNavbarExpanded.update(v => !v)"
+        [ngClass]="{'is-active': isNavbarExpanded()}">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu" [ngClass]="{'is-active': isNavbarExpanded()}">
+      @if (userService.id()!=null) {
+      <div class="navbar-start">
+        <a class="navbar-item" (click)="navigateToRoute('vault')"
+          [ngClass]="{'has-text-weight-bold':currentUrl() == '/vault'}">
+          <fa-icon [icon]="faVault" class="mr-2"></fa-icon> {{ 'my_vault' | translate }}
+        </a>
+        <a class="navbar-item" (click)="navigateToRoute('vault/add')"
+          [ngClass]="{'has-text-weight-bold':currentUrl() == '/vault/add'}">
+          <fa-icon [icon]="faKey" class="mr-2"></fa-icon> {{ 'navbar.add' | translate }}
+        </a>
+        <a class="navbar-item" (click)="navigateToRoute('preferences')"
+          [ngClass]="{'has-text-weight-bold':currentUrl() == '/preferences'}">
+          <fa-icon [icon]="faGears" class="mr-2"></fa-icon> {{ 'navbar.preferences' | translate }}
+        </a>
+        <a class="navbar-item" (click)="navigateToRoute('account')"
+          [ngClass]="{'has-text-weight-bold':currentUrl() == '/account'}">
+          <fa-icon [icon]="faUser" class="mr-2"></fa-icon> {{ 'navbar.account' | translate }}
+        </a>
+        <a class="navbar-item" href="https://docs.zero-totp.com" target="_blank" rel="noopener">
+          <fa-icon [icon]="faBook"></fa-icon> Docs
+        </a>
+        <a class="navbar-item" (click)="navigateToRoute('faq')"
+          [ngClass]="{'has-text-weight-bold':currentUrl() == '/faq'}">
+          <fa-icon [icon]="faCircleQuestion"></fa-icon> FAQ
         </a>
       </div>
+      }
+      @if (userService.id()==null && !this.userService.isVaultLocal()) {
+      <div class="navbar-start">
+        <a class="navbar-item" (click)="navigateToRoute('')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/'}">
+          <fa-icon [icon]="faHome"></fa-icon> {{ 'Home' | translate }}
+        </a>
+        <a class="navbar-item" (click)="navigateToRoute('login')">
+          <fa-icon [icon]="faVault"></fa-icon> {{ 'my_vault' | translate }}
+        </a>
+        <a class="navbar-item" href="https://docs.zero-totp.com" target="_blank" rel="noopener">
+          <fa-icon [icon]="faBook"></fa-icon> Docs
+        </a>
+        <a class="navbar-item" (click)="navigateToRoute('faq')"
+          [ngClass]="{'has-text-weight-bold':currentUrl() == '/faq'}">
+          <fa-icon [icon]="faCircleQuestion"></fa-icon> FAQ
+        </a>
+      </div>
+      }
+      @if (this.userService.isVaultLocal()) {
+      <div class="navbar-start">
+        <a class="navbar-item" (click)="navigateToRoute('vault')">
+          {{ 'navbar.vault_backup' | translate }}
+        </a>
+      </div>
+      }
 
-      <div id="navbarBasicExample" class="navbar-menu" [ngClass]="{'is-active': isNavbarExpanded()}" >
-        @if (userService.id()!=null) {
-          <div class="navbar-start" >
-            <a class="navbar-item" (click)="navigateToRoute('vault')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/vault'}">
-              <fa-icon [icon]="faVault" class="mr-2"></fa-icon> {{ 'my_vault' | translate }}
-            </a>
-            <a class="navbar-item" (click)="navigateToRoute('vault/add')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/vault/add'}">
-              <fa-icon [icon]="faKey" class="mr-2"></fa-icon>  {{ 'navbar.add' | translate }}
-            </a>
-            <a class="navbar-item" (click)="navigateToRoute('preferences')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/preferences'}">
-              <fa-icon [icon]="faGears" class="mr-2"></fa-icon>  {{ 'navbar.preferences' | translate }}
-            </a>
-            <a class="navbar-item" (click)="navigateToRoute('account')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/account'}">
-              <fa-icon [icon]="faUser" class="mr-2"></fa-icon>  {{ 'navbar.account' | translate }}
-            </a>
-            <a class="navbar-item" href="https://docs.zero-totp.com" target="_blank" rel="noopener">
-              <fa-icon [icon]="faBook"></fa-icon> Docs
-            </a>
-            <a class="navbar-item" (click)="navigateToRoute('faq')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/faq'}">
-              <fa-icon [icon]="faCircleQuestion"></fa-icon> FAQ
-            </a>
-          </div>
-        }
-        @if (userService.id()==null && !this.userService.isVaultLocal()) {
-          <div class="navbar-start" >
-            <a class="navbar-item" (click)="navigateToRoute('')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/'}">
-              <fa-icon [icon]="faHome"></fa-icon> {{ 'Home' | translate }}
-            </a>
-            <a class="navbar-item" (click)="navigateToRoute('login')">
-              <fa-icon [icon]="faVault"></fa-icon> {{ 'my_vault' | translate }}
-            </a>
-            <a class="navbar-item" href="https://docs.zero-totp.com" target="_blank" rel="noopener">
-              <fa-icon [icon]="faBook"></fa-icon> Docs
-            </a>
-            <a class="navbar-item" (click)="navigateToRoute('faq')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/faq'}">
-              <fa-icon [icon]="faCircleQuestion"></fa-icon> FAQ
-            </a>
-          </div>
-        }
-        @if (this.userService.isVaultLocal()) {
-          <div class="navbar-start" >
-            <a class="navbar-item"  (click)="navigateToRoute('vault')">
-              {{ 'navbar.vault_backup' | translate }}
-            </a>
-          </div>
-        }
+      <div class="navbar-end">
+        <div class="navbar-item" [ngClass]="{'is-active': isLangDropdownExpanded()}">
+          <button class="button is-ghost has-text-white" style="padding-left: 0px; padding-right: 0px;"
+            (click)="toggleThemeButton()">
+            @if (current_theme() == 'dark') {
+            <fa-icon [icon]="faSun" class="has-text-warning" size="2xl"></fa-icon>
+            }
+            @if (current_theme() == 'light') {
+            <fa-icon [icon]="faMoon" size="2xl"></fa-icon>
+            }
+          </button>
+        </div>
+        <div class="navbar-item has-dropdown lang-dropdown" [ngClass]="{'is-active': isLangDropdownExpanded()}">
+          <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded.update(v => !v)">
+            <img src="{{get_current_language_info().image}}" alt="{{get_current_language_info().name}}">
+          </a>
 
-        <div class="navbar-end">
-          <div class="navbar-item" [ngClass]="{'is-active': isLangDropdownExpanded()}">
-            <button class="button is-ghost has-text-white" style="padding-left: 0px; padding-right: 0px;" (click)="toggleThemeButton()">
-              @if (current_theme() == 'dark') {
-                <fa-icon [icon]="faSun" class="has-text-warning" size="2xl"></fa-icon>
-              }
-              @if (current_theme() == 'light') {
-                <fa-icon [icon]="faMoon"  size="2xl"></fa-icon>
-              }
-            </button>
-          </div>
-          <div class="navbar-item has-dropdown lang-dropdown" [ngClass]="{'is-active': isLangDropdownExpanded()}">
-            <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded.update(v => !v)">
-              <img src="{{get_current_language_info().image}}" alt="{{get_current_language_info().name}}">
+          <div class="navbar-dropdown is-boxed is-right" [ngClass]="{'is-active': isLangDropdownExpanded()}">
+            @for (lang of languages; track lang) {
+            <a class="navbar-item" (click)="changeLanguage(lang.code)">
+              <img src="{{lang.image}}" alt="{{lang.name}}">
+              <span>{{lang.name}}</span>
             </a>
-
-            <div class="navbar-dropdown is-boxed is-right" [ngClass]="{'is-active': isLangDropdownExpanded()}">
-              @for (lang of languages; track lang) {
-                <a class="navbar-item" (click)="changeLanguage(lang.code)">
-                  <img src="{{lang.image}}" alt="{{lang.name}}">
-                  <span>{{lang.name}}</span>
-                </a>
-              }
-              <hr class="navbar-divider">
-              <a class="navbar-item" href="https://github.com/SeaweedbrainCY/zero-totp/issues?q=is%3Aopen+is%3Aissue+label%3Alocalization">
-                <small>{{ 'navbar.lang.suggest' | translate }}</small>
-              </a>
-            </div>
+            }
+            <hr class="navbar-divider">
+            <a class="navbar-item"
+              href="https://github.com/SeaweedbrainCY/zero-totp/issues?q=is%3Aopen+is%3Aissue+label%3Alocalization">
+              <small>{{ 'navbar.lang.suggest' | translate }}</small>
+            </a>
           </div>
-          <div class="navbar-item">
-            <div class="buttons">
-              @if (userService.id() == null) {
-                <a class="button is-info" (click)="navigateToRoute('signup')">
-                  <span [ngClass]="{'has-text-weight-bold':currentUrl() == '/signup'}">{{ 'sign_up' | translate }}</span>
-                </a>
-              }
-              @if (userService.id()== null) {
-                <a class="button is-light" (click)="navigateToRoute('login')">
-                  <span [ngClass]="{'has-text-weight-bold':currentUrl() == '/login'}">{{ 'log_in' | translate }}</span>
-                </a>
-              }
+        </div>
+        <div class="navbar-item">
+          <div class="buttons">
+            @if (userService.id() == null) {
+            <a class="button is-info" (click)="navigateToRoute('signup')">
+              <span [ngClass]="{'has-text-weight-bold':currentUrl() == '/signup'}">{{ 'sign_up' | translate }}</span>
+            </a>
+            }
+            @if (userService.id()== null) {
+            <a class="button is-light" (click)="navigateToRoute('login')">
+              <span [ngClass]="{'has-text-weight-bold':currentUrl() == '/login'}">{{ 'log_in' | translate }}</span>
+            </a>
+            }
 
-              @if (userService.id() != null) {
-                <a class="button is-light" href="/logout">
-                  <span>{{ 'logout' | translate }}</span>
-                </a>
-              }
-              @if (this.userService.isVaultLocal()) {
-                <a class="button is-light" href="/login">
-                  <span>{{ 'close' | translate }}</span>
-                </a>
-              }
-            </div>
+            @if (userService.id() != null) {
+            <a class="button is-light" [routerLink]="['/logout']">
+              <span>{{ 'logout' | translate }}</span>
+            </a>
+            }
+            @if (this.userService.isVaultLocal()) {
+            <a class="button is-light" [routerLink]="['/login']">
+              <span>{{ 'close' | translate }}</span>
+            </a>
+            }
           </div>
         </div>
       </div>
     </div>
-  </nav>
+  </div>
+</nav>
+<!-- push page content below the nav bar -->
+<!--<div class="top-nav-spacer"></div>-->
+}

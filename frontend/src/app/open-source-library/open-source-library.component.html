@@ -1,94 +1,100 @@
-<section class="hero  is-halfheight m-6 has-text-weight-medium pt-2 pb-6" style="min-height: 70vh; display: block;">
-  <h1 class="is-size-3-mobile  is-size-1-tablet mt-6 has-text-weight-bold " >Open Source Libraries</h1>
+<section class="hero  is-halfheight ml-6 mr-6 mb-6 has-text-weight-medium pt-2 pb-6"
+  style="min-height: 70vh; display: block;">
+  <h1 class="is-size-3-mobile  is-size-1-tablet mt-6 has-text-weight-bold ">Open Source Libraries</h1>
 
   <p class="mt-4">
-  Zero-TOTP uses open source librairie to provide the most secure and reliable service. Zero-TOTP itself is an open source project released under the GPL-3.0 license.</p>
+    Zero-TOTP uses open source librairie to provide the most secure and reliable service. Zero-TOTP itself is an open
+    source project released under the GPL-3.0 license.</p>
   <br>
-    <p>Icons use in this website are free to use (personal and commercial) and come from <a href="https://www.flaticon.com/" title="icons">Flaticon</a> and <a href="https://fontawesome.com/icons/" title="icons">FrontAwesome</a></p><br>
-    <p>
-      Zero-TOTP is built on top of the following open source libraries:
-    </p>
-    <h2  class="is-size-5-mobile  is-size-3-tablet mt-6 has-text-weight-bold ">
-      MIT license
-    </h2>
-    <p>
-      The following components are licensed under the MIT license reproduced below :
-    </p>
-    <div>
-      @for (library of getMITlicense(); track library) {
-        <div class="mt-5 indent">
-          <a href="{{library.url}}" class="is-size-4 has-text-danger has-text-weight-bold">{{library.name}}</a><br>
-          <p>{{library.copyright}}</p>
-          <p class="has-text-grey is-italic">{{library.description}} <a class="has-text-grey" href="{{library.licenseUrl}}">{{library.license}}</a></p>
+  <p>Icons use in this website are free to use (personal and commercial) and come from <a
+      href="https://www.flaticon.com/" title="icons">Flaticon</a> and <a href="https://fontawesome.com/icons/"
+      title="icons">FrontAwesome</a></p><br>
+  <p>
+    Zero-TOTP is built on top of the following open source libraries:
+  </p>
+  <h2 class="is-size-5-mobile  is-size-3-tablet mt-6 has-text-weight-bold ">
+    MIT license
+  </h2>
+  <p>
+    The following components are licensed under the MIT license reproduced below :
+  </p>
+  <div>
+    @for (library of getMITlicense(); track library) {
+    <div class="mt-5 indent">
+      <a href="{{library.url}}" class="is-size-4 has-text-danger has-text-weight-bold">{{library.name}}</a><br>
+      <p>{{library.copyright}}</p>
+      <p class="has-text-grey is-italic">{{library.description}} <a class="has-text-grey"
+          href="{{library.licenseUrl}}">{{library.license}}</a></p>
+    </div>
+    }
+    <div class="is-family-code is-size-6 mt-5 is-flex is-justify-content-center">
+      <article class="message is-dark" style="width:80vw;">
+        <div class="message-header" (click)="MITlicenseExpanded=!MITlicenseExpanded" style="cursor: pointer;">
+          <p>MIT License</p>
+          <p>
+            @if (!MITlicenseExpanded) {
+            <fa-icon [icon]="faChevronDown" style="color:white"></fa-icon>
+            }
+            @if (MITlicenseExpanded) {
+            <fa-icon [icon]="faChevronUp" style="color:white"></fa-icon>
+            }
+          </p>
         </div>
-      }
-      <div class="is-family-code is-size-6 mt-5 is-flex is-justify-content-center">
-        <article class="message is-dark" style="width:80vw;">
-          <div class="message-header" (click)="MITlicenseExpanded=!MITlicenseExpanded" style="cursor: pointer;">
-            <p>MIT License</p>
-            <p>
-              @if (!MITlicenseExpanded) {
-                <fa-icon [icon]="faChevronDown" style="color:white"></fa-icon>
-              }
-              @if (MITlicenseExpanded) {
-                <fa-icon [icon]="faChevronUp" style="color:white"></fa-icon>
-              }
-            </p>
-          </div>
-          @if (MITlicenseExpanded) {
-            <div class="message-body">
-              The MIT License (MIT)
-              Permission is hereby granted, free of charge, to any person obtaining a copy
-              of this software and associated documentation files (the "Software"), to deal
-              in the Software without restriction, including without limitation the rights
-              to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-              copies of the Software, and to permit persons to whom the Software is
-              furnished to do so, subject to the following conditions:<br><br>
-              The above copyright notice and this permission notice shall be included in all
-              copies or substantial portions of the Software.<br><br>
-              THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-              IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-              FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-              AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-              LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-              OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-              SOFTWARE.
-            </div>
-          }
-        </article>
-      </div>
-
+        @if (MITlicenseExpanded) {
+        <div class="message-body">
+          The MIT License (MIT)
+          Permission is hereby granted, free of charge, to any person obtaining a copy
+          of this software and associated documentation files (the "Software"), to deal
+          in the Software without restriction, including without limitation the rights
+          to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+          copies of the Software, and to permit persons to whom the Software is
+          furnished to do so, subject to the following conditions:<br><br>
+          The above copyright notice and this permission notice shall be included in all
+          copies or substantial portions of the Software.<br><br>
+          THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+          IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+          FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+          AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+          LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+          OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+          SOFTWARE.
+        </div>
+        }
+      </article>
     </div>
 
-    <h2  class="is-size-5-mobile  is-size-3-tablet mt-6 has-text-weight-bold ">
-      Apache-2.0 license
-    </h2>
-    <p>
-      The following components are licensed under the Apache-2.0 license reproduced below :
-    </p>
-    <div>
-      @for (library of getApacheLicense(); track library) {
-        <div class="mt-5 indent">
-          <a href="{{library.url}}" class="is-size-4 has-text-danger has-text-weight-bold">{{library.name}}</a><br>
-          <p>{{library.copyright}}</p>
-          <p class="has-text-grey is-italic">{{library.description}} <a class="has-text-grey" href="{{library.licenseUrl}}">{{library.license}}</a></p>
+  </div>
+
+  <h2 class="is-size-5-mobile  is-size-3-tablet mt-6 has-text-weight-bold ">
+    Apache-2.0 license
+  </h2>
+  <p>
+    The following components are licensed under the Apache-2.0 license reproduced below :
+  </p>
+  <div>
+    @for (library of getApacheLicense(); track library) {
+    <div class="mt-5 indent">
+      <a href="{{library.url}}" class="is-size-4 has-text-danger has-text-weight-bold">{{library.name}}</a><br>
+      <p>{{library.copyright}}</p>
+      <p class="has-text-grey is-italic">{{library.description}} <a class="has-text-grey"
+          href="{{library.licenseUrl}}">{{library.license}}</a></p>
+    </div>
+    }
+    <div class="is-family-code is-size-6 mt-5 is-flex is-justify-content-center">
+      <article class="message is-dark" style="width:80vw;">
+        <div class="message-header" (click)="ApachelicenseExpanded=!ApachelicenseExpanded" style="cursor: pointer;">
+          <p>Apache-2.0 License</p>
+          <p>
+            @if (!ApachelicenseExpanded) {
+            <fa-icon [icon]="faChevronDown" style="color:white"></fa-icon>
+            }
+            @if (ApachelicenseExpanded) {
+            <fa-icon [icon]="faChevronUp" style="color:white"></fa-icon>
+            }
+          </p>
         </div>
-      }
-      <div class="is-family-code is-size-6 mt-5 is-flex is-justify-content-center">
-        <article class="message is-dark" style="width:80vw;">
-          <div class="message-header" (click)="ApachelicenseExpanded=!ApachelicenseExpanded" style="cursor: pointer;">
-            <p>Apache-2.0 License</p>
-            <p>
-              @if (!ApachelicenseExpanded) {
-                <fa-icon [icon]="faChevronDown" style="color:white"></fa-icon>
-              }
-              @if (ApachelicenseExpanded) {
-                <fa-icon [icon]="faChevronUp" style="color:white"></fa-icon>
-              }
-            </p>
-          </div>
-          @if (ApachelicenseExpanded) {
-            <pre class="message-body" >
+        @if (ApachelicenseExpanded) {
+        <pre class="message-body">
               Apache License
               Version 2.0, January 2004
               http://www.apache.org/licenses/
@@ -258,41 +264,42 @@
               See the License for the specific language governing permissions and
               limitations under the License.
             </pre>
-          }
-        </article>
-      </div>
-
+        }
+      </article>
     </div>
 
-    <h2  class="is-size-5-mobile  is-size-3-tablet mt-6 has-text-weight-bold ">
-      BSD-3-Clause license
-    </h2>
-    <p>
-      The following components are licensed under the BSD-3-Clause license reproduced below :
-    </p>
-    <div>
-      @for (library of getBSD3License(); track library) {
-        <div class="mt-5 indent">
-          <a href="{{library.url}}" class="is-size-4 has-text-danger has-text-weight-bold">{{library.name}}</a><br>
-          <p>{{library.copyright}}</p>
-          <p class="has-text-grey is-italic">{{library.description}} <a class="has-text-grey" href="{{library.licenseUrl}}">{{library.license}}</a></p>
+  </div>
+
+  <h2 class="is-size-5-mobile  is-size-3-tablet mt-6 has-text-weight-bold ">
+    BSD-3-Clause license
+  </h2>
+  <p>
+    The following components are licensed under the BSD-3-Clause license reproduced below :
+  </p>
+  <div>
+    @for (library of getBSD3License(); track library) {
+    <div class="mt-5 indent">
+      <a href="{{library.url}}" class="is-size-4 has-text-danger has-text-weight-bold">{{library.name}}</a><br>
+      <p>{{library.copyright}}</p>
+      <p class="has-text-grey is-italic">{{library.description}} <a class="has-text-grey"
+          href="{{library.licenseUrl}}">{{library.license}}</a></p>
+    </div>
+    }
+    <div class="is-family-code is-size-6 mt-5 is-flex is-justify-content-center">
+      <article class="message is-dark" style="width:80vw;">
+        <div class="message-header" (click)="BSD3licenseExpanded=!BSD3licenseExpanded" style="cursor: pointer;">
+          <p>BSD-3-Clause license</p>
+          <p>
+            @if (!BSD3licenseExpanded) {
+            <fa-icon [icon]="faChevronDown" style="color:white"></fa-icon>
+            }
+            @if (BSD3licenseExpanded) {
+            <fa-icon [icon]="faChevronUp" style="color:white"></fa-icon>
+            }
+          </p>
         </div>
-      }
-      <div class="is-family-code is-size-6 mt-5 is-flex is-justify-content-center">
-        <article class="message is-dark" style="width:80vw;">
-          <div class="message-header" (click)="BSD3licenseExpanded=!BSD3licenseExpanded" style="cursor: pointer;">
-            <p>BSD-3-Clause license</p>
-            <p>
-              @if (!BSD3licenseExpanded) {
-                <fa-icon [icon]="faChevronDown" style="color:white"></fa-icon>
-              }
-              @if (BSD3licenseExpanded) {
-                <fa-icon [icon]="faChevronUp" style="color:white"></fa-icon>
-              }
-            </p>
-          </div>
-          @if (BSD3licenseExpanded) {
-            <pre class="message-body">
+        @if (BSD3licenseExpanded) {
+        <pre class="message-body">
               Redistribution and use in source and binary forms, with or without
               modification, are permitted provided that the following conditions are
               met:
@@ -316,82 +323,84 @@
               NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
               SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </pre>
-          }
-        </article>
-      </div>
-
+        }
+      </article>
     </div>
 
-    <h2  class="is-size-5-mobile  is-size-3-tablet mt-6 has-text-weight-bold ">
-      BSD-2-Clause license
-    </h2>
-    <p>
-      The following components are licensed under the BSD-2-Clause license reproduced below :
-    </p>
-    <div>
-      @for (library of getBSD2License(); track library) {
-        <div class="mt-5 indent">
-          <a href="{{library.url}}" class="is-size-4 has-text-danger has-text-weight-bold">{{library.name}}</a><br>
-          <p>{{library.copyright}}</p>
-          <p class="has-text-grey is-italic">{{library.description}} <a class="has-text-grey" href="{{library.licenseUrl}}">{{library.license}}</a></p>
+  </div>
+
+  <h2 class="is-size-5-mobile  is-size-3-tablet mt-6 has-text-weight-bold ">
+    BSD-2-Clause license
+  </h2>
+  <p>
+    The following components are licensed under the BSD-2-Clause license reproduced below :
+  </p>
+  <div>
+    @for (library of getBSD2License(); track library) {
+    <div class="mt-5 indent">
+      <a href="{{library.url}}" class="is-size-4 has-text-danger has-text-weight-bold">{{library.name}}</a><br>
+      <p>{{library.copyright}}</p>
+      <p class="has-text-grey is-italic">{{library.description}} <a class="has-text-grey"
+          href="{{library.licenseUrl}}">{{library.license}}</a></p>
+    </div>
+    }
+    <div class="is-family-code is-size-6 mt-5 is-flex is-justify-content-center">
+      <article class="message is-dark" style="width:80vw;">
+        <div class="message-header" (click)="BSD2licenseExpanded=!BSD2licenseExpanded" style="cursor: pointer;">
+          <p>BSD-2-Clause license</p>
+          <p>
+            @if (!BSD2licenseExpanded) {
+            <fa-icon [icon]="faChevronDown" style="color:white"></fa-icon>
+            }
+            @if (BSD2licenseExpanded) {
+            <fa-icon [icon]="faChevronUp" style="color:white"></fa-icon>
+            }
+          </p>
         </div>
-      }
-      <div class="is-family-code is-size-6 mt-5 is-flex is-justify-content-center">
-        <article class="message is-dark" style="width:80vw;">
-          <div class="message-header" (click)="BSD2licenseExpanded=!BSD2licenseExpanded" style="cursor: pointer;">
-            <p>BSD-2-Clause license</p>
-            <p>
-              @if (!BSD2licenseExpanded) {
-                <fa-icon [icon]="faChevronDown" style="color:white"></fa-icon>
-              }
-              @if (BSD2licenseExpanded) {
-                <fa-icon [icon]="faChevronUp" style="color:white"></fa-icon>
-              }
-            </p>
-          </div>
-          @if (BSD2licenseExpanded) {
-            <pre class="message-body">
+        @if (BSD2licenseExpanded) {
+        <pre class="message-body">
               Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
               1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
               2.Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
               THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             </pre>
-          }
-        </article>
-      </div>
-
+        }
+      </article>
     </div>
 
+  </div>
 
-    <h2  class="is-size-5-mobile  is-size-3-tablet mt-6 has-text-weight-bold ">
-      GPL v2 license
-    </h2>
-    <p>
-      The following components are licensed under the  GPL v2 license license reproduced below :
-    </p>
-    <div>
-      @for (library of getGPL2License(); track library) {
-        <div class="mt-5 indent">
-          <a href="{{library.url}}" class="is-size-4 has-text-danger has-text-weight-bold">{{library.name}}</a><br>
-          <p>{{library.copyright}}</p>
-          <p class="has-text-grey is-italic">{{library.description}} <a class="has-text-grey" href="{{library.licenseUrl}}">{{library.license}}</a></p>
+
+  <h2 class="is-size-5-mobile  is-size-3-tablet mt-6 has-text-weight-bold ">
+    GPL v2 license
+  </h2>
+  <p>
+    The following components are licensed under the GPL v2 license license reproduced below :
+  </p>
+  <div>
+    @for (library of getGPL2License(); track library) {
+    <div class="mt-5 indent">
+      <a href="{{library.url}}" class="is-size-4 has-text-danger has-text-weight-bold">{{library.name}}</a><br>
+      <p>{{library.copyright}}</p>
+      <p class="has-text-grey is-italic">{{library.description}} <a class="has-text-grey"
+          href="{{library.licenseUrl}}">{{library.license}}</a></p>
+    </div>
+    }
+    <div class="is-family-code is-size-6 mt-5 is-flex is-justify-content-center">
+      <article class="message is-dark" style="width:80vw;">
+        <div class="message-header" (click)="GPLlicenseExpanded=!GPLlicenseExpanded" style="cursor: pointer;">
+          <p> GPL v2 license</p>
+          <p>
+            @if (!GPLlicenseExpanded) {
+            <fa-icon [icon]="faChevronDown" style="color:white"></fa-icon>
+            }
+            @if (GPLlicenseExpanded) {
+            <fa-icon [icon]="faChevronUp" style="color:white"></fa-icon>
+            }
+          </p>
         </div>
-      }
-      <div class="is-family-code is-size-6 mt-5 is-flex is-justify-content-center">
-        <article class="message is-dark" style="width:80vw;">
-          <div class="message-header" (click)="GPLlicenseExpanded=!GPLlicenseExpanded" style="cursor: pointer;">
-            <p> GPL v2 license</p>
-            <p>
-              @if (!GPLlicenseExpanded) {
-                <fa-icon [icon]="faChevronDown" style="color:white"></fa-icon>
-              }
-              @if (GPLlicenseExpanded) {
-                <fa-icon [icon]="faChevronUp" style="color:white"></fa-icon>
-              }
-            </p>
-          </div>
-          @if (GPLlicenseExpanded) {
-            <pre class="message-body">
+        @if (GPLlicenseExpanded) {
+        <pre class="message-body">
               GNU GENERAL PUBLIC LICENSE
               Version 2, June 1991
               Copyright (C) 1989, 1991 Free Software Foundation, Inc.,
@@ -670,9 +679,9 @@
               library.  If this is what you want to do, use the GNU Lesser General
               Public License instead of this License.
             </pre>
-          }
-        </article>
-      </div>
-
+        }
+      </article>
     </div>
-  </section>
+
+  </div>
+</section>

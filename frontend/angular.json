@@ -33,8 +33,7 @@
               "node_modules/animate.css/animate.min.css",
               "node_modules/bulma-modal-fx/dist/css/modal-fx.min.css"
             ],
-            "scripts": [
-            ],
+            "scripts": [],
             "browser": "src/main.ts"
           },
           "configurations": {
@@ -44,7 +43,7 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
-               ],
+              ],
               "budgets": [
                 {
                   "type": "initial",
@@ -60,12 +59,12 @@
               "outputHashing": "all",
               "serviceWorker": "ngsw-config.json",
               "optimization": {
-                   "scripts": true,
-                   "styles": {
-                          "minify": true,
-                          "inlineCritical": false
-                     },
-                    "fonts": true
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
               }
             },
             "development": {
@@ -73,6 +72,47 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "mobile-development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.mobile.dev.ts"
+                }
+              ]
+            },
+            "mobile-production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.mobile.prod.ts"
+                }
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "4mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              }
             }
           },
           "defaultConfiguration": "production"

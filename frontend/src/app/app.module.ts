@@ -166,6 +166,7 @@ export class AppModule {
         translate.use("en-uk");
       }
     }
-    translate.use("en-uk");
+    //console.log("default lang")
+    //translate.use("en-uk");
   }
 }
