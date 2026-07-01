@@ -112,7 +112,7 @@ jobs:
           REF_NAME: ${github.sha}
         run: envsubst < environment.prod.ts.tpl > environment.prod.ts
       - name: Build
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           node-version: "24"
       - run: npm ci
