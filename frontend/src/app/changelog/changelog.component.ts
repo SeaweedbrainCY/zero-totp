@@ -15,6 +15,18 @@ export class ChangelogComponent {
 
   changelogs = [
     {
+      date: "01/07/2026",
+      version: "2.0",
+      added: [
+        "This version paves the way for the coming Zero-TOTP iOS application. The app is not ready for public usage now, but some important features have been bought to Zero-TOTP frontend and API to help support this future integration. Some of those feature are ready in this release for the web application version",
+        "Improve mobile layout support"
+      ],
+      fixed: [
+        "Dependencies security upgrade",
+        "Improve repository hardening"
+      ]
+    },
+    {
       date: "20/05/2026",
       version: "1.13",
       added: [
