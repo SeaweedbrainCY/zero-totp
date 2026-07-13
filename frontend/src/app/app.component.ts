@@ -75,8 +75,14 @@ export class AppComponent implements OnInit {
           this.router.navigate(['/vault'], { relativeTo: this.route.root });
         }
       }
+      if (environment.isMobileApp) {
+        this.router.navigate(['/login'], { relativeTo: this.route.root });
+      }
       this.isAppLoading.set(false)
     }, (error) => {
+      if (environment.isMobileApp) {
+        this.router.navigate(['/login'], { relativeTo: this.route.root });
+      }
       this.isAppLoading.set(false)
     })
   }
