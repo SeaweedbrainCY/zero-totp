@@ -918,6 +918,9 @@
       "subtitle": "Your vault is automatically re-encrypted if you reload the page or after a certain period of inactivity. ",
       "title": "Your vault is locked"
     },
+    "locked_vault": {
+      "decrypt_vault_button": "Decrypt my vault"
+    },
     "oauth": {
       "error": {
         "server": "Impossible to start the Oauth flow"

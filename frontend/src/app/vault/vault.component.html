@@ -58,7 +58,8 @@
         }
         <button class="button is-info mt-4 has-text-white" (click)="unlockVault()"
           [ngClass]="{'is-loading':isDecryptingLockedVaut}">
-          Decrypt my vault
+          {{'vault.locked_vault.decrypt_vault_button'}}
+          
         </button>
       </div>
     </div>

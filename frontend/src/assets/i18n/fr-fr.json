@@ -914,6 +914,9 @@
       "subtitle": "Ton coffre redevient automatiquement chiffré si tu rafraichis la page ou après une certaine période d'inactivité.",
       "title": "Ton coffre est verrouillé"
     },
+    "locked_vault": {
+      "decrypt_vault_button": "Déchiffrer mon coffre"
+    },
     "oauth": {
       "error": {
         "server": "Impossible de lancer le flow Oauth"
