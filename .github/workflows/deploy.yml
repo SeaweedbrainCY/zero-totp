@@ -521,7 +521,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: SW deployment
-        run: curl  ${{ secrets.WEBHOOK_URL_SW }}
+        run: curl  -f ${{ secrets.WEBHOOK_URL_SW }}
 
   deploy-production-ca:
     if: needs.setup.outputs.is_prod == 'true'
@@ -539,7 +539,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: CA deployment
-        run: curl ${{ secrets.WEBHOOK_URL_CA }}
+        run: curl -f ${{ secrets.WEBHOOK_URL_CA }}
 
   deploy-production-themis:
     if: needs.setup.outputs.is_prod == 'true'
@@ -557,7 +557,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: TH deployment
-        run: curl ${{ secrets.WEBHOOK_URL_TH }}
+        run: curl -f ${{ secrets.WEBHOOK_URL_TH }}
 
   deploy-dev-env:
     if: needs.setup.outputs.is_dev == 'true'
@@ -572,4 +572,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Dev env deployment
-        run: curl ${{ secrets.WEBHOOK_URL_DEV }}
+        run: curl -f ${{ secrets.WEBHOOK_URL_DEV }}
