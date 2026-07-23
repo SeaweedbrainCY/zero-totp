@@ -20,7 +20,7 @@ RUN rm generate_nginx_conf.sh
 
 
 EXPOSE 80
-FROM nginx:alpine:1.31.3-alpine-slim
+FROM nginx:1.31.3-alpine
 COPY --from=builder /app/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /app/dist /usr/share/nginx/html/
 COPY --from=builder /app/docker-healthcheck.sh /docker-healthcheck.sh
