@@ -121,6 +121,12 @@
               id="dark_theme_icon"></fa-icon>
           </button>
         </div>
+        @if(userService.id()!=null){
+        <hr class="dropdown-divider" />
+        <a class="navbar-item" [routerLink]="['/logout']">
+          <fa-icon [icon]="faUserSlash" aria-hidden="true"></fa-icon> {{ 'logout' | translate }}
+        </a>
+        }
       </div>
     </div>
   </div>
