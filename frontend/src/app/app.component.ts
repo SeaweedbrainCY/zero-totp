@@ -44,9 +44,8 @@ export class AppComponent implements OnInit {
     }
     if (this.userService.zke_key() == null) {
       try {
-        console.log("before")
+        console.log("Refreshing user_id")
         await this.userService.refresh_user_id()
-        console.log("after")
         if (environment.isMobileApp) {
           // Try to load the zke_key from keychain
           const zke_key = await this.protectedKeychainStorageService.getZKEKey()
@@ -54,6 +53,7 @@ export class AppComponent implements OnInit {
         }
         return true
       } catch (error) {
+        console.log(error)
         return false
       }
     } else {
@@ -64,6 +64,7 @@ export class AppComponent implements OnInit {
 
 
   ngOnInit(): void {
+    console.log("Loading user data...")
     setTimeout(() => {
       if (this.isAppLoading()) {
         this.displayTroubleshootingMessage.set(true)
@@ -71,9 +72,7 @@ export class AppComponent implements OnInit {
     }, 5000)
     this.loadUserData().then((isSuccess) => {
       if (isSuccess) {
-        if (this.router.url == "/") {
-          this.router.navigate(['/vault'], { relativeTo: this.route.root });
-        }
+        this.router.navigate(['/vault'], { relativeTo: this.route.root });
       }
       if (environment.isMobileApp) {
         this.router.navigate(['/login'], { relativeTo: this.route.root });
