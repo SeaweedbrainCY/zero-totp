@@ -14,7 +14,7 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 
-FROM python:3.13-alpine
+FROM python:3.14.6-alpine3.24
 
 COPY --from=builder /api/venv /api/venv
 ENV PATH="/api/venv/bin:$PATH"
