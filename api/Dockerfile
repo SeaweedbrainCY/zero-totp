@@ -1,4 +1,4 @@
-FROM python:3.14.6-alpine3.24 AS builder
+FROM python:3.13.14-alpine3.24 AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -14,7 +14,7 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 
-FROM python:3.14.6-alpine3.24
+FROM python:3.13.14-alpine3.24
 
 COPY --from=builder /api/venv /api/venv
 ENV PATH="/api/venv/bin:$PATH"
