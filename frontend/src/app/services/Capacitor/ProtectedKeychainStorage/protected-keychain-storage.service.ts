@@ -45,4 +45,8 @@ export class ProtectedKeychainStorageService {
       return null
     }
   }
+
+  public async deleteZKEKey(): Promise<void> {
+    await iOSSecureStorage.remove({ key: ProtectedKeychainStorageKey.USER_ZKE_KEY_BASE_STORAGE_KEY })
+  }
 }
