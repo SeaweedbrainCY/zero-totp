@@ -1,4 +1,4 @@
-FROM python:3.13-alpine AS builder
+FROM python:3.14.6-alpine3.24 AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
