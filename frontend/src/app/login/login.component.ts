@@ -89,6 +89,10 @@ export class LoginComponent implements OnInit {
 
 
   ngOnInit() {
+    if (this.userService.isUserLoggedIn()) {
+      // If logged in redirect to /vault
+      this.router.navigate(["/vault"], { relativeTo: this.route.root });
+    }
     this.error_param = this.route.snapshot.paramMap.get('error_param')
     switch (this.error_param) {
       case null: {
