@@ -4,7 +4,9 @@ import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from '../services/API/api.service';
-
+import { environment } from 'src/environments/environment';
+import { AuthServiceService } from '../services/AuthService/auth-service.service';
+import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 
 @Component({
   selector: 'app-logout',
@@ -20,22 +22,28 @@ export class LogoutComponent implements OnInit {
     private route: ActivatedRoute,
     private userService: UserService,
     private http: HttpClient,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private authService: AuthServiceService,
+    private protectedKeychainStorage: ProtectedKeychainStorageService
   ) { }
 
   ngOnInit(): void {
-    this.loggout();
+    this.loggout().then(() => {
+      this.router.navigate(["/login"], { relativeTo: this.route.root });
+    })
   }
 
-  loggout() {
+  async loggout(): Promise<void> {
+    if (environment.isMobileApp) {
+      await this.authService.clearToken()
+      await this.protectedKeychainStorage.deleteZKEKey()
+    }
     this.http.put(this.apiService.baseURL + '/api/v1/logout', {}, { withCredentials: true, observe: 'response' }).subscribe({
       next: () => {
         this.userService.clear();
-        this.router.navigate(["/login"], { relativeTo: this.route.root });
       },
       error: () => {
         this.userService.clear();
-        this.router.navigate(["/login"], { relativeTo: this.route.root });
       }
     });
   }

@@ -112,15 +112,24 @@
         <hr class="dropdown-divider" />
         <div class="is-flex is-justify-content-space-around mt-4 mb-2">
           <button class="pt-2 pb-2 pr-4 pl-4" style="border-radius: 30px; "
-            [ngClass]="{'selected':current_theme() == 'light'}" id="light_theme_button" (click)="changeTheme('light')">
-            <fa-icon [icon]="faSun" [ngClass]="{'has-text-warning':current_theme() == 'light'}" size="xl"></fa-icon>
+            [ngClass]="{'selected':displayPreferences.theme() == 'light'}" id="light_theme_button"
+            (click)="changeTheme('light')">
+            <fa-icon [icon]="faSun" [ngClass]="{'has-text-warning':displayPreferences.theme() == 'light'}"
+              size="xl"></fa-icon>
           </button>
           <button class="pt-2 pb-2 pr-4 pl-4" style="border-radius: 30px;"
-            [ngClass]="{'selected':current_theme() == 'dark'}" id="dark_theme_button" (click)="changeTheme('dark')">
-            <fa-icon [icon]=" faMoon" [ngClass]="{'selected':current_theme() == 'dark'}" size="xl"
+            [ngClass]="{'selected':displayPreferences.theme() == 'dark'}" id="dark_theme_button"
+            (click)="changeTheme('dark')">
+            <fa-icon [icon]=" faMoon" [ngClass]="{'selected':displayPreferences.theme() == 'dark'}" size="xl"
               id="dark_theme_icon"></fa-icon>
           </button>
         </div>
+        @if(userService.id()!=null){
+        <hr class="dropdown-divider" />
+        <a class="navbar-item" [routerLink]="['/logout']">
+          <fa-icon [icon]="faUserSlash" aria-hidden="true"></fa-icon> {{ 'logout' | translate }}
+        </a>
+        }
       </div>
     </div>
   </div>
@@ -230,10 +239,10 @@
         <div class="navbar-item" [ngClass]="{'is-active': isLangDropdownExpanded()}">
           <button class="button is-ghost has-text-white" style="padding-left: 0px; padding-right: 0px;"
             (click)="toggleThemeButton()">
-            @if (current_theme() == 'dark') {
+            @if (displayPreferences.theme() == 'dark') {
             <fa-icon [icon]="faSun" class="has-text-warning" size="2xl"></fa-icon>
             }
-            @if (current_theme() == 'light') {
+            @if (displayPreferences.theme() == 'light') {
             <fa-icon [icon]="faMoon" size="2xl"></fa-icon>
             }
           </button>

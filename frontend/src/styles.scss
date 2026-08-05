@@ -366,7 +366,7 @@ video {
 }
 
 .toast-bottom-center {
-  bottom: 0;
+  bottom: 12px;
   right: 0;
   width: 100%;
 }
@@ -378,7 +378,7 @@ video {
 }
 
 .toast-bottom-full-width {
-  bottom: 0;
+  bottom: 40px;
   right: 0;
   width: 100%;
 }
@@ -427,19 +427,18 @@ video {
   right: -0.3em;
   top: -0.3em;
   float: right;
-  font-size: 20px;
-  font-weight: bold;
-  color: #FFFFFF;
-  text-shadow: 0 1px 0 #ffffff;
-  /* opacity: 0.8; */
+  font-size: 18px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
 }
 
 .toast-close-button:hover,
 .toast-close-button:focus {
-  color: #000000;
-  text-decoration: none;
+  color: #FFFFFF;
+  opacity: 1;
   cursor: pointer;
-  opacity: 0.4;
 }
 
 /*Additional properties for button version
@@ -465,19 +464,22 @@ button.toast-close-button {
 .toast-container .ngx-toastr {
   position: relative;
   overflow: hidden;
-  margin: 0 0 6px;
-  padding: 15px 15px 15px 50px;
-  width: 300px;
-  border-radius: 3px 3px 3px 3px;
+  margin: 0 0 8px;
+  padding: 14px 16px 14px 50px;
+  width: 500px;
+  border-radius: 12px;
   background-position: 15px center;
   background-repeat: no-repeat;
-  background-size: 24px;
-  box-shadow: 0 0 12px #999999;
+  background-size: 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.08);
   color: #FFFFFF;
+  backdrop-filter: blur(8px);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .toast-container .ngx-toastr:hover {
-  box-shadow: 0 0 12px #000000;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22), 0 3px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
   opacity: 1;
   cursor: pointer;
 }
@@ -507,7 +509,7 @@ button.toast-close-button {
 
 .toast-container.toast-top-full-width .ngx-toastr,
 .toast-container.toast-bottom-full-width .ngx-toastr {
-  width: 96%;
+  width: 70%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -519,24 +521,24 @@ button.toast-close-button {
 }
 
 .toast-success {
-  background-color: rgba(99, 163, 117, 0.9);
-  backdrop-filter: blur(5px);
+  background-color: rgba(52, 150, 84, 0.92);
+  backdrop-filter: blur(8px);
 }
 
 .toast-error {
-  background-color: rgba(254, 105, 71, 0.9);
-  backdrop-filter: blur(5px);
+  background-color: rgba(224, 76, 47, 0.92);
+  backdrop-filter: blur(8px);
 }
 
 .toast-info {
-  background-color: rgba(90, 169, 230, 0.9);
-  backdrop-filter: blur(5px);
+  background-color: rgba(59, 141, 209, 0.92);
+  backdrop-filter: blur(8px);
 }
 
 .toast-warning {
-  background-color: rgba(255, 207, 86, 0.9);
+  background-color: rgba(245, 191, 66, 0.92);
   color: #16262E !important;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(8px);
 }
 
 .toast-progress {
@@ -576,6 +578,5 @@ button.toast-close-button {
 @media all and (min-width: 481px) and (max-width: 768px) {
   .toast-container .ngx-toastr.div {
     padding: 15px 15px 15px 50px;
-    width: 25em;
   }
 }

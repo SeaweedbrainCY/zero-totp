@@ -106,6 +106,7 @@ export class UserService {
     this.googleDriveSync.set(null);
     this.vault_tags.set([]);
     localStorage.removeItem("email");
+    this.is_vault_in_memory = false
   }
 
   clearVault() {

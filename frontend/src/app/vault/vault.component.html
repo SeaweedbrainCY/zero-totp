@@ -52,12 +52,13 @@
           </div>
         </div>
         @if (vaultDecryptionErrorMessage() != '') {
-        <p class="has-text-weight-light has-text-danger" style="margin-top:-20px">
+        <p class="has-text-danger" style="margin-top:-20px">
           {{vaultDecryptionErrorMessage() | translate}}
         </p>
         }
-        <button class="button is-info mt-4 has-text-white" (click)="unlockVault()">
-          Decrypt my vault
+        <button class="button is-info mt-4 has-text-white" (click)="unlockVault()"
+          [ngClass]="{'is-loading':isDecryptingLockedVaut}">
+          {{'vault.locked_vault.decrypt_vault_button' | translate}}
         </button>
       </div>
     </div>
