@@ -1,4 +1,4 @@
-FROM python:3.13-alpine AS builder
+FROM python:3.13.14-alpine3.24 AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -14,12 +14,12 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 
-FROM python:3.13-alpine
+FROM python:3.13.14-alpine3.24
 
 COPY --from=builder /api/venv /api/venv
 ENV PATH="/api/venv/bin:$PATH"
 
-RUN apk update && apk upgrade && apk add --no-cache jq curl gosu mariadb-connector-c-dev  gcc g++
+RUN apk update && apk upgrade && apk add --no-cache jq curl gosu mariadb-connector-c-dev libgcc libstdc++
 
 WORKDIR /api
 

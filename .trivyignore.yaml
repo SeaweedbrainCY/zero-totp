@@ -1,6 +1,10 @@
 vulnerabilities:
-  - id:  GHSA-58pv-8j8x-9vj2 
-    expired_at: 2026-02-01
-    paths:
-      - "api/venv/lib/python3.13/site-packages/setuptools/_vendor/jaraco.context-5.3.0.dist-info/METADATA"
-    statement: Setuptools is not affected. https://github.com/pypa/setuptools/issues/5138
+  - id: GHSA-6v7p-g79w-8964
+    expired_at: 2026-09-05
+    statement: Vendor package from pip. Not used in the project. Waiting for upstream fix.
+  - id: CVE-2025-47273
+    expired_at: 2026-10-05
+    statement: The actual version of setuptools is 83.0.0. FP from trivy.
+  - id: CVE-2026-59890
+    expired_at: 2026-10-05
+    statement: The actual version of setuptools is 83.0.0. FP from trivy.

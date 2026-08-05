@@ -4,10 +4,11 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
-import { faLightbulb, faXmark, faVault, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook, faPlus, faBars, faRightFromBracket, faUpRightFromSquare, faChevronRight, faChevronDown, faGlobe, faCheck, faUserCheck, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faLightbulb, faXmark, faVault, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook, faPlus, faBars, faRightFromBracket, faUpRightFromSquare, faChevronRight, faChevronDown, faGlobe, faCheck, faUserCheck, faUserPlus, faUserSlash } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
 import { Utils } from '../common/Utils/utils';
+import { DisplayPreferencesService } from '../services/DisplayPreferences/display-preferences.service';
 
 
 @Component({
@@ -22,9 +23,10 @@ export class NavbarComponent implements OnInit {
   isNavbarExpanded = signal(false);
   isIdleWatchingEnabled = false;
   faXmark = faXmark
+  faUserSlash = faUserSlash;
   faUser = faUser;
-  faUserCheck=faUserCheck;
-  faUserPlus=faUserPlus;
+  faUserCheck = faUserCheck;
+  faUserPlus = faUserPlus;
   faUpRightFromSquare = faUpRightFromSquare;
   faChevronRight = faChevronRight;
   faChevronDown = faChevronDown;
@@ -49,7 +51,6 @@ export class NavbarComponent implements OnInit {
   dismissed_notification_key = "hide_notif_banner";
   is_waiting_for_internal_notif = false;
   last_notification_check_date = 0;
-  current_theme = signal(window.document.documentElement.getAttribute('data-theme'));
   isMobileDevice = signal(false)
   isMobileNavBarDropDownActive = signal(false)
   isMobileLangDevelopped = signal(false)
@@ -74,7 +75,8 @@ export class NavbarComponent implements OnInit {
     private idle: Idle,
     private http: HttpClient,
     private apiService: ApiService,
-    private utils: Utils
+    private utils: Utils,
+    public displayPreferences: DisplayPreferencesService,
   ) {
     router.events.subscribe((url: any) => {
       this.check_notification()
@@ -117,6 +119,7 @@ export class NavbarComponent implements OnInit {
     this.get_global_notification();
     this.last_notification_check_date = Math.floor(Date.now() / 1000);
     this.isMobileDevice.set(this.utils.isDeviceMobile())
+    this.displayPreferences.theme.set(window.document.documentElement.getAttribute('data-theme') ?? "light")
   }
 
   check_notification() {
@@ -235,13 +238,13 @@ export class NavbarComponent implements OnInit {
   }
 
   toggleThemeButton() {
-    if (this.current_theme() == 'light') {
+    if (this.displayPreferences.theme() == 'light') {
       window.document.documentElement.setAttribute('data-theme', 'dark');
-      this.current_theme.set('dark');
+      this.displayPreferences.theme.set('dark');
       localStorage.setItem('theme', 'dark');
     } else {
       window.document.documentElement.setAttribute('data-theme', 'light');
-      this.current_theme.set('light');
+      this.displayPreferences.theme.set('light');
       localStorage.setItem('theme', 'light');
     }
   }
@@ -249,11 +252,11 @@ export class NavbarComponent implements OnInit {
   changeTheme(newTheme: string) {
     if (newTheme == 'dark') {
       window.document.documentElement.setAttribute('data-theme', 'dark');
-      this.current_theme.set('dark');
+      this.displayPreferences.theme.set('dark');
       localStorage.setItem('theme', 'dark');
     } else {
       window.document.documentElement.setAttribute('data-theme', 'light');
-      this.current_theme.set('light');
+      this.displayPreferences.theme.set('light');
       localStorage.setItem('theme', 'light');
     }
   }

@@ -70,6 +70,10 @@ export class SignupComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    if (this.userService.isUserLoggedIn()) {
+      // If logged in redirect to /vault
+      this.router.navigate(["/vault"], { relativeTo: this.route.root });
+    }
     this.current_domain.set(window.location.host);
     this.get_api_configuration();
   }

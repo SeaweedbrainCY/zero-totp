@@ -47,6 +47,7 @@ export class Utils {
       timeOut: 5000,
       closeButton: true,
       progressBar: true,
+      positionClass: 'toast-bottom-full-width',
     });
   }
   public toastError(toastr: ToastrService, title: string, message: string) {
@@ -56,7 +57,7 @@ export class Utils {
       progressBar: true,
       progressAnimation: 'decreasing',
       tapToDismiss: true,
-      positionClass: 'toast-top-right',
+      positionClass: 'toast-bottom-full-width',
       titleClass: 'toast-title',
       messageClass: 'toast-message',
     });
@@ -69,7 +70,7 @@ export class Utils {
       progressBar: true,
       progressAnimation: 'decreasing',
       tapToDismiss: true,
-      positionClass: 'toast-top-right',
+      positionClass: 'toast-bottom-full-width',
       titleClass: 'toast-title',
       messageClass: 'toast-message',
     });

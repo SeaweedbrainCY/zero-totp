@@ -56,6 +56,7 @@ import { FaqComponent } from "./faq/faq.component";
 import { provideMarkdown } from "ngx-markdown";
 import { MarkdownModule } from "ngx-markdown";
 import { GlobalConfigurationService } from "./services/GlobalConfiguration/global-configuration.service";
+import { DisplayPreferencesService } from "./services/DisplayPreferences/display-preferences.service";
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -125,6 +126,7 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
   ],
   providers: [
     UserService,
+    DisplayPreferencesService,
     Utils,
     Crypto,
     QrCodeTOTP,
