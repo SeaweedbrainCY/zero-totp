@@ -14,6 +14,7 @@ import { ToastrService } from 'ngx-toastr';
 import { TranslateService } from '@ngx-translate/core';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
 import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
+import { DisplayPreferencesService } from '../services/DisplayPreferences/display-preferences.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -62,6 +63,7 @@ export class LoginComponent implements OnInit {
   instance_modal_error = signal("")
   instance_modal_loading = signal(false)
   instance_modal_apiBaseURL_input = signal(this.apiService.baseURL)
+  vault_modal_active = signal(false)
 
   // Not read in template — plain properties
   hashedPassword: string = "";
@@ -83,7 +85,8 @@ export class LoginComponent implements OnInit {
     private apiService: ApiService,
     private persistentStorage: CapacitorPersistentStorageService,
     private authService: AuthServiceService,
-    private secureProtectedStorage: ProtectedKeychainStorageService
+    private secureProtectedStorage: ProtectedKeychainStorageService,
+    public displayPreferences: DisplayPreferencesService
   ) {
   }
 

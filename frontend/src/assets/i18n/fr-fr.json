@@ -572,11 +572,10 @@
     "rescue": {
       "part1": "🛟 Des problèmes pour se connecter à ton compte ? Ouvre une backup sur notre ",
       "part2": "Rescue Zero-TOTP",
-      "strong": "plateforme ultra stable"
+      "strong": "Plateforme de secours"
     },
-    "subtitle": "Cette fois, c'est toi qui fais la magie 🪄",
     "success": "Coffre déchiffré ✅",
-    "title": "Il est temps d'ouvrir ton coffre !"
+    "title": "Ouvre ton coffre"
   },
   "logout": "Déconnexion",
   "more": "Plus",

@@ -576,11 +576,10 @@
     "rescue": {
       "part1": "🛟 Troubles logging to your account ? Open a backup on our ",
       "part2": "Rescue Zero-TOTP",
-      "strong": "ultra stable plateform"
+      "strong": "Rescue platform"
     },
-    "subtitle": "This time, you do the magic 🪄",
     "success": "Vault decrypted ✅",
-    "title": "It's time to open your vault !"
+    "title": "Open your vault"
   },
   "logout": "Logout",
   "more": "More",
