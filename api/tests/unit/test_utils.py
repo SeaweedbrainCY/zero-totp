@@ -241,14 +241,14 @@ class TestUtils(unittest.TestCase):
 ##################
 
     def test_get_poor_geolocation(self):
-        ip = "89.160.20.113"
+        ip = "2.125.160.216"
         geolocation = get_geolocation(ip)
-        self.assertEqual(geolocation, "89.160.20.113 (Germany)")
+        self.assertEqual(geolocation, "2.125.160.216/29 (France)")
     
     def test_get_rich_geolocation(self):
-        ip = "2.2.3.22"
+        ip = "89.160.20.113"
         geolocation = get_geolocation(ip)
-        self.assertEqual(geolocation, "2.2.3.22 (Boxford, England, United Kingdom)")
+        self.assertEqual(geolocation, "89.160.20.113 (Linköping, Östergötland County, Sweden)")
         
     
     def test_get_geolocation_with_private_ip(self):
