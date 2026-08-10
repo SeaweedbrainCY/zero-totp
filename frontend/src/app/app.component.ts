@@ -6,6 +6,8 @@ import { UserService } from './services/User/user.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProtectedKeychainStorageService } from './services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 import { faSignal, faBriefcaseMedical } from '@fortawesome/free-solid-svg-icons';
+import { Keyboard } from '@capacitor/keyboard';
+
 
 
 @Component({
@@ -84,6 +86,16 @@ export class AppComponent implements OnInit {
       }
       this.isAppLoading.set(false)
     })
+
+    if (environment.isMobileApp) {
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const isFormControl = target.matches('input, textarea, select, [contenteditable]');
+        if (!isFormControl) {
+          Keyboard.hide();
+        }
+      });
+    }
   }
 }
 
