@@ -3,7 +3,10 @@
   "appName": "Zero-TOTP",
   "webDir": "../frontend/dist/frontend/browser",
   "plugins": {
-    "iOSSecureStorage": {}
+    "iOSSecureStorage": {},
+    "Keyboard": {
+      "resize": "none"
+    }
   },
   "loggingBehavior": "none"
 }
