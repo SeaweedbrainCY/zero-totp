@@ -65,10 +65,11 @@
   </a>
   }
 
-  <div class="dropdown is-up is-right" [ngClass]="{' is-active':isMobileNavBarDropDownActive()}">
+  <div #mobileMoreOptionDropdown class="dropdown is-up is-right"
+    [ngClass]="{' is-active':isMobileNavBarDropDownActive()}">
     <div class="dropdown-trigger">
       <button class="button is-ghost" aria-haspopup="true" aria-controls="dropdown-menu7"
-        (click)="isMobileNavBarDropDownActive.update(v => !v)">
+        (click)="toggleMobileMoreOptionsButton()">
         <a class="nav-item" routerLinkActive="active" ariaCurrentWhenActive="page">
           <span class="nav-pill">
             <fa-icon [icon]="faBars" aria-hidden="true" />
