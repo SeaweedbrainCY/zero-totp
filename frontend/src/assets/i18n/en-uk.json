@@ -5,6 +5,8 @@
     "not_found": "Page not found.",
     "oops": "Oops!"
   },
+  "Disabled": "Disabled",
+  "Enabled": "Enabled",
   "Home": "Home",
   "Language": "Language",
   "Search": "Search",
@@ -620,6 +622,10 @@
           "success": "Success ! This new value will be applied at your next login",
           "title": "Autolock your vault after inactivity"
         },
+        "biometric_protection": {
+          "label": "Unlock your vault using your biometrics (FaceID or TouchID)",
+          "title": "Unlock with biometrics"
+        },
         "subtitle": "Settings related to your account security",
         "title": "Security"
       }
@@ -642,7 +648,7 @@
       "minimum": {
         "desc1": " This is the minimum number of backup that Zero-TOTP will keep above all in your Google Drive.",
         "desc2": " This paramater overrides any other parameter.",
-        "title": "Minimum of backup kept in Google Drive"
+        "title": "Minimum number of backup kept in Google Drive"
       },
       "section": {
         "title": "Backups"

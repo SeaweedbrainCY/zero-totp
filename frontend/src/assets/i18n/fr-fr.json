@@ -5,6 +5,8 @@
     "not_found": "Page non trouvée",
     "oops": "Oups !"
   },
+  "Disabled": "Désactivé",
+  "Enabled": "Activé",
   "Home": "Accueil",
   "Language": "Langue",
   "Search": "Rechercher",
@@ -615,6 +617,10 @@
           "label": "Temps maximum d'inactivité avant que ton coffre ne s'auto verrouille",
           "success": "Succès ! Cette nouvelle valeur sera appliquée à ta prochaine connexion",
           "title": "Auto-verrouillage du coffre après inactivité"
+        },
+        "biometric_protection": {
+          "label": "Déverouille automatiquement ton coffre avec FaceID ou TouchID",
+          "title": "Déverouillage par biométrie"
         },
         "subtitle": "Paramètres liés à la sécurité de ton compte",
         "title": "Sécurité"
