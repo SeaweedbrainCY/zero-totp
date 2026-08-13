@@ -774,7 +774,7 @@ def verify_email(src_ip, user_obj,body):
         return {"message": "Error while verifying email"}, 500
 
 
-@require_active_user
+@require_userid
 def get_whoami(src_ip, user_obj):
     return {"username": user_obj.username, "email": user_obj.mail, "id":user_obj.id}, 200
 
