@@ -37,7 +37,7 @@ export class EmailVerificationComponent implements OnInit {
     private toastr: ToastrService,
     private apiService: ApiService,
   ) {
-    if (this.user.email() == null) {
+    if (!this.user.isUserLoggedIn()) {
       this.translate.get("session_expired").subscribe((translation: string) => {
         this.toastr.error(translation)
         this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
