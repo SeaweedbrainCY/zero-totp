@@ -1,8 +1,8 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { faEnvelope, faKey, faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash, faFlask, faCircleQuestion, faArrowUpRightFromSquare, faDoorClosed } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faKey, faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash, faFlask, faCircleQuestion, faArrowUpRightFromSquare, faDoorClosed, faArrowRight, faCircleInfo, faLink, faGlobe, faShieldHalved, faPen } from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
-
+import { environment } from 'src/environments/environment';
 import { Utils } from '../common/Utils/utils';
 import { Crypto } from '../common/Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../services/User/user.service';
 import { ApiService } from '../services/API/api.service';
+import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
 
 
 @Component({
@@ -20,12 +21,16 @@ import { ApiService } from '../services/API/api.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignupComponent implements OnInit {
-  // Icons (static, no need for signals)
   faEnvelope = faEnvelope;
   faKey = faKey;
+  faPen = faPen;
+  faShieldHalved = faShieldHalved;
+  faLink = faLink;
   faDoorClosed = faDoorClosed;
+  faArrowRight = faArrowRight;
   faCheck = faCheck;
   faUser = faUser;
+  faGlobe = faGlobe;
   faArrowUpRightFromSquare = faArrowUpRightFromSquare;
   faDiscord = faDiscord;
   faCircleQuestion = faCircleQuestion;
@@ -34,6 +39,8 @@ export class SignupComponent implements OnInit {
   faEye = faEye;
   faEyeSlash = faEyeSlash;
   faFlask = faFlask;
+  faCircleInfo = faCircleInfo;
+  environment = environment
 
   username = signal('');
   email = signal('');
@@ -56,6 +63,11 @@ export class SignupComponent implements OnInit {
   current_domain = signal('');
   instance_dropdown_active = signal(false);
   signup_enabled = signal(true);
+  instance_modal_active = signal(false)
+  instance_modal_loading = signal(false)
+  instance_modal_error = signal("")
+  instance_modal_apiBaseURL_input = signal(this.apiService.baseURL)
+
 
   constructor(
     private http: HttpClient,
@@ -66,7 +78,8 @@ export class SignupComponent implements OnInit {
     private translate: TranslateService,
     private toastr: ToastrService,
     private userService: UserService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private persistentStorage: CapacitorPersistentStorageService
   ) { }
 
   ngOnInit(): void {
@@ -74,7 +87,14 @@ export class SignupComponent implements OnInit {
       // If logged in redirect to /vault
       this.router.navigate(["/vault"], { relativeTo: this.route.root });
     }
-    this.current_domain.set(window.location.host);
+    if (environment.isMobileApp) {
+      // Mobile app, current domain is the one of the API
+      const baseURL = new URL(this.apiService.baseURL)
+      this.current_domain.set(baseURL.host)
+    } else {
+      // webapp we use the current location
+      this.current_domain.set(window.location.host);
+    }
     this.get_api_configuration();
   }
 
@@ -241,8 +261,38 @@ export class SignupComponent implements OnInit {
   }
 
   zero_totp_instance_button_click() {
-    if (this.utils.isDeviceMobile()) {
-      this.instance_dropdown_active.update(v => !v);
+    if (environment.isMobileApp) {
+      this.instance_modal_active.update(v => !v);
+    } else {
+      // Webapp consulted on a mobile
+      if (this.utils.isDeviceMobile()) {
+        // On nonMobileDevice, it's just hoverable 
+        this.instance_dropdown_active.update(v => !v);
+      }
     }
+  }
+
+  validateNewAPIBaseURL() {
+    this.instance_modal_error.set("")
+    this.instance_modal_loading.set(true)
+    this.persistentStorage.setAPIBaseURL(this.instance_modal_apiBaseURL_input()).then(_ => {
+      this.apiService.updateBaseURL().then(success => {
+        this.instance_modal_loading.set(false)
+        if (success) {
+          this.instance_modal_active.set(false)
+          const baseURL = new URL(this.apiService.baseURL)
+          this.current_domain.set(baseURL.host)
+        } else {
+          this.translate.get("general_error").subscribe(t => {
+            this.instance_modal_error.set(t)
+          })
+        }
+      })
+    }).catch(error => {
+      console.log(error)
+      this.translate.get("invalid_url").subscribe(t => {
+        this.instance_modal_error.set(t)
+      })
+    })
   }
 }
