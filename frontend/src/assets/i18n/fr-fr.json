@@ -617,12 +617,12 @@
           "title": "Auto-verrouillage du coffre après inactivité"
         },
         "subtitle": "Paramètres liés à la sécurité de ton compte",
-        "title": "Paramètres de sécurité de ton compte"
+        "title": "Sécurité"
       }
     },
     "ackup": {
       "section": {
-        "subtitle": "Préférences à propos de la gestion de vos backups automatiques"
+        "subtitle": "Préférences à propos de la gestion de tes backups automatiques"
       }
     },
     "advanced": {
@@ -641,7 +641,7 @@
         "title": "Nombre de backup minimal gardé dans Google Drive"
       },
       "section": {
-        "title": "Configuration des backups"
+        "title": "Sauvegardes"
       },
       "warning": "Les backups automatiques ont été désactivées sur cette instance de Zero-TOTP. Pour utiliser cette fonctionnalité, demande a l'administrateur de l'activer, ou utilise l'instance officielle, zero-totp.com."
     },
@@ -671,7 +671,7 @@
           "title": "Afficher les logos (favicon) des sites web à côté de leur nom"
         },
         "subtitle": "Paramètres généraux sur l'affichage de ton coffre.",
-        "title": "Paramètre d'affichage du coffre"
+        "title": "Affichage du coffre"
       }
     },
     "warning": {

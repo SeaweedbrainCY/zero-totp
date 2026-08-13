@@ -621,7 +621,7 @@
           "title": "Autolock your vault after inactivity"
         },
         "subtitle": "Settings related to your account security",
-        "title": "Account security settings"
+        "title": "Security"
       }
     },
     "ackup": {
@@ -645,7 +645,7 @@
         "title": "Minimum of backup kept in Google Drive"
       },
       "section": {
-        "title": "Backup configuration"
+        "title": "Backups"
       },
       "warning": "Automatic backup is currently disabled on this Zero-TOTP tenant. To use this feature, ask the administrator to enable it or use the official instance, zero-totp.com."
     },
@@ -675,7 +675,7 @@
           "title": "Display website's logo (favicon) beside its name"
         },
         "subtitle": "Global settings on how your vault is displayed.",
-        "title": " Vault display settings"
+        "title": "Vault display"
       }
     },
     "warning": {
