@@ -799,14 +799,14 @@
       },
       "title": "Is your passphrase strong enough ?"
     },
-    "subtitle": "Have a safe and pleasant zero-trip",
+    "subtitle": "100% free, 100% open-source, 100% control over your security 🔒",
     "success": "Account created successfully 🎉🎉",
     "username": {
       "error": {
         "forbidden": "' \" < > characters are forbidden in usernames"
       }
     },
-    "welcome": "Welcome aboard of Zero-TOTP"
+    "welcome": "Join Zero-TOTP"
   },
   "start": "Start",
   "stop": "Stop",

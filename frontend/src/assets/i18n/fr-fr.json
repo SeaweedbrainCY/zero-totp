@@ -779,14 +779,14 @@
       },
       "title": "Ta passphrase est assez forte ?"
     },
-    "subtitle": "Un voyage sûr et fiable",
+    "subtitle": "100% gratuit, 100% open-source, 100% de contrôle sur ta sécurité 🔒",
     "success": "Compte créé avec succès 🎉🎉",
     "username": {
       "error": {
         "forbidden": "Les caractères ' \" < > sont interdits dans des noms d'utilisateur"
       }
     },
-    "welcome": "Bienvenue à bord de Zero-TOTP "
+    "welcome": "Rejoins Zero-TOTP"
   },
   "start": "Commencer",
   "stop": "Arrêter",
