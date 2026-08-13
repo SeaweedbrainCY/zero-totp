@@ -69,6 +69,7 @@ export class PreferencesComponent implements OnInit {
   default_backup_minimum_count = signal(-1);
   is_google_drive_enabled_on_this_tenant = signal(false);
   is_biometric_protection_enabled = signal(false)
+  isBuiltForMobile = signal(false)
 
   constructor(
     private http: HttpClient,
@@ -96,6 +97,7 @@ export class PreferencesComponent implements OnInit {
     this.check_if_google_drive_is_enabled_on_this_tenant()
     this.duration_unit.set("hour");
     if (environment.isMobileApp) {
+      this.isBuiltForMobile.set(true)
       this.getMobileAppPreference()
     }
   }
@@ -152,17 +154,17 @@ export class PreferencesComponent implements OnInit {
   }
 
   async getMobileAppPreference() {
-    const isEnabled: boolean = await this.capacitorPreferencesStorage.isBiometricsProtectionEnabled() ?? false
+    const isEnabled: boolean = await this.capacitorPreferencesStorage.isBiometricsProtectionEnabled(this.userService.id()!) ?? false
     this.is_biometric_protection_enabled.set(isEnabled)
   }
 
   enableBiometricProtection() {
-    this.capacitorPreferencesStorage.setBriometricProtection(true)
+    this.capacitorPreferencesStorage.setBriometricProtection(this.userService.id()!, true)
     this.is_biometric_protection_enabled.set(true)
   }
 
   disableBiometricProtection() {
-    this.capacitorPreferencesStorage.setBriometricProtection(false)
+    this.capacitorPreferencesStorage.setBriometricProtection(this.userService.id()!, false)
     this.is_biometric_protection_enabled.set(false)
     this.protectedKeychainStorageService.deleteZKEKey()
   }

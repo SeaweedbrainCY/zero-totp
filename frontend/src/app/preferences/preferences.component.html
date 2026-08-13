@@ -29,7 +29,7 @@
             <div style="border-bottom: 1px solid silver"></div>
             <p class="has-text-grey pb-3">{{ 'preference.account.security.subtitle' | translate }}
             </p>
-            @if(environment.isMobileApp){
+            @if(isBuiltForMobile()){
             <div class="box">
               <strong class="mr-1 label is-size-4	"> <fa-icon [icon]="faFingerprint" class="mr-2"></fa-icon>
                 {{ 'preference.account.security.biometric_protection.title' | translate }}
