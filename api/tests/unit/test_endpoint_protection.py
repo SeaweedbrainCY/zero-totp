@@ -13,7 +13,7 @@ from Utils import utils
 
 class TestEndpointProtection(unittest.TestCase):
 
-    get_endpoint_requiring_session = ["/api/v1/role", "/api/v1/zke_encrypted_key", f"/api/v1/encrypted_secret/{str(uuid4())}", "/api/v1/all_secrets", "/api/v1/vault/export", "api/v1/preferences", "/api/v1/whoami", "/api/v1/google-drive/oauth/authorization-flow", "/api/v1/google-drive/oauth/callback", "/api/v1/google-drive/option", "/api/v1/google-drive/last-backup/verify", "/api/v1/notification/internal", "/api/v1/email/send_verification", "/api/v1/backup/configuration", "/api/v1/backup/configuration?dv=true", "/api/v1/user/derived-key-salt", "/api/v1/backup/server/options"]
+    get_endpoint_requiring_session = ["/api/v1/role", "/api/v1/zke_encrypted_key", f"/api/v1/encrypted_secret/{str(uuid4())}", "/api/v1/all_secrets", "/api/v1/vault/export", "api/v1/preferences", "/api/v1/google-drive/oauth/authorization-flow", "/api/v1/google-drive/oauth/callback", "/api/v1/google-drive/option", "/api/v1/google-drive/last-backup/verify", "/api/v1/notification/internal", "/api/v1/email/send_verification", "/api/v1/backup/configuration", "/api/v1/backup/configuration?dv=true", "/api/v1/user/derived-key-salt", "/api/v1/backup/server/options"]
 
     post_endpoint_requiring_session = [f"/api/v1/encrypted_secret",  "/api/v1/account/delete", "/api/v1/encrypted_secrets"]
 
