@@ -29,8 +29,34 @@
             <div style="border-bottom: 1px solid silver"></div>
             <p class="has-text-grey pb-3">{{ 'preference.account.security.subtitle' | translate }}
             </p>
+            @if(environment.isMobileApp){
             <div class="box">
-              <strong class="mr-1 label is-size-4	">
+              <strong class="mr-1 label is-size-4	"> <fa-icon [icon]="faFingerprint" class="mr-2"></fa-icon>
+                {{ 'preference.account.security.biometric_protection.title' | translate }}
+              </strong>
+              <div>
+                <div>
+                  <label class="has-text-weight-bold"> {{ 'preference.account.security.biometric_protection.label'
+                    | translate }} </label>
+                </div>
+                <div [ngClass]="{'is-skeleton': loadingPreferences()}">
+                  <div class="buttons has-addons" [style.opacity]="loadingPreferences() ? 0 : 1">
+                    <button class="button " [ngClass]="{'is-selected is-success':is_biometric_protection_enabled()}"
+                      (click)="enableBiometricProtection()">
+                      {{ 'Enabled' | translate }}
+                    </button>
+                    <button class="button " [ngClass]="{'is-selected is-danger':!is_biometric_protection_enabled()}"
+                      (click)="disableBiometricProtection()">
+                      {{ 'Disabled' | translate }}
+                    </button>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
+            <div class="box">
+              <strong class="mr-1 label is-size-4	"> <fa-icon [icon]="faClock" class="mr-2"></fa-icon>
                 {{ 'preference.account.security.autolock.title' | translate }}
               </strong>
               <div>
@@ -95,7 +121,7 @@
             <p class="has-text-grey pb-3">{{ 'preference.vault.display.subtitle' | translate }}
             </p>
             <div class="box">
-              <strong class="mr-1 label is-size-4	">
+              <strong class="mr-1 label is-size-4	"> <fa-icon [icon]="faImage" class="mr-2"></fa-icon>
                 {{ 'preference.vault.display.favicon.title' | translate }} <span class="tag is-rounded is-info">{{
                   'preference.tag.global' | translate }}
                 </span>
@@ -167,7 +193,8 @@
             @if (is_google_drive_enabled_on_this_tenant()) {
             <div>
               <div class="box">
-                <label class="label is-size-4">{{ 'preference.backup.minimum.title' | translate }}
+                <label class="label is-size-4"> <fa-icon [icon]="faListOl" class="mr-2"></fa-icon> {{
+                  'preference.backup.minimum.title' | translate }}
                   <span class="tag is-rounded is-info"> {{ 'preference.tag.sync_only' | translate
                     }} </span></label>
                 <div [ngClass]="{'is-skeleton': loading_backup_configuration()}">
@@ -200,8 +227,9 @@
                 </div>
               </div>
               <div class="box">
-                <label class="label is-size-4">{{ 'preference.backup.eol.title' | translate }} <span
-                    class="tag is-rounded is-info"> {{ 'preference.tag.sync_only' | translate }}
+                <label class="label is-size-4"> <fa-icon [icon]="faHeartCircleBolt" class="mr-2"></fa-icon>{{
+                  'preference.backup.eol.title' | translate }} <span class="tag is-rounded is-info"> {{
+                    'preference.tag.sync_only' | translate }}
                   </span></label>
                 <div [ngClass]="{'is-skeleton': loading_backup_configuration()}">
 
