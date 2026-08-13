@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey, faCircleNotch, faCircleQuestion, faPen, faShieldHalved, faGlobe, faLink, faCircleInfo, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, faBriefcaseMedical, faEye, faEyeSlash, faKey, faCircleNotch, faCircleQuestion, faPen, faShieldHalved, faGlobe, faLink, faCircleInfo, faArrowRight, faFingerprint } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -26,6 +26,7 @@ export class LoginComponent implements OnInit {
   faEnvelope = faEnvelope;
   faLock = faLock;
   faArrowRight = faArrowRight;
+  faFingerprint = faFingerprint;
   faCheck = faCheck;
   faCircleInfo = faCircleInfo;
   faLink = faLink;
@@ -64,6 +65,8 @@ export class LoginComponent implements OnInit {
   instance_modal_loading = signal(false)
   instance_modal_apiBaseURL_input = signal(this.apiService.baseURL)
   vault_modal_active = signal(false)
+  biometric_protection_preference_modal_is_active = signal(false)
+  biometric_protection_preference_modal_buttons_are_active = signal(true)
 
   // Not read in template — plain properties
   hashedPassword: string = "";
@@ -471,10 +474,28 @@ export class LoginComponent implements OnInit {
             }
             this.toastr.clear();
             if (this.environment.isMobileApp) {
-              this.secureProtectedStorage.storeZKEKey(zke_key!)
+              this.persistentStorage.isBiometricsProtectionEnabled(this.userService.id()!).then((isBiometricsProtectionEnabled) => {
+                switch (isBiometricsProtectionEnabled) {
+                  case null:
+                    this.biometric_protection_preference_modal_is_active.set(true)
+                    break
+                  case true:
+                    this.secureProtectedStorage.storeZKEKey(zke_key!)
+                    this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
+                    this.router.navigate(["/vault"], { relativeTo: this.route.root });
+                    break;
+                  default:
+                    this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
+                    this.router.navigate(["/vault"], { relativeTo: this.route.root });
+                    break;
+                }
+              })
+            } else {
+              // not a mobile app
+              this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
+              this.router.navigate(["/vault"], { relativeTo: this.route.root });
             }
-            this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
-            this.router.navigate(["/vault"], { relativeTo: this.route.root });
+
           }
         }, (error) => {
           this.utils.toastError(this.toastr, error, "")
@@ -538,6 +559,28 @@ export class LoginComponent implements OnInit {
       this.translate.get("invalid_url").subscribe(t => {
         this.instance_modal_error.set(t)
       })
+    })
+  }
+
+  mobileUseBiometrics() {
+    this.biometric_protection_preference_modal_buttons_are_active.set(false)
+    this.persistentStorage.setBriometricProtection(this.userService.id()!, true).then(() => {
+      this.secureProtectedStorage.storeZKEKey(this.userService.zke_key()!).then(() => {
+        this.biometric_protection_preference_modal_buttons_are_active.set(true)
+        this.biometric_protection_preference_modal_is_active.set(false)
+        this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
+        this.router.navigate(["/vault"], { relativeTo: this.route.root });
+      })
+    })
+  }
+
+  mobileDontUseBiometrics() {
+    this.biometric_protection_preference_modal_buttons_are_active.set(false)
+    this.persistentStorage.setBriometricProtection(this.userService.id()!, false).then(() => {
+      this.biometric_protection_preference_modal_buttons_are_active.set(true)
+      this.biometric_protection_preference_modal_is_active.set(false)
+      this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
+      this.router.navigate(["/vault"], { relativeTo: this.route.root });
     })
   }
 }

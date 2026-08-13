@@ -527,6 +527,16 @@
       },
       "vault_backup": " Vault backup"
     },
+    "biometric-consent-modal": {
+      "button": {
+        "off": "Don't use biometrics",
+        "on": "Use biometrics"
+      },
+      "no_info": "If you choose not to, you'll need to re-enter your master password more often, since your vault is decrypted on your device only.",
+      "p1": "Zero-TOTP uses zero-knowledge encryption — we never see your vault password. You can let this device use <strong>Face ID or Touch ID </strong> to unlock your vault instead of typing your password every time.",
+      "p2": "You can change this anytime in <em>Preferences → Security</em>.",
+      "title": "Use biometrics to decrypt your vault?"
+    },
     "errors": {
       "account_blocked": "Your account has been blocked for security reasons. Please contact the administrator at developer[at]zero-totp.com to unlock it",
       "confirm_passphrase": "To continue, please confirm your passphrase",

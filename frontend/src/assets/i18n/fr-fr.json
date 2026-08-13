@@ -524,6 +524,9 @@
       },
       "vault_backup": "Backup de ton coffre"
     },
+    "biometric-consent-modal": {
+      "title": "Utiliser la biométrie pour déverouiller ton coffre ? "
+    },
     "errors": {
       "account_blocked": "Ton compte a été bloqué pour des raisons de sécurités. Contact un administrateur via developer[at]zero-totp.com pour le débloquer.",
       "confirm_passphrase": "Pour continuer, confirm ta passphrase",
