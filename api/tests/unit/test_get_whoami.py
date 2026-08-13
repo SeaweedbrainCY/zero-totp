@@ -54,7 +54,7 @@ class TestGetWhoami(unittest.TestCase):
             self.client.cookies = { "session-token": self.session_token}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
-                        self.assertEqual(response.json(), {"username": self.username, "email": self.email, "id": self.user_id})
+            self.assertEqual(response.json(), {"username": self.username, "email": self.email, "id": self.user_id})
     
     def test_get_whoami_blocked_user(self):
         with self.flask_application.app.app_context():
