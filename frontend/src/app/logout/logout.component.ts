@@ -7,7 +7,6 @@ import { ApiService } from '../services/API/api.service';
 import { environment } from 'src/environments/environment';
 import { AuthServiceService } from '../services/AuthService/auth-service.service';
 import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
-
 @Component({
   selector: 'app-logout',
   templateUrl: './logout.component.html',
@@ -24,7 +23,7 @@ export class LogoutComponent implements OnInit {
     private http: HttpClient,
     private apiService: ApiService,
     private authService: AuthServiceService,
-    private protectedKeychainStorage: ProtectedKeychainStorageService
+    private protectedKeychainStorage: ProtectedKeychainStorageService,
   ) { }
 
   ngOnInit(): void {
