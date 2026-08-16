@@ -963,5 +963,6 @@
             "main": "Et voilà ton coffre TOTP"
         }
     },
-    "verify": "Vérifier"
+    "verify": "Vérifier",
+    "general_error": "Une erreur est survenue. Merci d'essayer plus tard."
 }
