@@ -625,6 +625,7 @@
     }
   },
   "official": "Official",
+  "or": "or",
   "orange": "Orange",
   "passphrase": "Passphrase",
   "preference": {
@@ -942,6 +943,7 @@
       "title": "Your vault is locked"
     },
     "locked_vault": {
+      "biometric_unlock_button": "Unlock with biometrics",
       "decrypt_vault_button": "Decrypt my vault"
     },
     "oauth": {

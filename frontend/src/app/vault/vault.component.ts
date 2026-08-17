@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, signal, WritableSignal, Signal } from '@angular/core';
 import { UserService, TOTPEntry } from '../services/User/user.service';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faFingerprint, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
@@ -15,6 +15,9 @@ import { TOTP } from "totp-generator"
 import { VaultService, DecryptedVaultResult } from '../services/VaultService/vault.service';
 import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
 import { ApiService } from '../services/API/api.service';
+import { environment } from 'src/environments/environment';
+import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
+import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
 
 
 @Component({
@@ -28,6 +31,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   faPen = faPen;
   faSquarePlus = faSquarePlus;
   faCopy = faCopy;
+  faFingerprint = faFingerprint;
   faArrowUpRightFromSquare = faArrowUpRightFromSquare;
   faKey = faKey;
   faEye = faEye;
@@ -89,6 +93,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   faviconPolicy = signal("");
   totpCodesMap: WritableSignal<Map<string, string>> = signal(new Map<string, string>())
   searchBarValue = signal("")
+  isBiometricProtectionEnabled = signal(false)
 
 
 
@@ -103,7 +108,9 @@ export class VaultComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private vaultService: VaultService,
     public globalConfigurationService: GlobalConfigurationService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private protectedKeychainStorageService: ProtectedKeychainStorageService,
+    private capacitorPreferencesStorage: CapacitorPersistentStorageService
   ) {
     this.current_domain.set(window.location.host);
     router.events.subscribe((url: any) => {
@@ -149,6 +156,14 @@ export class VaultComponent implements OnInit, OnDestroy {
           });
         })
     } else if (this.userService.zke_key() == null) {
+      if (environment.isMobileApp) {
+        this.capacitorPreferencesStorage.isBiometricsProtectionEnabled(this.userService.id()!).then((preference) => {
+          if (preference == true) {
+            this.isBiometricProtectionEnabled.set(true)
+          }
+        })
+
+      }
       // User refreshed the page
       this.userService.refresh_user_id().then(() => {
         this.isVaultEncrypted.set(true);
@@ -182,6 +197,16 @@ export class VaultComponent implements OnInit, OnDestroy {
 
     // Hide the add button
     document.getElementById("add-code-button")!.style.display = "none";
+  }
+
+  mobileLoadZKEKeyFromKeychain() {
+    this.protectedKeychainStorageService.getZKEKey().then((zke_key) => {
+      this.userService.zke_key.set(zke_key)
+      this.ngOnInit()
+    },
+      (error) => {
+        console.log(error)
+      })
   }
 
 
