@@ -10,6 +10,7 @@
   "Home": "Home",
   "Language": "Language",
   "Search": "Search",
+  "Unlock": "Unlock",
   "abort": "Abort",
   "about": "About",
   "account": {
@@ -482,6 +483,9 @@
         "uploading": "Uploading"
       }
     },
+    "vault_locked": {
+      "message": "You need to unlock your vault to import new elements"
+    },
     "zero_totp": {
       "decrypt": "Decrypt your vault",
       "encrypt": "Encrypt and upload the new vault",
@@ -637,7 +641,11 @@
           "title": "Unlock with biometrics"
         },
         "subtitle": "Settings related to your account security",
-        "title": "Security"
+        "title": "Security",
+        "vault_locked": {
+          "message": "Unlock your vault to modify this preference",
+          "unlock_button": "Unlock"
+        }
       }
     },
     "ackup": {

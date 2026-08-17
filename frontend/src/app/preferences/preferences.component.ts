@@ -70,6 +70,7 @@ export class PreferencesComponent implements OnInit {
   is_google_drive_enabled_on_this_tenant = signal(false);
   is_biometric_protection_enabled = signal(false)
   isBuiltForMobile = signal(false)
+  isVaultLocked = signal(false)
 
   constructor(
     private http: HttpClient,
@@ -99,6 +100,9 @@ export class PreferencesComponent implements OnInit {
     if (environment.isMobileApp) {
       this.isBuiltForMobile.set(true)
       this.getMobileAppPreference()
+    }
+    if (this.userService.zke_key() == null) {
+      this.isVaultLocked.set(true)
     }
   }
 
@@ -159,7 +163,11 @@ export class PreferencesComponent implements OnInit {
   }
 
   enableBiometricProtection() {
+    if (this.userService.zke_key() == null) {
+
+    }
     this.capacitorPreferencesStorage.setBriometricProtection(this.userService.id()!, true)
+    this.protectedKeychainStorageService.storeZKEKey(this.userService.zke_key()!)
     this.is_biometric_protection_enabled.set(true)
   }
 

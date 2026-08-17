@@ -29,8 +29,8 @@
             <div style="border-bottom: 1px solid silver"></div>
             <p class="has-text-grey pb-3">{{ 'preference.account.security.subtitle' | translate }}
             </p>
-            @if(isBuiltForMobile()){
-            <div class="box">
+            @if(isBuiltForMobile() || true){
+            <div class="box vault-locked-wrapper" [ngClass]="{'is-locked': isVaultLocked()}">
               <strong class="mr-1 label is-size-4	"> <fa-icon [icon]="faFingerprint" class="mr-2"></fa-icon>
                 {{ 'preference.account.security.biometric_protection.title' | translate }}
               </strong>
@@ -53,6 +53,18 @@
                   </div>
                 </div>
               </div>
+              @if (isVaultLocked()) {
+              <div
+                class="vault-blur is-flex is-flex-direction-column is-align-items-center is-justify-content-center has-text-centered p-4">
+                <fa-icon [icon]="faLock" class="mb-2 is-size-3"></fa-icon>
+                <p class="has-text-weight-bold mb-3">
+                  {{ 'preference.account.security.vault_locked.message' | translate }}
+                </p>
+                <button class="button is-primary" [routerLink]="['/vault']">
+                  {{ 'preference.account.security.vault_locked.unlock_button' | translate }}
+                </button>
+              </div>
+              }
             </div>
             }
             <div class="box">
