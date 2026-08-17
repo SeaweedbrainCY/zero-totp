@@ -65,6 +65,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
   importSuccess = signal(false);
   import_had_error = signal(false);
   selected_uuid = signal<string[]>([])
+  isVaultLocked = signal(false)
 
   selected_merging_option = "";
   api_public_key: any = undefined;
@@ -107,6 +108,10 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
           this.router.navigate(['/login/sessionKilled'], { relativeTo: this.route.root });
         },
       );
+    }
+
+    if (this.userService.zke_key() == null) {
+      this.isVaultLocked.set(true)
     }
 
     this.init_component()
