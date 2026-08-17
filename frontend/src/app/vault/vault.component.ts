@@ -564,15 +564,10 @@ export class VaultComponent implements OnInit, OnDestroy {
 
 
   get_favicon_url(unsafe_uri: string | undefined): string {
-    if (unsafe_uri == undefined || unsafe_uri == "") {
-      return "https://icons.duckduckgo.com/ip3/unknown.ico";
-    }
-    const unsafe_domain = this.utils.getDomainFromURI(unsafe_uri)
-    if (this.utils.domain_name_validator(unsafe_domain)) {
-      return "https://icons.duckduckgo.com/ip3/" + unsafe_domain + ".ico";
-    } else {
-      return "https://icons.duckduckgo.com/ip3/unknown.ico";
-    }
+    const unsafe_domain = unsafe_uri ? this.utils.getDomainFromURI(unsafe_uri) : "";
+    const domain = this.utils.domain_name_validator(unsafe_domain) ? unsafe_domain : "unknown";
+    const url = new URL(`/ip3/${domain}.ico`, "https://icons.duckduckgo.com");
+    return url.toString();
   }
 
   resync_after_error() {
