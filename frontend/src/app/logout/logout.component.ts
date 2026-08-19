@@ -35,18 +35,12 @@ export class LogoutComponent implements OnInit {
   }
 
   async loggout(): Promise<void> {
+    await this.http.put(this.apiService.baseURL + '/api/v1/logout', {}, { withCredentials: true, observe: 'response' })
     if (environment.isMobileApp) {
       await this.persistentStorage.deleteBiometricProtectionPreference(this.userService.id()!)
       await this.authService.clearToken()
       await this.protectedKeychainStorage.deleteZKEKey()
     }
-    this.http.put(this.apiService.baseURL + '/api/v1/logout', {}, { withCredentials: true, observe: 'response' }).subscribe({
-      next: () => {
-        this.userService.clear();
-      },
-      error: () => {
-        this.userService.clear();
-      }
-    });
+    this.userService.clear();
   }
 }
