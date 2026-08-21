@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment';
 import { AuthServiceService } from '../services/AuthService/auth-service.service';
 import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
+import { firstValueFrom } from 'rxjs';
 @Component({
   selector: 'app-logout',
   templateUrl: './logout.component.html',
@@ -36,14 +37,24 @@ export class LogoutComponent implements OnInit {
         this.router.navigate(["/vault"], { relativeTo: this.route.root });
       })
     } else {
-      this.loggout().then(() => {
-        this.router.navigate(["/login"], { relativeTo: this.route.root });
-      })
+      this.loggout()
     }
   }
 
-  async loggout(): Promise<void> {
-    await this.http.put(this.apiService.baseURL + '/api/v1/logout', {}, { withCredentials: true, observe: 'response' })
+  async loggout() {
+    this.http.put(this.apiService.baseURL + '/api/v1/logout', {}, { withCredentials: true, observe: 'response' }).subscribe({
+      next: async () => {
+        await this.cleanLocalAndMemoryStorage()
+        this.router.navigate(["/login"], { relativeTo: this.route.root });
+      },
+      error: async () => {
+        await this.cleanLocalAndMemoryStorage()
+        this.router.navigate(["/login"], { relativeTo: this.route.root });
+      },
+    })
+  }
+
+  async cleanLocalAndMemoryStorage() {
     if (environment.isMobileApp) {
       await this.persistentStorage.deleteBiometricProtectionPreference(this.userService.id()!)
       await this.authService.clearToken()
