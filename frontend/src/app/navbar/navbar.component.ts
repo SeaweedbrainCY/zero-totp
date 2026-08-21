@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
-import { faLightbulb, faXmark, faVault, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook, faPlus, faBars, faRightFromBracket, faUpRightFromSquare, faChevronRight, faChevronDown, faGlobe, faCheck, faUserCheck, faUserPlus, faUserSlash } from '@fortawesome/free-solid-svg-icons';
+import { faLightbulb, faXmark, faVault, faLock, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook, faPlus, faBars, faRightFromBracket, faUpRightFromSquare, faChevronRight, faChevronDown, faGlobe, faCheck, faUserCheck, faUserPlus, faUserSlash } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
 import { Utils } from '../common/Utils/utils';
@@ -25,6 +25,7 @@ export class NavbarComponent implements OnInit {
   faXmark = faXmark
   faUserSlash = faUserSlash;
   faUser = faUser;
+  faLock=faLock;
   faUserCheck = faUserCheck;
   faUserPlus = faUserPlus;
   faUpRightFromSquare = faUpRightFromSquare;
