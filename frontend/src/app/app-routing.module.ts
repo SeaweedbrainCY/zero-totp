@@ -30,6 +30,7 @@ export const routes: Routes = [
   { path: 'vault/add', component: EditTOTPComponent },
   { path: 'qrcode', component: QrcodeReaderComponent },
   { path: "logout", component: LogoutComponent },
+  { path: "lock", component: LogoutComponent },
   { path: "account", component: AccountComponent },
   { path: "privacy", component: PrivacyPolicyComponent },
   { path: "changelog", component: ChangelogComponent },

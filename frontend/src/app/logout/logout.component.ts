@@ -7,7 +7,8 @@ import { ApiService } from '../services/API/api.service';
 import { environment } from 'src/environments/environment';
 import { AuthServiceService } from '../services/AuthService/auth-service.service';
 import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
-
+import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
+import { firstValueFrom } from 'rxjs';
 @Component({
   selector: 'app-logout',
   templateUrl: './logout.component.html',
@@ -24,27 +25,45 @@ export class LogoutComponent implements OnInit {
     private http: HttpClient,
     private apiService: ApiService,
     private authService: AuthServiceService,
-    private protectedKeychainStorage: ProtectedKeychainStorageService
+    private protectedKeychainStorage: ProtectedKeychainStorageService,
+    private persistentStorage: CapacitorPersistentStorageService
   ) { }
 
   ngOnInit(): void {
-    this.loggout().then(() => {
-      this.router.navigate(["/login"], { relativeTo: this.route.root });
+    // If user visits /logout/lock we don't really logout but just lock the application
+    const route = this.route.snapshot.url
+    if (route.length == 1 && route[0].path == "lock") {
+      this.lockApplication().then(() => {
+        this.router.navigate(["/vault"], { relativeTo: this.route.root });
+      })
+    } else {
+      this.loggout()
+    }
+  }
+
+  async loggout() {
+    this.http.put(this.apiService.baseURL + '/api/v1/logout', {}, { withCredentials: true, observe: 'response' }).subscribe({
+      next: async () => {
+        await this.cleanLocalAndMemoryStorage()
+        this.router.navigate(["/login"], { relativeTo: this.route.root });
+      },
+      error: async () => {
+        await this.cleanLocalAndMemoryStorage()
+        this.router.navigate(["/login"], { relativeTo: this.route.root });
+      },
     })
   }
 
-  async loggout(): Promise<void> {
+  async cleanLocalAndMemoryStorage() {
     if (environment.isMobileApp) {
+      await this.persistentStorage.deleteBiometricProtectionPreference(this.userService.id()!)
       await this.authService.clearToken()
       await this.protectedKeychainStorage.deleteZKEKey()
     }
-    this.http.put(this.apiService.baseURL + '/api/v1/logout', {}, { withCredentials: true, observe: 'response' }).subscribe({
-      next: () => {
-        this.userService.clear();
-      },
-      error: () => {
-        this.userService.clear();
-      }
-    });
+    this.userService.clear();
+  }
+
+  async lockApplication(): Promise<void> {
+    this.userService.clear();
   }
 }

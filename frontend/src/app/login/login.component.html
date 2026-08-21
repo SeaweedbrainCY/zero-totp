@@ -333,3 +333,41 @@
 
   </div>
 </div>
+
+<!-- biometric-consent-modal -->
+<div class="modal pr-4 pl-4" [ngClass]="{'is-active':biometric_protection_preference_modal_is_active()}">
+  <div class="modal-background"></div>
+
+  <div class="modal-card ">
+    <header class="modal-card-head">
+      <p class="modal-card-title has-text-centered" style="max-width: 100%;">
+        <fa-icon [icon]="faFingerprint" class="mr-2"></fa-icon>
+        {{'login.biometric-consent-modal.title' | translate}}
+
+      </p>
+    </header>
+
+    <section class="modal-card-body">
+      <p class="mb-3" [innerHTML]="'login.biometric-consent-modal.p1' | translate">
+      </p>
+      <div class="notification is-info is-light py-3">
+        <fa-icon [icon]="faShieldHalved" class="mr-2"></fa-icon>
+        {{ 'login.biometric-consent-modal.no_info' | translate}}
+      </div>
+      <p class="is-size-7 has-text-grey" [innerHTML]="'login.biometric-consent-modal.p2' | translate">
+      </p>
+    </section>
+
+    <footer class="modal-card-foot is-flex is-justify-content-center is-flex-wrap-wrap">
+      <button class="button m-2" (click)="mobileDontUseBiometrics()"
+        [disabled]="!biometric_protection_preference_modal_buttons_are_active()">
+        {{ 'login.biometric-consent-modal.button.off' | translate}}
+      </button>
+      <button class="button is-primary m-2" (click)="mobileUseBiometrics()"
+        [disabled]="!biometric_protection_preference_modal_buttons_are_active()">
+        <fa-icon [icon]="faFingerprint" class="mr-2"></fa-icon>
+        {{ 'login.biometric-consent-modal.button.on' | translate}}
+      </button>
+    </footer>
+  </div>
+</div>

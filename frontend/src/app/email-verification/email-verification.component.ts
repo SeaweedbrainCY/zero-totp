@@ -37,12 +37,7 @@ export class EmailVerificationComponent implements OnInit {
     private toastr: ToastrService,
     private apiService: ApiService,
   ) {
-    if (this.user.email() == null) {
-      this.translate.get("session_expired").subscribe((translation: string) => {
-        this.toastr.error(translation)
-        this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
-      });
-    }
+
   }
 
   ngOnInit(): void {
@@ -58,7 +53,7 @@ export class EmailVerificationComponent implements OnInit {
               this.router.navigate(['/vault'], { queryParams: { returnUrl: this.router.url } });
             }
           }
-        } catch {
+        } catch (e) {
           this.utils.toastError(this.toastr, this.translate.instant("email_verif.error.unknown"), "");
           this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
         }

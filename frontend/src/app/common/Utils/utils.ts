@@ -1,6 +1,5 @@
 import { ToastrService } from "ngx-toastr";
 import { HttpClient } from "@angular/common/http";
-import URLParse from 'url-parse';
 export class Utils {
 
 
@@ -95,12 +94,15 @@ export class Utils {
   }
 
   getDomainFromURI(uri: string): string {
-    if (uri != "") {
-      if (uri.startsWith("http://") || uri.startsWith("https://")) {
-        const parsedUrl = new URLParse(uri);
-        return parsedUrl.hostname;
+    if (!uri) return "";
+    try {
+      const parsedUrl = new URL(uri);
+      if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+        return "";
       }
+      return parsedUrl.hostname;
+    } catch {
+      return "";
     }
-    return ""
   }
 }

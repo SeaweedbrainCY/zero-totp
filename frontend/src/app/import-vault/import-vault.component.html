@@ -10,7 +10,7 @@
 
   @if (vault_type() == null) {
   <div class=" is-flex is-justify-content-center mt-6 pt-6">
-    <div class="is-flex is-flex-direction-column is-align-items-stretch" style="max-width: 90vw;">
+    <div class="import-locked-wrapper is-flex is-flex-direction-column is-align-items-stretch" style="max-width: 90vw;">
       <button class="button is-link is-light is-large is-responsive mt-4" [routerLink]="['./zero-totp/import']"
         style=" white-space: normal;  height: max-content;">
         <div style="height: 100%; " class="icon">
@@ -45,6 +45,19 @@
               class="tag is-warning">{{'available_soon' | translate}}</span> </p>
         </div>
       </button>
+      <!-- Lock overlay -->
+      @if (isVaultLocked()) {
+      <div
+        class="vault-blur is-flex is-flex-direction-column is-align-items-center is-justify-content-center has-text-centered p-4">
+        <fa-icon [icon]="faLock" class="mb-2 is-size-3"></fa-icon>
+        <p class="has-text-weight-bold mb-3">
+          {{ 'import_vault.vault_locked.message' | translate }}
+        </p>
+        <button class="button is-primary" [routerLink]="['/vault']">
+          {{ 'Unlock' | translate }}
+        </button>
+      </div>
+      }
     </div>
   </div>
   }

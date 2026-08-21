@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { faEnvelope, faLock, faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb, faVault, faSliders, faShieldHalved, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faLock, faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb, faVault, faSliders, faShieldHalved, faXmark, faFingerprint, faClock, faImage, faListOl, faHeartCircleBolt } from '@fortawesome/free-solid-svg-icons';
 import { faHardDrive } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
@@ -11,7 +11,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
 import { ApiService } from '../services/API/api.service';
-
+import { environment } from 'src/environments/environment';
+import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
+import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 @Component({
   selector: 'app-preferences',
   templateUrl: './preferences.component.html',
@@ -22,7 +24,12 @@ import { ApiService } from '../services/API/api.service';
 export class PreferencesComponent implements OnInit {
   faUser = faUser;
   faEnvelope = faEnvelope;
+  faHeartCircleBolt = faHeartCircleBolt;
   faLock = faLock;
+  faFingerprint = faFingerprint;
+  faClock = faClock;
+  faImage = faImage;
+  faListOl = faListOl;
   faShield = faShield;
   faCircleInfo = faCircleInfo;
   faVault = faVault;
@@ -61,6 +68,9 @@ export class PreferencesComponent implements OnInit {
   default_backup_max_age = signal(-1);
   default_backup_minimum_count = signal(-1);
   is_google_drive_enabled_on_this_tenant = signal(false);
+  is_biometric_protection_enabled = signal(false)
+  isBuiltForMobile = signal(false)
+  isVaultLocked = signal(false)
 
   constructor(
     private http: HttpClient,
@@ -71,7 +81,9 @@ export class PreferencesComponent implements OnInit {
     private translate: TranslateService,
     private toastr: ToastrService,
     private globalConfigurationService: GlobalConfigurationService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private capacitorPreferencesStorage: CapacitorPersistentStorageService,
+    private protectedKeychainStorageService: ProtectedKeychainStorageService
   ) {
   }
 
@@ -85,6 +97,13 @@ export class PreferencesComponent implements OnInit {
     this.get_backup_configuration()
     this.check_if_google_drive_is_enabled_on_this_tenant()
     this.duration_unit.set("hour");
+    if (environment.isMobileApp) {
+      this.isBuiltForMobile.set(true)
+      this.getMobileAppPreference()
+    }
+    if (this.userService.zke_key() == null) {
+      this.isVaultLocked.set(true)
+    }
   }
 
   get_preferences() {
@@ -136,6 +155,26 @@ export class PreferencesComponent implements OnInit {
         });
       }
     });
+  }
+
+  async getMobileAppPreference() {
+    const isEnabled: boolean = await this.capacitorPreferencesStorage.isBiometricsProtectionEnabled(this.userService.id()!) ?? false
+    this.is_biometric_protection_enabled.set(isEnabled)
+  }
+
+  enableBiometricProtection() {
+    if (this.userService.zke_key() == null) {
+
+    }
+    this.capacitorPreferencesStorage.setBriometricProtection(this.userService.id()!, true)
+    this.protectedKeychainStorageService.storeZKEKey(this.userService.zke_key()!)
+    this.is_biometric_protection_enabled.set(true)
+  }
+
+  disableBiometricProtection() {
+    this.capacitorPreferencesStorage.setBriometricProtection(this.userService.id()!, false)
+    this.is_biometric_protection_enabled.set(false)
+    this.protectedKeychainStorageService.deleteZKEKey()
   }
 
 

@@ -1,0 +1,14 @@
+.import-locked-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.vault-blur {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+
+    background-color: hsla(0, 0%, 100%, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}

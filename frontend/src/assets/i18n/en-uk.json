@@ -5,9 +5,12 @@
     "not_found": "Page not found.",
     "oops": "Oops!"
   },
+  "Disabled": "Disabled",
+  "Enabled": "Enabled",
   "Home": "Home",
   "Language": "Language",
   "Search": "Search",
+  "Unlock": "Unlock",
   "abort": "Abort",
   "about": "About",
   "account": {
@@ -480,6 +483,9 @@
         "uploading": "Uploading"
       }
     },
+    "vault_locked": {
+      "message": "You need to unlock your vault to import new elements"
+    },
     "zero_totp": {
       "decrypt": "Decrypt your vault",
       "encrypt": "Encrypt and upload the new vault",
@@ -497,6 +503,7 @@
   "invalid_url": "Invalid URL",
   "less": "Less",
   "loading": "Loading ...",
+  "lock": "Lock",
   "log_in": "Log in",
   "logging-out": {
     "loading": "Logging you out ..."
@@ -524,6 +531,16 @@
         }
       },
       "vault_backup": " Vault backup"
+    },
+    "biometric-consent-modal": {
+      "button": {
+        "off": "Don't use biometrics",
+        "on": "Use biometrics"
+      },
+      "no_info": "If you choose not to, you'll need to re-enter your master password more often, since your vault is decrypted on your device only.",
+      "p1": "Zero-TOTP uses zero-knowledge encryption — we never see your vault password. You can let this device use <strong>Face ID or Touch ID </strong> to unlock your vault instead of typing your password every time.",
+      "p2": "You can change this anytime in <em>Preferences → Security</em>.",
+      "title": "Use biometrics to decrypt your vault?"
     },
     "errors": {
       "account_blocked": "Your account has been blocked for security reasons. Please contact the administrator at developer[at]zero-totp.com to unlock it",
@@ -609,6 +626,7 @@
     }
   },
   "official": "Official",
+  "or": "or",
   "orange": "Orange",
   "passphrase": "Passphrase",
   "preference": {
@@ -620,8 +638,16 @@
           "success": "Success ! This new value will be applied at your next login",
           "title": "Autolock your vault after inactivity"
         },
+        "biometric_protection": {
+          "label": "Unlock your vault using your biometrics (FaceID or TouchID)",
+          "title": "Unlock with biometrics"
+        },
         "subtitle": "Settings related to your account security",
-        "title": "Account security settings"
+        "title": "Security",
+        "vault_locked": {
+          "message": "Unlock your vault to modify this preference",
+          "unlock_button": "Unlock"
+        }
       }
     },
     "ackup": {
@@ -642,10 +668,10 @@
       "minimum": {
         "desc1": " This is the minimum number of backup that Zero-TOTP will keep above all in your Google Drive.",
         "desc2": " This paramater overrides any other parameter.",
-        "title": "Minimum of backup kept in Google Drive"
+        "title": "Minimum number of backup kept in Google Drive"
       },
       "section": {
-        "title": "Backup configuration"
+        "title": "Backups"
       },
       "warning": "Automatic backup is currently disabled on this Zero-TOTP tenant. To use this feature, ask the administrator to enable it or use the official instance, zero-totp.com."
     },
@@ -675,7 +701,7 @@
           "title": "Display website's logo (favicon) beside its name"
         },
         "subtitle": "Global settings on how your vault is displayed.",
-        "title": " Vault display settings"
+        "title": "Vault display"
       }
     },
     "warning": {
@@ -774,14 +800,14 @@
       },
       "title": "Is your passphrase strong enough ?"
     },
-    "subtitle": "Have a safe and pleasant zero-trip",
+    "subtitle": "100% free, 100% open-source, 100% control over your security 🔒",
     "success": "Account created successfully 🎉🎉",
     "username": {
       "error": {
         "forbidden": "' \" < > characters are forbidden in usernames"
       }
     },
-    "welcome": "Welcome aboard of Zero-TOTP"
+    "welcome": "Join Zero-TOTP"
   },
   "start": "Start",
   "stop": "Stop",
@@ -918,6 +944,7 @@
       "title": "Your vault is locked"
     },
     "locked_vault": {
+      "biometric_unlock_button": "Unlock with biometrics",
       "decrypt_vault_button": "Decrypt my vault"
     },
     "oauth": {

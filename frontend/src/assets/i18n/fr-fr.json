@@ -5,6 +5,8 @@
     "not_found": "Page non trouvée",
     "oops": "Oups !"
   },
+  "Disabled": "Désactivé",
+  "Enabled": "Activé",
   "Home": "Accueil",
   "Language": "Langue",
   "Search": "Rechercher",
@@ -522,6 +524,9 @@
       },
       "vault_backup": "Backup de ton coffre"
     },
+    "biometric-consent-modal": {
+      "title": "Utiliser la biométrie pour déverouiller ton coffre ? "
+    },
     "errors": {
       "account_blocked": "Ton compte a été bloqué pour des raisons de sécurités. Contact un administrateur via developer[at]zero-totp.com pour le débloquer.",
       "confirm_passphrase": "Pour continuer, confirm ta passphrase",
@@ -616,13 +621,17 @@
           "success": "Succès ! Cette nouvelle valeur sera appliquée à ta prochaine connexion",
           "title": "Auto-verrouillage du coffre après inactivité"
         },
+        "biometric_protection": {
+          "label": "Déverouille automatiquement ton coffre avec FaceID ou TouchID",
+          "title": "Déverouillage par biométrie"
+        },
         "subtitle": "Paramètres liés à la sécurité de ton compte",
-        "title": "Paramètres de sécurité de ton compte"
+        "title": "Sécurité"
       }
     },
     "ackup": {
       "section": {
-        "subtitle": "Préférences à propos de la gestion de vos backups automatiques"
+        "subtitle": "Préférences à propos de la gestion de tes backups automatiques"
       }
     },
     "advanced": {
@@ -641,7 +650,7 @@
         "title": "Nombre de backup minimal gardé dans Google Drive"
       },
       "section": {
-        "title": "Configuration des backups"
+        "title": "Sauvegardes"
       },
       "warning": "Les backups automatiques ont été désactivées sur cette instance de Zero-TOTP. Pour utiliser cette fonctionnalité, demande a l'administrateur de l'activer, ou utilise l'instance officielle, zero-totp.com."
     },
@@ -671,7 +680,7 @@
           "title": "Afficher les logos (favicon) des sites web à côté de leur nom"
         },
         "subtitle": "Paramètres généraux sur l'affichage de ton coffre.",
-        "title": "Paramètre d'affichage du coffre"
+        "title": "Affichage du coffre"
       }
     },
     "warning": {
@@ -770,14 +779,14 @@
       },
       "title": "Ta passphrase est assez forte ?"
     },
-    "subtitle": "Un voyage sûr et fiable",
+    "subtitle": "100% gratuit, 100% open-source, 100% de contrôle sur ta sécurité 🔒",
     "success": "Compte créé avec succès 🎉🎉",
     "username": {
       "error": {
         "forbidden": "Les caractères ' \" < > sont interdits dans des noms d'utilisateur"
       }
     },
-    "welcome": "Bienvenue à bord de Zero-TOTP "
+    "welcome": "Rejoins Zero-TOTP"
   },
   "start": "Commencer",
   "stop": "Arrêter",

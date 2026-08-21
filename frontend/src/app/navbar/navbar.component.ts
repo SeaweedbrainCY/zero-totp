@@ -1,10 +1,10 @@
-import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
 import { UserService } from '../services/User/user.service';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
-import { faLightbulb, faXmark, faVault, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook, faPlus, faBars, faRightFromBracket, faUpRightFromSquare, faChevronRight, faChevronDown, faGlobe, faCheck, faUserCheck, faUserPlus, faUserSlash } from '@fortawesome/free-solid-svg-icons';
+import { faLightbulb, faXmark, faVault, faLock, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook, faPlus, faBars, faRightFromBracket, faUpRightFromSquare, faChevronRight, faChevronDown, faGlobe, faCheck, faUserCheck, faUserPlus, faUserSlash } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
 import { Utils } from '../common/Utils/utils';
@@ -25,6 +25,7 @@ export class NavbarComponent implements OnInit {
   faXmark = faXmark
   faUserSlash = faUserSlash;
   faUser = faUser;
+  faLock=faLock;
   faUserCheck = faUserCheck;
   faUserPlus = faUserPlus;
   faUpRightFromSquare = faUpRightFromSquare;
@@ -54,6 +55,11 @@ export class NavbarComponent implements OnInit {
   isMobileDevice = signal(false)
   isMobileNavBarDropDownActive = signal(false)
   isMobileLangDevelopped = signal(false)
+
+  // For mobiles, detect click outside of more info dropdown toggle button
+  @ViewChild('mobileMoreOptionDropdown') mobileMoreOptionDropdownEl!: ElementRef<HTMLElement>;
+
+
 
   languages = [
     {
@@ -236,6 +242,24 @@ export class NavbarComponent implements OnInit {
     }
     return this.languages[0]; // en-uk
   }
+
+  toggleMobileMoreOptionsButton() {
+    console.log("el=", this.mobileMoreOptionDropdownEl)
+    this.isMobileNavBarDropDownActive.update(v => !v)
+    if (this.isMobileNavBarDropDownActive()) {
+      document.addEventListener('click', this.toggleMobileMoreOptionsButtonOutsideClickHandler);
+    } else {
+      document.removeEventListener('click', this.toggleMobileMoreOptionsButtonOutsideClickHandler);
+    }
+
+  }
+
+  toggleMobileMoreOptionsButtonOutsideClickHandler = (e: MouseEvent) => {
+    const target = e.target as Node;
+    if (!this.mobileMoreOptionDropdownEl.nativeElement.contains(target)) {
+      this.isMobileNavBarDropDownActive.set(false);
+    }
+  };
 
   toggleThemeButton() {
     if (this.displayPreferences.theme() == 'light') {

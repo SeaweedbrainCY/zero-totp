@@ -56,10 +56,24 @@
           {{vaultDecryptionErrorMessage() | translate}}
         </p>
         }
-        <button class="button is-info mt-4 has-text-white" (click)="unlockVault()"
+        <button class="button is-info mt-4 has-text-white mb-3" (click)="unlockVault()"
           [ngClass]="{'is-loading':isDecryptingLockedVaut}">
           {{'vault.locked_vault.decrypt_vault_button' | translate}}
         </button>
+        @if(isBiometricProtectionEnabled()){
+        <div class="is-flex is-align-items-center mt-4 is-justify-content-center" style="width: 100%;">
+          <hr class="flex-grow-1" style="background-color: rgba(255,255,255,0.2); height: 1px; margin: 0;width:30vw">
+          <span class="px-3 has-text-grey-lighter is-size-7">{{ 'or' | translate }}</span>
+          <hr class="flex-grow-1" style="background-color: rgba(255,255,255,0.2); height: 1px; margin: 0; width:30vw">
+        </div>
+        <div class="mt-3">
+          <a class="button is-outlined has-text-white is-rounded mt-4" style="width: 48px; height: 48px; padding: 0;"
+            [attr.aria-label]="'vault.locked_vault.biometric_unlock_button' | translate"
+            (click)="mobileLoadZKEKeyFromKeychain()">
+            <fa-icon [icon]="faFingerprint" size="lg"></fa-icon>
+          </a>
+        </div>
+        }
       </div>
     </div>
   </article>
