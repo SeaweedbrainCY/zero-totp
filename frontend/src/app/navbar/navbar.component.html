@@ -127,6 +127,9 @@
         </div>
         @if(userService.id()!=null){
         <hr class="dropdown-divider" />
+        <a class="navbar-item" [routerLink]="['/lock']">
+          <fa-icon [icon]="faUserSlash" aria-hidden="true"></fa-icon> {{ 'lock' | translate }}
+        </a>
         <a class="navbar-item" [routerLink]="['/logout']">
           <fa-icon [icon]="faUserSlash" aria-hidden="true"></fa-icon> {{ 'logout' | translate }}
         </a>

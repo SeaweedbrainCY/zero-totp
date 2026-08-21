@@ -29,9 +29,17 @@ export class LogoutComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loggout().then(() => {
-      this.router.navigate(["/login"], { relativeTo: this.route.root });
-    })
+    // If user visits /logout/lock we don't really logout but just lock the application
+    const route = this.route.snapshot.url
+    if (route.length == 1 && route[0].path == "lock") {
+      this.lockApplication().then(() => {
+        this.router.navigate(["/vault"], { relativeTo: this.route.root });
+      })
+    } else {
+      this.loggout().then(() => {
+        this.router.navigate(["/login"], { relativeTo: this.route.root });
+      })
+    }
   }
 
   async loggout(): Promise<void> {
@@ -41,6 +49,10 @@ export class LogoutComponent implements OnInit {
       await this.authService.clearToken()
       await this.protectedKeychainStorage.deleteZKEKey()
     }
+    this.userService.clear();
+  }
+
+  async lockApplication(): Promise<void> {
     this.userService.clear();
   }
 }
