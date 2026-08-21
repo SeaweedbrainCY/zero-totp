@@ -396,13 +396,14 @@ export class LoginComponent implements OnInit {
     this.http.post<{ id: number | undefined, isVerified: boolean, username: string | undefined, derivedKeySalt: string | undefined, role: string | undefined, isGoogleDriveSync: boolean | undefined, session_token: string | undefined, refresh_token: string | undefined }>(this.apiService.baseURL + "/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         try {
+          this.userService.id.set(response.body!.id!);
+          this.userService.email.set(this.email());
           if (!response.body!.isVerified) {
             this.router.navigate(["/emailVerification"], { relativeTo: this.route.root });
             return;
           }
 
-          this.userService.id.set(response.body!.id!);
-          this.userService.email.set(this.email());
+
           this.userService.derivedKeySalt.set(response.body!.derivedKeySalt!);
           if (environment.isMobileApp && response.body!.session_token != undefined && response.body!.refresh_token != undefined) {
             const domain = new URL(this.apiService.baseURL).host
