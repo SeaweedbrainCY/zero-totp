@@ -1,0 +1,38 @@
+name: Crowdin Action - Update translations
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+jobs:
+    synchronize-with-crowdin:
+        permissions:
+            contents: read
+            pull-requests: write
+
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+            - name: crowdin action
+              uses: crowdin/github-action@8f01d54f70f1713ee3f09d82c2bbb2daeac28689 # v2.17.1
+              with:
+                  upload_sources: true
+                  upload_translations: false
+                  download_translations: true
+                  localization_branch_name: i18n/crowdin_translations
+                  create_pull_request: true
+                  pull_request_title: "[i18n] New Crowdin Translations"
+                  pull_request_body: "New Crowdin translations."
+                  pull_request_base_branch_name: "main"
+                  github_user_email: "${{ secrets.CROWDIN_COMMIT_USER_EMAIL }}"
+                  gpg_private_key: "${{ secrets.GPG_PRIVATE_KEY }}"
+                  gpg_passphrase: "${{ secrets.GPG_PASSPHRASE }}"
+              env:
+                  # A numeric ID, found at https://crowdin.com/project/<projectName>/tools/api
+                  CROWDIN_PROJECT_ID: "${{ secrets.CROWDIN_PROJECT_ID }}"
+
+                  # Visit https://crowdin.com/settings#api-key to create this token
+                  CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
