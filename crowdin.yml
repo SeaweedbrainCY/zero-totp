@@ -1,0 +1,6 @@
+files:
+  - source: /frontend/src/assets/i18n/en-en.json
+    translation: /frontend/src/assets/i18n/%locale%.json
+    "languages_mapping":
+      "locale":
+        "fr": "fr-fr"
