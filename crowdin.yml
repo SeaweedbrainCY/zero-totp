@@ -1,5 +1,5 @@
 files:
-  - source: /frontend/src/assets/i18n/en-en.json
+  - source: /frontend/src/assets/i18n/en-uk.json
     translation: /frontend/src/assets/i18n/%locale%.json
     "languages_mapping":
       "locale":
