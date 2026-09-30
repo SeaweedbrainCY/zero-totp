@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
 import { faFileArrowDown, faArrowRight, faCloudArrowUp, faCheck, faUnlockKeyhole, faLock, faUnlock, faCircleCheck as faCircleCheckFilled, faCircleNotch, faCircleExclamation, faFileCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { faFileExcel, faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
-import { TranslateService } from '@ngx-translate/core';
-import { Router, ActivatedRoute, RouterStateSnapshot, NavigationEnd } from '@angular/router';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
+import { Router, ActivatedRoute, RouterStateSnapshot, NavigationEnd, RouterLink } from '@angular/router';
 import { ViewportRuler } from '@angular/cdk/scrolling';
 import { NgZone } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
@@ -10,21 +10,29 @@ import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault
 import { Utils } from '../common/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
 import { forkJoin, of, Subscription } from 'rxjs';
-import { formatDate } from '@angular/common';
+import { formatDate, NgClass } from '@angular/common';
 import { UserService, TOTPEntry } from '../services/User/user.service';
 import { Crypto } from '../common/Crypto/crypto';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { FormsModule } from '@angular/forms';
 
 
 
 
 @Component({
-  selector: 'app-import-vault',
-  templateUrl: './import-vault.component.html',
-  styleUrl: './import-vault.component.css',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-import-vault',
+    templateUrl: './import-vault.component.html',
+    styleUrl: './import-vault.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        FaIconComponent,
+        RouterLink,
+        NgClass,
+        FormsModule,
+        TranslatePipe,
+    ],
 })
 export class ImportVaultComponent implements OnInit, OnDestroy {
   faFileArrowDown = faFileArrowDown;

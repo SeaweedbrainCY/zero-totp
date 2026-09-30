@@ -7,11 +7,13 @@ import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { Crypto } from '../common/Crypto/crypto';
 import { Utils } from '../common/Utils/utils';
 import { ApiService } from '../services/API/api.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { TranslatePipe } from '@ngx-translate/core';
 @Component({
-  selector: 'app-oauth-sync',
-  templateUrl: './oauth-sync.component.html',
-  styleUrls: ['./oauth-sync.component.css'],
-  standalone: false
+    selector: 'app-oauth-sync',
+    templateUrl: './oauth-sync.component.html',
+    styleUrls: ['./oauth-sync.component.css'],
+    imports: [FaIconComponent, TranslatePipe]
 })
 @Injectable({ providedIn: 'root' })
 export class OauthSyncComponent implements OnInit {

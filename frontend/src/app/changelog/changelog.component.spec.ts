@@ -8,8 +8,8 @@ describe('ChangelogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ChangelogComponent]
-    });
+    imports: [ChangelogComponent]
+});
     fixture = TestBed.createComponent(ChangelogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

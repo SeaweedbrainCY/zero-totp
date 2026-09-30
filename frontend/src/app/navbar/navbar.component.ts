@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
 import { UserService } from '../services/User/user.service';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { ActivatedRoute, Router, NavigationEnd, RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
 import { Subscription } from 'rxjs';
 import { faLightbulb, faXmark, faVault, faLock, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook, faPlus, faBars, faRightFromBracket, faUpRightFromSquare, faChevronRight, faChevronDown, faGlobe, faCheck, faUserCheck, faUserPlus, faUserSlash } from '@fortawesome/free-solid-svg-icons';
@@ -9,14 +9,22 @@ import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
 import { Utils } from '../common/Utils/utils';
 import { DisplayPreferencesService } from '../services/DisplayPreferences/display-preferences.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { NgClass } from '@angular/common';
 
 
 @Component({
-  selector: 'app-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css'],
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-navbar',
+    templateUrl: './navbar.component.html',
+    styleUrls: ['./navbar.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        FaIconComponent,
+        NgClass,
+        RouterLink,
+        RouterLinkActive,
+        TranslatePipe,
+    ],
 })
 export class NavbarComponent implements OnInit {
   currentUrl = signal("");

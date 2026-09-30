@@ -5,21 +5,30 @@ import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
 import { Utils } from '../common/Utils/utils';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
 import { ApiService } from '../services/API/api.service';
 import { environment } from 'src/environments/environment';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
 import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { NgClass } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 @Component({
-  selector: 'app-preferences',
-  templateUrl: './preferences.component.html',
-  styleUrls: ['./preferences.component.css'],
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-preferences',
+    templateUrl: './preferences.component.html',
+    styleUrls: ['./preferences.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        FaIconComponent,
+        NgClass,
+        RouterLink,
+        FormsModule,
+        TranslatePipe,
+    ],
 })
 export class PreferencesComponent implements OnInit {
   faUser = faUser;

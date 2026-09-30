@@ -1,14 +1,22 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { faCircleNotch, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { NgClass } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
 
 
 @Component({
     selector: 'app-callback',
     templateUrl: './callback.component.html',
     styleUrls: ['./callback.component.css'],
-    standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        FaIconComponent,
+        NgClass,
+        RouterLink,
+        TranslatePipe,
+    ],
 })
 export class CallbackComponent implements OnInit{
   errorMessage = signal('');

@@ -8,8 +8,8 @@ describe('PrivacyPolicyComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [PrivacyPolicyComponent]
-    });
+    imports: [PrivacyPolicyComponent]
+});
     fixture = TestBed.createComponent(PrivacyPolicyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

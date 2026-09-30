@@ -8,8 +8,8 @@ describe('OpenSourceLibraryComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [OpenSourceLibraryComponent]
-    });
+    imports: [OpenSourceLibraryComponent]
+});
     fixture = TestBed.createComponent(OpenSourceLibraryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

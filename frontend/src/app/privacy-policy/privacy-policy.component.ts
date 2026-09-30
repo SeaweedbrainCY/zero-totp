@@ -1,14 +1,16 @@
 import { Component, OnInit, signal, WritableSignal } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { faCircleNotch, faArrowUpRightFromSquare, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { MarkdownComponent } from 'ngx-markdown';
 
 @Component({
     selector: 'app-privacy-policy',
     templateUrl: './privacy-policy.component.html',
     styleUrls: ['./privacy-policy.component.css'],
-    standalone: false
+    imports: [FaIconComponent, MarkdownComponent, TranslatePipe]
 })
 export class PrivacyPolicyComponent implements OnInit {
 

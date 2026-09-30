@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-pagenotfound',
     templateUrl: './pagenotfound.component.html',
     styleUrls: ['./pagenotfound.component.css'],
-    standalone: false
+    imports: [TranslatePipe]
 })
 export class PagenotfoundComponent {
   currentUrl: string = "";

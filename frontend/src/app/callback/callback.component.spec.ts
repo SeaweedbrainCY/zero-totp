@@ -8,8 +8,8 @@ describe('CallbackComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [CallbackComponent]
-    });
+    imports: [CallbackComponent]
+});
     fixture = TestBed.createComponent(CallbackComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

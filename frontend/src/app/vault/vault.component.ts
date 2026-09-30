@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy, signal, WritableSignal, Signal } from '@angular/core';
 import { UserService, TOTPEntry } from '../services/User/user.service';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd, RouterLink } from '@angular/router';
 import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faFingerprint, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
 import { Crypto } from '../common/Crypto/crypto';
 import { Utils } from '../common/Utils/utils';
-import { formatDate } from '@angular/common';
+import { formatDate, NgClass } from '@angular/common';
 import { LocalVaultV1Service } from '../services/upload-vault/LocalVaultv1Service.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { TOTP } from "totp-generator"
 import { VaultService, DecryptedVaultResult } from '../services/VaultService/vault.service';
@@ -18,13 +18,16 @@ import { ApiService } from '../services/API/api.service';
 import { environment } from 'src/environments/environment';
 import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { FormsModule } from '@angular/forms';
+import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
 
 
 @Component({
-  selector: 'app-vault',
-  templateUrl: './vault.component.html',
-  styleUrls: ['./vault.component.css'],
-  standalone: false
+    selector: 'app-vault',
+    templateUrl: './vault.component.html',
+    styleUrls: ['./vault.component.css'],
+    imports: [FaIconComponent, FormsModule, NgClass, RouterLink, CdkCopyToClipboard, TranslatePipe]
 })
 export class VaultComponent implements OnInit, OnDestroy {
   // Fontawesome icons

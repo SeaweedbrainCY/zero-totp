@@ -8,8 +8,8 @@ describe('VaultComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [VaultComponent]
-    });
+    imports: [VaultComponent]
+});
     fixture = TestBed.createComponent(VaultComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

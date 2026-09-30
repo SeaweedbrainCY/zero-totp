@@ -8,8 +8,8 @@ describe('PagenotfoundComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [PagenotfoundComponent]
-    });
+    imports: [PagenotfoundComponent]
+});
     fixture = TestBed.createComponent(PagenotfoundComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

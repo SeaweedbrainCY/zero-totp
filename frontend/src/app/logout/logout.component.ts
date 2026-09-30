@@ -9,11 +9,13 @@ import { AuthServiceService } from '../services/AuthService/auth-service.service
 import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
 import { firstValueFrom } from 'rxjs';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { TranslatePipe } from '@ngx-translate/core';
 @Component({
-  selector: 'app-logout',
-  templateUrl: './logout.component.html',
-  styleUrls: ['./logout.component.css'],
-  standalone: false
+    selector: 'app-logout',
+    templateUrl: './logout.component.html',
+    styleUrls: ['./logout.component.css'],
+    imports: [FaIconComponent, TranslatePipe]
 })
 export class LogoutComponent implements OnInit {
   faCircleNotch = faCircleNotch;

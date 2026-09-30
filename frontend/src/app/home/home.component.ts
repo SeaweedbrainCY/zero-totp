@@ -4,13 +4,23 @@ import { Utils } from '../common/Utils/utils';
 import { faLock, faEyeSlash, faFingerprint, faUserLock, faHouse, faMobileScreenButton, faCode, faKitMedical, faAngleDown, faPen, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateDirective, TranslatePipe } from '@ngx-translate/core';
+import { RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
 
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css'],
-    standalone: false,
     changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        TranslateDirective,
+        RouterLink,
+        FaIconComponent,
+        CdkCopyToClipboard,
+        TranslatePipe,
+    ],
 })
 
 

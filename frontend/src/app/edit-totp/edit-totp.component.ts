@@ -8,17 +8,25 @@ import { Utils } from '../common/Utils/utils';
 import { Crypto } from '../common/Crypto/crypto';
 import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
 import URLParse from 'url-parse';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { TOTP } from 'totp-generator'
 import { ApiService } from '../services/API/api.service';
+import { NgClass } from '@angular/common';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-edit-totp',
-  templateUrl: './edit-totp.component.html',
-  styleUrls: ['./edit-totp.component.css'],
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-edit-totp',
+    templateUrl: './edit-totp.component.html',
+    styleUrls: ['./edit-totp.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        NgClass,
+        FaIconComponent,
+        FormsModule,
+        TranslatePipe,
+    ],
 })
 export class EditTOTPComponent implements OnInit, OnDestroy {
   faChevronCircleLeft = faChevronCircleLeft;

@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
     selector: 'app-open-source-library',
     templateUrl: './open-source-library.component.html',
     styleUrls: ['./open-source-library.component.css'],
-    standalone: false
+    imports: [FaIconComponent]
 })
 export class OpenSourceLibraryComponent {
   MITlicenseExpanded=false;
