@@ -1,5 +1,3 @@
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
 import { AppModule, HttpLoaderFactory, MissingTranslationHelper } from './app/app.module';
 import { UserService } from './app/services/User/user.service';
 import { DisplayPreferencesService } from './app/services/DisplayPreferences/display-preferences.service';
@@ -12,7 +10,7 @@ import { provideMarkdown, MarkdownModule } from 'ngx-markdown';
 import { provideHttpClient, HttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { httpInterceptorProviders } from './app/helpers/auth.interceptor';
-import { provideZonelessChangeDetection, provideCheckNoChangesConfig, isDevMode, importProvidersFrom } from '@angular/core';
+import { provideZonelessChangeDetection, provideCheckNoChangesConfig, isDevMode, importProvidersFrom, provideAppInitializer } from '@angular/core';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { AppRoutingModule, routes } from './app/app-routing.module';
 import { FormsModule } from '@angular/forms';
@@ -26,6 +24,7 @@ import { NgIdleModule } from '@ng-idle/core';
 import { TranslateModule, TranslateLoader, MissingTranslationHandler, MissingTranslationHandlerParams } from '@ngx-translate/core';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { AppComponent } from './app/app.component';
+import { initTranslations } from './app/i18n';
 
 
 bootstrapApplication(AppComponent, {
@@ -61,6 +60,7 @@ bootstrapApplication(AppComponent, {
         provideZonelessChangeDetection(),
         provideCheckNoChangesConfig({ exhaustive: true, interval: 1000 }),
         provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: "enabled" })),
+        provideAppInitializer(initTranslations),
     ]
 })
   .catch(err => console.error(err));
