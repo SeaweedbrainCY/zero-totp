@@ -52,6 +52,7 @@ jobs:
     needs: setup
     permissions:
       security-events: write
+      cont
     name: Tests and security analysis
     uses: ./.github/workflows/test.yml # use the callable tests job to run tests
     secrets:
