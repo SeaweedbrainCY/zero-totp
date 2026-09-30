@@ -42,8 +42,8 @@ Learn more about the encryption or self-hosting in the [documentation](https://d
 | [Rescue Zero-TOTP](https://rescue.zero-totp.com) | ✅ | ✅ | ✅ |
 | [Zero-TOTP Web App](https://zero-totp.com) | ✅ | ✅ | ✅ |
 | Zero-TOTP web app self-host | ✅ | ✅ | ✅  |
+| Zero-TOTP iOS App | ✅ | ⏳ | ⏳ |
 | Rescue Zero-TOTP self-host | ✅ | ⏳ | ⏳ |
-| Zero-TOTP iOS App | ⏳ | ⏳ | ⏳ |
 | Zero-TOTP CLI App | ⏳ | ⏳ | ⏳ |
 
 ## Secure and reliable
