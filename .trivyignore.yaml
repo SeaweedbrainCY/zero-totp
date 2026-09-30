@@ -1,7 +1,7 @@
 vulnerabilities:
   - id: GHSA-6v7p-g79w-8964
     expired_at: 2026-09-05
-    statement: Vendor package from pip. Not used in the project. Waiting for upstream fix.
+    statement: Package from the python alpine image. Not used in the project. Waiting for upstream fix.
   - id: CVE-2025-47273
     expired_at: 2026-10-05
     statement: The actual version of setuptools is 83.0.0. FP from trivy.
