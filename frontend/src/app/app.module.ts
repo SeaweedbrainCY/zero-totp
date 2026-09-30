@@ -68,7 +68,8 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
   }
 }
 
-@NgModule({
+@NgModule(/* TODO(standalone-migration): clean up removed NgModule class manually. 
+{
     declarations: [AppComponent],
     bootstrap: [AppComponent],
     imports: [
@@ -138,7 +139,7 @@ export class MissingTranslationHelper implements MissingTranslationHandler {
         provideZonelessChangeDetection(),
         provideCheckNoChangesConfig({ exhaustive: true, interval: 1000 })
     ],
-})
+} */)
 export class AppModule {
   constructor(translate: TranslateService) {
     translate.addLangs(["fr-fr"]);
