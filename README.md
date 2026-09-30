@@ -35,9 +35,7 @@ You are the only one able to decrypt these information, thanks to your strong an
 Learn more about the encryption or self-hosting in the [documentation](https://docs.zero-totp.com).
 
 ## Project progress
-*Updated 2025-09-29*
-> [!TIP]
-> As of today, all focus is on the web app (main and Rescue) and their self-hosted version. The iOS app and the CLI app are not in development for the moment.
+*Updated 2026-09-29*
 
 | Platform | In development | In beta Test | Stable |
 | --- | --- | --- | --- |
