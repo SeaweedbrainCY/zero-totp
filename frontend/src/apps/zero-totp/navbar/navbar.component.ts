@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { faLightbulb, faXmark, faVault, faLock, faKey, faGears, faUser, faSun, faMoon, faCircleQuestion, faHome, faBook, faPlus, faBars, faRightFromBracket, faUpRightFromSquare, faChevronRight, faChevronDown, faGlobe, faCheck, faUserCheck, faUserPlus, faUserSlash } from '@fortawesome/free-solid-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
-import { Utils } from '../../../shared/Utils/utils';
+import { isDeviceMobile } from '../../../shared/Utils/utils';
 import { DisplayPreferencesService } from '../services/DisplayPreferences/display-preferences.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgClass } from '@angular/common';
@@ -89,7 +89,6 @@ export class NavbarComponent implements OnInit {
     private idle: Idle,
     private http: HttpClient,
     private apiService: ApiService,
-    private utils: Utils,
     public displayPreferences: DisplayPreferencesService,
   ) {
     router.events.subscribe((url: any) => {
@@ -132,7 +131,7 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     this.get_global_notification();
     this.last_notification_check_date = Math.floor(Date.now() / 1000);
-    this.isMobileDevice.set(this.utils.isDeviceMobile())
+    this.isMobileDevice.set(isDeviceMobile())
     this.displayPreferences.theme.set(window.document.documentElement.getAttribute('data-theme') ?? "light")
   }
 

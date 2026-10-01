@@ -7,7 +7,7 @@ import { UserService } from '../services/User/user.service';
 import { Crypto } from '../../../shared/Crypto/crypto';
 import { AuthServiceService, AuthToken } from '../services/AuthService/auth-service.service';
 import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
-import { Utils } from '../../../shared/Utils/utils';
+import { isDeviceMobile } from '../../../shared/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
 import { ApiService } from '../services/API/api.service';
 import { ToastService } from '../../../shared/Services/Toast/toast.service';
@@ -82,6 +82,9 @@ export class LoginComponent implements OnInit {
   local_vault_service: LocalVaultV1Service | null = null;
   api_public_key: string | undefined = undefined;
 
+  // Pass to html template
+  protected isDeviceMobile = isDeviceMobile
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -91,7 +94,6 @@ export class LoginComponent implements OnInit {
     private localVaultv1: LocalVaultV1Service,
     private translate: TranslateService,
     private toast: ToastService,
-    public utils: Utils,
     private vaultService: VaultService,
     private apiService: ApiService,
     private persistentStorage: CapacitorPersistentStorageService,
@@ -539,7 +541,7 @@ export class LoginComponent implements OnInit {
       this.instance_modal_active.update(v => !v);
     } else {
       // Webapp consulted on a mobile
-      if (this.utils.isDeviceMobile()) {
+      if (isDeviceMobile()) {
         // On nonMobileDevice, it's just hoverable
         this.instance_dropdown_active.update(v => !v);
       }

@@ -3,7 +3,7 @@ import { faEnvelope, faKey, faCheck, faUser, faXmark, faFlagCheckered, faEye, fa
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { Utils } from '../../../shared/Utils/utils';
+import { isDeviceMobile } from '../../../shared/Utils/utils';
 import { Crypto } from '../../../shared/Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
@@ -50,6 +50,9 @@ export class SignupComponent implements OnInit {
   faCircleInfo = faCircleInfo;
   environment = environment
 
+  // Accessed from html
+  protected readonly isDeviceMobile = isDeviceMobile;
+
   username = signal('');
   email = signal('');
   password = signal('');
@@ -79,7 +82,6 @@ export class SignupComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    public utils: Utils,
     private crypto: Crypto,
     private router: Router,
     private route: ActivatedRoute,
@@ -273,7 +275,7 @@ export class SignupComponent implements OnInit {
       this.instance_modal_active.update(v => !v);
     } else {
       // Webapp consulted on a mobile
-      if (this.utils.isDeviceMobile()) {
+      if (isDeviceMobile()) {
         // On nonMobileDevice, it's just hoverable
         this.instance_dropdown_active.update(v => !v);
       }

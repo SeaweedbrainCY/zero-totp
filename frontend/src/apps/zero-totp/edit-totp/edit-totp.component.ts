@@ -4,7 +4,7 @@ import { UserService } from '../services/User/user.service';
 import { TOTPEntry, TOTPEntryFromJSON, TOTPEntryToJSON } from '../../../shared/models/totp-entry';
 import { HttpClient } from '@angular/common/http';
 import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch, faEyeSlash, faEye, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { Utils } from '../../../shared/Utils/utils';
+import { domain_name_validator, sanitize } from '../../../shared/Utils/utils';
 
 import { Crypto } from '../../../shared/Crypto/crypto';
 import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
@@ -76,7 +76,6 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
     public userService: UserService,
     private QRCodeService: QrCodeTOTP,
     private http: HttpClient,
-    private utils: Utils,
     private crypto: Crypto,
     private translate: TranslateService,
     private toast: ToastService,
@@ -161,7 +160,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
       this.nameError.set("totp.error.name_empty");
       return;
     }
-    if (this.utils.sanitize(this.name()) != this.name()) {
+    if (sanitize(this.name()) != this.name()) {
       this.nameError.set("totp.error.char");
       return;
     }
@@ -169,7 +168,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
 
   checkURI() {
     this.uriError.set("");
-    if (this.utils.sanitize(this.uri()) != this.uri()) {
+    if (sanitize(this.uri()) != this.uri()) {
       this.uriError.set("totp.error.char");
       return;
     }
@@ -224,7 +223,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.secret() != this.utils.sanitize(this.secret())) {
+    if (this.secret() != sanitize(this.secret())) {
       this.secretError.set("totp.error.char");
       return;
     }
@@ -529,7 +528,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
           const parsedUrl = new URLParse(this.uri());
           const domain = parsedUrl.hostname;
           if (domain != null && domain != "") {
-            if (this.utils.domain_name_validator(domain)) {
+            if (domain_name_validator(domain)) {
               this.faviconURL.set("https://icons.duckduckgo.com/ip3/" + domain + ".ico");
             } else {
               this.uriError.set("totp.error.invalid_domain");

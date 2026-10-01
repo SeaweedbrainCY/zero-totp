@@ -4,7 +4,7 @@ import { UserService, CommonError as UserServiceCommonError } from '../services/
 import { TOTPEntry, TOTPEntryFromJSON, TOTPEntryToJSON } from '../../../shared/models/totp-entry';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Utils } from '../../../shared/Utils/utils';
+import { sanitize } from '../../../shared/Utils/utils';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Crypto } from '../../../shared/Crypto/crypto';
 import { Buffer } from 'buffer';
@@ -84,7 +84,6 @@ export class AccountComponent implements OnInit {
   constructor(
     private http: HttpClient,
     public userService: UserService,
-    private utils: Utils,
     private router: Router,
     private route: ActivatedRoute,
     private crypto: Crypto,
@@ -141,7 +140,7 @@ export class AccountComponent implements OnInit {
       this.usernameErrorMessage.set("account.username.error.missing");
       return;
     }
-    if (this.username != this.utils.sanitize(this.username)) {
+    if (this.username != sanitize(this.username)) {
       this.usernameErrorMessage.set("account.username.error.char");
       return;
     }
@@ -177,7 +176,7 @@ export class AccountComponent implements OnInit {
     if (!emailRegex.test(this.email)) {
       this.emailErrorMessage.set("account.email.errors.invalid");
       return;
-    } if (this.email != this.utils.sanitize(this.email)) {
+    } if (this.email != sanitize(this.email)) {
       this.emailErrorMessage.set("account.email.errors.char");
       return;
     } if (this.email != "" && this.confirmEmail != "" && this.email != this.confirmEmail) {

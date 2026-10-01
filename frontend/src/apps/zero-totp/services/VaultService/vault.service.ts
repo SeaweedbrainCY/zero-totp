@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Crypto } from '../../../../shared/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
-import { Utils } from '../../../../shared/Utils/utils';
 import { TOTPEntry, TOTPEntryFromJSON } from '../../../../shared/models/totp-entry';
 
 
@@ -22,7 +21,6 @@ export class VaultService {
   constructor(
     private crypto: Crypto,
     private translate: TranslateService,
-    private utils: Utils,
   ) { }
 
 

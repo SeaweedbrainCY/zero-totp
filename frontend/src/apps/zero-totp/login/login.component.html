@@ -93,7 +93,7 @@
             <span class="has-text-grey is-size-7"> {{'login.instance.you_are_using' | translate}} </span>
             <div class="is-flex is-justify-content-center is-align-items-center">
               <div class=""
-                [ngClass]="{'dropdown': !environment.isMobileApp, 'is-active': instance_dropdown_active(), 'is-hoverable': !this.utils.isDeviceMobile()}">
+                [ngClass]="{'dropdown': !environment.isMobileApp, 'is-active': instance_dropdown_active(), 'is-hoverable': !isDeviceMobile()}">
                 <div class="dropdown-trigger">
                   <button class="button is-ghost is-small pl-1" aria-haspopup="true" aria-controls="dropdown-menu"
                     (click)="zero_totp_instance_button_click()"> {{current_domain()}}

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Utils } from '../../../../shared/Utils/utils';
+import { sanitize } from '../../../../shared/Utils/utils';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +7,6 @@ import { Utils } from '../../../../shared/Utils/utils';
 export class QrCodeTOTP {
     private label:string | undefined = undefined;
     private secret:string | undefined = undefined;
-    private utils = new Utils();
 
 
 
@@ -16,7 +15,7 @@ export class QrCodeTOTP {
     }
 
     setLabel(label:string){
-        this.label =  this.utils.sanitize(label) || '';
+        this.label = sanitize(label) || '';
     }
 
     getSecret():string|undefined{
@@ -24,7 +23,7 @@ export class QrCodeTOTP {
     }
 
     setSecret(secret : string){
-        this.secret = this.utils.sanitize(secret) || '';
+        this.secret = sanitize(secret) || '';
     }
 
 }

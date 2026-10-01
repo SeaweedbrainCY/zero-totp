@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 import { Crypto } from '../../../shared/Crypto/crypto';
-import { Utils } from '../../../shared/Utils/utils';
+import { getCookie } from '../../../shared/Utils/utils';
 import { ApiService } from '../services/API/api.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -29,10 +29,9 @@ export class OauthSyncComponent implements OnInit {
     private userService: UserService,
     private http: HttpClient,
     private crypto: Crypto,
-    private utils: Utils,
     private apiService: ApiService
   ) {
-    const creds_b64 = this.utils.getCookie('credentials');
+    const creds_b64 = getCookie('credentials');
     if (creds_b64 != null) {
       this.credentials = creds_b64;
     } else {
