@@ -1,12 +1,12 @@
-import { faColonSign } from '@fortawesome/free-solid-svg-icons';
+import { Injectable } from "@angular/core";
 import {Buffer} from 'buffer';
 import { environment } from 'src/environments/environment';
 
-
+@Injectable({ providedIn: 'root' })
 export class Crypto {
 
     pbkdf2_iterations = 700000;
-    
+
 
     generateKeyMaterial(password: string) {
         const enc = new TextEncoder();
@@ -96,9 +96,9 @@ export class Crypto {
 
       async importPublicKey(publicKeyPEM: string): Promise<CryptoKey> {
         const publicKeyDER = atob(publicKeyPEM.replace(/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----/g, ''));
-      
+
         const publicKeyBuffer = this.str2ab(publicKeyDER);
-      
+
         const publicKey = await crypto.subtle.importKey(
           'spki',
           publicKeyBuffer,
@@ -120,7 +120,7 @@ export class Crypto {
         }
         return buf;
       }
-        
+
       ab2str(buf: ArrayBuffer) {
             return String.fromCharCode.apply(null, Array.from(new Uint8Array(buf)));
         }
@@ -130,7 +130,7 @@ export class Crypto {
 
         try{
         const buf = atob(privateKeyBase64.replace(/-----BEGIN RSA PRIVATE KEY-----|-----END RSA PRIVATE KEY-----|\n/g, ''));
-        
+
         const privateKeyPem = this.str2ab(buf)
         const privateKey =await crypto.subtle.importKey(
             'pkcs8',
