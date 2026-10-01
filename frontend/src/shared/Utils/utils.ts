@@ -1,3 +1,12 @@
+export function sanitize(unsafe_str: string | null): string | null {
+    // THIS IS NOT A SECURITY FUNCTION.
+    // a proper sanitizer is implemented in the backend. This just avoid user to see escaped characters in the UI.
+    // All output data must always be escaped by angular or a proper sanitizer.
+    if (unsafe_str == null) {
+      return null;
+    }
+    return unsafe_str.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;').replaceAll('`', '&#x60;');//  nosemgrep
+  }
 
 export function domain_name_validator(domain_name: string): boolean {
   const valid = /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/;
@@ -29,8 +38,8 @@ export function parseTags(json_tags: string): string[] {
   try {
     for (const tag of tags_extracted) {
       if (tag != null) {
-        if (this.sanitize(tag) != null) {
-          tags.push(this.sanitize(tag)!);
+        if (sanitize(tag) != null) {
+          tags.push(sanitize(tag)!);
         }
       }
     }
@@ -51,3 +60,4 @@ export function getDomainFromURI(uri: string): string {
   } catch {
     return '';
   }
+}
