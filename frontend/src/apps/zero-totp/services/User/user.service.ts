@@ -3,7 +3,7 @@ import { LocalVaultV1Service } from '../upload-vault/LocalVaultv1Service.service
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../API/api.service';
 
-import { Crypto } from '../../common/Crypto/crypto';
+import { Crypto } from '../../../../shared/common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
 import { Buffer } from 'buffer';
 
@@ -312,8 +312,8 @@ export class UserService {
     this.vault_tags.set(tags)
   }
 
-  // During login phase, the user's password is pre-hashed before being sent in the login request. 
-  // This pre-hash rely on a salt returned by the API. 
+  // During login phase, the user's password is pre-hashed before being sent in the login request.
+  // This pre-hash rely on a salt returned by the API.
   // Promise the user's hashed passphrase or reject with an error. Error can be a CommonError or a generic textual error.
   getUserPreHashedPassphrase(passphrase: string): Promise<string> {
     return new Promise<string>((resolve, reject) => {

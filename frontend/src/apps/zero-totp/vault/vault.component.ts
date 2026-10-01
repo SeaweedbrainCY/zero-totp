@@ -5,8 +5,8 @@ import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, 
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
-import { Crypto } from '../common/Crypto/crypto';
-import { Utils } from '../common/Utils/utils';
+import { Crypto } from '../../../shared/common/Crypto/crypto';
+import { Utils } from '../../../shared/common/Utils/utils';
 import { formatDate, NgClass } from '@angular/common';
 import { LocalVaultV1Service } from '../services/upload-vault/LocalVaultv1Service.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
@@ -74,7 +74,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   totpValidityUIAnimationTimeoutID = 0
 
 
-  // Signals 
+  // Signals
   progress_bar_percent = signal(0);
   selectedTags: WritableSignal<string[]> = signal([]);
   vaultDecryptionErrorMessage = signal("");
@@ -126,7 +126,7 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this.userService.isVaultLocal()) {
-      // Local vault, the user uploaded it 
+      // Local vault, the user uploaded it
       this.isVaultEncrypted.set(false);
       this.local_vault_service = this.userService.local_vault_service();
       let vaultDate = "unknown"

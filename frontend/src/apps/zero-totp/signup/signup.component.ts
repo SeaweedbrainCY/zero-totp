@@ -3,8 +3,8 @@ import { faEnvelope, faKey, faCheck, faUser, faXmark, faFlagCheckered, faEye, fa
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { Utils } from '../common/Utils/utils';
-import { Crypto } from '../common/Crypto/crypto';
+import { Utils } from '../../../shared/common/Utils/utils';
+import { Crypto } from '../../../shared/common/Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -274,7 +274,7 @@ export class SignupComponent implements OnInit {
     } else {
       // Webapp consulted on a mobile
       if (this.utils.isDeviceMobile()) {
-        // On nonMobileDevice, it's just hoverable 
+        // On nonMobileDevice, it's just hoverable
         this.instance_dropdown_active.update(v => !v);
       }
     }

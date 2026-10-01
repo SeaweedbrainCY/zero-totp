@@ -9,7 +9,7 @@ import { provideToastr } from 'ngx-toastr';
 import { provideNgIdle } from '@ng-idle/core';
 
 import { routes } from './app.routes';
-import { HttpLoaderFactory, MissingTranslationHelper, initTranslations } from './i18n';
+import { HttpLoaderFactory, MissingTranslationHelper, initTranslations } from '../../shared/i18n';
 import { httpInterceptorProviders } from './helpers/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {

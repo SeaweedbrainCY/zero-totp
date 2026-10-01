@@ -3,7 +3,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../services/User/user.service';
 import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { Utils } from '../common/Utils/utils';
+import { Utils } from '../../../shared/common/Utils/utils';
 import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner'

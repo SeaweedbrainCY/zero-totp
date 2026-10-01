@@ -7,12 +7,12 @@ import { ViewportRuler } from '@angular/cdk/scrolling';
 import { NgZone } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
-import { Utils } from '../common/Utils/utils';
+import { Utils } from '../../../shared/common/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { formatDate, NgClass } from '@angular/common';
 import { UserService, TOTPEntry } from '../services/User/user.service';
-import { Crypto } from '../common/Crypto/crypto';
+import { Crypto } from '../../../shared/common/Crypto/crypto';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -476,7 +476,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     await this.uploadBatches(batches);
 
     this.uploading.set(false);
-    this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it 
+    this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it
     if (!this.import_had_error()) {
       this.importSuccess.set(true);
     }

@@ -3,9 +3,9 @@ import { faEnvelope, faLock, faCheck, faUser, faCog, faShield, faHourglassStart,
 import { TOTPEntry, UserService, CommonError as UserServiceCommonError } from '../services/User/user.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Utils } from '../common/Utils/utils';
+import { Utils } from '../../../shared/common/Utils/utils';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Crypto } from '../common/Crypto/crypto';
+import { Crypto } from '../../../shared/common/Crypto/crypto';
 import { Buffer } from 'buffer';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
@@ -711,5 +711,3 @@ export class AccountComponent implements OnInit {
   }
 
 }
-
-

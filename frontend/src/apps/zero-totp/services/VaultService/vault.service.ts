@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Crypto } from '../../common/Crypto/crypto';
+import { Crypto } from '../../../../shared/common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
-import { Utils } from '../../common/Utils/utils';
+import { Utils } from '../../../../shared/common/Utils/utils';
 import { TOTPEntry, UserService } from '../User/user.service';
 
 

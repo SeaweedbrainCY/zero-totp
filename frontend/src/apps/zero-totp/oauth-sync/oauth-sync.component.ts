@@ -4,8 +4,8 @@ import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
-import { Crypto } from '../common/Crypto/crypto';
-import { Utils } from '../common/Utils/utils';
+import { Crypto } from '../../../shared/common/Crypto/crypto';
+import { Utils } from '../../../shared/common/Utils/utils';
 import { ApiService } from '../services/API/api.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -68,5 +68,3 @@ export class OauthSyncComponent implements OnInit {
 
 
 }
-
-

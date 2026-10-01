@@ -2,8 +2,8 @@ import { inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateService } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
-import defaultLanguage from "../../assets/i18n/en-uk.json";
-import FrenchLanguage from "../../assets/i18n/fr-fr.json";
+import defaultLanguage from "../assets/i18n/en-uk.json";
+import FrenchLanguage from "../assets/i18n/fr-fr.json";
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);

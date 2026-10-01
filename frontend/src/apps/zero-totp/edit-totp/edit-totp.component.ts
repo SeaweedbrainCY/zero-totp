@@ -3,9 +3,9 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService, TOTPEntry } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch, faEyeSlash, faEye, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { Utils } from '../common/Utils/utils';
+import { Utils } from '../../../shared/common/Utils/utils';
 
-import { Crypto } from '../common/Crypto/crypto';
+import { Crypto } from '../../../shared/common/Crypto/crypto';
 import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
 import URLParse from 'url-parse';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
@@ -434,7 +434,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
         this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.add.added"), "");
         this.QRCodeService.setLabel('')
         this.QRCodeService.setSecret('')
-        this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it 
+        this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it
         this.router.navigate(["/vault/"], { relativeTo: this.route.root });
       },
       error: (error) => {
@@ -463,7 +463,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
     this.http.put(this.apiService.baseURL + "/api/v1/encrypted_secret/" + this.uuid, { enc_secret: enc_property }, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.add.success"), "");
-        this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it 
+        this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it
         this.router.navigate(["/vault"], { relativeTo: this.route.root });
       },
       error: (error) => {
@@ -495,7 +495,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
         if (response.status == 201) {
           this.isDestroying.set(false);
           this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.delete.success"), "");
-          this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it 
+          this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it
           this.router.navigate(["/vault"], { relativeTo: this.route.root });
         } else {
           this.isDestroying.set(false);

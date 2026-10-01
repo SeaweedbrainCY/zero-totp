@@ -1,5 +1,5 @@
 import { SecurityContext,Injectable } from '@angular/core';
-import { Crypto } from '../../common/Crypto/crypto';
+import { Crypto } from '../../../../shared/common/Crypto/crypto';
 import { DomSanitizer } from '@angular/platform-browser';
 
 
@@ -44,9 +44,9 @@ export class LocalVaultV1Service {
     if(context.hasOwnProperty("version")){
       return context.version;
     } else {
-      return null 
+      return null
     }
-    
+
   }
 
   parseUploadedVault(unsecure_context_b64:string, api_public_key:string|undefined): Promise< UploadVaultStatus> {
@@ -115,7 +115,7 @@ export class LocalVaultV1Service {
       } else {
         resolve(UploadVaultStatus.INVALID_VERSION);
       }
-    } 
+    }
     catch(e){
       console.log(e)
       resolve(UploadVaultStatus.INVALID_JSON);
@@ -151,5 +151,3 @@ export class LocalVaultV1Service {
     this.is_signature_valid = is_valid;
   }
 }
-
-

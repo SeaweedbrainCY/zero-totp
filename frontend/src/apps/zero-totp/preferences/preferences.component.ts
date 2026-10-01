@@ -4,9 +4,9 @@ import { faHardDrive } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
-import { Utils } from '../common/Utils/utils';
+import { Utils } from '../../../shared/common/Utils/utils';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Crypto } from '../common/Crypto/crypto';
+import { Crypto } from '../../../shared/common/Crypto/crypto';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';

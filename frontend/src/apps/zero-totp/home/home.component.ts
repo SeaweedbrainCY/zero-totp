@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import {Crypto} from '../common/Crypto/crypto';
-import { Utils } from '../common/Utils/utils';
+import {Crypto} from '../../../shared/common/Crypto/crypto';
+import { Utils } from '../../../shared/common/Utils/utils';
 import { faLock, faEyeSlash, faFingerprint, faUserLock, faHouse, faMobileScreenButton, faCode, faKitMedical, faAngleDown, faPen, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { ToastrService } from 'ngx-toastr';

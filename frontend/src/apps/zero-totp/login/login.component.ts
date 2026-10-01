@@ -4,10 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../services/User/user.service';
-import { Crypto } from '../common/Crypto/crypto';
+import { Crypto } from '../../../shared/common/Crypto/crypto';
 import { AuthServiceService, AuthToken } from '../services/AuthService/auth-service.service';
 import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
-import { Utils } from '../common/Utils/utils';
+import { Utils } from '../../../shared/common/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
 import { ApiService } from '../services/API/api.service';
 import { ToastrService } from 'ngx-toastr';
@@ -351,8 +351,8 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  // DEPRECATED. 
-  // userService pre-hashed 
+  // DEPRECATED.
+  // userService pre-hashed
   hashPassword() {
     this.http.get(this.apiService.baseURL + "/api/v1/login/specs?username=" + encodeURIComponent(this.email()), { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
@@ -540,7 +540,7 @@ export class LoginComponent implements OnInit {
     } else {
       // Webapp consulted on a mobile
       if (this.utils.isDeviceMobile()) {
-        // On nonMobileDevice, it's just hoverable 
+        // On nonMobileDevice, it's just hoverable
         this.instance_dropdown_active.update(v => !v);
       }
     }
@@ -593,4 +593,3 @@ export class LoginComponent implements OnInit {
     })
   }
 }
-
