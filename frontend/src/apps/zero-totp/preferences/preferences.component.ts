@@ -4,11 +4,10 @@ import { faHardDrive } from '@fortawesome/free-regular-svg-icons';
 import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
-import { Utils } from '../../../shared/common/Utils/utils';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Crypto } from '../../../shared/common/Crypto/crypto';
+import { Crypto } from '../../../shared/Crypto/crypto';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
 import { ApiService } from '../services/API/api.service';
 import { environment } from 'src/environments/environment';
@@ -84,11 +83,10 @@ export class PreferencesComponent implements OnInit {
   constructor(
     private http: HttpClient,
     public userService: UserService,
-    private utils: Utils,
     private router: Router,
     private route: ActivatedRoute,
     private translate: TranslateService,
-    private toastr: ToastrService,
+    private toast: ToastService,
     private globalConfigurationService: GlobalConfigurationService,
     private apiService: ApiService,
     private capacitorPreferencesStorage: CapacitorPersistentStorageService,
@@ -140,7 +138,7 @@ export class PreferencesComponent implements OnInit {
           } else {
             this.faviconPolicy.set("enabledOnly");
             this.translate.get('preference.error.fetch').subscribe((translation: string) => {
-              this.utils.toastError(this.toastr, translation, "")
+              this.toast.error(translation)
             });
           }
         }
@@ -160,7 +158,7 @@ export class PreferencesComponent implements OnInit {
           return;
         }
         this.translate.get('preference.error.update').subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
+          this.toast.error(translation + " " + this.translate.instant(errorMessage));
         });
       }
     });
@@ -208,13 +206,13 @@ export class PreferencesComponent implements OnInit {
           this.loading_backup_configuration.set(false);
         } else {
           this.translate.get('preference.error.fetch').subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
         }
       },
       error: (error) => {
         this.translate.get('preference.error.fetch').subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation, error.error.message)
+          this.toast.error(translation, error.error.message)
         });
       }
     });
@@ -246,7 +244,7 @@ export class PreferencesComponent implements OnInit {
             return;
           }
           this.translate.get('preference.error.update').subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
+            this.toast.error(translation + " " + this.translate.instant(errorMessage));
           });
         }
       });
@@ -297,7 +295,7 @@ export class PreferencesComponent implements OnInit {
           return;
         }
         this.translate.get('preference.error.update').subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
+          this.toast.error(translation + " " + this.translate.instant(errorMessage));
         });
       }
     });
@@ -372,7 +370,7 @@ export class PreferencesComponent implements OnInit {
           return;
         }
         this.translate.get('preference.error.update').subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
+          this.toast.error(translation + " " + this.translate.instant(errorMessage));
         });
       }
     });

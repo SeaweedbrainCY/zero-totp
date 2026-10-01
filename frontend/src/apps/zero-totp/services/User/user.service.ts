@@ -3,10 +3,10 @@ import { LocalVaultV1Service } from '../upload-vault/LocalVaultv1Service.service
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../API/api.service';
 
-import { Crypto } from '../../../../shared/common/Crypto/crypto';
+import { Crypto } from '../../../../shared/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
 import { Buffer } from 'buffer';
-import { TOTPEntry } from '../../../../shared/common/models/totp-entry';
+import { TOTPEntry } from '../../../../shared/models/totp-entry';
 
 
 export interface getZKEKeyResult {

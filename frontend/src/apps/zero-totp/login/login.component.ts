@@ -4,13 +4,13 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService } from '../services/User/user.service';
-import { Crypto } from '../../../shared/common/Crypto/crypto';
+import { Crypto } from '../../../shared/Crypto/crypto';
 import { AuthServiceService, AuthToken } from '../services/AuthService/auth-service.service';
 import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
-import { Utils } from '../../../shared/common/Utils/utils';
+import { Utils } from '../../../shared/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
 import { ApiService } from '../services/API/api.service';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
 import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
@@ -90,7 +90,7 @@ export class LoginComponent implements OnInit {
     private crypto: Crypto,
     private localVaultv1: LocalVaultV1Service,
     private translate: TranslateService,
-    private toastr: ToastrService,
+    private toast: ToastService,
     public utils: Utils,
     private vaultService: VaultService,
     private apiService: ApiService,
@@ -168,7 +168,7 @@ export class LoginComponent implements OnInit {
     const emailRegex = /\S+@\S+\.\S+/;
     if (!emailRegex.test(this.email())) {
       this.translate.get("login.errors.email").subscribe((translation) => {
-        this.utils.toastError(this.toastr, translation, "");
+        this.toast.error(translation);
       });
       return false;
     } else {
@@ -184,7 +184,7 @@ export class LoginComponent implements OnInit {
       },
       error: (error) => {
         this.translate.get("login.errors.no_session").subscribe((translation) => {
-          this.utils.toastError(this.toastr, translation, "");
+          this.toast.error(translation);
           this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
         });
       }
@@ -195,7 +195,7 @@ export class LoginComponent implements OnInit {
   login() {
     if (this.email() == "" || this.password() == "") {
       this.translate.get("login.errors.empty").subscribe((translation) => {
-        this.utils.toastError(this.toastr, translation, "");
+        this.toast.error(translation);
       });
       return;
     }
@@ -217,7 +217,7 @@ export class LoginComponent implements OnInit {
         }
         case UploadVaultStatus.INVALID_JSON: {
           this.translate.get("login.errors.import_vault.invalid_type").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "");
+            this.toast.error(translation);
           });
           this.loading_file.set(false);
           break;
@@ -225,14 +225,14 @@ export class LoginComponent implements OnInit {
 
         case UploadVaultStatus.INVALID_VERSION: {
           this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "");
+            this.toast.error(translation);
           });
           this.loading_file.set(false);
           break;
         }
         case UploadVaultStatus.NO_SIGNATURE: {
           this.translate.get("login.errors.import_vault.no_signature").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.loading_file.set(false);
           break;
@@ -244,14 +244,14 @@ export class LoginComponent implements OnInit {
         }
         case UploadVaultStatus.MISSING_ARGUMENT: {
           this.translate.get("login.errors.import_vault.missing_arg").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.loading_file.set(false);
           break;
         }
         case UploadVaultStatus.INVALID_ARGUMENT: {
           this.translate.get("login.errors.import_vault.invalid_arg").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.loading_file.set(false);
           break;
@@ -259,7 +259,7 @@ export class LoginComponent implements OnInit {
 
         case UploadVaultStatus.UNKNOWN: {
           this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.loading_file.set(false);
           break;
@@ -267,7 +267,7 @@ export class LoginComponent implements OnInit {
 
         default: {
           this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.loading_file.set(false);
           break;
@@ -288,7 +288,7 @@ export class LoginComponent implements OnInit {
           const version = this.localVaultv1.extract_version_from_vault(unsecure_context);
           if (version == null) {
             this.translate.get("login.errors.import_vault.invalid_file").subscribe((translation) => {
-              this.utils.toastError(this.toastr, translation, "");
+              this.toast.error(translation);
             });
             this.loading_file.set(false);
 
@@ -309,19 +309,19 @@ export class LoginComponent implements OnInit {
           }
           else {
             this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation) => {
-              this.utils.toastError(this.toastr, translation, "")
+              this.toast.error(translation)
             });
             this.loading_file.set(false);
           }
         } catch (e) {
           this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.loading_file.set(false);
         }
       } else {
         this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation) => {
-          this.utils.toastError(this.toastr, translation, "")
+          this.toast.error(translation)
         });
         this.loading_file.set(false);
       }
@@ -342,11 +342,11 @@ export class LoginComponent implements OnInit {
         this.userService.zke_key.set(zke_key!);
         this.router.navigate(["/vault"], { relativeTo: this.route.root });
       }, (error) => {
-        this.utils.toastError(this.toastr, error, "")
+        this.toast.error(error)
         this.isLoading.set(false);
       });
     }, (error) => {
-      this.utils.toastError(this.toastr, error, "")
+      this.toast.error(error)
       this.isLoading.set(false);
     });
   }
@@ -367,14 +367,14 @@ export class LoginComponent implements OnInit {
               this.postLoginRequest();
             } else {
               this.translate.get("login.errors.hashing").subscribe((translation) => {
-                this.utils.toastError(this.toastr, translation, "")
+                this.toast.error(translation)
               });
               this.isLoading.set(false);
             }
           });
         } catch {
           this.translate.get("login.errors.hashing").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.isLoading.set(false);
         }
@@ -382,11 +382,11 @@ export class LoginComponent implements OnInit {
         if (error.status == 429) {
           const ban_time = error.error.ban_time || "few";
           this.translate.get("login.errors.rate_limited", { time: String(ban_time) }).subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
         } else {
           this.translate.get("login.errors.no_connection").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
         }
         this.isLoading.set(false);
@@ -435,7 +435,7 @@ export class LoginComponent implements OnInit {
           this.isLoading.set(false);
           console.log(e);
           this.translate.get("login.errors.server_error").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
         }
 
@@ -447,20 +447,20 @@ export class LoginComponent implements OnInit {
         if (error.status == 429) {
           const ban_time = error.error.ban_time || "few";
           this.translate.get("login.errors.rate_limited", { time: String(ban_time) }).subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
         } else if (error.error.message == "blocked") {
           this.translate.get("login.errors.account_blocked").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
         } else if (error.error.message == "generic_errors.invalid_creds") {
           this.translate.get(error.error.message).subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
         } else {
           this.translate.get("generic_errors.error").subscribe((translation) => {
             let message = translation + " : " + error.status + " " + error.statusText + ". " + (error.error.message);
-            this.utils.toastError(this.toastr, message, "")
+            this.toast.error(message)
           });
         }
 
@@ -481,7 +481,7 @@ export class LoginComponent implements OnInit {
             } else {
               localStorage.removeItem("r_email");
             }
-            this.toastr.clear();
+            this.toast.clear();
             if (this.environment.isMobileApp) {
               this.persistentStorage.isBiometricsProtectionEnabled(this.userService.id()!).then((isBiometricsProtectionEnabled) => {
                 switch (isBiometricsProtectionEnabled) {
@@ -490,32 +490,32 @@ export class LoginComponent implements OnInit {
                     break
                   case true:
                     this.secureProtectedStorage.storeZKEKey(zke_key!)
-                    this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
+                    this.toast.success(this.translate.instant("login.success"))
                     this.router.navigate(["/vault"], { relativeTo: this.route.root });
                     break;
                   default:
-                    this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
+                    this.toast.success(this.translate.instant("login.success"))
                     this.router.navigate(["/vault"], { relativeTo: this.route.root });
                     break;
                 }
               })
             } else {
               // not a mobile app
-              this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
+              this.toast.success(this.translate.instant("login.success"))
               this.router.navigate(["/vault"], { relativeTo: this.route.root });
             }
 
           }
         }, (error) => {
-          this.utils.toastError(this.toastr, error, "")
+          this.toast.error(error)
           this.isLoading.set(false);
         });
       }, (error) => {
-        this.utils.toastError(this.toastr, error, "")
+        this.toast.error(error)
         this.isLoading.set(false);
       });
     }, (error) => {
-      this.utils.toastError(this.toastr, error, "")
+      this.toast.error(error)
       this.isLoading.set(false);
     });
   }
@@ -577,7 +577,7 @@ export class LoginComponent implements OnInit {
       this.secureProtectedStorage.storeZKEKey(this.userService.zke_key()!).then(() => {
         this.biometric_protection_preference_modal_buttons_are_active.set(true)
         this.biometric_protection_preference_modal_is_active.set(false)
-        this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
+        this.toast.success(this.translate.instant("login.success"))
         this.router.navigate(["/vault"], { relativeTo: this.route.root });
       })
     })
@@ -588,7 +588,7 @@ export class LoginComponent implements OnInit {
     this.persistentStorage.setBriometricProtection(this.userService.id()!, false).then(() => {
       this.biometric_protection_preference_modal_buttons_are_active.set(true)
       this.biometric_protection_preference_modal_is_active.set(false)
-      this.utils.toastSuccess(this.toastr, this.translate.instant("login.success"), "")
+      this.toast.success(this.translate.instant("login.success"))
       this.router.navigate(["/vault"], { relativeTo: this.route.root });
     })
   }

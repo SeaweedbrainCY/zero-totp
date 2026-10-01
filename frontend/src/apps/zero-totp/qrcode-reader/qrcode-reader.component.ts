@@ -3,8 +3,7 @@ import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../services/User/user.service';
 import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { Utils } from '../../../shared/common/Utils/utils';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { environment } from 'src/environments/environment';
 import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner'
 import { FormsModule } from '@angular/forms';
@@ -39,8 +38,7 @@ export class QrcodeReaderComponent implements OnInit {
     private userService: UserService,
     private qrCode: QrCodeTOTP,
     public translate: TranslateService,
-    private utils: Utils,
-    private toastr: ToastrService,
+    private toast: ToastService,
   ) {
     router.events.subscribe((url: any) => {
       if (url instanceof NavigationEnd) {
@@ -88,7 +86,7 @@ export class QrcodeReaderComponent implements OnInit {
 
       let decoded = decodeURIComponent(resultString);
       this.qrResultString.set(decoded);
-      this.utils.toastSuccess(this.toastr, 'Got it!', '');
+      this.toast.success('Got it!');
 
       const substring = ['otpauth://totp/', '?', 'secret='];
       let patternOK = true;
@@ -100,7 +98,7 @@ export class QrcodeReaderComponent implements OnInit {
 
       if (!patternOK) {
         this.translate.get('qrcode.error.pattern_invalid').subscribe((translation: string) => {
-          this.utils.toastWarning(this.toastr, translation, '');
+          this.toast.warning(translation);
         });
       } else {
         const radical = decoded.split('otpauth://totp/')[1];
@@ -116,7 +114,7 @@ export class QrcodeReaderComponent implements OnInit {
           this.navigate('/vault/add');
         } catch {
           this.translate.get('qrcode.error.read_error').subscribe((translation: string) => {
-            this.utils.toastWarning(this.toastr, translation, '');
+            this.toast.warning(translation);
           });
         }
       }

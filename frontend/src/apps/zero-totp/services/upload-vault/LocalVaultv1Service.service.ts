@@ -1,5 +1,5 @@
 import { SecurityContext,Injectable } from '@angular/core';
-import { Crypto } from '../../../../shared/common/Crypto/crypto';
+import { Crypto } from '../../../../shared/Crypto/crypto';
 import { DomSanitizer } from '@angular/platform-browser';
 
 

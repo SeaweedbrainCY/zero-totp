@@ -1,17 +1,17 @@
 import { Component, OnInit, OnDestroy, signal, WritableSignal, Signal } from '@angular/core';
 import { UserService } from '../services/User/user.service';
-import { TOTPEntry } from '../../../shared/common/models/totp-entry';
+import { TOTPEntry } from '../../../shared/models/totp-entry';
 import { ActivatedRoute, Router, NavigationEnd, RouterLink } from '@angular/router';
 import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faFingerprint, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
-import { Crypto } from '../../../shared/common/Crypto/crypto';
-import { Utils } from '../../../shared/common/Utils/utils';
+import { Crypto } from '../../../shared/Crypto/crypto';
+import { Utils } from '../../../shared/Utils/utils';
 import { formatDate, NgClass } from '@angular/common';
 import { LocalVaultV1Service } from '../services/upload-vault/LocalVaultv1Service.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { TOTP } from "totp-generator"
 import { VaultService, DecryptedVaultResult } from '../services/VaultService/vault.service';
 import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
@@ -109,7 +109,7 @@ export class VaultComponent implements OnInit, OnDestroy {
     private crypto: Crypto,
     private utils: Utils,
     private translate: TranslateService,
-    private toastr: ToastrService,
+    private toast: ToastService,
     private vaultService: VaultService,
     public globalConfigurationService: GlobalConfigurationService,
     private apiService: ApiService,
@@ -146,7 +146,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.reloadSpin.set(false)
         if (result.errors.length != 0) {
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, result.errors.join(". "));
+            this.toast.error(translation, result.errors.join(". "));
           });
         }
         this.userService.vault.set(result.vault)
@@ -156,7 +156,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         error => {
           this.reloadSpin.set(false)
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, error);
+            this.toast.error(translation, error);
           });
         })
     } else if (this.userService.zke_key() == null) {
@@ -301,7 +301,7 @@ export class VaultComponent implements OnInit, OnDestroy {
               return;
             }
             this.translate.get("vault.error.server").subscribe((translation: string) => {
-              this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
+              this.toast.error(translation + " " + this.translate.instant(errorMessage));
             });
           }
           reject(error)
@@ -320,7 +320,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           } else {
             this.faviconPolicy.set("enabledOnly");
             this.translate.get("vault.error.preferences").subscribe((translation: string) => {
-              this.utils.toastError(this.toastr, translation, "");
+              this.toast.error(translation);
             });
           }
         }
@@ -337,7 +337,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           return;
         }
         this.translate.get("vault.error.server").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, "Error : Impossible to update your preferences. " + this.translate.instant(errorMessage), "");
+          this.toast.error("Error : Impossible to update your preferences. " + this.translate.instant(errorMessage));
         });
       }
     });
@@ -379,7 +379,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
   copy() {
-    this.utils.toastSuccess(this.toastr, this.translate.instant("copied"), "");
+    this.toast.success(this.translate.instant("copied"));
   }
 
   refreshUserData() {
@@ -391,7 +391,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.reloadSpin.set(false)
         if (result.errors.length != 0) {
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, result.errors.join(". "));
+            this.toast.error(translation, result.errors.join(". "));
           });
         }
         this.userService.vault.set(result.vault)
@@ -402,7 +402,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         error => {
           this.reloadSpin.set(false)
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, error);
+            this.toast.error(translation, error);
           });
         })
     })
@@ -419,7 +419,7 @@ export class VaultComponent implements OnInit, OnDestroy {
         a.download = 'Zero-TOTP_backup_' + date + '.txt';
         a.click();
         window.URL.revokeObjectURL(url);
-        this.utils.toastSuccess(this.toastr, this.translate.instant("vault.downloaded"), "");
+        this.toast.success(this.translate.instant("vault.downloaded"));
       },
       error: error => {
         let errorMessage = "";
@@ -437,7 +437,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           return;
         }
         this.translate.get("vault.error.server").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
+          this.toast.error(translation + " " + this.translate.instant(errorMessage));
         });
       }
     });
@@ -458,7 +458,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           errorMessage = error.error.detail;
         }
         this.translate.get("vault.oauth.error.server").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation + ". " + errorMessage, "");
+          this.toast.error(translation + ". " + errorMessage);
         });
       }
     });
@@ -489,7 +489,7 @@ export class VaultComponent implements OnInit, OnDestroy {
               errorMessage = error.error.detail;
             }
             this.translate.get("vault.error.server").subscribe((translation: string) => {
-              this.utils.toastError(this.toastr, translation + " " + errorMessage, "");
+              this.toast.error(translation + " " + errorMessage);
             });
           }
         });
@@ -512,7 +512,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           errorMessage = error.error.title;
         }
         this.translate.get("vault.error.backup.part1").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation + " " + errorMessage + ". " + this.translate.instant("vault.error.backup.part2"), "");
+          this.toast.error(translation + " " + errorMessage + ". " + this.translate.instant("vault.error.backup.part2"));
         });
       }
     });
@@ -533,11 +533,11 @@ export class VaultComponent implements OnInit, OnDestroy {
         } else if (data.status == "corrupted_file") {
           this.isGoogleDriveSync.set("error");
           this.translate.get("vault.error.google.unreadable").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, "");
+            this.toast.error(translation);
           });
         } else {
           this.translate.get("vault.error.google.unreadable").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, "");
+            this.toast.error(translation);
           });
         }
       }, error: (error) => {
@@ -574,7 +574,7 @@ export class VaultComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.isGoogleDriveEnabled = false;
         this.isGoogleDriveSync.set("false");
-        this.utils.toastSuccess(this.toastr, this.translate.instant("vault.google.disabled"), "");
+        this.toast.success(this.translate.instant("vault.google.disabled"));
       },
       error: (error) => {
         this.isGoogleDriveSync.set('error');
@@ -585,7 +585,7 @@ export class VaultComponent implements OnInit, OnDestroy {
           errorMessage = error.error.detail;
         }
 
-        this.utils.toastError(this.toastr, this.translate.instant("vault.error.google.disable") + " " + errorMessage, "");
+        this.toast.error(this.translate.instant("vault.error.google.disable") + " " + errorMessage);
       }
     });
   }
@@ -647,7 +647,7 @@ export class VaultComponent implements OnInit, OnDestroy {
                   console.log(error);
                   this.isDecryptingLockedVaut = false;
                   this.translate.get("vault.error.unlock").subscribe((translation: string) => {
-                    this.utils.toastError(this.toastr, translation + " " + "U5", "");
+                    this.toast.error(translation + " " + "U5");
                   });
                 });
 
@@ -655,7 +655,7 @@ export class VaultComponent implements OnInit, OnDestroy {
                 console.log(response);
                 this.isDecryptingLockedVaut = false;
                 this.translate.get("vault.error.unlock").subscribe((translation: string) => {
-                  this.utils.toastError(this.toastr, translation + " " + "U3-" + response.status, "");
+                  this.toast.error(translation + " " + "U3-" + response.status);
                 });
               }
 
@@ -663,7 +663,7 @@ export class VaultComponent implements OnInit, OnDestroy {
               console.log(error);
               this.isDecryptingLockedVaut = false;
               this.translate.get("vault.error.unlock").subscribe((translation: string) => {
-                this.utils.toastError(this.toastr, translation + " " + "U4", "");
+                this.toast.error(translation + " " + "U4");
               });
 
             }
@@ -672,14 +672,14 @@ export class VaultComponent implements OnInit, OnDestroy {
           console.log(response)
           this.isDecryptingLockedVaut = false;
           this.translate.get("vault.error.unlock").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation + " " + "U1-" + response.statusText, "");
+            this.toast.error(translation + " " + "U1-" + response.statusText);
           });
         }
       }, error: (error) => {
         this.isDecryptingLockedVaut = false;
         console.log(error);
         this.translate.get("vault.error.unlock").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation + " " + "U2", "");
+          this.toast.error(translation + " " + "U2");
         });
       }
     })

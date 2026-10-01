@@ -5,8 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../services/API/api.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { Utils } from '../../../shared/common/Utils/utils';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
@@ -41,8 +40,7 @@ export class EmailVerificationComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private translate: TranslateService,
-    private utils: Utils,
-    private toastr: ToastrService,
+    private toast: ToastService,
     private apiService: ApiService,
   ) {
 
@@ -55,19 +53,19 @@ export class EmailVerificationComponent implements OnInit {
           const user = JSON.parse(JSON.stringify(response.body));
           if (user.role != "not_verified") {
             if (this.user.email() == null) {
-              this.utils.toastError(this.toastr, this.translate.instant("email_verif.error.no_email"), "");
+              this.toast.error(this.translate.instant("email_verif.error.no_email"));
               this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
             } else {
               this.router.navigate(['/vault'], { queryParams: { returnUrl: this.router.url } });
             }
           }
         } catch (e) {
-          this.utils.toastError(this.toastr, this.translate.instant("email_verif.error.unknown"), "");
+          this.toast.error(this.translate.instant("email_verif.error.unknown"));
           this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
         }
       },
       error: (error) => {
-        this.utils.toastError(this.toastr, this.translate.instant("email_verif.error.unknown"), "");
+        this.toast.error(this.translate.instant("email_verif.error.unknown"));
         this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
       }
     });
@@ -84,7 +82,7 @@ export class EmailVerificationComponent implements OnInit {
       next: (response) => {
         if (response.status == 200) {
           this.verifyLoading.set(false);
-          this.utils.toastSuccess(this.toastr, this.translate.instant("email_verif.verify.success"), "");
+          this.toast.success(this.translate.instant("email_verif.verify.success"));
           this.router.navigate(['/vault'], { queryParams: { returnUrl: this.router.url } });
         }
       },
@@ -101,7 +99,7 @@ export class EmailVerificationComponent implements OnInit {
             this.errorMessage.set(this.translate.instant("email_verif.error.generic"));
           }
         } else {
-          this.utils.toastError(this.toastr, this.translate.instant("email_verif.error.unknown"), "");
+          this.toast.error(this.translate.instant("email_verif.error.unknown"));
         }
       }
     });
@@ -112,17 +110,17 @@ export class EmailVerificationComponent implements OnInit {
     this.http.get(this.apiService.baseURL + "/api/v1/email/send_verification", { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         this.verifyLoading.set(false);
-        this.utils.toastSuccess(this.toastr, this.translate.instant("email_verif.resend.success"), "");
+        this.toast.success(this.translate.instant("email_verif.resend.success"));
       },
       error: (error) => {
         this.verifyLoading.set(false);
         if (error.status == 429) {
           const ban_time = error.error.ban_time || "few";
           this.translate.get("email_verif.error.rate_limited", { time: String(ban_time) }).subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "");
+            this.toast.error(translation);
           });
         } else {
-          this.utils.toastError(this.toastr, this.translate.instant("email_verif.resend.error"), "");
+          this.toast.error(this.translate.instant("email_verif.resend.error"));
         }
       }
     });
@@ -160,7 +158,7 @@ export class EmailVerificationComponent implements OnInit {
       next: (response) => {
         this.emailLoading.set(false);
         this.translate.get("email_verif.popup.success").subscribe((translation: string) => {
-          this.utils.toastSuccess(this.toastr, translation, "");
+          this.toast.success(translation);
         });
         this.user.email.set(JSON.parse(JSON.stringify(response.body))["message"])
         this.isEmailModalActive.set(false);

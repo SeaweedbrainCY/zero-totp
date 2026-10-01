@@ -1,15 +1,15 @@
 import { Component, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { faEnvelope, faLock, faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash, faVault, faExclamationTriangle, faEye, faEyeSlash, faCircleExclamation, faCircleNotch, faLightbulb, faL } from '@fortawesome/free-solid-svg-icons';
 import { UserService, CommonError as UserServiceCommonError } from '../services/User/user.service';
-import { TOTPEntry, TOTPEntryFromJSON, TOTPEntryToJSON } from '../../../shared/common/models/totp-entry';
+import { TOTPEntry, TOTPEntryFromJSON, TOTPEntryToJSON } from '../../../shared/models/totp-entry';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { Utils } from '../../../shared/common/Utils/utils';
+import { Utils } from '../../../shared/Utils/utils';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Crypto } from '../../../shared/common/Crypto/crypto';
+import { Crypto } from '../../../shared/Crypto/crypto';
 import { Buffer } from 'buffer';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { ApiService } from '../services/API/api.service';
 import { VaultService } from '../services/VaultService/vault.service';
 import { TrailingSlashPathLocationStrategy, NgClass } from '@angular/common';
@@ -89,7 +89,7 @@ export class AccountComponent implements OnInit {
     private route: ActivatedRoute,
     private crypto: Crypto,
     public translate: TranslateService,
-    private toastr: ToastrService,
+    private toast: ToastService,
     private vaultService: VaultService,
     private apiService: ApiService,
   ) { }
@@ -122,13 +122,13 @@ export class AccountComponent implements OnInit {
         }
         if (error.status == 0) {
           this.translate.get("account.errors.network").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
         } else if (error.status == 403 && error.error.error == "Not verified") {
           this.router.navigate(["/emailVerification"], { relativeTo: this.route.root });
         } else {
           this.translate.get("account.errors.unknown").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
         }
       }
@@ -154,7 +154,7 @@ export class AccountComponent implements OnInit {
       this.http.put(this.apiService.baseURL + "/api/v1/update/username", { username: this.username }, { withCredentials: true, observe: 'response' }).subscribe({
         next: () => {
           this.buttonLoading.username.set(false)
-          this.utils.toastSuccess(this.toastr, this.translate.instant('account.username.success'), "");
+          this.toast.success(this.translate.instant('account.username.success'));
           this.get_whoami();
 
         },
@@ -163,7 +163,7 @@ export class AccountComponent implements OnInit {
           if (error.error.message == undefined) {
             error.error.message = 'account.username.error.unknown';
           }
-          this.utils.toastError(this.toastr, "Error : " + this.translate.instant(error.error.message), "");
+          this.toast.error("Error : " + this.translate.instant(error.error.message));
         },
         complete: () => this.buttonLoading.username.set(false)
       })
@@ -191,7 +191,7 @@ export class AccountComponent implements OnInit {
   updateEmail() {
     if (this.email == "") {
       this.translate.get("signup.errors.missing_fields").subscribe((translation: string) => {
-        this.utils.toastError(this.toastr, translation, "")
+        this.toast.error(translation)
       });
       return;
     }
@@ -205,7 +205,7 @@ export class AccountComponent implements OnInit {
     this.http.put(this.apiService.baseURL + "/api/v1/update/email", data, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         this.buttonLoading.email.set(false)
-        this.utils.toastSuccess(this.toastr, this.translate.instant('account.email.success'), "");
+        this.toast.success(this.translate.instant('account.email.success'));
         this.userService.email.set(JSON.parse(JSON.stringify(response.body))["message"])
         this.get_whoami();
       },
@@ -214,7 +214,7 @@ export class AccountComponent implements OnInit {
         if (error.error.message == undefined) {
           error.error.message = this.translate.instant('account.email.error');
         }
-        this.utils.toastError(this.toastr, "Error : " + error.error.message, "");
+        this.toast.error("Error : " + error.error.message);
       },
       complete: () => this.buttonLoading.email.set(false)
     })
@@ -254,7 +254,7 @@ export class AccountComponent implements OnInit {
     }
     if (this.password == "" && isOk) {
       this.translate.get("account.passphrase.no_former_passphrase").subscribe((translation: string) => {
-        this.utils.toastError(this.toastr, translation, "")
+        this.toast.error(translation)
       });
       isOk = false;
     }
@@ -270,7 +270,7 @@ export class AccountComponent implements OnInit {
         this.hashedOldPassword = hashed;
         this.sendDeleteAccountRequest().then(_ => {
           this.router.navigate(["/logout"], { relativeTo: this.route.root });
-          this.utils.toastSuccess(this.toastr, this.translate.instant("account.delete.success"), "");
+          this.toast.success(this.translate.instant("account.delete.success"));
         }, error => {
           this.buttonLoading.deletion.set(false)
           this.deletionErrorMessage.set(this.translate.instant("account.delete.error.aborted"));
@@ -286,7 +286,7 @@ export class AccountComponent implements OnInit {
           this.router.navigate(["/login/sessionKilled"], { relativeTo: this.route.root });
           break;
         default:
-          this.utils.toastError(this.toastr, error, "")
+          this.toast.error(error)
           this.deletionErrorMessage.set(this.translate.instant("account.delete.error.aborted"));
           break;
       }
@@ -323,7 +323,7 @@ export class AccountComponent implements OnInit {
       }
       this.isGoogleDriveBackupEnabled.set(false);
       this.translate.get("account.passphrase.popup.google.fetch_error").subscribe((translation: string) => {
-        this.utils.toastError(this.toastr, translation + " " + errorMessage, "");
+        this.toast.error(translation + " " + errorMessage);
       });
     });
   }
@@ -340,7 +340,7 @@ export class AccountComponent implements OnInit {
           } else if (error.error.detail != null) {
             errorMessage = error.error.detail;
           }
-          this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.popup.google.delete_error") + " " + errorMessage, "");
+          this.toast.error(this.translate.instant("account.passphrase.popup.google.delete_error") + " " + errorMessage);
           reject(error)
         }
       });
@@ -358,7 +358,7 @@ export class AccountComponent implements OnInit {
         } else if (error.error.detail != null) {
           errorMessage = error.error.detail;
         }
-        this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.popup.google.backup_error") + " " + errorMessage, "");
+        this.toast.error(this.translate.instant("account.passphrase.popup.google.backup_error") + " " + errorMessage);
         reject(error)
       });
     });
@@ -384,7 +384,7 @@ export class AccountComponent implements OnInit {
           this.userService.getUserEncryptedVault().then(encrypted_vault => {
             this.vaultService.decryptVault(encrypted_vault, this.userService.zke_key()!).then(decrypted_vault => {
               if (decrypted_vault.errors.length > 0) {
-                this.utils.toastError(this.toastr, this.translate.instant("import_vault.errors.vault_decryption_failure"), decrypted_vault.errors.join("\n"));
+                this.toast.error(this.translate.instant("import_vault.errors.vault_decryption_failure"), decrypted_vault.errors.join("\n"));
                 this.updateAborted('#2')
                 return
               }
@@ -406,14 +406,14 @@ export class AccountComponent implements OnInit {
                             if (this.isGoogleDriveBackupEnabled()) {
                               this.backup().then(_ => {
                                 this.stepsDone.update(steps => [...steps, "backup"])
-                                this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success"), "");
+                                this.toast.success(this.translate.instant("account.passphrase.popup.updating.success"));
                                 this.router.navigate(["/login"], { relativeTo: this.route.root });
                               }, error => {
                                 this.updateAbortedWithSuccess('#8 Backup of your vault on Google drive. Reason : ' + error)
                                 this.router.navigate(["/login"], { relativeTo: this.route.root });
                               });
                             }
-                            this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success"), "");
+                            this.toast.success(this.translate.instant("account.passphrase.popup.updating.success"));
                             this.router.navigate(["/login"], { relativeTo: this.route.root });
                           }, error => {
                             this.updateAbortedWithSuccess('#7 Deletion of your all google drive backup. Reason : ' + error)
@@ -424,14 +424,14 @@ export class AccountComponent implements OnInit {
                             this.backup().then(_ => {
 
                               this.stepsDone.update(steps => [...steps, "backup"])
-                              this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success"), "");
+                              this.toast.success(this.translate.instant("account.passphrase.popup.updating.success"));
                               this.router.navigate(["/login"], { relativeTo: this.route.root });
                             }, error => {
                               this.updateAbortedWithSuccess('#8 Backup of your vault on Google drive. . Reason : ' + error.message)
                               this.router.navigate(["/login"], { relativeTo: this.route.root });
                             });
                           } else {
-                            this.utils.toastSuccess(this.toastr, this.translate.instant("account.passphrase.popup.updating.success"), "");
+                            this.toast.success(this.translate.instant("account.passphrase.popup.updating.success"));
                             this.router.navigate(["/login"], { relativeTo: this.route.root });
                           }
                         }
@@ -468,12 +468,12 @@ export class AccountComponent implements OnInit {
 
   updateAborted(errorCode: string) {
     this.buttonLoading.passphrase.set(false)
-    this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.full_abort") + " " + errorCode, "");
+    this.toast.error(this.translate.instant("account.passphrase.error.full_abort") + " " + errorCode);
   }
 
   updateAbortedWithSuccess(errorCode: string) {
     this.buttonLoading.passphrase.set(false)
-    this.utils.toastWarning(this.toastr, this.translate.instant("account.passphrase.error.light_abort") + " " + errorCode, "");
+    this.toast.warning(this.translate.instant("account.passphrase.error.light_abort") + " " + errorCode);
   }
 
 
@@ -488,7 +488,7 @@ export class AccountComponent implements OnInit {
       this.http.post(this.apiService.baseURL + "/api/v1/login", data, { withCredentials: true, observe: 'response' }).subscribe({
         next: () => resolve("ok"),
         error: (error) => {
-          this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.incorrect"), "");
+          this.toast.error(this.translate.instant("account.passphrase.error.incorrect"));
           this.buttonLoading.passphrase.set(false)
           reject(error)
         }
@@ -508,7 +508,7 @@ export class AccountComponent implements OnInit {
           if (result.errors.length != 0) {
             const errors = result.errors.join(". ")
             this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-              this.utils.toastError(this.toastr, translation, errors);
+              this.toast.error(translation, errors);
             });
             reject(errors)
           }
@@ -516,7 +516,7 @@ export class AccountComponent implements OnInit {
         },
           error => {
             this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-              this.utils.toastError(this.toastr, translation, error);
+              this.toast.error(translation, error);
             });
           })
       })
@@ -529,7 +529,7 @@ export class AccountComponent implements OnInit {
         resolve(derivedKey);
       }, error => {
         this.translate.get("account.passphrase.error.derive").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation, "");
+          this.toast.error(translation);
           reject(error)
         });
       });
@@ -552,7 +552,7 @@ export class AccountComponent implements OnInit {
         enc_vault.set(uuid, enc_property);
 
       } catch (e) {
-        this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.decrypt"), "");
+        this.toast.error(this.translate.instant("account.passphrase.error.decrypt"));
         throw e
       }
     }
@@ -613,17 +613,17 @@ export class AccountComponent implements OnInit {
           }, error: (error) => {
             if (error.status == 500) {
               if (error.error.hashing == 1) {
-                this.utils.toastError(this.toastr, this.translate.instant('account.passphrase.error.hash_new'), "");
+                this.toast.error(this.translate.instant('account.passphrase.error.hash_new'));
                 reject(error.status)
               } else {
                 this.translate.get("account.passphrase.error.fatal").subscribe((translation: string) => {
-                  this.utils.toastError(this.toastr, translation, error.error.message);
+                  this.toast.error(translation, error.error.message);
                 });
                 reject(error.status)
               }
               resolve("ok");
             } else {
-              this.utils.toastError(this.toastr, this.translate.instant("account.passphrase.error.fatal_light") + error.status + " " + error.error.message, "");
+              this.toast.error(this.translate.instant("account.passphrase.error.fatal_light") + error.status + " " + error.error.message);
               reject(error.status)
             }
           }
@@ -646,7 +646,7 @@ export class AccountComponent implements OnInit {
           } else if (error.error.detail != null) {
             errorMessage = error.error.detail;
           }
-          this.utils.toastError(this.toastr, errorMessage, "");
+          this.toast.error(errorMessage);
           reject(errorMessage)
         }
       });

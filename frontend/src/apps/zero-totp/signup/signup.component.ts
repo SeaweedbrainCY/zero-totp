@@ -3,11 +3,11 @@ import { faEnvelope, faKey, faCheck, faUser, faXmark, faFlagCheckered, faEye, fa
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { Utils } from '../../../shared/common/Utils/utils';
-import { Crypto } from '../../../shared/common/Crypto/crypto';
+import { Utils } from '../../../shared/Utils/utils';
+import { Crypto } from '../../../shared/Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { UserService } from '../services/User/user.service';
 import { ApiService } from '../services/API/api.service';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
@@ -84,7 +84,7 @@ export class SignupComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private translate: TranslateService,
-    private toastr: ToastrService,
+    private toast: ToastService,
     private userService: UserService,
     private apiService: ApiService,
     private persistentStorage: CapacitorPersistentStorageService
@@ -178,15 +178,15 @@ export class SignupComponent implements OnInit {
     this.usernameErrorMessage.set('');
     this.passwordErrorMessage.set(['']);
     if (!this.terms()) {
-      this.utils.toastError(this.toastr, this.translate.instant('signup.errors.terms'), '');
+      this.toast.error(this.translate.instant('signup.errors.terms'));
       return;
     }
     if (!this.beta()) {
-      this.utils.toastError(this.toastr, this.translate.instant('signup.errors.beta'), '');
+      this.toast.error(this.translate.instant('signup.errors.beta'));
       return;
     }
     if (this.username() === '' || this.email() === '' || this.password() === '') {
-      this.utils.toastError(this.toastr, this.translate.instant('signup.errors.missing_fields'), '');
+      this.toast.error(this.translate.instant('signup.errors.missing_fields'));
       return;
     }
     this.checkPassword();
@@ -215,7 +215,7 @@ export class SignupComponent implements OnInit {
         this.hashed_password.set(hashed);
         this.signupRequest();
       } else {
-        this.utils.toastError(this.toastr, this.translate.instant('signup.errors.hashing'), '');
+        this.toast.error(this.translate.instant('signup.errors.hashing'));
       }
     });
   }
@@ -233,7 +233,7 @@ export class SignupComponent implements OnInit {
     this.http.post(this.apiService.baseURL + '/api/v1/signup', data, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
         this.isLoading.set(false);
-        this.utils.toastSuccess(this.toastr, this.translate.instant('signup.success'), '');
+        this.toast.success(this.translate.instant('signup.success'));
         this.userService.email.set(this.email());
         const response_data = response.body as { message: string; email_verification_required: boolean };
         if (response_data.email_verification_required) {
@@ -246,15 +246,15 @@ export class SignupComponent implements OnInit {
         console.log(error);
         this.isLoading.set(false);
         if (error.status === 409) {
-          this.utils.toastError(this.toastr, this.translate.instant('signup.errors.already_exist'), '');
+          this.toast.error(this.translate.instant('signup.errors.already_exist'));
         } else if (error.status === 403 && error.error != null && error.error.code != null && error.error.code === 'signup_disabled') {
-          this.utils.toastError(this.toastr, this.translate.instant('signup.errors.disabled'), '');
+          this.toast.error(this.translate.instant('signup.errors.disabled'));
         } else {
           let error_message = this.translate.instant('signup.errors.unknown');
           if (error.error != null && error.error.message != null) {
             error_message = error.error.message;
           }
-          this.utils.toastError(this.toastr, 'Error : ' + error_message, '');
+          this.toast.error('Error : ' + error_message);
         }
       },
     });

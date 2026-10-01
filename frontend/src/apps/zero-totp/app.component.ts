@@ -9,7 +9,7 @@ import { faSignal, faBriefcaseMedical } from '@fortawesome/free-solid-svg-icons'
 import { Keyboard } from '@capacitor/keyboard';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NavbarComponent } from './navbar/navbar.component';
-import { FooterComponent } from '../../shared/footer/footer.component';
+import { FooterComponent } from '../../shared/Views/footer/footer.component';
 import { TranslatePipe } from '@ngx-translate/core';
 
 

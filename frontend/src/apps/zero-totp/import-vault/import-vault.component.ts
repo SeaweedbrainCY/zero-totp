@@ -5,15 +5,14 @@ import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { Router, ActivatedRoute, RouterStateSnapshot, NavigationEnd, RouterLink } from '@angular/router';
 import { ViewportRuler } from '@angular/cdk/scrolling';
 import { NgZone } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
-import { Utils } from '../../../shared/common/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { formatDate, NgClass } from '@angular/common';
 import { UserService } from '../services/User/user.service';
-import { TOTPEntry, TOTPEntryToJSON } from '../../../shared/common/models/totp-entry';
-import { Crypto } from '../../../shared/common/Crypto/crypto';
+import { TOTPEntry, TOTPEntryToJSON } from '../../../shared/models/totp-entry';
+import { Crypto } from '../../../shared/Crypto/crypto';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -94,9 +93,8 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private readonly viewportRuler: ViewportRuler,
     private readonly ngZone: NgZone,
-    private toastr: ToastrService,
+    private toast: ToastService,
     private localVaultv1: LocalVaultV1Service,
-    private utils: Utils,
     private vaultService: VaultService,
     private userService: UserService,
     private crypto: Crypto,
@@ -225,7 +223,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
         }
         case UploadVaultStatus.INVALID_JSON: {
           this.translate.get("login.errors.import_vault.invalid_type").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "");
+            this.toast.error(translation);
           });
           this.local_vault_service.set(null);
           event.target.value = null;
@@ -235,7 +233,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
         case UploadVaultStatus.INVALID_VERSION: {
           this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "");
+            this.toast.error(translation);
           });
           this.local_vault_service.set(null);
           event.target.value = null;
@@ -244,7 +242,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
         }
         case UploadVaultStatus.NO_SIGNATURE: {
           this.translate.get("login.errors.import_vault.no_signature").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.local_vault_service.set(null);
           event.target.value = null;
@@ -259,7 +257,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
         }
         case UploadVaultStatus.MISSING_ARGUMENT: {
           this.translate.get("login.errors.import_vault.missing_arg").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.local_vault_service.set(null);
           event.target.value = null;
@@ -268,7 +266,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
         }
         case UploadVaultStatus.INVALID_ARGUMENT: {
           this.translate.get("login.errors.import_vault.invalid_arg").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.local_vault_service.set(null);
           event.target.value = null;
@@ -278,7 +276,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
         case UploadVaultStatus.UNKNOWN: {
           this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.local_vault_service.set(null);
           event.target.value = null;
@@ -288,7 +286,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
         default: {
           this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.local_vault_service.set(null);
           event.target.value = null;
@@ -316,7 +314,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
             const version = this.localVaultv1.extract_version_from_vault(unsecure_context);
             if (version == null) {
               this.translate.get("login.errors.import_vault.invalid_file").subscribe((translation) => {
-                this.utils.toastError(this.toastr, translation, "");
+                this.toast.error(translation);
               });
               this.loading_file.set(false);
 
@@ -336,7 +334,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
               });
             } else {
               this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation) => {
-                this.utils.toastError(this.toastr, translation, "")
+                this.toast.error(translation)
               });
               this.local_vault_service.set(null);
               event.target.value = null;
@@ -345,7 +343,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
           } catch (e) {
             console.log("Zero-totp vault parsing error: " + e)
             this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation) => {
-              this.utils.toastError(this.toastr, translation, "")
+              this.toast.error(translation)
             });
             this.local_vault_service.set(null);
             event.target.value = null;
@@ -353,7 +351,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
           }
         } else {
           this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           this.local_vault_service.set(null);
           event.target.value = null;
@@ -457,7 +455,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
     } else {
       this.translate.get("login.errors.import_vault.invalid_file").subscribe((translation) => {
-        this.utils.toastError(this.toastr, translation, "");
+        this.toast.error(translation);
       });
       const current_step_index = this.vault_steps.get(this.vault_type()!)!.indexOf(this.step()!)
       this.router.navigate(['/import/vault/' + this.vault_type() + '/' + this.vault_steps.get(this.vault_type()!)![current_step_index - 1]])
@@ -496,7 +494,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
           this.import_had_error.set(true);
           this.uploading.set(false);
           this.translate.get("import_vault.uploading.errors.upload").subscribe((translation) => {
-            this.utils.toastError(this.toastr, translation, ". Error: " + error);
+            this.toast.error(translation, ". Error: " + error);
           });
           reject(error);
         },

@@ -1,6 +1,5 @@
 import { Component, AfterViewInit, WritableSignal, signal } from '@angular/core';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
 import {faChevronUp, faChevronDown, faMagnifyingGlass, faStopwatch, faShieldHalved, faVault} from '@fortawesome/free-solid-svg-icons';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -25,7 +24,6 @@ export class FaqComponent  implements AfterViewInit {
 
   constructor(
     private translate: TranslateService, 
-    private toastr: ToastrService,
     private route: ActivatedRoute,
 
   ) {

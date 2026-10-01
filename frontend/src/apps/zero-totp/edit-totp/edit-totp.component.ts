@@ -1,16 +1,16 @@
 import { Component, OnDestroy, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../services/User/user.service';
-import { TOTPEntry, TOTPEntryFromJSON, TOTPEntryToJSON } from '../../../shared/common/models/totp-entry';
+import { TOTPEntry, TOTPEntryFromJSON, TOTPEntryToJSON } from '../../../shared/models/totp-entry';
 import { HttpClient } from '@angular/common/http';
 import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch, faEyeSlash, faEye, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { Utils } from '../../../shared/common/Utils/utils';
+import { Utils } from '../../../shared/Utils/utils';
 
-import { Crypto } from '../../../shared/common/Crypto/crypto';
+import { Crypto } from '../../../shared/Crypto/crypto';
 import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
 import URLParse from 'url-parse';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { TOTP } from 'totp-generator'
 import { ApiService } from '../services/API/api.service';
 import { NgClass } from '@angular/common';
@@ -79,7 +79,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
     private utils: Utils,
     private crypto: Crypto,
     private translate: TranslateService,
-    private toastr: ToastrService,
+    private toast: ToastService,
     private apiService: ApiService
   ) {
     router.events.subscribe((url: any) => {
@@ -127,7 +127,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
         const properties = vault.get(this.secret_uuid);
         if (properties == undefined) {
           this.translate.get("totp.error.get").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
           return
         }
@@ -274,7 +274,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
         } else {
           this.faviconPolicy.set("enabledOnly");
           this.translate.get("totp.favicon_policy.enabledOnly").subscribe((translation: string) => {
-            this.utils.toastError(this.toastr, translation, "")
+            this.toast.error(translation)
           });
         }
       }
@@ -289,7 +289,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
         errorMessage = "vault.error.server_unreachable"
         return;
       }
-      this.utils.toastError(this.toastr, this.translate.instant("totp.error.update_pref") + this.translate.instant(errorMessage), "");
+      this.toast.error(this.translate.instant("totp.error.update_pref") + this.translate.instant(errorMessage));
     });
   }
 
@@ -302,7 +302,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
           this.crypto.decrypt(data.enc_secret, this.userService.zke_key()!).then((decrypted_secret) => {
             if (decrypted_secret == null) {
               this.translate.get("totp.error.decryption").subscribe((translation: string) => {
-                this.utils.toastWarning(this.toastr, translation, "")
+                this.toast.warning(translation)
               });
             } else {
               const property = TOTPEntryFromJSON(decrypted_secret);
@@ -351,7 +351,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
           });
         } catch {
           this.translate.get("totp.error.fetch_secret").subscribe((translation: string) => {
-            this.utils.toastWarning(this.toastr, translation, "")
+            this.toast.warning(translation)
           });
         }
       },
@@ -371,7 +371,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
           return;
         }
         this.translate.get("totp.error.fetch_secret_server").subscribe((translation: string) => {
-          this.utils.toastError(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
+          this.toast.error(translation + " " + this.translate.instant(errorMessage));
         });
       }
     });
@@ -391,7 +391,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
       return;
     }
     if (this.code() == this.translate.instant("totp.error.code")) {
-      this.utils.toastError(this.toastr, this.translate.instant("totp.error.code"), "");
+      this.toast.error(this.translate.instant("totp.error.code"));
       this.isSaving.set(false);
       return;
     }
@@ -420,7 +420,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
       });
     } catch {
       this.translate.get("totp.error.encryption").subscribe((translation: string) => {
-        this.utils.toastWarning(this.toastr, translation, "");
+        this.toast.warning(translation);
         this.isSaving.set(false);
       });
     }
@@ -432,7 +432,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
       next: (response) => {
         const data = JSON.parse(JSON.stringify(response.body))
         this.uuid = data.uuid;
-        this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.add.added"), "");
+        this.toast.success(this.translate.instant("totp.secret.add.added"));
         this.QRCodeService.setLabel('')
         this.QRCodeService.setSecret('')
         this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it
@@ -454,7 +454,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
           return;
         }
         this.translate.get("totp.error.update").subscribe((translation: string) => {
-          this.utils.toastWarning(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
+          this.toast.warning(translation + " " + this.translate.instant(errorMessage));
         });
       }
     });
@@ -463,7 +463,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
   updateSecret(enc_property: string) {
     this.http.put(this.apiService.baseURL + "/api/v1/encrypted_secret/" + this.uuid, { enc_secret: enc_property }, { withCredentials: true, observe: 'response' }).subscribe({
       next: (response) => {
-        this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.add.success"), "");
+        this.toast.success(this.translate.instant("totp.secret.add.success"));
         this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it
         this.router.navigate(["/vault"], { relativeTo: this.route.root });
       },
@@ -483,7 +483,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
           return;
         }
         this.translate.get("totp.error.update").subscribe((translation: string) => {
-          this.utils.toastWarning(this.toastr, translation + " " + this.translate.instant(errorMessage), "");
+          this.toast.warning(translation + " " + this.translate.instant(errorMessage));
         });
       }
     });
@@ -495,12 +495,12 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
       next: (response) => {
         if (response.status == 201) {
           this.isDestroying.set(false);
-          this.utils.toastSuccess(this.toastr, this.translate.instant("totp.secret.delete.success"), "");
+          this.toast.success(this.translate.instant("totp.secret.delete.success"));
           this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it
           this.router.navigate(["/vault"], { relativeTo: this.route.root });
         } else {
           this.isDestroying.set(false);
-          this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.deleting"), "");
+          this.toast.warning(this.translate.instant("totp.error.deleting"));
         }
 
       },
@@ -512,7 +512,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
         } else if (error.error.detail != null) {
           errorMessage = error.error.detail;
         }
-        this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.deleting") + " " + errorMessage, "");
+        this.toast.warning(this.translate.instant("totp.error.deleting") + " " + errorMessage);
       }
     });
   }
@@ -565,20 +565,20 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
   addTag() {
     if (this.addTagName() != "") {
       if (this.tags().includes(this.addTagName())) {
-        this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.tag_exists"), "")
+        this.toast.warning(this.translate.instant("totp.error.tag_exists"))
       } else if (this.addTagName().length > 30) {
-        this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.tag_length"), "")
+        this.toast.warning(this.translate.instant("totp.error.tag_length"))
       } else {
         this.tags.update(t => [...t, this.addTagName()]);
         if (this.remainingTags().includes(this.addTagName())) {
           this.remainingTags.update(rt => rt.filter(item => item !== this.addTagName()));
         }
         this.addTagName.set("");
-        this.toastr.clear()
+        this.toast.clear()
         this.tagModal()
       }
     } else {
-      this.utils.toastWarning(this.toastr, this.translate.instant("totp.error.tag_empty"), "")
+      this.toast.warning(this.translate.instant("totp.error.tag_empty"))
     }
 
   }
@@ -586,7 +586,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
   selectTag(tag: string) {
     this.tags.update(t => [...t, tag]);
     this.addTagName.set("");
-    this.toastr.clear()
+    this.toast.clear()
     this.tagModal()
     this.remainingTags.update(rt => rt.filter(item => item !== tag));
   }

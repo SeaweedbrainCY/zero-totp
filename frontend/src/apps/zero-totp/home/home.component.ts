@@ -1,9 +1,8 @@
 import { Component, Input, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import {Crypto} from '../../../shared/common/Crypto/crypto';
-import { Utils } from '../../../shared/common/Utils/utils';
+import {Crypto} from '../../../shared/Crypto/crypto';
 import { faLock, faEyeSlash, faFingerprint, faUserLock, faHouse, faMobileScreenButton, faCode, faKitMedical, faAngleDown, faPen, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { TranslateDirective, TranslatePipe } from '@ngx-translate/core';
 import { RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -51,8 +50,7 @@ export class HomeComponent implements OnInit {
   current_color_index = 0;
 
   constructor(
-    private utils: Utils,
-    private toastr:ToastrService
+    private toast: ToastService
     ){
   }
 
@@ -92,7 +90,7 @@ export class HomeComponent implements OnInit {
   }
 
   copy(){
-    this.utils.toastSuccess(this.toastr, "Copied !", "");
+    this.toast.success("Copied !");
   }
 
 

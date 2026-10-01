@@ -1,6 +1,4 @@
 import { Injectable } from "@angular/core";
-import { ToastrService } from "ngx-toastr";
-import { HttpClient } from "@angular/common/http";
 
 @Injectable({ providedIn: 'root' })
 export class Utils {
@@ -43,40 +41,6 @@ export class Utils {
     return '';
   }
 
-
-  public toastSuccess(toastr: ToastrService, title: string, message: string) {
-    toastr.success(message, title, {
-      timeOut: 5000,
-      closeButton: true,
-      progressBar: true,
-      positionClass: 'toast-bottom-full-width',
-    });
-  }
-  public toastError(toastr: ToastrService, title: string, message: string) {
-    toastr.error(message, title, {
-      timeOut: 30000,
-      closeButton: true,
-      progressBar: true,
-      progressAnimation: 'decreasing',
-      tapToDismiss: true,
-      positionClass: 'toast-bottom-full-width',
-      titleClass: 'toast-title',
-      messageClass: 'toast-message',
-    });
-  }
-
-  public toastWarning(toastr: ToastrService, title: string, message: string) {
-    toastr.warning(title, message, {
-      timeOut: 30000,
-      closeButton: true,
-      progressBar: true,
-      progressAnimation: 'decreasing',
-      tapToDismiss: true,
-      positionClass: 'toast-bottom-full-width',
-      titleClass: 'toast-title',
-      messageClass: 'toast-message',
-    });
-  }
 
 
   public parseTags(json_tags: string): string[] {
