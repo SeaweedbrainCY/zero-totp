@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { UserService, TOTPEntry } from '../services/User/user.service';
+import { UserService } from '../services/User/user.service';
+import { TOTPEntry, TOTPEntryFromJSON, TOTPEntryToJSON } from '../../../shared/common/models/totp-entry';
 import { HttpClient } from '@angular/common/http';
 import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch, faEyeSlash, faEye, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { Utils } from '../../../shared/common/Utils/utils';
@@ -304,7 +305,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
                 this.utils.toastWarning(this.toastr, translation, "")
               });
             } else {
-              const property = this.userService.TOTPEntryFromJSON(decrypted_secret);
+              const property = TOTPEntryFromJSON(decrypted_secret);
               this.uuid = this.secret_uuid!;
               this.name.set(property.name);
               this.secret.set(property.secret);
@@ -407,7 +408,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
     }
 
 
-    const jsonProperty = this.userService.TOTPEntryToJSON(properties)
+    const jsonProperty = TOTPEntryToJSON(properties)
     try {
       this.crypto.encrypt(jsonProperty, this.userService.zke_key()!).then((enc_jsonProperty) => {
         if (this.secret_uuid != null) {

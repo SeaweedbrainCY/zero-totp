@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { faEnvelope, faLock, faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash, faVault, faExclamationTriangle, faEye, faEyeSlash, faCircleExclamation, faCircleNotch, faLightbulb, faL } from '@fortawesome/free-solid-svg-icons';
-import { TOTPEntry, UserService, CommonError as UserServiceCommonError } from '../services/User/user.service';
+import { UserService, CommonError as UserServiceCommonError } from '../services/User/user.service';
+import { TOTPEntry, TOTPEntryFromJSON, TOTPEntryToJSON } from '../../../shared/common/models/totp-entry';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Utils } from '../../../shared/common/Utils/utils';
@@ -547,7 +548,7 @@ export class AccountComponent implements OnInit {
     const enc_vault = new Map<string, string>();
     for (let [uuid, property] of vault) {
       try {
-        const enc_property = await this.crypto.encrypt(this.userService.TOTPEntryToJSON(property), zke_key)
+        const enc_property = await this.crypto.encrypt(TOTPEntryToJSON(property), zke_key)
         enc_vault.set(uuid, enc_property);
 
       } catch (e) {
@@ -578,7 +579,7 @@ export class AccountComponent implements OnInit {
         if (dec_secret == null) {
           throw new Error("dec_secret is null");
         } else {
-          const secret = this.userService.TOTPEntryFromJSON(dec_secret).secret;
+          const secret = TOTPEntryFromJSON(dec_secret).secret;
           if (secret != vault.get(uuid)!.secret) {
             throw new Error("secret is different")
           }

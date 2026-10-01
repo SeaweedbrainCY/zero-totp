@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Crypto } from '../../../../shared/common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
 import { Utils } from '../../../../shared/common/Utils/utils';
-import { TOTPEntry, UserService } from '../User/user.service';
+import { TOTPEntry, TOTPEntryFromJSON } from '../../../../shared/common/models/totp-entry';
 
 
 
@@ -23,7 +23,6 @@ export class VaultService {
     private crypto: Crypto,
     private translate: TranslateService,
     private utils: Utils,
-    private userServive: UserService,
   ) { }
 
 
@@ -52,7 +51,7 @@ export class VaultService {
         }
         return this.crypto.decrypt(enc_secret, zke_key).then((dec_secret) => {
           if (dec_secret != null) {
-            decrypted_vault.set(uuid, this.userServive.TOTPEntryFromJSON(dec_secret))
+            decrypted_vault.set(uuid, TOTPEntryFromJSON(dec_secret))
           } else {
             decrypted_vault.set(uuid, fakeProperty);
             errors.push("Decrypted secret null.")

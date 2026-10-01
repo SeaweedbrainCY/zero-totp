@@ -11,7 +11,8 @@ import { Utils } from '../../../shared/common/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { formatDate, NgClass } from '@angular/common';
-import { UserService, TOTPEntry } from '../services/User/user.service';
+import { UserService } from '../services/User/user.service';
+import { TOTPEntry, TOTPEntryToJSON } from '../../../shared/common/models/totp-entry';
 import { Crypto } from '../../../shared/common/Crypto/crypto';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
@@ -537,7 +538,7 @@ export class ImportVaultComponent implements OnInit, OnDestroy {
 
   encryptSecret(secret_properties: TOTPEntry): Promise<string> {
     return new Promise((resolve, reject) => {
-      const jsonProperty = this.userService.TOTPEntryToJSON(secret_properties)
+      const jsonProperty = TOTPEntryToJSON(secret_properties)
       try {
         this.crypto.encrypt(jsonProperty, this.userService.zke_key()!).then((enc_jsonProperty) => {
           resolve(enc_jsonProperty);

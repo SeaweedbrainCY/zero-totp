@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, signal, WritableSignal, Signal } from '@angular/core';
-import { UserService, TOTPEntry } from '../services/User/user.service';
+import { UserService } from '../services/User/user.service';
+import { TOTPEntry } from '../../../shared/common/models/totp-entry';
 import { ActivatedRoute, Router, NavigationEnd, RouterLink } from '@angular/router';
 import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faFingerprint, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
@@ -344,7 +345,6 @@ export class VaultComponent implements OnInit, OnDestroy {
 
   navigate(route: string) {
     this.router.navigate([route], { relativeTo: this.route.root });
-
   }
 
 

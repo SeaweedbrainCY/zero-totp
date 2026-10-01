@@ -6,23 +6,14 @@ import { ApiService } from '../API/api.service';
 import { Crypto } from '../../../../shared/common/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
 import { Buffer } from 'buffer';
+import { TOTPEntry } from '../../../../shared/common/models/totp-entry';
 
-
-export interface TOTPEntry {
-  name: string;
-  uri: string;
-  secret: string;
-  color: string;
-  favicon: boolean;
-  tags: string[];
-}
 
 export interface getZKEKeyResult {
   derivedKeySalt: string;
   zkeKey: CryptoKey;
 }
 
-const VALID_COLORS = new Set(['success', 'danger', 'info', 'warning']);
 
 export enum CommonError {
   UserNeedToLoginAgain = "Please login again."
@@ -118,47 +109,6 @@ export class UserService {
 
   }
 
-  TOTPEntryToJSON(entry: TOTPEntry): string {
-    return JSON.stringify(entry)
-  }
-
-  TOTPEntryFromJSON(jsonEntry: string): TOTPEntry {
-    const totpEntryDefault: TOTPEntry = {
-      name: 'Error',
-      uri: '',
-      secret: '',
-      color: 'info',
-      favicon: false,
-      tags: [],
-    };
-
-    let raw: unknown;
-
-    try {
-      raw = JSON.parse(jsonEntry);
-    } catch {
-      return totpEntryDefault;
-    }
-
-    if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
-      return totpEntryDefault
-    }
-
-    const r = raw as Record<string, unknown>;
-
-    return {
-      name: typeof r['name'] === 'string' ? r['name'] : totpEntryDefault.name,
-      uri: typeof r['uri'] === 'string' ? r['uri'] : totpEntryDefault.uri,
-      secret: typeof r['secret'] === 'string' ? r['secret'] : totpEntryDefault.secret,
-      color: VALID_COLORS.has(r['color'] as string)
-        ? r['color'] as TOTPEntry['color']
-        : totpEntryDefault.color,
-      favicon: typeof r['favicon'] === 'boolean' ? r['favicon'] : totpEntryDefault.favicon,
-      tags: Array.isArray(r['tags']) && r['tags'].every(t => typeof t === 'string')
-        ? r['tags']
-        : totpEntryDefault.tags,
-    };
-  }
 
   getUserEncryptedVault(): Promise<Array<Map<string, string>>> {
     return new Promise<Array<Map<string, string>>>((resolve, reject) => {
