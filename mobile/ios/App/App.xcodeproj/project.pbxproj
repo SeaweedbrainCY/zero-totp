@@ -18,6 +18,7 @@
 		902703FD2FD36BCE00B7FEFA /* secureStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902703FA2FD36BCE00B7FEFA /* secureStorage.swift */; };
 		902703FE2FD36BCE00B7FEFA /* secureStoragePlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902703FB2FD36BCE00B7FEFA /* secureStoragePlugin.swift */; };
 		902704062FD3985000B7FEFA /* MyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902704052FD3985000B7FEFA /* MyViewController.swift */; };
+		8AA6E5CE8EED4843B6E8B235 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C279EA4616684B8EA0DFA033 /* SceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		902703FF2FD3824900B7FEFA /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		902704052FD3985000B7FEFA /* MyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyViewController.swift; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
+		C279EA4616684B8EA0DFA033 /* SceneDelegate.swift */ = {isa = PBXFileReference; name = "SceneDelegate.swift"; path = "SceneDelegate.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 				902703FA2FD36BCE00B7FEFA /* secureStorage.swift */,
 				902703FB2FD36BCE00B7FEFA /* secureStoragePlugin.swift */,
 				902704052FD3985000B7FEFA /* MyViewController.swift */,
+				C279EA4616684B8EA0DFA033 /* SceneDelegate.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -114,8 +117,8 @@
 		504EC2FC1FED79650016851F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0920;
+				LastSwiftUpdateCheck = 920;
+				LastUpgradeCheck = 920;
 				TargetAttributes = {
 					504EC3031FED79650016851F = {
 						CreatedOnToolsVersion = 9.2;
@@ -170,6 +173,7 @@
 				902703FD2FD36BCE00B7FEFA /* secureStorage.swift in Sources */,
 				902704062FD3985000B7FEFA /* MyViewController.swift in Sources */,
 				902703FE2FD36BCE00B7FEFA /* secureStoragePlugin.swift in Sources */,
+				8AA6E5CE8EED4843B6E8B235 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
