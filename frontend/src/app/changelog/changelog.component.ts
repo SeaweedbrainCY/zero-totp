@@ -15,6 +15,19 @@ export class ChangelogComponent {
   imageHash = environment.imageHash;
 
   changelogs = [
+  {
+    date: "01/10/2026",
+    version: "2.2",
+    added: [
+      "Continue to bring future mobile support",
+      "Work has been done to prepare a better inclusion of rescue.zero-totp.com in the main stack"
+    ],
+      fixed: [
+      "Fix a bug causing the email verification on signup to fail making the signup impossible",
+      "Dependencies security upgrade",
+      "Improve repository hardening"
+    ]
+  },
     {
       date: "01/07/2026",
       version: "2.0",
