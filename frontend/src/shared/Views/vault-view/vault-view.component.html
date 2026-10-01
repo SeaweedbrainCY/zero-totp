@@ -24,13 +24,7 @@
   }
 </div>
 
-@if (!this.userService.isVaultLocal()) {
-<span class="tag mb-4 is-light is-info" (click)="refreshUserData()" id="reloadVault">{{ 'vault.button.reload' |
-  translate
-  }} <fa-icon [icon]="faRotateRight" class="pl-1"
-    [animation]="reloadSpin() ? 'spin' : undefined"></fa-icon></span>
-}
-@if (reloadSpin()) {
+@if (isVaultLoading()) {
 <article class="hero is-halfheight" style="min-height: 40vh;">
   <article class="hero-body is-flex is-justify-content-center">
     <div>
@@ -40,15 +34,15 @@
   </article>
 </article>
 }
-@if (!reloadSpin()) {
+@if (!isVaultLoading()) {
 <div class="is-flex is-justify-content-center columns is-flex-wrap-wrap is-desktop">
-  @if (!this.userService.isVaultLocal()) {
+  @if (!isVaultReadOnly()) {
   <div class="column is-full-mobile
       is-one-third-tablet
       is-one-third-desktop
       is-one-third-widescreen
       is-one-quarter-fullhd">
-    <a (click)="isModalActive.update(current => !current)">
+    <a (click)="isAddTOTPModalActive.update(current => !current)">
       <div class="card  ">
         <header class="card-header">
           <p class="card-header-title">{{ 'vault.button.add' | translate }}</p>
@@ -107,7 +101,7 @@
               <svg width="2em" height="2em" viewBox="0 0 56 56">
                 <circle class="totp-ring__track" cx="28" cy="28" r="24" />
                 <circle class="totp-ring__progress" cx="28" cy="28" r="24"
-                  [style.stroke]="getColorFromTOTPColorType(userService.vault().get(uuid)!.color)"
+                  [style.stroke]="getColorFromTOTPColorType(vault().get(uuid)!.color)"
                   [style.stroke-dashoffset]="150.796 * (1 - progress_bar_percent() / 100)" />
               </svg>
             </div>
@@ -121,5 +115,30 @@
           </div>
         </div>
       </a>
+    </div>
+  </div>
+  }
+  }
+</div>
+}
+
+
+  <div id="addTOTPModal" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isAddTOTPModalActive()}">
+    <div class="modal-background" (click)="isAddTOTPModalActive.update(current => !current)"></div>
+    <div class="modal-content">
+      <section class="modal-card-body">
+        <h1 class="is-size-3">{{ 'vault.add.title' | translate }}</h1>
+        <div class="is-flex is-justify-content-center m-4">
+          <button class="button is-info"   [routerLink]="['/qrcode']"></button>
+        </div>
+        <div class="is-flex is-justify-content-center m-4">
+          <button class="button" [routerLink]="['/vault', 'add']">{{ 'vault.add.manual' | translate }}</button>
+        </div>
+      </section>
+      <footer class="modal-card-foot is-flex is-justify-content-right">
+        <button class="button" (click)="isAddTOTPModalActive.update(current => !current)">{{"cancel" | translate}}</button>
+      </footer>
+      <button class="modal-close is-large" aria-label="close"
+        (click)="isAddTOTPModalActive.update(current => !current)"></button>
     </div>
   </div>

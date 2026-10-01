@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, WritableSignal, Signal } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { UserService } from '../services/User/user.service';
 import { TOTPEntry } from '../../../shared/models/totp-entry';
 import { ActivatedRoute, Router, NavigationEnd, RouterLink } from '@angular/router';
@@ -7,7 +7,6 @@ import { faGoogleDrive } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 
 import { Crypto } from '../../../shared/Crypto/crypto';
-import { Utils } from '../../../shared/Utils/utils';
 import { formatDate, NgClass } from '@angular/common';
 import { LocalVaultV1Service } from '../services/upload-vault/LocalVaultv1Service.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
@@ -19,18 +18,18 @@ import { ApiService } from '../services/API/api.service';
 import { environment } from 'src/environments/environment';
 import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
-import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
+import { VaultViewComponent } from 'src/shared/Views/vault-view/vault-view.component';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 
 @Component({
     selector: 'app-vault',
     templateUrl: './vault.component.html',
     styleUrls: ['./vault.component.css'],
-    imports: [FaIconComponent, FormsModule, NgClass, RouterLink, CdkCopyToClipboard, TranslatePipe]
+    imports: [FaIconComponent, FormsModule, NgClass, RouterLink, TranslatePipe, VaultViewComponent]
 })
-export class VaultComponent implements OnInit, OnDestroy {
+export class VaultComponent implements OnInit {
   // Fontawesome icons
   faPen = faPen;
   faSquarePlus = faSquarePlus;
@@ -61,23 +60,16 @@ export class VaultComponent implements OnInit, OnDestroy {
   faCircleQuestion = faCircleQuestion;
   faUpload = faUpload;
 
-  remainingTime = 0;
   local_vault_service: LocalVaultV1Service | null = null;
   isGoogleDriveEnabled = true;
-  totp_code_generation_interval: number | undefined;
   passphrase = "";
-  filter = "";
+
   isDecryptingLockedVaut = false;
   currentURL = ""
-  totpGenerationIntervalID: number = 0
-  totpValidityUIAnimationIntervalID = 0
-  totpGenerationTimeoutID = 0
-  totpValidityUIAnimationTimeoutID = 0
+
 
 
   // Signals
-  progress_bar_percent = signal(0);
-  selectedTags: WritableSignal<string[]> = signal([]);
   vaultDecryptionErrorMessage = signal("");
   google_drive_refresh_token_error_display_modal_active = signal(false);
   google_drive_refresh_token_error = signal(false);
@@ -87,7 +79,6 @@ export class VaultComponent implements OnInit, OnDestroy {
   isVaultEncrypted: WritableSignal<boolean | undefined> = signal(undefined);
   isPassphraseVisible = signal(false);
   isGoogleDriveSync = signal("loading"); // uptodate, loading, error, false
-  isModalActive = signal(false)
   reloadSpin = signal(false)
   storageOptionOpen = signal(false)
   page_title = signal("vault.title.main");
@@ -107,7 +98,6 @@ export class VaultComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private http: HttpClient,
     private crypto: Crypto,
-    private utils: Utils,
     private translate: TranslateService,
     private toast: ToastService,
     private vaultService: VaultService,
@@ -151,7 +141,6 @@ export class VaultComponent implements OnInit, OnDestroy {
         }
         this.userService.vault.set(result.vault)
         this.userService.is_vault_in_memory = true
-        this.startDisplayingCode()
       },
         error => {
           this.reloadSpin.set(false)
@@ -178,30 +167,17 @@ export class VaultComponent implements OnInit, OnDestroy {
 
     } else {
       // User is logged in, can have vault in memory
-      document.getElementById("add-code-button")!.style.display = "flex";
-      document.getElementById("add-code-button")!.onclick = () => { this.isModalActive.set(true); };
+
       this.isVaultEncrypted.set(false);
       this.get_google_drive_option();
       this.get_preferences();
       if (this.userService.zke_key() == null || !this.userService.is_vault_in_memory) {
         this.refreshUserData()
-      } else {
-        // The vault is in memory no need to download/decrypt it
-        this.startDisplayingCode()
       }
     }
   }
 
-  ngOnDestroy() {
-    clearTimeout(this.totpGenerationTimeoutID)
-    clearInterval(this.totpGenerationIntervalID)
 
-    clearTimeout(this.totpValidityUIAnimationTimeoutID)
-    clearInterval(this.totpValidityUIAnimationIntervalID)
-
-    // Hide the add button
-    document.getElementById("add-code-button")!.style.display = "none";
-  }
 
   mobileLoadZKEKeyFromKeychain() {
     this.protectedKeychainStorageService.getZKEKey().then((zke_key) => {
@@ -215,53 +191,9 @@ export class VaultComponent implements OnInit, OnDestroy {
 
 
 
-  // Return epoch time a totp codes needs to be generated
-  getNextTOTPGenerationEpochTime(): number {
-    return (Math.floor(Date.now() / 30_000) + 1) * 30_000
-  }
-
-  startTOTPGenerationInterval() {
-    this.generateCode()
-    // TOTP generation interval. Every 30 s
-    let msUntilNextGeneration = this.getNextTOTPGenerationEpochTime() - Date.now()
-    window.setTimeout(() => {
-      this.generateCode()
-      this.totpGenerationIntervalID = window.setInterval(() => {
-        this.generateCode()
-      }, 30_000)
-    }, msUntilNextGeneration)
-  }
-
-  updateTOTPValidationUI() {
-    let msUntilNextGeneration = this.getNextTOTPGenerationEpochTime() - Date.now()
-    this.progress_bar_percent.set(msUntilNextGeneration / 300)
-  }
-
-  startTOTPValidityUIAnimation() {
-    this.updateTOTPValidationUI()
-    // Update TOTP validity animation. Every 1s
-
-    // TOTP codes generate on exact second, like 14:30:00,000. So validity animation should update every plain second, ie ms=000
-    const now = Date.now()
-    let msUntilPlainSecond = (Math.floor(now / 1000) + 1) * 1000 - now
-    window.setTimeout(() => {
-      this.updateTOTPValidationUI()
-      this.totpValidityUIAnimationIntervalID = window.setInterval(() => {
-        this.updateTOTPValidationUI()
-      }, 1000)
-    }, msUntilPlainSecond)
-  }
 
 
 
-  startDisplayingCode() {
-    if (this.totpValidityUIAnimationIntervalID == 0 && this.totpValidityUIAnimationTimeoutID == 0) {
-      this.startTOTPValidityUIAnimation()
-    }
-    if (this.totpGenerationIntervalID == 0 && this.totpValidityUIAnimationTimeoutID == 0) {
-      this.startTOTPGenerationInterval()
-    }
-  }
 
 
   // DEPRECATED: Should use user service's own utility
@@ -351,36 +283,15 @@ export class VaultComponent implements OnInit, OnDestroy {
 
 
 
-  generateCode() {
-    let newTOTPCodesMap = new Map<string, string>()
-    for (let uuid of this.userService.vault().keys()) {
-      const secret = this.userService.vault().get(uuid)!.secret;
-      try {
-        let code = TOTP.generate(secret).otp
-        newTOTPCodesMap.set(uuid, code)
-      } catch (e) {
-        console.log(e);
-        newTOTPCodesMap.set(uuid, "Error")
-      }
-    }
-    this.totpCodesMap.set(newTOTPCodesMap)
-  }
 
 
 
 
 
-  searchBarValueChanged() {
-    this.searchBarValue.set(this.filter)
-  }
 
-  edit(domain: string) {
-    this.router.navigate(["/vault/edit/" + domain], { relativeTo: this.route.root });
-  }
 
-  copy() {
-    this.toast.success(this.translate.instant("copied"));
-  }
+
+
 
   refreshUserData() {
     this.get_google_drive_option();
@@ -397,7 +308,6 @@ export class VaultComponent implements OnInit, OnDestroy {
         this.userService.vault.set(result.vault)
         this.userService.updateVaultTagsList()
         this.userService.is_vault_in_memory = true
-        this.startDisplayingCode()
       },
         error => {
           this.reloadSpin.set(false)
@@ -591,12 +501,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
 
-  get_favicon_url(unsafe_uri: string | undefined): string {
-    const unsafe_domain = unsafe_uri ? this.utils.getDomainFromURI(unsafe_uri) : "";
-    const domain = this.utils.domain_name_validator(unsafe_domain) ? unsafe_domain : "unknown";
-    const url = new URL(`/ip3/${domain}.ico`, "https://icons.duckduckgo.com");
-    return url.toString();
-  }
+
 
   resync_after_error() {
     this.disable_google_drive();
@@ -608,13 +513,7 @@ export class VaultComponent implements OnInit, OnDestroy {
   }
 
 
-  selectTag(tag: string) {
-    if (this.selectedTags().includes(tag)) {
-      this.selectedTags.update(tags => tags.filter(e => e !== tag));
-    } else {
-      this.selectedTags.update(tags => [...tags, tag])
-    }
-  }
+
 
 
   unlockVault() {
@@ -634,8 +533,6 @@ export class VaultComponent implements OnInit, OnDestroy {
                   this.userService.decryptZKEKey(zke_encrypted_key, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
                     this.userService.zke_key.set(zke_key!);
                     this.isVaultEncrypted.set(false);
-                    document.getElementById("add-code-button")!.style.display = "flex";
-                    document.getElementById("add-code-button")!.onclick = () => { this.isModalActive.set(true); };
                     this.isDecryptingLockedVaut = false;
                     this.refreshUserData()
                   }, (error) => {
@@ -683,47 +580,5 @@ export class VaultComponent implements OnInit, OnDestroy {
         });
       }
     })
-  }
-
-  getColorFromTOTPColorType(colorType: string): string {
-    switch (colorType) {
-      case "success": return "#63A375"
-      case "danger": return "#FE6847"
-      case "warning": return "#FFCF56"
-      default: return "#5AA9E6"
-    }
-  }
-
-  // Evaluates if a code should be displayed. The logic check the filtering tags and search items
-  // It is important to keep the dynamic part selectedTagsList and searchBarValue as args because its the update of those values, catched in the HTML component that will re-trigger the function evaluation
-  shouldDisplayCode(totpEntry: TOTPEntry, selectedTagsList: string[], searchBarValue: string): boolean {
-    if (selectedTagsList.length == 0 && searchBarValue == "") {
-      return true
-    }
-
-    if (selectedTagsList.length > 0) {
-      let hasOneGoodTag = false
-      for (let tag of selectedTagsList) {
-        if (totpEntry.tags.includes(tag)) {
-          hasOneGoodTag = true;
-          break;
-        }
-      }
-      if (!hasOneGoodTag) {
-        return false
-      }
-    }
-
-    if (searchBarValue != "") {
-      let filter = searchBarValue.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase()
-      if (filter.length > 50) {
-        // Avoid slowing down the browser. Ne search with more than 50 char
-        filter = filter.substring(0, 50)
-      }
-      if (!totpEntry.name.includes(filter) && !totpEntry.uri.includes(filter)) {
-        return false
-      }
-    }
-    return true
   }
 }
