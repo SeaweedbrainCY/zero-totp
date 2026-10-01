@@ -24,7 +24,13 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptorsFromDi()),
     httpInterceptorProviders,
     provideAnimations(), // required by ngx-toastr
-    provideToastr(),
+    provideToastr({
+      positionClass: 'toast-bottom-full-width',
+      closeButton: true,
+      progressBar: true,
+      progressAnimation: 'decreasing',
+      tapToDismiss: true,
+    }),
     provideNgIdle(),
     provideMarkdown({ loader: HttpClient }),
     provideTranslateService({
