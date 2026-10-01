@@ -73,9 +73,9 @@
 
           }">
       <header class="card-header">
-        <p class="card-header-title  ">@if ((vault().get(uuid)!.favicon || faviconPolicy()
+        <p class="card-header-title  ">@if ((vault().get(uuid)!.favicon || userFaviconPolicy()
           ==
-          'always') && faviconPolicy() != 'never') {
+          'always') && userFaviconPolicy() != 'never') {
           <img src="{{get_favicon_url(vault().get(uuid)!.uri)}}" alt="" width="25px" height="25px"
             style="margin-right: 6px;">
           }

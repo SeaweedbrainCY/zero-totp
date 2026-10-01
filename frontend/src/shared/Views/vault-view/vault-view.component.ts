@@ -1,4 +1,4 @@
-import { Component, inject, input, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, input, signal, effect, OnInit, OnDestroy } from '@angular/core';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { TOTPEntry } from '../../models/totp-entry';
 import { ToastService } from '../../Services/Toast/toast.service';
@@ -26,7 +26,7 @@ export class VaultViewComponent implements OnInit, OnDestroy {
   vault = input.required<Map<string, TOTPEntry>>();
   isVaultReadOnly = input(false)
   isVaultLoading = input(false)
-  faviconPolicy = input("")
+  userFaviconPolicy = input("")
 
 
   // tags signals
@@ -60,11 +60,18 @@ export class VaultViewComponent implements OnInit, OnDestroy {
   faMagnifyingGlass = faMagnifyingGlass;
 
 
+  constructor() {
+    // generateCode() reads this.vault(), so this effect re-runs every time the parent passes a new vault
+    // (e.g. once decryption is done), instead of waiting for the next 30s tick.
+    effect(() => this.generateCode());
+  }
+
   ngOnInit(): void {
     if (!this.isVaultReadOnly()) {
       document.getElementById("add-code-button")!.style.display = "flex";
       document.getElementById("add-code-button")!.onclick = () => { this.isAddTOTPModalActive.set(true); };
     }
+    this.startDisplayingCode()
   }
 
   ngOnDestroy() {
@@ -149,7 +156,7 @@ export class VaultViewComponent implements OnInit, OnDestroy {
     this.generateCode()
     // TOTP generation interval. Every 30 s
     let msUntilNextGeneration = this.getNextTOTPGenerationEpochTime() - Date.now()
-    window.setTimeout(() => {
+    this.totpGenerationTimeoutID = window.setTimeout(() => {
       this.generateCode()
       this.totpGenerationIntervalID = window.setInterval(() => {
         this.generateCode()
@@ -169,7 +176,7 @@ export class VaultViewComponent implements OnInit, OnDestroy {
     // TOTP codes generate on exact second, like 14:30:00,000. So validity animation should update every plain second, ie ms=000
     const now = Date.now()
     let msUntilPlainSecond = (Math.floor(now / 1000) + 1) * 1000 - now
-    window.setTimeout(() => {
+    this.totpValidityUIAnimationTimeoutID = window.setTimeout(() => {
       this.updateTOTPValidationUI()
       this.totpValidityUIAnimationIntervalID = window.setInterval(() => {
         this.updateTOTPValidationUI()
@@ -178,12 +185,12 @@ export class VaultViewComponent implements OnInit, OnDestroy {
   }
 
 
-
+  // Display code in the UI. Will call all the underlying display and compute func
   startDisplayingCode() {
     if (this.totpValidityUIAnimationIntervalID == 0 && this.totpValidityUIAnimationTimeoutID == 0) {
       this.startTOTPValidityUIAnimation()
     }
-    if (this.totpGenerationIntervalID == 0 && this.totpValidityUIAnimationTimeoutID == 0) {
+    if (this.totpGenerationIntervalID == 0 && this.totpGenerationTimeoutID == 0) {
       this.startTOTPGenerationInterval()
     }
   }
