@@ -11,16 +11,24 @@ import { Utils } from '../common/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
 import { ApiService } from '../services/API/api.service';
 import { ToastrService } from 'ngx-toastr';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
 import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 import { DisplayPreferencesService } from '../services/DisplayPreferences/display-preferences.service';
+import { FormsModule } from '@angular/forms';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { NgClass } from '@angular/common';
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        FormsModule,
+        FaIconComponent,
+        NgClass,
+        TranslatePipe,
+    ],
 })
 export class LoginComponent implements OnInit {
   faEnvelope = faEnvelope;

@@ -8,8 +8,8 @@ describe('LogoutComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [LogoutComponent]
-    });
+    imports: [LogoutComponent]
+});
     fixture = TestBed.createComponent(LogoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

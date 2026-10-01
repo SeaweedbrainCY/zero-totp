@@ -4,14 +4,16 @@ import { TOTPEntry, UserService, CommonError as UserServiceCommonError } from '.
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Utils } from '../common/Utils/utils';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Crypto } from '../common/Crypto/crypto';
 import { Buffer } from 'buffer';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from '../services/API/api.service';
 import { VaultService } from '../services/VaultService/vault.service';
-import { TrailingSlashPathLocationStrategy } from '@angular/common';
+import { TrailingSlashPathLocationStrategy, NgClass } from '@angular/common';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { FormsModule } from '@angular/forms';
 
 
 type LoadingButtons = {
@@ -22,10 +24,10 @@ type LoadingButtons = {
 }
 
 @Component({
-  selector: 'app-account',
-  templateUrl: './account.component.html',
-  styleUrls: ['./account.component.css'],
-  standalone: false
+    selector: 'app-account',
+    templateUrl: './account.component.html',
+    styleUrls: ['./account.component.css'],
+    imports: [FaIconComponent, RouterLink, NgClass, FormsModule, TranslatePipe]
 })
 export class AccountComponent implements OnInit {
   faUser = faUser;

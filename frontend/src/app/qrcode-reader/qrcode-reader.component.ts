@@ -2,17 +2,25 @@ import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/cor
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../services/User/user.service';
 import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { Utils } from '../common/Utils/utils';
 import { ToastrService } from 'ngx-toastr';
 import { environment } from 'src/environments/environment';
 import { CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint } from '@capacitor/barcode-scanner'
+import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
 @Component({
-  selector: 'app-qrcode-reader',
-  templateUrl: './qrcode-reader.component.html',
-  styleUrls: ['./qrcode-reader.component.css'],
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-qrcode-reader',
+    templateUrl: './qrcode-reader.component.html',
+    styleUrls: ['./qrcode-reader.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        FormsModule,
+        NgClass,
+        ZXingScannerModule,
+        TranslatePipe,
+    ],
 })
 export class QrcodeReaderComponent implements OnInit {
   scannerEnabled = signal(true);

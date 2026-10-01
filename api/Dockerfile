@@ -8,7 +8,7 @@ WORKDIR /api
 RUN python -m venv /api/venv
 ENV PATH="/api/venv/bin:$PATH"
 
-RUN apk update && apk upgrade && apk add --no-cache mariadb-dev  gcc g++ libffi-dev openssl-dev musl-dev linux-headers make jq curl gosu && apk add --no-cache mariadb-connector-c-dev 
+RUN apk update && apk upgrade && apk add --no-cache mariadb-dev  gcc g++ libffi-dev openssl-dev musl-dev linux-headers make jq curl gosu && apk add --no-cache mariadb-connector-c-dev
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
@@ -17,6 +17,12 @@ RUN pip install -r requirements.txt
 FROM python:3.13.15-alpine3.24
 
 COPY --from=builder /api/venv /api/venv
+# Remove pip to remove pip pre-imported packages
+RUN /api/venv/bin/python -m pip uninstall -y pip \
+&& python -m pip uninstall -y pip \
+&& rm -rf /usr/local/lib/python3.13/ensurepip
+
+
 ENV PATH="/api/venv/bin:$PATH"
 
 RUN apk update && apk upgrade && apk add --no-cache jq curl gosu mariadb-connector-c-dev libgcc libstdc++

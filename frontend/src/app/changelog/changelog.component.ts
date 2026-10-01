@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { faCirclePlus, faTruckMedical } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'app-changelog',
-  templateUrl: './changelog.component.html',
-  styleUrls: ['./changelog.component.css'],
-  standalone: false
+    selector: 'app-changelog',
+    templateUrl: './changelog.component.html',
+    styleUrls: ['./changelog.component.css'],
+    imports: [FaIconComponent]
 })
 export class ChangelogComponent {
   faCirclePlus = faCirclePlus;

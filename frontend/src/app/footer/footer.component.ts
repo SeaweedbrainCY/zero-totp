@@ -2,12 +2,15 @@ import { Component, signal } from '@angular/core';
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { faGlobe, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { environment } from 'src/environments/environment';
+import { RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-footer',
     templateUrl: './footer.component.html',
     styleUrls: ['./footer.component.css'],
-    standalone: false
+    imports: [RouterLink, FaIconComponent, TranslatePipe]
 })
 export class FooterComponent {
   

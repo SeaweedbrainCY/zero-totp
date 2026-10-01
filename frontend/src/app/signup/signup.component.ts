@@ -6,19 +6,27 @@ import { environment } from 'src/environments/environment';
 import { Utils } from '../common/Utils/utils';
 import { Crypto } from '../common/Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { UserService } from '../services/User/user.service';
 import { ApiService } from '../services/API/api.service';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
 
 
 @Component({
-  selector: 'app-signup',
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.css'],
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-signup',
+    templateUrl: './signup.component.html',
+    styleUrls: ['./signup.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        FaIconComponent,
+        FormsModule,
+        NgClass,
+        TranslatePipe,
+    ],
 })
 export class SignupComponent implements OnInit {
   faEnvelope = faEnvelope;

@@ -1,15 +1,16 @@
 import { Component, AfterViewInit, WritableSignal, signal } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import {faChevronUp, faChevronDown, faMagnifyingGlass, faStopwatch, faShieldHalved, faVault} from '@fortawesome/free-solid-svg-icons';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'app-faq',
-  templateUrl: './faq.component.html',
-  styleUrl: './faq.component.css',
-  standalone: false
+    selector: 'app-faq',
+    templateUrl: './faq.component.html',
+    styleUrl: './faq.component.css',
+    imports: [FaIconComponent, RouterLink, TranslatePipe]
 })
 export class FaqComponent  implements AfterViewInit {
   faChevronUp = faChevronUp;

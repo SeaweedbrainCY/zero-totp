@@ -4,16 +4,24 @@ import { UserService } from '../services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../services/API/api.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { Utils } from '../common/Utils/utils';
 import { ToastrService } from 'ngx-toastr';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-email-verification',
-  templateUrl: './email-verification.component.html',
-  styleUrls: ['./email-verification.component.css'],
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-email-verification',
+    templateUrl: './email-verification.component.html',
+    styleUrls: ['./email-verification.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        FaIconComponent,
+        FormsModule,
+        NgClass,
+        TranslatePipe,
+    ],
 })
 export class EmailVerificationComponent implements OnInit {
   faPaperPlane = faPaperPlane;

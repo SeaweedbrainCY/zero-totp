@@ -8,8 +8,8 @@ describe('OauthSyncComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [OauthSyncComponent]
-    });
+    imports: [OauthSyncComponent]
+});
     fixture = TestBed.createComponent(OauthSyncComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

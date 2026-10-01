@@ -8,8 +8,8 @@ describe('EditTOTPComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [EditTOTPComponent]
-    });
+    imports: [EditTOTPComponent]
+});
     fixture = TestBed.createComponent(EditTOTPComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

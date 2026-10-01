@@ -3,18 +3,22 @@ import { environment } from 'src/environments/environment';
 import { Renderer2, Inject } from '@angular/core';
 import { AuthServiceService } from './services/AuthService/auth-service.service';
 import { UserService } from './services/User/user.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterOutlet } from '@angular/router';
 import { ProtectedKeychainStorageService } from './services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 import { faSignal, faBriefcaseMedical } from '@fortawesome/free-solid-svg-icons';
 import { Keyboard } from '@capacitor/keyboard';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { NavbarComponent } from './navbar/navbar.component';
+import { FooterComponent } from './footer/footer.component';
+import { TranslatePipe } from '@ngx-translate/core';
 
 
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  standalone: false
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
+    imports: [FaIconComponent, NavbarComponent, RouterOutlet, FooterComponent, TranslatePipe]
 })
 export class AppComponent implements OnInit {
   title = 'frontend';
