@@ -318,13 +318,14 @@
       <span class="tag mb-4 is-light is-info" (click)="refreshUserData()" id="reloadVault">{{ 'vault.button.reload' |
         translate
         }} <fa-icon [icon]="faRotateRight" class="pl-1"
-          [animation]="reloadSpin() ? 'spin' : undefined">
+          [animation]="isVaultLoading() ? 'spin' : undefined">
 
           </fa-icon>
       </span>
 
       <app-vault-view
         [vault]="userService.vault()"
+        [isVaultLoading]="isVaultLoading()"
       />
     </div>
   </div>

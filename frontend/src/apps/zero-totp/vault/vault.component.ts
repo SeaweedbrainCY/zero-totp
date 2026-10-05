@@ -79,7 +79,7 @@ export class VaultComponent implements OnInit {
   isVaultEncrypted: WritableSignal<boolean | undefined> = signal(undefined);
   isPassphraseVisible = signal(false);
   isGoogleDriveSync = signal("loading"); // uptodate, loading, error, false
-  reloadSpin = signal(false)
+  isVaultLoading = signal(false)
   storageOptionOpen = signal(false)
   page_title = signal("vault.title.main");
   vault_date: WritableSignal<string | undefined> = signal(undefined); // for local vault
@@ -131,9 +131,9 @@ export class VaultComponent implements OnInit {
 
       this.page_title.set("vault.title.backup");
       this.vault_date.set(vaultDate);
-      this.reloadSpin.set(true)
+      this.isVaultLoading.set(true)
       this.vaultService.decryptVault(this.local_vault_service!.get_enc_secrets()!, this.userService.zke_key()!).then(result => {
-        this.reloadSpin.set(false)
+        this.isVaultLoading.set(false)
         if (result.errors.length != 0) {
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
             this.toast.error(translation, result.errors.join(". "));
@@ -143,7 +143,7 @@ export class VaultComponent implements OnInit {
         this.userService.is_vault_in_memory = true
       },
         error => {
-          this.reloadSpin.set(false)
+          this.isVaultLoading.set(false)
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
             this.toast.error(translation, error);
           });
@@ -199,7 +199,7 @@ export class VaultComponent implements OnInit {
   // DEPRECATED: Should use user service's own utility
   getUserEncryptedVault(): Promise<Array<Map<string, string>>> {
     return new Promise<Array<Map<string, string>>>((resolve, reject) => {
-      this.reloadSpin.set(true)
+      this.isVaultLoading.set(true)
       this.userService.vault_tags.set([]);
       this.http.get(this.apiService.baseURL + "/api/v1/all_secrets", { withCredentials: true, observe: 'response' }).subscribe({
         next: (response) => {
@@ -214,10 +214,10 @@ export class VaultComponent implements OnInit {
           resolve(encrypted_secret_vault)
         },
         error: (error) => {
-          this.reloadSpin.set(true)
+          this.isVaultLoading.set(true)
           if (error.status == 404) {
             this.userService.vault.set(new Map<string, TOTPEntry>());
-            this.reloadSpin.set(false)
+            this.isVaultLoading.set(false)
           } else {
             let errorMessage = "";
             if (error.error.message != null) {
@@ -296,10 +296,10 @@ export class VaultComponent implements OnInit {
   refreshUserData() {
     this.get_google_drive_option();
     this.get_preferences();
-    this.reloadSpin.set(true)
+    this.isVaultLoading.set(true)
     this.getUserEncryptedVault().then(encrypted_vault => {
       this.vaultService.decryptVault(encrypted_vault, this.userService.zke_key()!).then(result => {
-        this.reloadSpin.set(false)
+        this.isVaultLoading.set(false)
         if (result.errors.length != 0) {
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
             this.toast.error(translation, result.errors.join(". "));
@@ -310,7 +310,7 @@ export class VaultComponent implements OnInit {
         this.userService.is_vault_in_memory = true
       },
         error => {
-          this.reloadSpin.set(false)
+          this.isVaultLoading.set(false)
           this.translate.get("vault.error.decryption").subscribe((translation: string) => {
             this.toast.error(translation, error);
           });
