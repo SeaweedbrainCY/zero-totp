@@ -73,7 +73,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    public userService: UserService,
+    private userService: UserService,
     private QRCodeService: QrCodeTOTP,
     private http: HttpClient,
     private crypto: Crypto,
@@ -90,7 +90,7 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.userService.zke_key() == null && !this.userService.isVaultLocal()) {
+    if (this.userService.zke_key() == null) {
       this.userService.refresh_user_id().then((success) => {
         this.router.navigate(["/vault"], { relativeTo: this.route.root });
       }, (error) => {
@@ -118,29 +118,8 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
       this.isEditing.set(true);
       this.isSecretVisible.set(false);
       console.log("is editing")
-      if (!this.userService.isVaultLocal()) {
         this.getSecretTOTP()
         this.get_preferences()
-      } else {
-        const vault = this.userService.vault()!;
-        const properties = vault.get(this.secret_uuid);
-        if (properties == undefined) {
-          this.translate.get("totp.error.get").subscribe((translation: string) => {
-            this.toast.error(translation)
-          });
-          return
-        }
-        this.uuid = this.secret_uuid!;
-        this.name.set(properties.name);
-        this.secret.set(properties.secret);
-        this.color.set(properties.color);
-        this.color.set(properties.uri)
-        this.favicon.set(properties.favicon);
-        if (this.favicon()) {
-          this.loadFavicon()
-        }
-        this.tags.set(properties.tags);
-      }
 
     }
 
