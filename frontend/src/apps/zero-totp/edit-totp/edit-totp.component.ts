@@ -1,9 +1,31 @@
-import { Component, OnDestroy, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { UserService } from '../services/User/user.service';
-import { TOTPEntry, TOTPEntryFromJSON, TOTPEntryToJSON } from '../../../shared/models/totp-entry';
+import {
+  TOTPEntry,
+  TOTPEntryFromJSON,
+  TOTPEntryToJSON,
+} from '../../../shared/models/totp-entry';
 import { HttpClient } from '@angular/common/http';
-import { faChevronCircleLeft, faGlobe, faKey, faCircleQuestion, faPassport, faPlus, faCheck, faCircleNotch, faEyeSlash, faEye, faXmark } from '@fortawesome/free-solid-svg-icons';
+import {
+  faChevronCircleLeft,
+  faGlobe,
+  faKey,
+  faCircleQuestion,
+  faPassport,
+  faPlus,
+  faCheck,
+  faCircleNotch,
+  faEyeSlash,
+  faEye,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { domain_name_validator, sanitize } from '../../../shared/Utils/utils';
 
 import { Crypto } from '../../../shared/Crypto/crypto';
@@ -11,23 +33,18 @@ import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
 import URLParse from 'url-parse';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastService } from '../../../shared/Services/Toast/toast.service';
-import { TOTP } from 'totp-generator'
+import { TOTP } from 'totp-generator';
 import { ApiService } from '../services/API/api.service';
 import { NgClass } from '@angular/common';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-    selector: 'app-edit-totp',
-    templateUrl: './edit-totp.component.html',
-    styleUrls: ['./edit-totp.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [
-        NgClass,
-        FaIconComponent,
-        FormsModule,
-        TranslatePipe,
-    ],
+  selector: 'app-edit-totp',
+  templateUrl: './edit-totp.component.html',
+  styleUrls: ['./edit-totp.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgClass, FaIconComponent, FormsModule, TranslatePipe],
 })
 export class EditTOTPComponent implements OnInit, OnDestroy {
   faChevronCircleLeft = faChevronCircleLeft;
@@ -41,28 +58,28 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
   faXmark = faXmark;
   faEye = faEye;
   faCircleQuestion = faCircleQuestion;
-  faviconURL = signal("");
-  name = signal("");
-  uri = signal("");
+  faviconURL = signal('');
+  name = signal('');
+  uri = signal('');
   favicon = signal(false);
-  uuid = "";
-  secret = signal("");
-  nameError = signal("");
-  uriError = signal("");
-  secretError = signal("");
-  color = signal("info");
-  selected_color = signal("");
+  uuid = '';
+  secret = signal('');
+  nameError = signal('');
+  uriError = signal('');
+  secretError = signal('');
+  color = signal('info');
+  selected_color = signal('');
   animationFrameId: number = 0;
-  code = signal("");
+  code = signal('');
   progress_bar_percent = signal(80);
-  currentUrl: string = "";
+  currentUrl: string = '';
   secret_uuid: string | null = null;
   isModalActive = signal(false);
   isDestroying = signal(false);
-  faviconPolicy = signal(""); // never, always, enabledOnly
+  faviconPolicy = signal(''); // never, always, enabledOnly
   tags = signal<string[]>([]);
   isTagModalActive = signal(false);
-  addTagName = signal("");
+  addTagName = signal('');
   isEditing = signal(false); // true if editing, false if adding
   isSaving = signal(false);
   remainingTags = signal<string[]>([]);
@@ -79,52 +96,58 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
     private crypto: Crypto,
     private translate: TranslateService,
     private toast: ToastService,
-    private apiService: ApiService
+    private apiService: ApiService,
   ) {
     router.events.subscribe((url: any) => {
       if (url instanceof NavigationEnd) {
         this.currentUrl = url.url;
       }
     });
-
   }
 
   ngOnInit() {
     if (this.userService.zke_key() == null) {
-      this.userService.refresh_user_id().then((success) => {
-        this.router.navigate(["/vault"], { relativeTo: this.route.root });
-      }, (error) => {
-        this.router.navigate(["/login/sessionKilled"], { relativeTo: this.route.root });
-      });
+      this.userService.refresh_user_id().then(
+        (success) => {
+          this.router.navigate(['/vault'], { relativeTo: this.route.root });
+        },
+        (error) => {
+          this.router.navigate(['/login/sessionKilled'], {
+            relativeTo: this.route.root,
+          });
+        },
+      );
     }
     this.secret_uuid = this.route.snapshot.paramMap.get('id');
     if (this.secret_uuid == null) {
       this.isEditing.set(false);
-      if (this.currentUrl != "/vault/add") {
-        this.router.navigate(["/vault"], { relativeTo: this.route.root });
+      if (this.currentUrl != '/vault/add') {
+        this.router.navigate(['/vault'], { relativeTo: this.route.root });
         return;
       }
-      if (this.QRCodeService.getLabel() != undefined && this.QRCodeService != undefined) {
+      if (
+        this.QRCodeService.getLabel() != undefined &&
+        this.QRCodeService != undefined
+      ) {
         this.name.set(this.QRCodeService.getLabel()!);
         this.secret.set(this.QRCodeService.getSecret()!);
       }
-      this.get_preferences()
-      this.translate.get("blue").subscribe((default_color: string) => {
+      this.get_preferences();
+      this.translate.get('blue').subscribe((default_color: string) => {
         this.selected_color.set(default_color);
       });
       this.remainingTags.set(this.userService.vault_tags());
-
     } else {
       this.isEditing.set(true);
       this.isSecretVisible.set(false);
-      console.log("is editing")
-        this.getSecretTOTP()
-        this.get_preferences()
-
+      console.log('is editing');
+      this.getSecretTOTP();
+      this.get_preferences();
     }
 
-    this.totp_code_generation_interval = window.setInterval(() => { this.compute_totp_expiration() }, 100);
-
+    this.totp_code_generation_interval = window.setInterval(() => {
+      this.compute_totp_expiration();
+    }, 100);
   }
 
   ngOnDestroy() {
@@ -134,40 +157,40 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
   }
 
   checkName() {
-    this.nameError.set("");
-    if (this.name() == "") {
-      this.nameError.set("totp.error.name_empty");
+    this.nameError.set('');
+    if (this.name() == '') {
+      this.nameError.set('totp.error.name_empty');
       return;
     }
     if (sanitize(this.name()) != this.name()) {
-      this.nameError.set("totp.error.char");
+      this.nameError.set('totp.error.char');
       return;
     }
   }
 
   checkURI() {
-    this.uriError.set("");
+    this.uriError.set('');
     if (sanitize(this.uri()) != this.uri()) {
-      this.uriError.set("totp.error.char");
+      this.uriError.set('totp.error.char');
       return;
     }
-    if (this.uri() != "") {
-      if (!this.uri().startsWith("http://") && !this.uri().startsWith("https://")) {
-        this.uri.set("https://" + this.uri());
+    if (this.uri() != '') {
+      if (
+        !this.uri().startsWith('http://') &&
+        !this.uri().startsWith('https://')
+      ) {
+        this.uri.set('https://' + this.uri());
       }
     }
     if (this.favicon() == true) {
-      if (this.uri() == "") {
-        this.uriError.set("totp.error.fav_empty");
+      if (this.uri() == '') {
+        this.uriError.set('totp.error.fav_empty');
         return;
       } else {
-        this.loadFavicon()
+        this.loadFavicon();
       }
     }
   }
-
-
-
 
   compute_totp_expiration() {
     const now = Date.now();
@@ -181,55 +204,56 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
 
   generateCode() {
     try {
-      if (this.secret() == "") { return; }
-      this.secret.set(this.secret().replace(/\s/g, ""));
+      if (this.secret() == '') {
+        return;
+      }
+      this.secret.set(this.secret().replace(/\s/g, ''));
       this.code.set(TOTP.generate(this.secret()).otp);
       this.totp_code_expiration = TOTP.generate(this.secret()).expires;
-      this.generating_next_totp_code = false
+      this.generating_next_totp_code = false;
     } catch (e) {
-      console.log(e)
-      this.code.set(this.translate.instant("totp.error.code"));
-      this.generating_next_totp_code = false
+      console.log(e);
+      this.code.set(this.translate.instant('totp.error.code'));
+      this.generating_next_totp_code = false;
     }
   }
 
-
   checkSecret() {
-    this.secretError.set("");
-    this.secret.set(this.secret().replace(/\s/g, ""));
-    if (this.secret() == "") {
-      this.secretError.set("totp.error.secret_empty");
+    this.secretError.set('');
+    this.secret.set(this.secret().replace(/\s/g, ''));
+    if (this.secret() == '') {
+      this.secretError.set('totp.error.secret_empty');
       return;
     }
 
     if (this.secret() != sanitize(this.secret())) {
-      this.secretError.set("totp.error.char");
+      this.secretError.set('totp.error.char');
       return;
     }
     this.generateCode();
   }
 
   changeColor(colorSelected: string) {
-    this.translate.get("blue").subscribe((translation: string) => {
+    this.translate.get('blue').subscribe((translation: string) => {
       switch (colorSelected) {
         case translation: {
-          this.color.set("info");
+          this.color.set('info');
           break;
         }
-        case this.translate.instant("green"): {
-          this.color.set("success");
+        case this.translate.instant('green'): {
+          this.color.set('success');
           break;
         }
-        case this.translate.instant("orange"): {
-          this.color.set("warning");
+        case this.translate.instant('orange'): {
+          this.color.set('warning');
           break;
         }
-        case this.translate.instant("red"): {
-          this.color.set("danger");
+        case this.translate.instant('red'): {
+          this.color.set('danger');
           break;
         }
         default: {
-          this.color.set("info");
+          this.color.set('info');
           break;
         }
       }
@@ -237,143 +261,177 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
   }
 
   cancel() {
-    this.router.navigate(["/vault"], { relativeTo: this.route.root });
+    this.router.navigate(['/vault'], { relativeTo: this.route.root });
   }
 
   get_preferences() {
-    this.http.get(this.apiService.baseURL + "/api/v1/preferences?fields=favicon_policy", { withCredentials: true, observe: 'response' }).subscribe((response) => {
-      if (response.body != null) {
-        const data = JSON.parse(JSON.stringify(response.body));
-        if (data.favicon_policy != null) {
-          this.faviconPolicy.set(data.favicon_policy);
-          if (this.faviconPolicy() == "always") {
-            this.favicon.set(true);
+    this.http
+      .get(
+        this.apiService.baseURL + '/api/v1/preferences?fields=favicon_policy',
+        { withCredentials: true, observe: 'response' },
+      )
+      .subscribe(
+        (response) => {
+          if (response.body != null) {
+            const data = JSON.parse(JSON.stringify(response.body));
+            if (data.favicon_policy != null) {
+              this.faviconPolicy.set(data.favicon_policy);
+              if (this.faviconPolicy() == 'always') {
+                this.favicon.set(true);
+              }
+            } else {
+              this.faviconPolicy.set('enabledOnly');
+              this.translate
+                .get('totp.favicon_policy.enabledOnly')
+                .subscribe((translation: string) => {
+                  this.toast.error(translation);
+                });
+            }
           }
-        } else {
-          this.faviconPolicy.set("enabledOnly");
-          this.translate.get("totp.favicon_policy.enabledOnly").subscribe((translation: string) => {
-            this.toast.error(translation)
-          });
-        }
-      }
-    }, (error) => {
-      let errorMessage = "";
-      if (error.error.message != null) {
-        errorMessage = error.error.message;
-      } else if (error.error.detail != null) {
-        errorMessage = error.error.detail;
-      }
-      if (error.status == 0) {
-        errorMessage = "vault.error.server_unreachable"
-        return;
-      }
-      this.toast.error(this.translate.instant("totp.error.update_pref") + this.translate.instant(errorMessage));
-    });
+        },
+        (error) => {
+          let errorMessage = '';
+          if (error.error.message != null) {
+            errorMessage = error.error.message;
+          } else if (error.error.detail != null) {
+            errorMessage = error.error.detail;
+          }
+          if (error.status == 0) {
+            errorMessage = 'vault.error.server_unreachable';
+            return;
+          }
+          this.toast.error(
+            this.translate.instant('totp.error.update_pref') +
+              this.translate.instant(errorMessage),
+          );
+        },
+      );
   }
 
   getSecretTOTP() {
     this.uuid = this.secret_uuid!;
-    this.http.get(this.apiService.baseURL + "/api/v1/encrypted_secret/" + this.uuid, { withCredentials: true, observe: 'response' }).subscribe({
-      next: (response) => {
-        try {
-          const data = JSON.parse(JSON.stringify(response.body));
-          this.crypto.decrypt(data.enc_secret, this.userService.zke_key()!).then((decrypted_secret) => {
-            if (decrypted_secret == null) {
-              this.translate.get("totp.error.decryption").subscribe((translation: string) => {
-                this.toast.warning(translation)
-              });
-            } else {
-              const property = TOTPEntryFromJSON(decrypted_secret);
-              this.uuid = this.secret_uuid!;
-              this.name.set(property.name);
-              this.secret.set(property.secret);
-              this.generateCode();
-              this.color.set(property.color)
-              this.uri.set(property.uri)
-              this.favicon.set(property.favicon)
-              this.tags.set(property.tags)
-              this.translate.get("blue").subscribe((blue: string) => {
-                switch (this.color()) {
-                  case "info": {
-                    this.selected_color.set(blue);
-                    break;
+    this.http
+      .get(this.apiService.baseURL + '/api/v1/encrypted_secret/' + this.uuid, {
+        withCredentials: true,
+        observe: 'response',
+      })
+      .subscribe({
+        next: (response) => {
+          try {
+            const data = JSON.parse(JSON.stringify(response.body));
+            this.crypto
+              .decrypt(data.enc_secret, this.userService.zke_key()!)
+              .then((decrypted_secret) => {
+                if (decrypted_secret == null) {
+                  this.translate
+                    .get('totp.error.decryption')
+                    .subscribe((translation: string) => {
+                      this.toast.warning(translation);
+                    });
+                } else {
+                  const property = TOTPEntryFromJSON(decrypted_secret);
+                  this.uuid = this.secret_uuid!;
+                  this.name.set(property.name);
+                  this.secret.set(property.secret);
+                  this.generateCode();
+                  this.color.set(property.color);
+                  this.uri.set(property.uri);
+                  this.favicon.set(property.favicon);
+                  this.tags.set(property.tags);
+                  this.translate.get('blue').subscribe((blue: string) => {
+                    switch (this.color()) {
+                      case 'info': {
+                        this.selected_color.set(blue);
+                        break;
+                      }
+                      case 'success': {
+                        this.selected_color.set(
+                          this.translate.instant('green'),
+                        );
+                        break;
+                      }
+                      case 'warning': {
+                        this.selected_color.set(
+                          this.translate.instant('orange'),
+                        );
+                        break;
+                      }
+                      case 'danger': {
+                        this.selected_color.set(this.translate.instant('red'));
+                        break;
+                      }
+                      default: {
+                        this.selected_color.set(blue);
+                        break;
+                      }
+                    }
+                  });
+                  if (this.favicon()) {
+                    this.loadFavicon();
                   }
-                  case "success": {
-                    this.selected_color.set(this.translate.instant("green"));
-                    break;
-                  }
-                  case "warning": {
-                    this.selected_color.set(this.translate.instant("orange"));
-                    break;
-                  }
-                  case "danger": {
-                    this.selected_color.set(this.translate.instant("red"));
-                    break;
-                  }
-                  default: {
-                    this.selected_color.set(blue);
-                    break;
+                  for (let tag of this.userService.vault_tags()) {
+                    if (!this.tags().includes(tag)) {
+                      this.remainingTags.update((rt) => [...rt, tag]);
+                    }
                   }
                 }
               });
-              if (this.favicon()) {
-                this.loadFavicon()
-              }
-              for (let tag of this.userService.vault_tags()) {
-                if (!this.tags().includes(tag)) {
-                  this.remainingTags.update(rt => [...rt, tag]);
-                }
-              }
+          } catch {
+            this.translate
+              .get('totp.error.fetch_secret')
+              .subscribe((translation: string) => {
+                this.toast.warning(translation);
+              });
+          }
+        },
+        error: (error) => {
+          let errorMessage = '';
+          if (error.error.message != null) {
+            errorMessage = error.error.message;
+          } else if (error.error.detail != null) {
+            errorMessage = error.error.detail;
+          }
 
-            }
-          });
-        } catch {
-          this.translate.get("totp.error.fetch_secret").subscribe((translation: string) => {
-            this.toast.warning(translation)
-          });
-        }
-      },
-      error: (error) => {
-        let errorMessage = "";
-        if (error.error.message != null) {
-          errorMessage = error.error.message;
-        } else if (error.error.detail != null) {
-          errorMessage = error.error.detail;
-        }
-
-        if (error.status == 0) {
-          errorMessage = "vault.error.server_unreachable"
-        } else if (error.status == 401) {
-          this.userService.clear();
-          this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
-          return;
-        }
-        this.translate.get("totp.error.fetch_secret_server").subscribe((translation: string) => {
-          this.toast.error(translation + " " + this.translate.instant(errorMessage));
-        });
-      }
-    });
+          if (error.status == 0) {
+            errorMessage = 'vault.error.server_unreachable';
+          } else if (error.status == 401) {
+            this.userService.clear();
+            this.router.navigate(['/login/sessionEnd'], {
+              relativeTo: this.route.root,
+            });
+            return;
+          }
+          this.translate
+            .get('totp.error.fetch_secret_server')
+            .subscribe((translation: string) => {
+              this.toast.error(
+                translation + ' ' + this.translate.instant(errorMessage),
+              );
+            });
+        },
+      });
   }
 
   save() {
     this.isSaving.set(true);
     if (this.userService.id() == null) {
-      this.router.navigate(["/login/sessionKilled"], { relativeTo: this.route.root });
+      this.router.navigate(['/login/sessionKilled'], {
+        relativeTo: this.route.root,
+      });
     }
 
     this.checkName();
     this.checkSecret();
     this.checkURI();
-    if (this.nameError() != "" || this.secretError() != "") {
+    if (this.nameError() != '' || this.secretError() != '') {
       this.isSaving.set(false);
       return;
     }
-    if (this.code() == this.translate.instant("totp.error.code")) {
-      this.toast.error(this.translate.instant("totp.error.code"));
+    if (this.code() == this.translate.instant('totp.error.code')) {
+      this.toast.error(this.translate.instant('totp.error.code'));
       this.isSaving.set(false);
       return;
     }
-
 
     const properties: TOTPEntry = {
       secret: this.secret(),
@@ -382,198 +440,237 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
       uri: this.uri(),
       favicon: this.favicon(),
       tags: this.tags(),
+    };
 
-    }
-
-
-    const jsonProperty = TOTPEntryToJSON(properties)
+    const jsonProperty = TOTPEntryToJSON(properties);
     try {
-      this.crypto.encrypt(jsonProperty, this.userService.zke_key()!).then((enc_jsonProperty) => {
-        if (this.secret_uuid != null) {
-          this.updateSecret(enc_jsonProperty);
-        } else {
-          this.addNewSecret(enc_jsonProperty);
-        }
-        this.isSaving.set(false);
-      });
+      this.crypto
+        .encrypt(jsonProperty, this.userService.zke_key()!)
+        .then((enc_jsonProperty) => {
+          if (this.secret_uuid != null) {
+            this.updateSecret(enc_jsonProperty);
+          } else {
+            this.addNewSecret(enc_jsonProperty);
+          }
+          this.isSaving.set(false);
+        });
     } catch {
-      this.translate.get("totp.error.encryption").subscribe((translation: string) => {
-        this.toast.warning(translation);
-        this.isSaving.set(false);
-      });
+      this.translate
+        .get('totp.error.encryption')
+        .subscribe((translation: string) => {
+          this.toast.warning(translation);
+          this.isSaving.set(false);
+        });
     }
     this.isSaving.set(false);
   }
 
   addNewSecret(enc_property: string) {
-    this.http.post(this.apiService.baseURL + "/api/v1/encrypted_secret", { enc_secret: enc_property }, { withCredentials: true, observe: 'response' }).subscribe({
-      next: (response) => {
-        const data = JSON.parse(JSON.stringify(response.body))
-        this.uuid = data.uuid;
-        this.toast.success(this.translate.instant("totp.secret.add.added"));
-        this.QRCodeService.setLabel('')
-        this.QRCodeService.setSecret('')
-        this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it
-        this.router.navigate(["/vault/"], { relativeTo: this.route.root });
-      },
-      error: (error) => {
-        let errorMessage = "";
-        if (error.error.message != null) {
-          errorMessage = error.error.message;
-        } else if (error.error.detail != null) {
-          errorMessage = error.error.detail;
-        }
+    this.http
+      .post(
+        this.apiService.baseURL + '/api/v1/encrypted_secret',
+        { enc_secret: enc_property },
+        { withCredentials: true, observe: 'response' },
+      )
+      .subscribe({
+        next: (response) => {
+          const data = JSON.parse(JSON.stringify(response.body));
+          this.uuid = data.uuid;
+          this.toast.success(this.translate.instant('totp.secret.add.added'));
+          this.QRCodeService.setLabel('');
+          this.QRCodeService.setSecret('');
+          this.userService.is_vault_in_memory = false; // voluntarily invalidate cached vault to force reloading it
+          this.router.navigate(['/vault/'], { relativeTo: this.route.root });
+        },
+        error: (error) => {
+          let errorMessage = '';
+          if (error.error.message != null) {
+            errorMessage = error.error.message;
+          } else if (error.error.detail != null) {
+            errorMessage = error.error.detail;
+          }
 
-        if (error.status == 0) {
-          errorMessage = "vault.error.server_unreachable"
-        } else if (error.status == 401) {
-          this.userService.clear();
-          this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
-          return;
-        }
-        this.translate.get("totp.error.update").subscribe((translation: string) => {
-          this.toast.warning(translation + " " + this.translate.instant(errorMessage));
-        });
-      }
-    });
+          if (error.status == 0) {
+            errorMessage = 'vault.error.server_unreachable';
+          } else if (error.status == 401) {
+            this.userService.clear();
+            this.router.navigate(['/login/sessionEnd'], {
+              relativeTo: this.route.root,
+            });
+            return;
+          }
+          this.translate
+            .get('totp.error.update')
+            .subscribe((translation: string) => {
+              this.toast.warning(
+                translation + ' ' + this.translate.instant(errorMessage),
+              );
+            });
+        },
+      });
   }
 
   updateSecret(enc_property: string) {
-    this.http.put(this.apiService.baseURL + "/api/v1/encrypted_secret/" + this.uuid, { enc_secret: enc_property }, { withCredentials: true, observe: 'response' }).subscribe({
-      next: (response) => {
-        this.toast.success(this.translate.instant("totp.secret.add.success"));
-        this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it
-        this.router.navigate(["/vault"], { relativeTo: this.route.root });
-      },
-      error: (error) => {
-        let errorMessage = "";
-        if (error.error.message != null) {
-          errorMessage = error.error.message;
-        } else if (error.error.detail != null) {
-          errorMessage = error.error.detail;
-        }
+    this.http
+      .put(
+        this.apiService.baseURL + '/api/v1/encrypted_secret/' + this.uuid,
+        { enc_secret: enc_property },
+        { withCredentials: true, observe: 'response' },
+      )
+      .subscribe({
+        next: (response) => {
+          this.toast.success(this.translate.instant('totp.secret.add.success'));
+          this.userService.is_vault_in_memory = false; // voluntarily invalidate cached vault to force reloading it
+          this.router.navigate(['/vault'], { relativeTo: this.route.root });
+        },
+        error: (error) => {
+          let errorMessage = '';
+          if (error.error.message != null) {
+            errorMessage = error.error.message;
+          } else if (error.error.detail != null) {
+            errorMessage = error.error.detail;
+          }
 
-        if (error.status == 0) {
-          errorMessage = "vault.error.server_unreachable"
-        } else if (error.status == 401) {
-          this.userService.clear();
-          this.router.navigate(["/login/sessionEnd"], { relativeTo: this.route.root });
-          return;
-        }
-        this.translate.get("totp.error.update").subscribe((translation: string) => {
-          this.toast.warning(translation + " " + this.translate.instant(errorMessage));
-        });
-      }
-    });
+          if (error.status == 0) {
+            errorMessage = 'vault.error.server_unreachable';
+          } else if (error.status == 401) {
+            this.userService.clear();
+            this.router.navigate(['/login/sessionEnd'], {
+              relativeTo: this.route.root,
+            });
+            return;
+          }
+          this.translate
+            .get('totp.error.update')
+            .subscribe((translation: string) => {
+              this.toast.warning(
+                translation + ' ' + this.translate.instant(errorMessage),
+              );
+            });
+        },
+      });
   }
 
   delete() {
     this.isDestroying.set(true);
-    this.http.delete(this.apiService.baseURL + "/api/v1/encrypted_secret/" + this.secret_uuid, { withCredentials: true, observe: 'response' }).subscribe({
-      next: (response) => {
-        if (response.status == 201) {
+    this.http
+      .delete(
+        this.apiService.baseURL +
+          '/api/v1/encrypted_secret/' +
+          this.secret_uuid,
+        { withCredentials: true, observe: 'response' },
+      )
+      .subscribe({
+        next: (response) => {
+          if (response.status == 201) {
+            this.isDestroying.set(false);
+            this.toast.success(
+              this.translate.instant('totp.secret.delete.success'),
+            );
+            this.userService.is_vault_in_memory = false; // voluntarily invalidate cached vault to force reloading it
+            this.router.navigate(['/vault'], { relativeTo: this.route.root });
+          } else {
+            this.isDestroying.set(false);
+            this.toast.warning(this.translate.instant('totp.error.deleting'));
+          }
+        },
+        error: (error) => {
           this.isDestroying.set(false);
-          this.toast.success(this.translate.instant("totp.secret.delete.success"));
-          this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it
-          this.router.navigate(["/vault"], { relativeTo: this.route.root });
-        } else {
-          this.isDestroying.set(false);
-          this.toast.warning(this.translate.instant("totp.error.deleting"));
-        }
-
-      },
-      error: (error) => {
-        this.isDestroying.set(false);
-        let errorMessage = "";
-        if (error.error.message != null) {
-          errorMessage = error.error.message;
-        } else if (error.error.detail != null) {
-          errorMessage = error.error.detail;
-        }
-        this.toast.warning(this.translate.instant("totp.error.deleting") + " " + errorMessage);
-      }
-    });
+          let errorMessage = '';
+          if (error.error.message != null) {
+            errorMessage = error.error.message;
+          } else if (error.error.detail != null) {
+            errorMessage = error.error.detail;
+          }
+          this.toast.warning(
+            this.translate.instant('totp.error.deleting') + ' ' + errorMessage,
+          );
+        },
+      });
   }
 
   loadFavicon() {
-    this.uriError.set("");
+    this.uriError.set('');
     if (this.favicon() == true) {
-      if (this.uri() != "") {
-        if (!this.uri().startsWith("http://") && !this.uri().startsWith("https://")) {
-          this.uriError.set("totp.error.missing_https");
+      if (this.uri() != '') {
+        if (
+          !this.uri().startsWith('http://') &&
+          !this.uri().startsWith('https://')
+        ) {
+          this.uriError.set('totp.error.missing_https');
           return;
         }
         try {
           const parsedUrl = new URLParse(this.uri());
           const domain = parsedUrl.hostname;
-          if (domain != null && domain != "") {
+          if (domain != null && domain != '') {
             if (domain_name_validator(domain)) {
-              this.faviconURL.set("https://icons.duckduckgo.com/ip3/" + domain + ".ico");
+              this.faviconURL.set(
+                'https://icons.duckduckgo.com/ip3/' + domain + '.ico',
+              );
             } else {
-              this.uriError.set("totp.error.invalid_domain");
+              this.uriError.set('totp.error.invalid_domain');
               return;
             }
           } else {
-            this.uriError.set("totp.error.invalid_uri");
+            this.uriError.set('totp.error.invalid_uri');
             return;
           }
         } catch {
-          this.uriError.set("totp.error.invalid_uri");
+          this.uriError.set('totp.error.invalid_uri');
           return;
         }
-
-
       } else {
-        this.uriError.set("totp.error.no_fav");
+        this.uriError.set('totp.error.no_fav');
       }
     }
   }
 
   modal() {
     if (!this.isDestroying()) {
-      this.isModalActive.update(v => !v);
+      this.isModalActive.update((v) => !v);
     }
   }
 
   tagModal() {
-    this.addTagName.set("");
-    this.isTagModalActive.update(v => !v);
+    this.addTagName.set('');
+    this.isTagModalActive.update((v) => !v);
   }
 
   addTag() {
-    if (this.addTagName() != "") {
+    if (this.addTagName() != '') {
       if (this.tags().includes(this.addTagName())) {
-        this.toast.warning(this.translate.instant("totp.error.tag_exists"))
+        this.toast.warning(this.translate.instant('totp.error.tag_exists'));
       } else if (this.addTagName().length > 30) {
-        this.toast.warning(this.translate.instant("totp.error.tag_length"))
+        this.toast.warning(this.translate.instant('totp.error.tag_length'));
       } else {
-        this.tags.update(t => [...t, this.addTagName()]);
+        this.tags.update((t) => [...t, this.addTagName()]);
         if (this.remainingTags().includes(this.addTagName())) {
-          this.remainingTags.update(rt => rt.filter(item => item !== this.addTagName()));
+          this.remainingTags.update((rt) =>
+            rt.filter((item) => item !== this.addTagName()),
+          );
         }
-        this.addTagName.set("");
-        this.toast.clear()
-        this.tagModal()
+        this.addTagName.set('');
+        this.toast.clear();
+        this.tagModal();
       }
     } else {
-      this.toast.warning(this.translate.instant("totp.error.tag_empty"))
+      this.toast.warning(this.translate.instant('totp.error.tag_empty'));
     }
-
   }
 
   selectTag(tag: string) {
-    this.tags.update(t => [...t, tag]);
-    this.addTagName.set("");
-    this.toast.clear()
-    this.tagModal()
-    this.remainingTags.update(rt => rt.filter(item => item !== tag));
+    this.tags.update((t) => [...t, tag]);
+    this.addTagName.set('');
+    this.toast.clear();
+    this.tagModal();
+    this.remainingTags.update((rt) => rt.filter((item) => item !== tag));
   }
 
   deleteTag(tag: string) {
-    this.tags.update(t => t.filter(item => item !== tag));
+    this.tags.update((t) => t.filter((item) => item !== tag));
     if (this.userService.vault_tags().includes(tag)) {
-      this.remainingTags.update(rt => [...rt, tag]);
+      this.remainingTags.update((rt) => [...rt, tag]);
     }
   }
-
 }
