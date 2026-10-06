@@ -6,7 +6,7 @@ import { ApiService } from '../API/api.service';
 import { Crypto } from '../../../../shared/Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
 import { Buffer } from 'buffer';
-import { TOTPEntry } from '../../../../shared/models/totp-entry';
+import { TOTPEntry } from '../../../../shared/common/models/totp-entry';
 
 
 export interface getZKEKeyResult {
@@ -165,18 +165,10 @@ export class UserService {
             });
           });;
         } else {
-          if (isVaultLocal) {
             this.translate.get("login.errors.import_vault.wrong_passphrase").subscribe((translation) => {
               reject(translation);
             });
-          } else {
-            this.translate.get("login.errors.import_vault.key_dec").subscribe((translation) => {
-              reject(translation);
-            });
-          }
-
         }
-
       });
     });
   }
