@@ -214,7 +214,7 @@
         </a>
       </div>
       }
-      @if (userService.id()==null && !this.userService.isVaultLocal()) {
+      @if (userService.id()==null) {
       <div class="navbar-start">
         <a class="navbar-item" (click)="navigateToRoute('')" [ngClass]="{'has-text-weight-bold':currentUrl() == '/'}">
           <fa-icon [icon]="faHome"></fa-icon> {{ 'Home' | translate }}
@@ -228,13 +228,6 @@
         <a class="navbar-item" (click)="navigateToRoute('faq')"
           [ngClass]="{'has-text-weight-bold':currentUrl() == '/faq'}">
           <fa-icon [icon]="faCircleQuestion"></fa-icon> FAQ
-        </a>
-      </div>
-      }
-      @if (this.userService.isVaultLocal()) {
-      <div class="navbar-start">
-        <a class="navbar-item" (click)="navigateToRoute('vault')">
-          {{ 'navbar.vault_backup' | translate }}
         </a>
       </div>
       }
@@ -286,11 +279,6 @@
             @if (userService.id() != null) {
             <a class="button is-light" [routerLink]="['/logout']">
               <span>{{ 'logout' | translate }}</span>
-            </a>
-            }
-            @if (this.userService.isVaultLocal()) {
-            <a class="button is-light" [routerLink]="['/login']">
-              <span>{{ 'close' | translate }}</span>
             </a>
             }
           </div>

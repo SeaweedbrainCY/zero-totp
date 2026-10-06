@@ -95,7 +95,7 @@ export class NavbarComponent implements OnInit {
       this.check_notification()
       if (url instanceof NavigationEnd) {
         this.currentUrl.set(url.url);
-        if (this.userService.vault() && !this.userService.isVaultLocal() && !this.idle.isRunning()) {
+        if (this.userService.vault()  && !this.idle.isRunning()) {
           this.get_autolock_delay().subscribe({
             next: (response) => {
               const data = JSON.parse(JSON.stringify(response.body))
@@ -108,7 +108,7 @@ export class NavbarComponent implements OnInit {
               this.idle.setTimeout(20);
               this.idle.onTimeout.subscribe(() => {
                 // As idle.stop() doesn't work (issue #167, we need to check if the user is still logged in before redirecting to the login page)
-                if (this.userService.id() && !this.userService.isVaultLocal()) {
+                if (this.userService.id() ) {
                   console.log("Idle timeout " + this.currentUrl())
                   this.userService.clearVault();
                   this.router.navigate(["/vault/locked"], { relativeTo: this.route.root });
