@@ -6,11 +6,11 @@ import { Router, ActivatedRoute, RouterStateSnapshot, NavigationEnd, RouterLink 
 import { ViewportRuler } from '@angular/cdk/scrolling';
 import { NgZone } from '@angular/core';
 import { ToastService } from '../../../shared/Services/Toast/toast.service';
-import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
+import { LocalVaultV1Service, UploadVaultStatus } from '../../../shared/Services/upload-vault/LocalVaultv1Service.service';
 import { VaultService } from '../services/VaultService/vault.service';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { formatDate, NgClass } from '@angular/common';
-import { UserService } from '../services/User/user.service';
+import { UserService } from '../../../shared/Services/User/user.service';
 import { TOTPEntry, TOTPEntryToJSON } from '../../../shared/models/totp-entry';
 import { Crypto } from '../../../shared/Crypto/crypto';
 import { HttpClient, HttpResponse } from '@angular/common/http';

@@ -11,6 +11,8 @@ import { CdkCopyToClipboard } from '@angular/cdk/clipboard';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 
+// TODO: configure usage of isVaultReadOnly
+// Integrate the difference behavior as it was (when vault refresh for ex.)
 
 @Component({
   selector: 'app-vault-view',
