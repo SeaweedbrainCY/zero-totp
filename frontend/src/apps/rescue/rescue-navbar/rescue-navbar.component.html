@@ -1,0 +1,39 @@
+
+<nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" [routerLink]="['/']">
+       <img src="assets/zero-totp-rescue_light.png" alt="Logo of Zero TOTP">
+      </a>
+
+
+      <a role="button" class="navbar-burger"  id="navbarBurger" aria-label="menu" aria-expanded="false" data-target="navbar" (click)="isNavbarExpanded.update(v => !v)">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="navbar" class="navbar-menu" [ngClass]="{'is-active': isNavbarExpanded()}" >
+      <div class="navbar-start">
+        <a class="navbar-item" [ngClass]="{'has-text-weight-bold':currentUrl() == '/'}" [routerLink]="['/']">
+          Rescue Zero-TOTP
+        </a>
+        <a class="navbar-item"  [routerLink]="['/vault']" [ngClass]="{'has-text-weight-bold':currentUrl() == '/vault'}" >
+          Vault backup
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button is-light"  [routerLink]="['/open-vault']">
+              <span [ngClass]="{'has-text-weight-bold':currentUrl() == '/openVault'}">Open my vault</span>
+            </a>
+            <a class="button is-light" [routerLink]="['/open-vault']">
+              <span>Close</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
