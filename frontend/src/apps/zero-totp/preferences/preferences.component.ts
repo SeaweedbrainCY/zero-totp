@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { faEnvelope, faLock, faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faCircleNotch, faCircleExclamation, faLightbulb, faVault, faSliders, faShieldHalved, faXmark, faFingerprint, faClock, faImage, faListOl, faHeartCircleBolt } from '@fortawesome/free-solid-svg-icons';
 import { faHardDrive } from '@fortawesome/free-regular-svg-icons';
-import { UserService } from '../services/User/user.service';
+import { UserService } from '../../../shared/Services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';

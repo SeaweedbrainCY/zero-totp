@@ -8,7 +8,7 @@ import { Crypto } from '../../../shared/Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastService } from '../../../shared/Services/Toast/toast.service';
-import { UserService } from '../services/User/user.service';
+import { UserService } from '../../../shared/Services/User/user.service';
 import { ApiService } from '../services/API/api.service';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';

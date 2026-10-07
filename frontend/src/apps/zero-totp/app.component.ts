@@ -2,7 +2,7 @@ import { Component, OnInit, DOCUMENT, signal } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Renderer2, Inject } from '@angular/core';
 import { AuthServiceService } from './services/AuthService/auth-service.service';
-import { UserService } from './services/User/user.service';
+import { UserService } from '../../shared/Services/User/user.service';
 import { Router, ActivatedRoute, RouterOutlet } from '@angular/router';
 import { ProtectedKeychainStorageService } from './services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 import { faSignal, faBriefcaseMedical } from '@fortawesome/free-solid-svg-icons';

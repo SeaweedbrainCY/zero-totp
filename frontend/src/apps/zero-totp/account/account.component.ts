@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, Signal, WritableSignal } from '@angular/core';
 import { faEnvelope, faLock, faCheck, faUser, faCog, faShield, faHourglassStart, faCircleInfo, faArrowsRotate, faFlask, faTrash, faVault, faExclamationTriangle, faEye, faEyeSlash, faCircleExclamation, faCircleNotch, faLightbulb, faL } from '@fortawesome/free-solid-svg-icons';
-import { UserService, CommonError as UserServiceCommonError } from '../services/User/user.service';
+import { UserService, CommonError as UserServiceCommonError } from '../../../shared/Services/User/user.service';
 import { TOTPEntry, TOTPEntryFromJSON, TOTPEntryToJSON } from '../../../shared/models/totp-entry';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 

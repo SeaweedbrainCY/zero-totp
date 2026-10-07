@@ -1,6 +1,6 @@
 import { Component, OnInit, Injectable, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserService } from '../services/User/user.service';
+import { UserService } from '../../../shared/Services/User/user.service';
 import { HttpClient } from '@angular/common/http';
 
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';

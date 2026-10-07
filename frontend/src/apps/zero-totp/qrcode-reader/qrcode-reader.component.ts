@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { UserService } from '../services/User/user.service';
+import { UserService } from '../../../shared/Services/User/user.service';
 import { QrCodeTOTP } from '../services/qr-code-totp/qr-code-totp.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastService } from '../../../shared/Services/Toast/toast.service';

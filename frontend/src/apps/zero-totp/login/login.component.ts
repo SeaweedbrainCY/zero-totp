@@ -3,10 +3,10 @@ import { faEnvelope, faLock, faCheck, faXmark, faFlagCheckered, faCloudArrowUp, 
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Router, ActivatedRoute } from '@angular/router';
-import { UserService } from '../services/User/user.service';
+import { UserService } from '../../../shared/Services/User/user.service';
 import { Crypto } from '../../../shared/Crypto/crypto';
 import { AuthServiceService, AuthToken } from '../services/AuthService/auth-service.service';
-import { LocalVaultV1Service, UploadVaultStatus } from '../services/upload-vault/LocalVaultv1Service.service';
+import { LocalVaultV1Service, UploadVaultStatus } from '../../../shared/Services/upload-vault/LocalVaultv1Service.service';
 import { isDeviceMobile } from '../../../shared/Utils/utils';
 import { VaultService } from '../services/VaultService/vault.service';
 import { ApiService } from '../services/API/api.service';
@@ -79,7 +79,6 @@ export class LoginComponent implements OnInit {
   // Not read in template — plain properties
   hashedPassword: string = "";
   error_param: string | null = null;
-  local_vault_service: LocalVaultV1Service | null = null;
   api_public_key: string | undefined = undefined;
 
   // Pass to html template
@@ -91,7 +90,6 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute,
     private userService: UserService,
     private crypto: Crypto,
-    private localVaultv1: LocalVaultV1Service,
     private translate: TranslateService,
     private toast: ToastService,
     private vaultService: VaultService,
@@ -209,149 +207,7 @@ export class LoginComponent implements OnInit {
 
   }
 
-  openVaultV1(event: any, unsecure_context: string, input: any) {
-    this.local_vault_service!.parseUploadedVault(unsecure_context, this.api_public_key).then((vault_parsing_status) => {
-      switch (vault_parsing_status) {
-        case UploadVaultStatus.SUCCESS: {
-          this.isPassphraseModalActive.set(true);
-          this.loading_file.set(false);
-          break
-        }
-        case UploadVaultStatus.INVALID_JSON: {
-          this.translate.get("login.errors.import_vault.invalid_type").subscribe((translation) => {
-            this.toast.error(translation);
-          });
-          this.loading_file.set(false);
-          break;
-        }
 
-        case UploadVaultStatus.INVALID_VERSION: {
-          this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation) => {
-            this.toast.error(translation);
-          });
-          this.loading_file.set(false);
-          break;
-        }
-        case UploadVaultStatus.NO_SIGNATURE: {
-          this.translate.get("login.errors.import_vault.no_signature").subscribe((translation) => {
-            this.toast.error(translation)
-          });
-          this.loading_file.set(false);
-          break;
-        }
-        case UploadVaultStatus.INVALID_SIGNATURE: {
-          this.isUnsecureVaultModaleActive.set(true);
-          this.loading_file.set(false);
-          break;
-        }
-        case UploadVaultStatus.MISSING_ARGUMENT: {
-          this.translate.get("login.errors.import_vault.missing_arg").subscribe((translation) => {
-            this.toast.error(translation)
-          });
-          this.loading_file.set(false);
-          break;
-        }
-        case UploadVaultStatus.INVALID_ARGUMENT: {
-          this.translate.get("login.errors.import_vault.invalid_arg").subscribe((translation) => {
-            this.toast.error(translation)
-          });
-          this.loading_file.set(false);
-          break;
-        }
-
-        case UploadVaultStatus.UNKNOWN: {
-          this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation) => {
-            this.toast.error(translation)
-          });
-          this.loading_file.set(false);
-          break;
-        }
-
-        default: {
-          this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation) => {
-            this.toast.error(translation)
-          });
-          this.loading_file.set(false);
-          break;
-        }
-      }
-    });
-  }
-
-  openFile(event: any): void {
-    this.loading_file.set(true);
-    const input = event.target;
-    const reader = new FileReader();
-    reader.readAsText(input.files[0], 'utf-8');
-    reader.onload = (() => {
-      if (reader.result) {
-        try {
-          const unsecure_context = reader.result.toString();
-          const version = this.localVaultv1.extract_version_from_vault(unsecure_context);
-          if (version == null) {
-            this.translate.get("login.errors.import_vault.invalid_file").subscribe((translation) => {
-              this.toast.error(translation);
-            });
-            this.loading_file.set(false);
-
-          } else if (version == 1) {
-            this.local_vault_service = this.localVaultv1
-            this.http.get(this.apiService.baseURL + "/api/v1/vault/signature/public-key", { withCredentials: true, observe: 'response' }).subscribe({
-              next: (response) => {
-                const data = JSON.parse(JSON.stringify(response.body))
-                this.api_public_key = data.public_key;
-                this.openVaultV1(event, unsecure_context, input);
-              },
-              error: (error) => {
-                console.log(error);
-                this.loading_file.set(false);
-                this.openVaultV1(event, unsecure_context, input);
-              }
-            });
-          }
-          else {
-            this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation) => {
-              this.toast.error(translation)
-            });
-            this.loading_file.set(false);
-          }
-        } catch (e) {
-          this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation) => {
-            this.toast.error(translation)
-          });
-          this.loading_file.set(false);
-        }
-      } else {
-        this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation) => {
-          this.toast.error(translation)
-        });
-        this.loading_file.set(false);
-      }
-    });
-    reader.onerror = (() => {
-      this.loading_file.set(false);
-    });
-  }
-
-
-  openLocalVault() {
-    this.userService.clear();
-    this.userService.isVaultLocal.set(true);
-    this.userService.local_vault_service.set(this.local_vault_service!);
-    this.userService.derivedKeySalt.set(this.local_vault_service!.get_derived_key_salt()!);
-    this.userService.derivePassphrase(this.userService.derivedKeySalt()!, this.password()).then((derivedKey) => {
-      this.userService.decryptZKEKey(this.local_vault_service!.get_zke_key_enc()!, derivedKey, this.userService.isVaultLocal()!).then((zke_key) => {
-        this.userService.zke_key.set(zke_key!);
-        this.router.navigate(["/vault"], { relativeTo: this.route.root });
-      }, (error) => {
-        this.toast.error(error)
-        this.isLoading.set(false);
-      });
-    }, (error) => {
-      this.toast.error(error)
-      this.isLoading.set(false);
-    });
-  }
 
   // DEPRECATED.
   // userService pre-hashed
