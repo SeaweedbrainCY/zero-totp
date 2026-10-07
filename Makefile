@@ -26,7 +26,7 @@ test:
 	mv api/config/config.yml api/config/.secret/config.yml
 	cp api/tests/ressources/test-config.yml api/config/config.yml
 	cd api && . venv/bin/activate && \
-	python -m pytest --cov=. --cov-report=term --cov-report=html -s 
+	python -m pytest --cov=. --cov-report=term --cov-report=html -s
 	mv -f api/config/.secret/config.yml api/config/config.yml
 
 run:
@@ -47,3 +47,11 @@ run_ios:
 	echo "Building and running iOS application"
 	cd frontend && ng build --configuration mobile-development --subresource-integrity
 	cd mobile && npx cap sync ios && npx cap open ios
+
+run_rescue:
+	echo "Starting rescue frontend server ..."
+	cd frontend && ng serve rescue --host=127.0.0.1
+
+update_i18n:
+	echo "Updating en-uk i18n file"
+	npx ngx-translate-extract --input ./frontend/src --output ./frontend/src/assets/i18n/en-uk.json  --clean --sort -f "namespaced-json"
