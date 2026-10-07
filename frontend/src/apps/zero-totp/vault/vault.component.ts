@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, WritableSignal } from '@angular/core';
-import { UserService } from '../services/User/user.service';
+import { UserService } from '../../../shared/Services/User/user.service';
 import { TOTPEntry } from '../../../shared/models/totp-entry';
 import { ActivatedRoute, Router, NavigationEnd, RouterLink } from '@angular/router';
 import { faPen, faSquarePlus, faCopy, faCheckCircle, faCircleXmark, faDownload, faDesktop, faRotateRight, faChevronUp, faChevronDown, faChevronRight, faLink, faCircleInfo, faUpload, faCircleNotch, faCircleExclamation, faCircleQuestion, faFlask, faMagnifyingGlass, faXmark, faFingerprint, faServer, faLock, faEye, faEyeSlash, faKey, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { Crypto } from '../../../shared/Crypto/crypto';
 import { formatDate, NgClass } from '@angular/common';
-import { LocalVaultV1Service } from '../services/upload-vault/LocalVaultv1Service.service';
+import { LocalVaultV1Service } from '../../../shared/Services/upload-vault/LocalVaultv1Service.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { TOTP } from "totp-generator"
