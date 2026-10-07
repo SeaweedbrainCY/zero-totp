@@ -9,7 +9,7 @@ import { AccountComponent } from './account/account.component';
 import { PagenotfoundComponent } from '../../shared/Views/pagenotfound/pagenotfound.component';
 import { QrcodeReaderComponent } from './qrcode-reader/qrcode-reader.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
-import { ChangelogComponent } from './changelog/changelog.component';
+import { ChangelogComponent } from '../../shared/Views/changelog/changelog.component';
 import { CallbackComponent } from './callback/callback.component';
 import { OauthSyncComponent } from './oauth-sync/oauth-sync.component';
 import { PreferencesComponent } from './preferences/preferences.component';
