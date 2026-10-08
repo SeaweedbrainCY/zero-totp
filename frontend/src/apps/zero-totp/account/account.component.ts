@@ -11,7 +11,7 @@ import { Buffer } from 'buffer';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { ApiService } from '../services/API/api.service';
-import { VaultService } from '../services/VaultService/vault.service';
+import { VaultService } from '../../../shared/Services/VaultService/vault.service';
 import { TrailingSlashPathLocationStrategy, NgClass } from '@angular/common';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';

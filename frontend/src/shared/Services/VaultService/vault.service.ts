@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Crypto } from '../../../../shared/Crypto/crypto';
+import { Crypto } from '../../Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
-import { TOTPEntry, TOTPEntryFromJSON } from '../../../../shared/models/totp-entry';
+import { TOTPEntry, TOTPEntryFromJSON } from '../../models/totp-entry';
 
 
 

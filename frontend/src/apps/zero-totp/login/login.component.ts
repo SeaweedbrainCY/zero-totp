@@ -8,7 +8,7 @@ import { Crypto } from '../../../shared/Crypto/crypto';
 import { AuthServiceService, AuthToken } from '../services/AuthService/auth-service.service';
 import { LocalVaultV1Service, UploadVaultStatus } from '../../../shared/Services/upload-vault/LocalVaultv1Service.service';
 import { isDeviceMobile } from '../../../shared/Utils/utils';
-import { VaultService } from '../services/VaultService/vault.service';
+import { VaultService } from '../../../shared/Services/VaultService/vault.service';
 import { ApiService } from '../services/API/api.service';
 import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';

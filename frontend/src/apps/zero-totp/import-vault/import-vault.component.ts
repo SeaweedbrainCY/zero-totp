@@ -7,7 +7,7 @@ import { ViewportRuler } from '@angular/cdk/scrolling';
 import { NgZone } from '@angular/core';
 import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { LocalVaultV1Service, UploadVaultStatus } from '../../../shared/Services/upload-vault/LocalVaultv1Service.service';
-import { VaultService } from '../services/VaultService/vault.service';
+import { VaultService } from '../../../shared/Services/VaultService/vault.service';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { formatDate, NgClass } from '@angular/common';
 import { UserService } from '../../../shared/Services/User/user.service';
