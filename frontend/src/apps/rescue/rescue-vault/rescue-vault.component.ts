@@ -32,7 +32,6 @@ export class RescueVaultComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.userService.zke_key() == null) {
-      console.log("her")
       this.router.navigate(["/open-vault"]);
     } else {
      this.loadVault()
