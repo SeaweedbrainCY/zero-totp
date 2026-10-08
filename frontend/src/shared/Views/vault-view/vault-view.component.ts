@@ -70,9 +70,13 @@ export class VaultViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     if (!this.isVaultReadOnly()) {
-      document.getElementById("add-code-button")!.style.display = "flex";
-      document.getElementById("add-code-button")!.onclick = () => { this.isAddTOTPModalActive.set(true); };
-    }
+      const addCodeButton = document.getElementById("add-code-button")
+      if (addCodeButton != null) {
+        document.getElementById("add-code-button")!.style.display = "flex";
+        document.getElementById("add-code-button")!.onclick = () => { this.isAddTOTPModalActive.set(true); };
+      }
+      }
+
     this.startDisplayingCode()
   }
 
@@ -84,7 +88,10 @@ export class VaultViewComponent implements OnInit, OnDestroy {
     clearInterval(this.totpValidityUIAnimationIntervalID)
 
     // Hide the add button
-    document.getElementById("add-code-button")!.style.display = "none";
+    const addCodeButton = document.getElementById("add-code-button")
+    if (addCodeButton != null) {
+      document.getElementById("add-code-button")!.style.display = "none";
+    }
   }
 
 
