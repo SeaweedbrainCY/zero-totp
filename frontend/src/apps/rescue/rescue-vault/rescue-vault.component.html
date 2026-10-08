@@ -1,0 +1,26 @@
+<section class="hero is-halfheight pb-6" style="min-height: 70vh;">
+  <div class="container  is-fluid ">
+    <div>
+      <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">{{ 'vault.title.backup' | translate}}
+        @if (vault_date() != "") {
+        <span>{{vault_date()}}</span>
+        }
+      </h1>
+      <p class="has-text-centered has-text-grey pb-6">{{ 'vault.subtitle' | translate }} </p>
+      <article class="message is-info">
+        <div class="message-body">
+          {{ 'vault.local.desc.part1' | translate }}<br>
+          <b>{{ 'vault.local.desc.part2' | translate }}
+            <code>{{ 'vault.local.desc.code' | translate }}</code>{{ 'vault.local.desc.part3' | translate
+            }}</b>.
+        </div>
+      </article>
+
+
+      <app-vault-view
+        [vault]="userService.vault()"
+        [isVaultLoading]="isVaultLoading()"
+      />
+    </div>
+  </div>
+</section>
