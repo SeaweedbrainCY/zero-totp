@@ -8,11 +8,10 @@ import { HttpClient } from '@angular/common/http';
 
 import { Crypto } from '../../../shared/Crypto/crypto';
 import { formatDate, NgClass } from '@angular/common';
-import { LocalVaultV1Service } from '../../../shared/Services/upload-vault/LocalVaultv1Service.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { TOTP } from "totp-generator"
-import { VaultService, DecryptedVaultResult } from '../services/VaultService/vault.service';
+import { VaultService, DecryptedVaultResult } from '../../../shared/Services/VaultService/vault.service';
 import { GlobalConfigurationService } from '../services/GlobalConfiguration/global-configuration.service';
 import { ApiService } from '../services/API/api.service';
 import { environment } from 'src/environments/environment';
@@ -60,7 +59,6 @@ export class VaultComponent implements OnInit {
   faCircleQuestion = faCircleQuestion;
   faUpload = faUpload;
 
-  local_vault_service: LocalVaultV1Service | null = null;
   isGoogleDriveEnabled = true;
   passphrase = "";
 
@@ -97,7 +95,6 @@ export class VaultComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private http: HttpClient,
-    private crypto: Crypto,
     private translate: TranslateService,
     private toast: ToastService,
     private vaultService: VaultService,
@@ -116,39 +113,7 @@ export class VaultComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.userService.isVaultLocal()) {
-      // Local vault, the user uploaded it
-      this.isVaultEncrypted.set(false);
-      this.local_vault_service = this.userService.local_vault_service();
-      let vaultDate = "unknown"
-      try {
-        const vaultDateStr = this.local_vault_service!.get_date()!.split(".")[0];
-        vaultDate = String(formatDate(new Date(vaultDateStr), 'dd/MM/yyyy HH:mm:ss O', 'en'));
-      } catch {
-        vaultDate = "error"
-      }
-
-
-      this.page_title.set("vault.title.backup");
-      this.vault_date.set(vaultDate);
-      this.isVaultLoading.set(true)
-      this.vaultService.decryptVault(this.local_vault_service!.get_enc_secrets()!, this.userService.zke_key()!).then(result => {
-        this.isVaultLoading.set(false)
-        if (result.errors.length != 0) {
-          this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-            this.toast.error(translation, result.errors.join(". "));
-          });
-        }
-        this.userService.vault.set(result.vault)
-        this.userService.is_vault_in_memory = true
-      },
-        error => {
-          this.isVaultLoading.set(false)
-          this.translate.get("vault.error.decryption").subscribe((translation: string) => {
-            this.toast.error(translation, error);
-          });
-        })
-    } else if (this.userService.zke_key() == null) {
+    if (this.userService.zke_key() == null) {
       if (environment.isMobileApp) {
         this.capacitorPreferencesStorage.isBiometricsProtectionEnabled(this.userService.id()!).then((preference) => {
           if (preference == true) {
