@@ -15,9 +15,6 @@
 
     <div id="navbar" class="navbar-menu" [ngClass]="{'is-active': isNavbarExpanded()}" >
       <div class="navbar-start">
-        <a class="navbar-item" [ngClass]="{'has-text-weight-bold':currentUrl() == '/'}" [routerLink]="['/']">
-          Rescue Zero-TOTP
-        </a>
         <a class="navbar-item"  [routerLink]="['/vault']" [ngClass]="{'has-text-weight-bold':currentUrl() == '/vault'}" >
           Vault backup
         </a>
@@ -26,12 +23,16 @@
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
+            @if(currentUrl() != '/vault'){
             <a class="button is-light"  [routerLink]="['/open-vault']">
               <span [ngClass]="{'has-text-weight-bold':currentUrl() == '/openVault'}">Open my vault</span>
             </a>
+            }
+            @if(currentUrl() == '/vault'){
             <a class="button is-light" [routerLink]="['/open-vault']">
               <span>Close</span>
             </a>
+            }
           </div>
         </div>
       </div>

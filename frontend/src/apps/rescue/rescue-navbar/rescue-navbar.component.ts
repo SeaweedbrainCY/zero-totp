@@ -15,6 +15,8 @@ export class RescueNavbarComponent {
   isNavbarExpanded = signal(false)
   currentUrl = signal("")
 
+
+
   constructor(
     private router: Router,
   ) {
