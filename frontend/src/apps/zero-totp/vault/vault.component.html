@@ -90,17 +90,8 @@
         }
       </h1>
       <p class="has-text-centered has-text-grey pb-6">{{ 'vault.subtitle' | translate }} </p>
-      @if (this.userService.isVaultLocal()) {
-      <article class="message is-info">
-        <div class="message-body">
-          {{ 'vault.local.desc.part1' | translate }}<br>
-          <b>{{ 'vault.local.desc.part2' | translate }}
-            <code>{{ 'vault.local.desc.code' | translate }}</code>{{ 'vault.local.desc.part3' | translate
-            }}</b>.
-        </div>
-      </article>
-      }
-      @if (!this.userService.isVaultLocal()) {
+
+
       <div class="message is-success">
         <div class="message"
           [ngClass]="{'is-success': isGoogleDriveSync() == 'uptodate' || !is_google_drive_enabled_on_this_tenant() ||  isGoogleDriveSync() == 'loading', 'is-warning': isGoogleDriveSync() == 'error' || isGoogleDriveSync() == 'false' }">
@@ -314,7 +305,6 @@
           </div>
         </div>
       </div>
-      }
       <span class="tag mb-4 is-light is-info" (click)="refreshUserData()" id="reloadVault">{{ 'vault.button.reload' |
         translate
         }} <fa-icon [icon]="faRotateRight" class="pl-1"
