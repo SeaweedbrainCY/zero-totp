@@ -121,10 +121,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "frontend:build:production"
+              "buildTarget": "zero-totp:build:production"
             },
             "development": {
-              "buildTarget": "frontend:build:development"
+              "buildTarget": "zero-totp:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -132,7 +132,7 @@
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n",
           "options": {
-            "buildTarget": "frontend:build"
+            "buildTarget": "zero-totp:build"
           }
         },
         "test": {
