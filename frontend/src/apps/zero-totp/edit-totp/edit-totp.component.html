@@ -55,7 +55,7 @@
                 <div class="control has-icons-left">
                   <input class="input" type="text" placeholder="GitHub" name="name" [ngModel]="name()" (ngModelChange)="name.set($event)"
                     (keyup)="checkName()"
-                    [ngClass]="{'is-danger':nameError() != '',  'is-success' : name() != '' && nameError() == '' }"
+                    [ngClass]="{'is-danger':nameError() != '',  'is-success' : name() != '' && nameError() == '' }">
                   <span class="icon is-small is-left">
                     <fa-icon [icon]="faPassport"></fa-icon>
                   </span>
@@ -80,7 +80,7 @@
                 <div class="control has-icons-left">
                   <input class="input" type="text" placeholder="https://github.com" name="uri" [ngModel]="uri()" (ngModelChange)="uri.set($event)"
                     (change)="checkURI()"
-                    [ngClass]="{'is-warning':uriError() != '',  'is-success' : uriError() == '' && uri() != '' }"
+                    [ngClass]="{'is-warning':uriError() != '',  'is-success' : uriError() == '' && uri() != '' }">
                   <span class="icon is-small is-left">
                     <fa-icon [icon]="faGlobe"></fa-icon>
                   </span>
@@ -106,7 +106,7 @@
                   <input class="input" type="{{isSecretVisible() ? 'text' : 'password'}}" placeholder="XXXXXXXXXXXXXXXX" name="secret" [ngModel]="secret()" (ngModelChange)="secret.set($event)"
                     (change)="checkSecret()"
                     (keyup)="checkSecret()"
-                    [ngClass]="{'is-danger':secretError() != '', 'is-success' : secret() != '' && secretError() == '' }"
+                    [ngClass]="{'is-danger':secretError() != '', 'is-success' : secret() != '' && secretError() == '' }">
                   <span class="icon is-small is-left">
                     <fa-icon [icon]="faKey"></fa-icon>
                   </span>
