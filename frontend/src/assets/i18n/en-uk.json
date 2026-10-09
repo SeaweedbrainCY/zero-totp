@@ -347,13 +347,15 @@
 			"title": "The project"
 		},
 		"subtitle": {
+		"main": "Zero-TOTP is a ",
 			"and": "and a",
 			"opensource": "100% open-source",
 			"platform": "platform",
 			"zke": "Zero-Knowledge Infrastructure"
 		},
 		"title": {
-			"strong": "safe place"
+			"strong": "safe place",
+			"main": "Store your TOTP codes in a"
 		},
 		"trust": {
 			"no": {
