@@ -76,10 +76,6 @@
             @if (!is_oauth_flow()) {
             <div class="is-flex is-justify-content-center is-align-items-center mt-5 is-flex-wrap-wrap"
               style="gap: 0.75rem;">
-              <button class="button is-small is-rounded is-outlined is-light" (click)="vault_modal_active.set(true)">
-                <fa-icon [icon]="faCloudArrowUp" class="mr-2"></fa-icon>
-                {{ 'login.backup.open_button' | translate }}
-              </button>
               <a class="button is-small is-rounded is-outlined is-danger" href="https://rescue.zero-totp.com">
                 <fa-icon [icon]="faBriefcaseMedical" class="mr-2"></fa-icon>
                 {{ 'login.rescue.strong' | translate }}
@@ -165,100 +161,6 @@
   </div>
 </section>
 
-@if (!is_oauth_flow()) {
-<div class="modal" [ngClass]="{'is-active': vault_modal_active()}">
-  <div class="modal-background" (click)="vault_modal_active.set(false)"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
-      <p class="modal-card-title">{{ 'login.backup.open_button' | translate }}</p>
-      <button class="delete" aria-label="close" (click)="vault_modal_active.set(false)"></button>
-    </header>
-    <section class="modal-card-body has-text-centered">
-      <p class="has-text-grey mb-5">{{ 'login.backup.subtitle' | translate }}</p>
-      <div class="file is-boxed is-centered">
-        <label class="file-label">
-          <input class="file-input" type="file" name="resume" accept=".zero-totp, .txt" (change)="openFile($event)">
-          <span class="file-cta">
-            <span class="file-icon">
-              @if (!loading_file()) {
-              <fa-icon [icon]="faCloudArrowUp"></fa-icon>
-              }
-              @if (loading_file()) {
-              <fa-icon [icon]="faCircleNotch" [animation]="true ? 'spin' : undefined"></fa-icon>
-              }
-            </span>
-            @if (!loading_file()) {
-            <span class="file-label">
-              {{ 'login.backup.vault_backup' | translate }}
-            </span>
-            }
-          </span>
-        </label>
-      </div>
-    </section>
-  </div>
-</div>
-}
-
-<div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isUnsecureVaultModaleActive()}">
-  <div class="modal-background" (click)="isUnsecureVaultModaleActive.update(v => !v)"></div>
-  <div class="modal-content">
-    <section class="modal-card-body">
-      <h1 class="is-size-2 has-text-danger">{{ 'login.backup.unsecure.popup.title' | translate }}</h1>
-      <strong>{{ 'login.backup.unsecure.popup.strong' | translate }}</strong>. {{ 'login.backup.unsecure.popup.desc' |
-      translate }}<br>
-      <strong>{{ 'login.backup.unsecure.popup.strong2' | translate }}</strong>
-      <br><br>
-    </section>
-    <footer class="modal-card-foot is-flex is-justify-content-right">
-      <button class="button is-success mr-2" (click)="isUnsecureVaultModaleActive.update(v => !v)">{{
-        'login.backup.unsecure.popup.button.cancel' | translate }}</button>
-      <button class="button is-danger ml-2"
-        (click)="local_vault_service!.set_is_signature_valid(true); isUnsecureVaultModaleActive.update(v => !v); isPassphraseModalActive.set(true);">{{
-        'login.backup.unsecure.popup.continue' | translate }}</button>
-    </footer>
-  </div>
-  <button class="modal-close is-large" aria-label="close"
-    (click)="isUnsecureVaultModaleActive.update(v => !v)"></button>
-</div>
-
-
-<div id="local_vault_passphrase" class="modal modal-fx-fadeInScale"
-  [ngClass]="{'is-active': isPassphraseModalActive()}">
-  <div class="modal-background" (click)="isPassphraseModalActive.update(v => !v)"></div>
-  <div class="modal-content">
-    <section class="modal-card-body">
-      <h1 class="is-size-2 has-text-info">{{ 'login.backup.open.popup.title' | translate }}</h1>
-      <div class="field is-flex-tablet has-addons  mt-3">
-        <div class="control has-icons-left" style="width:90%">
-          <input class="input" type="{{isLocalVaultPassphraseVisible() ? 'text' : 'password'}}"
-            placeholder="{{'passphrase' | translate}}" name="password" [ngModel]="password()"
-            (ngModelChange)="password.set($event)" (keyup.enter)="openLocalVault()">
-          <span class="icon is-small is-left">
-            <fa-icon [icon]="faKey"></fa-icon>
-          </span>
-        </div>
-        <p class="control">
-          <a class="button" (click)="isLocalVaultPassphraseVisible.update(v => !v)">
-            @if (isLocalVaultPassphraseVisible()) {
-            <fa-icon [icon]="faEyeSlash" size="sm"></fa-icon>
-            }@if (!isLocalVaultPassphraseVisible()) {
-            <fa-icon [icon]="faEye" size="sm"></fa-icon>
-            }
-          </a>
-        </p>
-      </div>
-    </section>
-    <footer class="modal-card-foot is-flex is-justify-content-right">
-      <button class="button" (click)="isPassphraseModalActive.update(v => !v)">{{'cancel' |
-        translate}}</button>
-      <button class="button is-info"
-        (click)="local_vault_service!.set_is_signature_valid(true); isPassphraseModalActive.update(v => !isUnsecureVaultModaleActive()); openLocalVault();">{{
-        'unlock' | translate }}</button>
-    </footer>
-  </div>
-  <button class="modal-close is-large" aria-label="close" (click)="isPassphraseModalActive.update(v => !v)"></button>
-</div>
 <div class="modal" [ngClass]="{'is-active': instance_modal_active()}">
   <div class="modal-background" (click)="this.instance_modal_active.set(false);"></div>
   <div class="modal-card" style="width: 100%; margin: 0; position: absolute; bottom: 0; border-radius: 16px 16px 0 0;">

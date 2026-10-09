@@ -58,28 +58,23 @@ export class LoginComponent implements OnInit {
   isLoading = signal(false);
   warning_message = signal("");
   warning_message_color = signal("is-warning");
-  isUnsecureVaultModaleActive = signal(false);
   isPassphraseModalActive = signal(false);
   is_oauth_flow = signal(false);
   login_button = signal("login.open_button");
   isPassphraseVisible = signal(false);
-  isLocalVaultPassphraseVisible = signal(false);
   remember = signal(false);
-  loading_file = signal(false);
   current_domain = signal("");
   instance_dropdown_active = signal(false);
   instance_modal_active = signal(false)
   instance_modal_error = signal("")
   instance_modal_loading = signal(false)
   instance_modal_apiBaseURL_input = signal(this.apiService.baseURL)
-  vault_modal_active = signal(false)
   biometric_protection_preference_modal_is_active = signal(false)
   biometric_protection_preference_modal_buttons_are_active = signal(true)
 
   // Not read in template — plain properties
   hashedPassword: string = "";
   error_param: string | null = null;
-  api_public_key: string | undefined = undefined;
 
   // Pass to html template
   protected isDeviceMobile = isDeviceMobile
