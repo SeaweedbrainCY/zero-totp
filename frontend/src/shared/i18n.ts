@@ -5,9 +5,6 @@ import { TranslateHttpLoader } from "@ngx-translate/http-loader";
 import defaultLanguage from "../assets/i18n/en-uk.json";
 import FrenchLanguage from "../assets/i18n/fr-fr.json";
 
-export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http);
-}
 
 export class MissingTranslationHelper implements MissingTranslationHandler {
   handle(params: MissingTranslationHandlerParams) {
@@ -22,7 +19,7 @@ export function initTranslations(): void {
   translate.addLangs(["fr-fr"]);
   translate.setTranslation("fr-fr", FrenchLanguage);
   translate.setTranslation("en-uk", defaultLanguage);
-  translate.setDefaultLang("en-uk");
+  translate.setFallbackLang("en-uk");
   if (localStorage.getItem("language") == null) {
     const browserLang = translate.getBrowserLang();
     if (browserLang == undefined) {

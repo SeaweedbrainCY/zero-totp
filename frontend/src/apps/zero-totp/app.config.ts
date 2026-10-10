@@ -7,9 +7,9 @@ import { MissingTranslationHandler, TranslateLoader, provideTranslateService } f
 import { provideMarkdown } from 'ngx-markdown';
 import { provideToastr } from 'ngx-toastr';
 import { provideNgIdle } from '@ng-idle/core';
-
+import {provideTranslateHttpLoader} from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
-import { HttpLoaderFactory, MissingTranslationHelper, initTranslations } from '../../shared/i18n';
+import { MissingTranslationHelper, initTranslations } from '../../shared/i18n';
 import { httpInterceptorProviders } from './helpers/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -34,15 +34,12 @@ export const appConfig: ApplicationConfig = {
     provideNgIdle(),
     provideMarkdown({ loader: HttpClient }),
     provideTranslateService({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient],
-      },
+      loader: provideTranslateHttpLoader({prefix:"../assets/i18n/", suffix:".json"}),
       missingTranslationHandler: {
         provide: MissingTranslationHandler,
         useClass: MissingTranslationHelper,
       },
+      fallbackLang: "en-uk"
     }),
     provideAppInitializer(initTranslations),
     provideServiceWorker('ngsw-worker.js', {

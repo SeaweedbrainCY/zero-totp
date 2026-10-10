@@ -6,6 +6,7 @@ import { provideToastr } from 'ngx-toastr';
 
 import { routes } from './app.routes';
 import { MissingTranslationHelper, initTranslations } from '../../shared/i18n';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 // Rescue must work while Zero-TOTP is down: no HttpClient, no auth interceptor, no API.
 // Any code path that tries to inject HttpClient will fail loudly with a NullInjectorError.
@@ -25,10 +26,12 @@ export const appConfig: ApplicationConfig = {
     }),
     // No loader: translations are bundled and registered by initTranslations
     provideTranslateService({
+      loader: provideTranslateHttpLoader({prefix:"../assets/i18n/", suffix:".json"}),
       missingTranslationHandler: {
         provide: MissingTranslationHandler,
         useClass: MissingTranslationHelper,
       },
+      fallbackLang: 'en-uk'
     }),
     provideAppInitializer(initTranslations),
   ],
