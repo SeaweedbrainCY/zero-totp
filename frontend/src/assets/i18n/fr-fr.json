@@ -10,6 +10,7 @@
   "Home": "Accueil",
   "Language": "Langue",
   "Search": "Rechercher",
+  "Unlock": "Déverrouiller",
   "abort": "Abandonner",
   "about": "À propos",
   "account": {
@@ -165,13 +166,14 @@
     }
   },
   "cancel": "Retour",
-  "changelog": "Changelog",
+  "changelog": "Journal des modifications",
   "close": "Fermer",
   "confirm": "Confirmer",
   "continue": "Continuer",
   "copied": "Copié !",
   "decrypt": "Déchiffrer",
   "decrypted": "déchiffré",
+  "default": "Par défaut",
   "delete": "Supprimer",
   "email": "Email",
   "email_verif": {
@@ -275,6 +277,7 @@
       "a3_p3": "Connecte-toi au site ou à l'application que vous voulez sécuriser.",
       "a3_p4": "Rends-toi dans les paramètres de sécurité et recherchez l’option Authentification à deux facteurs (2FA) ou TOTP.",
       "a3_p5": "Choisis l’option Application d’authentification plutôt que SMS ou email.",
+      "a3_p6": "Scanne le QR-Code avec Zero-TOTP",
       "a3_p7": "Ouvre ton coffre Zero-TOTP",
       "a3_p8": "Clique sur ajouter un TOTP et scanne le QRCode",
       "a3_p9": "Si le site ne propose qu’une clé secrète sous forme de texte, copie-la et colle-la manuellement dans Zero-TOTP.",
@@ -318,6 +321,7 @@
     "bug": "Signaler un bug",
     "opensource": "Composants open-source"
   },
+  "general_error": "Une erreur est survenue. Re-essaye plus tard.",
   "generic_errors": {
     "bad_email": "Email invalide",
     "email_exists": "Cet email existe déjà",
@@ -386,7 +390,7 @@
     "subtitle": "Zero-TOTP est une plateforme",
     "subtitle.and": "et basée sur une",
     "subtitle.opensource": "100% open-source",
-    "subtitle.platform": "",
+    "subtitle.platform": "plateforme",
     "subtitle.zke": "Zero-Knowledge Infrastructure.",
     "title": "Garde tes codes TOTP dans un ",
     "title.strong": "endroit sûr",
@@ -479,6 +483,9 @@
         "uploading": "Envoie de "
       }
     },
+    "vault_locked": {
+      "message": "Tu dois déverrouiller ton coffre pour importer de nouveaux éléments"
+    },
     "zero_totp": {
       "decrypt": "Déchiffre ton coffre",
       "encrypt": "Chiffrer le nouveau coffre et l'uploader",
@@ -496,6 +503,7 @@
   "invalid_url": "URL invalide",
   "less": "Moins",
   "loading": "Chargement ...",
+  "lock": "Vérrouiller",
   "log_in": "Connexion",
   "logging-out": {
     "loading": "Déconnexion ..."
@@ -525,6 +533,13 @@
       "vault_backup": "Backup de ton coffre"
     },
     "biometric-consent-modal": {
+      "button": {
+        "off": "Ne pas utiliser la biométrie",
+        "on": "Déverrouiller par biométrie"
+      },
+      "no_info": "Si tu choisis de ne pas l'utiliser, tu devras entrer ton mot-de-passe maitre plus souvent, puisque ton coffre est déchiffré sur ton appareil uniquement.",
+      "p1": "Zero-TOTP utilise du chiffrement à connaissance nulle (Zero-Knowledge Encryption). Nous ne voyons donc jamais le mot de passe de ton coffre. Tu peux utiliser <strong>Face ID ou Touch ID </strong> sur cet appareil pour déchiffrer ton coffre au lieu de rentrer ton mot de passe à chaque fois.",
+      "p2": "Tu peux changer cela à tout moment <em>Préférences → Sécurité</em>.",
       "title": "Utiliser la biométrie pour déverouiller ton coffre ? "
     },
     "errors": {
@@ -557,6 +572,7 @@
     },
     "instance": {
       "confirm": "Valider",
+      "recent": "Instances récentes",
       "select": {
         "subtitle": "Choisis ton serveur Zero-TOTP",
         "title": "Sélectionne une instance Zero-TOTP",
@@ -610,8 +626,9 @@
     }
   },
   "official": "Officiel",
+  "or": "ou",
   "orange": "Orange",
-  "passphrase": "Passphrase",
+  "passphrase": "Mot-de-passe",
   "preference": {
     "account": {
       "security": {
@@ -626,7 +643,11 @@
           "title": "Déverouillage par biométrie"
         },
         "subtitle": "Paramètres liés à la sécurité de ton compte",
-        "title": "Sécurité"
+        "title": "Sécurité",
+        "vault_locked": {
+          "message": "Déverrouille ton coffre pour modifier cette préférence",
+          "unlock_button": "Déverrouiller"
+        }
       }
     },
     "ackup": {
@@ -923,6 +944,7 @@
       "title": "Ton coffre est verrouillé"
     },
     "locked_vault": {
+      "biometric_unlock_button": "Déverrouiller par biométrie",
       "decrypt_vault_button": "Déchiffrer mon coffre"
     },
     "oauth": {
