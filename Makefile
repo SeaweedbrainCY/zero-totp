@@ -54,4 +54,4 @@ run_rescue:
 
 update_i18n:
 	echo "Updating en-uk i18n file"
-	npx ngx-translate-extract --input ./frontend/src --output ./frontend/src/assets/i18n/en-uk.json  --clean --sort -f "namespaced-json"
+	cd frontend && npx ngx-translate-extract --input ./src --output ./src/assets/i18n/en-uk.json  --clean --sort -f "json"
