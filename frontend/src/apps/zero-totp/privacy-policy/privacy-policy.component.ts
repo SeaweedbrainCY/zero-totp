@@ -72,7 +72,7 @@ export class PrivacyPolicyComponent implements OnInit {
     }
 
     langChanged() {
-        if (this.translate.currentLang === 'fr-fr') {
+        if (this.translate.getCurrentLang() === 'fr-fr') {
             this.privacy_policy_url = this.privacy_policy_url_base_url + 'fr';
             this.load_privacy_policy();
         } else {
