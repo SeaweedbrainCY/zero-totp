@@ -281,11 +281,6 @@ export class EditTOTPComponent implements OnInit, OnDestroy {
               }
             } else {
               this.faviconPolicy.set('enabledOnly');
-              this.translate
-                .get('totp.favicon_policy.enabledOnly')
-                .subscribe((translation: string) => {
-                  this.toast.error(translation);
-                });
             }
           }
         },
