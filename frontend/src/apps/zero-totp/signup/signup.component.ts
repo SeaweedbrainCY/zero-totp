@@ -68,7 +68,6 @@ export class SignupComponent implements OnInit {
   encryptedZKEkey = signal('');
   derivedKeySalt = signal('');
   passphraseSalt = signal('');
-  beta = signal(true);
   isPasswordVisible = signal(false);
   isConfirmPasswordVisible = signal(false);
   current_domain = signal('');
@@ -181,10 +180,6 @@ export class SignupComponent implements OnInit {
     this.passwordErrorMessage.set(['']);
     if (!this.terms()) {
       this.toast.error(this.translate.instant('signup.errors.terms'));
-      return;
-    }
-    if (!this.beta()) {
-      this.toast.error(this.translate.instant('signup.errors.beta'));
       return;
     }
     if (this.username() === '' || this.email() === '' || this.password() === '') {
