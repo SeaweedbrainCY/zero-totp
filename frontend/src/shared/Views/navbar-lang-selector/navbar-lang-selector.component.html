@@ -1,0 +1,20 @@
+<div style="height: 100%;" class="is-flex justify-content-center align-items-center">
+<div class="navbar-item has-dropdown lang-dropdown" [ngClass]="{'is-active': isLangDropdownExpanded()}">
+  <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded.update(v => !v)" class="button is-ghost has-text-white" style="padding-left: 0px; padding-right: 0px;">
+    <fa-icon [icon]="faLanguage"  size="2xl"></fa-icon>
+  </a>
+
+  <div class="navbar-dropdown is-boxed is-right" [ngClass]="{'is-active': isLangDropdownExpanded()}">
+    @for (lang of availableLangs(); track lang) {
+    <a class="navbar-item" (click)="changeLanguage(lang.code)">
+      <span>{{lang.name | translate}}</span>
+    </a>
+    }
+    <hr class="navbar-divider">
+    <a class="navbar-item"
+      href="https://github.com/SeaweedbrainCY/zero-totp/issues?q=is%3Aopen+is%3Aissue+label%3Alocalization">
+      <small>{{ 'navbar.lang.suggest' | translate }}</small>
+    </a>
+  </div>
+</div>
+</div>
