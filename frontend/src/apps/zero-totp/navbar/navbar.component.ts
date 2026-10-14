@@ -11,6 +11,7 @@ import { isDeviceMobile } from '../../../shared/Utils/utils';
 import { DisplayPreferencesService } from '../services/DisplayPreferences/display-preferences.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgClass } from '@angular/common';
+import { NavbarLangSelectorComponent } from 'src/shared/Views/navbar-lang-selector/navbar-lang-selector.component';
 
 
 @Component({
@@ -24,6 +25,7 @@ import { NgClass } from '@angular/common';
         RouterLink,
         RouterLinkActive,
         TranslatePipe,
+        NavbarLangSelectorComponent
     ],
 })
 export class NavbarComponent implements OnInit {
@@ -53,8 +55,6 @@ export class NavbarComponent implements OnInit {
   faMoon = faMoon;
   faVault = faVault;
   faLightbulb = faLightbulb;
-  current_language: string = localStorage.getItem('language') || 'en-uk';
-  isLangDropdownExpanded = signal(false);
   idleEndSupscription: Subscription | null = null;
   notification_message = signal<string | undefined>(undefined);
   dismissed_notification_key = "hide_notif_banner";
@@ -62,25 +62,11 @@ export class NavbarComponent implements OnInit {
   last_notification_check_date = 0;
   isMobileDevice = signal(false)
   isMobileNavBarDropDownActive = signal(false)
-  isMobileLangDevelopped = signal(false)
-
   // For mobiles, detect click outside of more info dropdown toggle button
   @ViewChild('mobileMoreOptionDropdown') mobileMoreOptionDropdownEl!: ElementRef<HTMLElement>;
 
 
 
-  languages = [
-    {
-      name: "English", // default one
-      code: "en-uk",
-      image: "assets/united-kingdom.png"
-    },
-    {
-      name: "Français",
-      code: "fr-fr",
-      image: "assets/france.png"
-    }
-  ]
   constructor(
     public userService: UserService,
     private router: Router,
@@ -124,7 +110,6 @@ export class NavbarComponent implements OnInit {
           });
         }
       }
-      translate.use(this.current_language)
     });
   }
 
@@ -228,27 +213,8 @@ export class NavbarComponent implements OnInit {
     window.location.href = url;
   }
 
-  changeLanguage(language: string) {
-    this.isLangDropdownExpanded.set(false);
-    if (language == 'fr-fr') {
-      localStorage.setItem('language', 'fr-fr');
-      this.current_language = 'fr-fr';
-      this.translate.use('fr-fr');
-    } else { // 'en-uk' + default
-      localStorage.setItem('language', 'en-uk');
-      this.current_language = 'en-uk';
-      this.translate.use('en-uk');
-    }
-  }
 
-  get_current_language_info() {
-    for (let lang of this.languages) {
-      if (lang.code == this.current_language) {
-        return lang;
-      }
-    }
-    return this.languages[0]; // en-uk
-  }
+
 
   toggleMobileMoreOptionsButton() {
     console.log("el=", this.mobileMoreOptionDropdownEl)

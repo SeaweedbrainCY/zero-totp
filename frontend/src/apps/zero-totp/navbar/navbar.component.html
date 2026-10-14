@@ -88,27 +88,7 @@
           <fa-icon [icon]="faCircleQuestion" aria-hidden="true"></fa-icon> FAQ
         </a>
         <hr class="dropdown-divider" />
-        <a class="navbar-item" (click)="isMobileLangDevelopped.update(v => !v)">
-          <fa-icon [icon]="faGlobe" aria-hidden="true"></fa-icon> {{ 'Language' | translate }}
-          @if(isMobileLangDevelopped()){
-          <fa-icon [icon]="faChevronDown" aria-hidden="true"></fa-icon>
-          }
-          @if(!isMobileLangDevelopped()){
-          <fa-icon [icon]="faChevronRight" aria-hidden="true"></fa-icon>
-          }
-        </a>
-        @if(isMobileLangDevelopped()){
-        @for (lang of languages; track lang) {
-        <a class="navbar-item" [ngClass]="{'ml-5':get_current_language_info().name != lang.name}"
-          (click)="changeLanguage(lang.code)">
-          @if(get_current_language_info().name == lang.name){
-          <fa-icon [icon]="faCheck" aria-hidden="true"></fa-icon>
-          }
-          {{lang.name}}
-        </a>
-
-        }
-        }
+        <app-navbar-lang-selector [isAMobileDevice]="isMobileDevice()"></app-navbar-lang-selector>
 
         <hr class="dropdown-divider" />
         <div class="is-flex is-justify-content-space-around mt-4 mb-2">
@@ -233,7 +213,8 @@
       }
 
       <div class="navbar-end">
-        <div class="navbar-item" [ngClass]="{'is-active': isLangDropdownExpanded()}">
+        <app-navbar-lang-selector></app-navbar-lang-selector>
+        <div class="navbar-item">
           <button class="button is-ghost has-text-white" style="padding-left: 0px; padding-right: 0px;"
             (click)="toggleThemeButton()">
             @if (displayPreferences.theme() == 'dark') {
@@ -244,25 +225,7 @@
             }
           </button>
         </div>
-        <div class="navbar-item has-dropdown lang-dropdown" [ngClass]="{'is-active': isLangDropdownExpanded()}">
-          <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded.update(v => !v)">
-            <img src="{{get_current_language_info().image}}" alt="{{get_current_language_info().name}}">
-          </a>
 
-          <div class="navbar-dropdown is-boxed is-right" [ngClass]="{'is-active': isLangDropdownExpanded()}">
-            @for (lang of languages; track lang) {
-            <a class="navbar-item" (click)="changeLanguage(lang.code)">
-              <img src="{{lang.image}}" alt="{{lang.name}}">
-              <span>{{lang.name}}</span>
-            </a>
-            }
-            <hr class="navbar-divider">
-            <a class="navbar-item"
-              href="https://github.com/SeaweedbrainCY/zero-totp/issues?q=is%3Aopen+is%3Aissue+label%3Alocalization">
-              <small>{{ 'navbar.lang.suggest' | translate }}</small>
-            </a>
-          </div>
-        </div>
         <div class="navbar-item">
           <div class="buttons">
             @if (userService.id() == null) {
