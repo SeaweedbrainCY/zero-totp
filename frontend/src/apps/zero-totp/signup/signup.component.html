@@ -218,7 +218,7 @@
         <div class="control">
           <button class="button is-info is-medium mt-6" (click)="openModal()" data-target="confirmation"
             [ngClass]="{'is-loading': isLoading()}"
-            [disabled]="isLoading() || emailErrorMessage() != '' || passwordErrorMessage().length > 1 || usernameErrorMessage() != '' || !terms() || !beta()">{{
+            [disabled]="isLoading() || emailErrorMessage() != '' || passwordErrorMessage().length > 1 || usernameErrorMessage() != '' || !terms()">{{
             'signup.button.start' | translate }}
           </button>
 
