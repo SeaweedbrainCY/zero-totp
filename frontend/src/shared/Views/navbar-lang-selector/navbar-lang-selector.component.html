@@ -9,7 +9,7 @@
   <div class="navbar-dropdown is-boxed is-right" [ngClass]="{'is-active': isLangDropdownExpanded()}">
     @for (lang of availableLangs(); track lang) {
     <a class="navbar-item" [ngClass]="{'has-text-weight-bold':lang.code == currentLang()}" (click)="changeLanguage(lang.code)">
-      <span>{{lang.name | translate}}</span>
+      <span>{{ lang.name }}</span>
     </a>
     }
     <hr class="navbar-divider">
