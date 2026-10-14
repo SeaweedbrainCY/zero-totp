@@ -1,3 +1,5 @@
+<!-- NOT mobile device -->
+@if(!isAMobileDevice()){
 <div style="height: 100%;" class="is-flex justify-content-center align-items-center">
 <div class="navbar-item has-dropdown lang-dropdown" [ngClass]="{'is-active': isLangDropdownExpanded()}">
   <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded.update(v => !v)" class="button is-ghost has-text-white" style="padding-left: 0px; padding-right: 0px;">
@@ -6,7 +8,7 @@
 
   <div class="navbar-dropdown is-boxed is-right" [ngClass]="{'is-active': isLangDropdownExpanded()}">
     @for (lang of availableLangs(); track lang) {
-    <a class="navbar-item" (click)="changeLanguage(lang.code)">
+    <a class="navbar-item" [ngClass]="{'has-text-weight-bold':lang.code == currentLang()}" (click)="changeLanguage(lang.code)">
       <span>{{lang.name | translate}}</span>
     </a>
     }
@@ -18,3 +20,27 @@
   </div>
 </div>
 </div>
+}
+
+<!-- mobile device -->
+
+@if(isAMobileDevice()){
+<a class="navbar-item" (click)="isLangDropdownExpanded.update(v => !v)">
+  <fa-icon [icon]="faLanguage" aria-hidden="true"></fa-icon> {{ 'Language' | translate }}
+  @if(isLangDropdownExpanded()){
+  <fa-icon [icon]="faChevronDown" aria-hidden="true"></fa-icon>
+  }
+  @if(!isLangDropdownExpanded()){
+  <fa-icon [icon]="faChevronRight" aria-hidden="true"></fa-icon>
+  }
+</a>
+@if(isLangDropdownExpanded()){
+@for (lang of availableLangs(); track lang) {
+<a class="navbar-item"[ngClass]="{'has-text-weight-bold':lang.code == currentLang()}"
+  (click)="changeLanguage(lang.code)">
+
+  {{lang.name}}
+</a>
+}
+}
+}

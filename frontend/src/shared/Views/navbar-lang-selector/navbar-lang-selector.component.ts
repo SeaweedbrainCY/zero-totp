@@ -1,9 +1,8 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
+import { Component, signal, OnInit, inject, input } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { faLanguage } from '@fortawesome/free-solid-svg-icons';
+import { faLanguage, faChevronRight, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { NgClass } from '@angular/common';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-
 type Lang = {
     code: string,
     name:string
@@ -27,19 +26,31 @@ export class NavbarLangSelectorComponent implements OnInit {
   // DI
   translate = inject(TranslateService)
 
+  // inputs
+  isAMobileDevice = input(false)
+
   // signals
   isLangDropdownExpanded = signal(false)
   availableLangs = signal<Lang[]>([])
+  currentLang = signal("")
 
   //icons
   faLanguage = faLanguage
+  faChevronRight = faChevronRight
+  faChevronDown = faChevronDown
 
 
   ngOnInit(): void {
      const langs = this.translate.getLangs()
        .map(code => ({ code, name: this.getLangName(code) }))
        .sort((a, b) => a.name.localeCompare(b.name))
-     this.availableLangs.set(langs)
+    this.availableLangs.set(langs)
+
+    this.currentLang.set(this.translate.getCurrentLang() || "en-uk")
+
+    this.translate.onLangChange.subscribe((changeEvent) => {
+      this.currentLang.set(changeEvent.lang)
+    })
    }
 
    // Name of the language in its own language (e.g. "Français", "English")
