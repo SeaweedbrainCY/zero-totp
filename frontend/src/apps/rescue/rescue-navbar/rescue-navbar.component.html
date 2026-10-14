@@ -22,6 +22,7 @@
 
       <div class="navbar-end">
         <div class="navbar-item">
+          <app-navbar-lang-selector></app-navbar-lang-selector>
           <div class="buttons">
             @if(currentUrl() != '/vault'){
             <a class="button is-light"  [routerLink]="['/open-vault']">
