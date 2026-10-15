@@ -98,6 +98,7 @@ jobs:
              if [ -s missingkeys.txt ]; then
                 echo The following keys are not translated :;
                 cat missingkeys.txt;
+                exit 1;
              else
               echo Translations are ok;
              fi
@@ -123,10 +124,11 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
       - name: Check there is no empty translation
         run: |
-             jq -r 'to_entries[] | select(.value | type != "string" or test("^\\s*$")) | .key' frontend/src/assets/i18nen-uk.json > missingkeys.txt
+             jq -r 'to_entries[] | select(.value | type != "string" or test("^\\s*$")) | .key' frontend/src/assets/i18/en-uk.json > missingkeys.txt
              if [ -s missingkeys.txt ]; then
                 echo The following keys are not translated :;
                 cat missingkeys.txt;
+                exit 1;
              else
               echo Translations are ok;
              fi
