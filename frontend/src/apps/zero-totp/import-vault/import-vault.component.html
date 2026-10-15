@@ -245,17 +245,17 @@
   <div class="modal-background" (click)="rejectUnsecureVault()"></div>
   <div class="modal-content">
     <section class="modal-card-body">
-      <h1 class="is-size-2 has-text-danger">{{ 'login.backup.unsecure.popup.title' | translate }}</h1>
-      <strong>{{ 'login.backup.unsecure.popup.strong' | translate }}</strong>. {{ 'login.backup.unsecure.popup.desc' |
+      <h1 class="is-size-2 has-text-danger">{{ 'backup.unsecure.popup.title' | translate }}</h1>
+      <strong>{{ 'backup.unsecure.popup.strong' | translate }}</strong>. {{ 'backup.unsecure.popup.desc' |
       translate }}<br>
-      <strong>{{ 'login.backup.unsecure.popup.strong2' | translate }}</strong>
+      <strong>{{ 'backup.unsecure.popup.strong2' | translate }}</strong>
       <br><br>
     </section>
     <footer class="modal-card-foot is-flex is-justify-content-right">
       <button class="button is-success mr-2" (click)="rejectUnsecureVault()">{{
-        'login.backup.unsecure.popup.button.cancel' |
+        'backup.unsecure.popup.button.cancel' |
         translate }}</button>
-      <button class="button is-danger ml-2" (click)="acceptUnsecureVault()">{{ 'login.backup.unsecure.popup.continue' |
+      <button class="button is-danger ml-2" (click)="acceptUnsecureVault()">{{ 'backup.unsecure.popup.continue' |
         translate }}</button>
     </footer>
   </div>

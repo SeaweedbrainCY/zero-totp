@@ -2,20 +2,26 @@
     <div class="hero-body is-flex is-flex-direction-column	is-fullheight">
       <div class="has-text-centered	is-full is-flex is-justify-content-center block">
         <p class="block"><span class="title is-1 is-full has-text-centered has-text-danger has-text-weight-bold">
-            We are here in case of emergency 🛟
+          {{"rescue.openvault.title" | translate }}
+
           </span><br />
 
-          <span class="has-text-weight-bold has-text-danger">zero-totp.com is down or doesn't respond ? No problem ! </span>
+          <span class="has-text-weight-bold has-text-danger">
+             {{"rescue.openvault.subtitle" | translate }}
+          </span>
         </p>
       </div>
       @if(zero_totp_maintenance()){
       <div class="has-text-centered columns p-5">
         <article class="message is-info">
           <div class="message-body has-text-centered">
-            <h1 class="is-size-4 has-text-weight-bold"> <fa-icon [icon]="faPersonDigging"></fa-icon> Zero-TOTP is under maintenance.
+            <h1 class="is-size-4 has-text-weight-bold"> <fa-icon [icon]="faPersonDigging"></fa-icon>
+             {{"rescue.openvault.error.maintenance.title" | translate }}
+
             </h1><br>
             <p class="has-text-weight-bold">
-              You have been redirected to rescue.zero-totp.com. You can still open backups of your vaults from here. Once the maintenance is over, you will be able to use Zero-TOTP again. Just refresh this page regularly.
+              {{"rescue.openvault.error.maintenance.desc" | translate }}
+
             </p>
 
         </div>
@@ -28,10 +34,13 @@
       <div class="has-text-centered columns p-5">
         <article class="message is-warning">
           <div class="message-body has-text-centered">
-            <h1 class="is-size-4 has-text-weight-bold"> <fa-icon [icon]="faFire"></fa-icon> Zero-TOTP is currently unavailable
+            <h1 class="is-size-4 has-text-weight-bold"> <fa-icon [icon]="faFire"></fa-icon>
+              {{"rescue.openvault.error.unavailable.title" | translate }}
+
             </h1><br>
             <p class="has-text-weight-bold">
-             Zero-TOTP is currently unavailable due to an issue. You have been redirected to rescue.zero-totp.com. Our team is fully mobilized to solve the problem as soon as possible. In the meantime, you can still open backups of your vaults from here. Once the issue is resolved, you will be able to use Zero-TOTP again. Just refresh this page regularly.
+               {{"rescue.openvault.error.unavailable.desc" | translate }}
+
             </p>
 
         </div>
@@ -43,12 +52,12 @@
       <div class="has-text-centered columns p-5">
         <article class="message is-success">
           <div class="message-body has-text-centered">
-            <h1 class="is-size-4 has-text-weight-bold"> <fa-icon [icon]="faCheckDouble"></fa-icon> Zero-TOTP is up !
-            </h1><br>
-            <p class="has-text-weight-bold">
-              <strong class="has-text-weight-bold">Zero-TOTP is currently fully available and back online !</strong> But if you want you can still use rescue Zero-TOTP. Make sure to <a href="https://github.com/SeaweedbrainCY/zero-totp/issues" > report an bug on GitHub </a> if you're encountering an issue.
-            </p>
+            <h1 class="is-size-4 has-text-weight-bold"> <fa-icon [icon]="faCheckDouble"></fa-icon>
+              {{"rescue.openvault.error.up.title" | translate }}
 
+            </h1><br>
+            <p class="has-text-weight-bold"[innerHTML]="'rescue.openvault.error.up.desc' | translate">
+            </p>
         </div>
       </article>
       </div>
@@ -59,7 +68,10 @@
     <div class="is-flex is-flex-direction-column box">
       <div class="is-flex is-justify-content-center has-text-centered">
 
-        <p><span class="has-text-weight-bold has-text-grey">You can open a Zero-TOTP vault saved on your laptop or Google Drive 💻</span>
+        <p><span class="has-text-weight-bold has-text-grey">
+          {{"rescue.openvault.openvaultbox.title" | translate }}
+
+        </span>
       </p>
       </div>
       <div class="is-flex is-justify-content-center">
@@ -72,7 +84,7 @@
                   <fa-icon [icon]="faCloudArrowUp"></fa-icon>
                 </span>
                 <span class="file-label">
-                  Vault backup
+                   {{"rescue.openvault.openvaultbox.button" | translate }}
                 </span>
               </span>
             </label>
@@ -85,7 +97,7 @@
     <div class="flex is-justify-content-center is-flex-wrap-wrap mt-4">
       <p class="control has-text-centered ml-2 mr-2 mb-4">
         <a class="button is-success is-outlined" href="https://status.zero-totp.com">
-          <span>Check Zero-TOTP status</span>
+          <span> {{"rescue.openvault.checkZeroTOTPStatus" | translate }}</span>
           <span class="icon is-small">
             <fa-icon [icon]="faCircleUp"></fa-icon>
           </span>
@@ -93,7 +105,7 @@
       </p>
       <p class="control has-text-centered ml-2 mr-2">
         <a class="button is-info is-outlined" href="https://zero-totp.com">
-          <span>Use Zero-TOTP with all its features</span>
+          <span>{{"rescue.openvault.useZeroTOTP" | translate }}</span>
           <span class="icon is-small">
             <fa-icon [icon]="faExternalLinkAlt"></fa-icon>
           </span>
@@ -113,14 +125,17 @@
     <div class="modal-background" (click)="isUnsecureVaultModaleActive.update(v => !v)"></div>
     <div class="modal-content">
         <section class="modal-card-body">
-            <h1 class="is-size-2 has-text-danger">You backup may be not secure</h1>
-            <strong>The verification of the authenticity of your vault failed</strong>. Your vault may have been modified by someone else or it does not come from Zero-TOTP.<br>
-            <strong>Importing an unsecure backup may lead to security issues and should not be trusted</strong>
+            <h1 class="is-size-2 has-text-danger">  {{"backup.unsecure.popup.title" | translate }}
+            </h1>
+            <strong>
+              {{"backup.unsecure.popup.strong" | translate}}.
+            </strong>{{"backup.unsecure.popup.desc" | translate}}<br>
+            <strong>{{"backup.unsecure.popup.strong2" |translate}}</strong>
             <br><br>
         </section>
         <footer class="modal-card-foot is-flex is-justify-content-right">
-            <button class="button is-success mr-2" (click)="isUnsecureVaultModaleActive.update(v => !v)">Return to safety</button>
-            <button class="button is-danger ml-2" (click)="local_vault_service!.set_is_signature_valid(true);isUnsecureVaultModaleActive.update(v => !v); this.isPassphraseModalActive.set(true);" >I trust this backup</button>
+            <button class="button is-success mr-2" (click)="isUnsecureVaultModaleActive.update(v => !v)">{{"backup.unsecure.popup.button.cancel" | translate}}</button>
+            <button class="button is-danger ml-2" (click)="local_vault_service!.set_is_signature_valid(true);isUnsecureVaultModaleActive.update(v => !v); this.isPassphraseModalActive.set(true);" >{{"backup.unsecure.popup.continue" | translate}}</button>
         </footer>
     </div>
     <button class="modal-close is-large" aria-label="close" (click)="isUnsecureVaultModaleActive.update(v => !v)" ></button>
