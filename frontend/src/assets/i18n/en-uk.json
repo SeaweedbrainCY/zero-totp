@@ -403,7 +403,7 @@
 	"login.remember": "Remember my email address",
 	"login.rescue.part1": "🛟 Troubles logging to your account ? Open a backup on our ",
 	"login.rescue.part2": "Rescue Zero-TOTP",
-	"login.rescue.strong": "Rescue platform",
+	"login.rescue.strong": "Open a backup ? Zero-TOTP down ?",
 	"login.success": "Vault decrypted ✅",
 	"login.title": "Open your vault",
 	"logout": "Logout",
