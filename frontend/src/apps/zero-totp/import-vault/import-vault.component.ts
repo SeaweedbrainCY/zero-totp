@@ -1,0 +1,575 @@
+import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
+import { faFileArrowDown, faArrowRight, faCloudArrowUp, faCheck, faUnlockKeyhole, faLock, faUnlock, faCircleCheck as faCircleCheckFilled, faCircleNotch, faCircleExclamation, faFileCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faFileExcel, faCircle, faCircleCheck } from '@fortawesome/free-regular-svg-icons';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
+import { Router, ActivatedRoute, RouterStateSnapshot, NavigationEnd, RouterLink } from '@angular/router';
+import { ViewportRuler } from '@angular/cdk/scrolling';
+import { NgZone } from '@angular/core';
+import { ToastService } from '../../../shared/Services/Toast/toast.service';
+import { LocalVaultV1Service, UploadVaultStatus } from '../../../shared/Services/upload-vault/LocalVaultv1Service.service';
+import { VaultService } from '../../../shared/Services/VaultService/vault.service';
+import { forkJoin, of, Subscription } from 'rxjs';
+import { formatDate, NgClass } from '@angular/common';
+import { UserService } from '../../../shared/Services/User/user.service';
+import { TOTPEntry, TOTPEntryToJSON } from '../../../shared/models/totp-entry';
+import { Crypto } from '../../../shared/Crypto/crypto';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { ApiService } from '../services/API/api.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { FormsModule } from '@angular/forms';
+
+
+
+
+@Component({
+    selector: 'app-import-vault',
+    templateUrl: './import-vault.component.html',
+    styleUrl: './import-vault.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [
+        FaIconComponent,
+        RouterLink,
+        NgClass,
+        FormsModule,
+        TranslatePipe,
+    ],
+})
+export class ImportVaultComponent implements OnInit, OnDestroy {
+  faFileArrowDown = faFileArrowDown;
+  faArrowRight = faArrowRight;
+  faCloudArrowUp = faCloudArrowUp
+  faCircleExclamation = faCircleExclamation;
+  faFileCircleCheck = faFileCircleCheck;
+  vault_steps: Map<string, String[]> = new Map<string, String[]>();
+  faCheck = faCheck;
+  faUnlockKeyhole = faUnlockKeyhole;
+  faLock = faLock;
+  faUnlock = faUnlock;
+  faCircleEmpty = faCircle;
+  faCircleCheck = faCircleCheck;
+  faFileExcel = faFileExcel;
+  faCircleNotch = faCircleNotch;
+  faCircle = faCircle;
+  faCircleCheckFilled = faCircleCheckFilled;
+
+  vault_type = signal<string | null>(null);
+  step = signal<string | null>(null);
+  continue_button_text = signal("continue");
+  local_vault_service = signal<LocalVaultV1Service | null>(null);
+  isUnsecureVaultModaleActive = signal(false);
+  imported_vault_passphrase = signal("");
+  vault_date = signal("");
+  loading_file = signal(false);
+  isMobileDevice = signal(false);
+  is_continue_disabled = signal(false);
+  is_importing = signal(false);
+  file_name = signal("");
+  decrypted_vault = signal<Map<string, TOTPEntry> | undefined>(undefined);
+  decryption_error = signal("");
+  is_vault_successfully_decrypted = signal(false);
+  uploading = signal(false);
+  upload_state = signal("");
+  upload_error_uuid = signal<string[]>([]);
+  importSuccess = signal(false);
+  import_had_error = signal(false);
+  selected_uuid = signal<string[]>([])
+  isVaultLocked = signal(false)
+
+  selected_merging_option = "";
+  api_public_key: any = undefined;
+  width: number = 0;
+  height: number = 0;
+  apiRequestDelay: number = 500;
+  apiBackoffFactor: number = 1.5;
+
+  private readonly viewportChange = this.viewportRuler
+    .change(200)
+    .subscribe(() => this.ngZone.run(() => this.setSize()));
+
+
+  constructor(
+    private translate: TranslateService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private readonly viewportRuler: ViewportRuler,
+    private readonly ngZone: NgZone,
+    private toast: ToastService,
+    private localVaultv1: LocalVaultV1Service,
+    private vaultService: VaultService,
+    private userService: UserService,
+    private crypto: Crypto,
+    private http: HttpClient,
+    private apiService: ApiService
+  ) {
+    this.vault_steps.set("zero-totp", ["import", "decrypt", "encrypt"])
+    this.setSize();
+  }
+
+  ngOnInit(): void {
+    if (this.userService.id() == null) {
+      this.userService.refresh_user_id().then(
+        () => {
+          this.router.navigate(['/vault'], { relativeTo: this.route.root });
+        },
+        () => {
+          this.router.navigate(['/login/sessionKilled'], { relativeTo: this.route.root });
+        },
+      );
+    }
+
+    if (this.userService.zke_key() == null) {
+      this.isVaultLocked.set(true)
+    }
+
+    this.init_component()
+
+    this.route.paramMap.subscribe(params => {
+      this.init_component()
+    })
+  }
+
+  ngOnDestroy() {
+    this.viewportChange.unsubscribe();
+  }
+
+  init_component() {
+    this.vault_type.set(this.route.snapshot.paramMap.get('type'));
+    this.step.set(this.route.snapshot.paramMap.get('step'));
+    console.log(this.vault_type())
+    console.log(this.step())
+    if (this.vault_type() != null) {
+      if (!(this.vault_steps.has(this.vault_type()!))) {
+        console.log("not found. Redirecting to import")
+        this.router.navigate(['/import/vault'])
+      }
+      if (this.vault_type() == "zero-totp") {
+        if (this.step() == null) {
+          this.redirectToFirstStep()
+        } else {
+          if (!(this.vault_steps.get(this.vault_type()!)!.includes(this.step()!))) {
+            this.redirectToFirstStep()
+          } else {
+            if (this.step() == "import") {
+              if (this.local_vault_service() == null) {
+                this.is_continue_disabled.set(true);
+              } else {
+                this.is_continue_disabled.set(false);
+              }
+            } else if (this.step() == "decrypt") {
+              if (this.local_vault_service() == null) {
+                this.router.navigate(['/import/vault/zero-totp/import'])
+              } else {
+                if (this.decrypted_vault() == undefined) {
+                  this.is_continue_disabled.set(true);
+                } else {
+                  this.is_continue_disabled.set(false);
+                }
+              }
+            } else if (this.step() == "encrypt") {
+              if (this.decrypted_vault() == undefined) {
+                this.router.navigate(['/import/vault/zero-totp/import'])
+              } else {
+                this.continue_button_text.set("confirm");
+                try {
+                  const vaultDateStr = this.local_vault_service()!.get_date()!.split(".")[0];
+                  this.vault_date.set(String(formatDate(new Date(vaultDateStr), 'dd/MM/yyyy HH:mm:ss O', 'en')));
+                } catch {
+                  this.vault_date.set(this.local_vault_service()!.get_date()!);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private setSize() {
+    const { width, height } = this.viewportRuler.getViewportSize();
+    this.width = width;
+    this.height = height;
+    this.isMobileDevice.set(width < 768);
+  }
+
+  redirectToFirstStep() {
+    this.router.navigate(['/import/vault/' + this.vault_type() + '/' + this.vault_steps.get(this.vault_type()!)![0]])
+  }
+
+  selectSecret(key_uuid: string) {
+    if (this.selected_uuid().includes(key_uuid)) {
+      this.selected_uuid.update(current => current.filter(value => (value != key_uuid)))
+    } else {
+      this.selected_uuid.update(current => [...current, key_uuid])
+    }
+  }
+
+  selectAllSecret() {
+    this.selected_uuid.set(Array.from((this.decrypted_vault()!.keys())))
+  }
+
+  selectNoSecret() {
+    this.selected_uuid.set([])
+  }
+
+
+  openVaultV1(event: any, unsecure_context: string, input: any) {
+    this.local_vault_service()!.parseUploadedVault(unsecure_context, this.api_public_key).then((vault_parsing_status) => {
+      switch (vault_parsing_status) {
+        case UploadVaultStatus.SUCCESS: {
+          this.file_name.set(input.files[0].name);
+          this.is_continue_disabled.set(false);
+          this.loading_file.set(false);
+          break
+        }
+        case UploadVaultStatus.INVALID_JSON: {
+          this.translate.get("login.errors.import_vault.invalid_type").subscribe((translation) => {
+            this.toast.error(translation);
+          });
+          this.local_vault_service.set(null);
+          event.target.value = null;
+          this.loading_file.set(false);
+          break;
+        }
+
+        case UploadVaultStatus.INVALID_VERSION: {
+          this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation) => {
+            this.toast.error(translation);
+          });
+          this.local_vault_service.set(null);
+          event.target.value = null;
+          this.loading_file.set(false);
+          break;
+        }
+        case UploadVaultStatus.NO_SIGNATURE: {
+          this.translate.get("login.errors.import_vault.no_signature").subscribe((translation) => {
+            this.toast.error(translation)
+          });
+          this.local_vault_service.set(null);
+          event.target.value = null;
+          this.loading_file.set(false);
+          break;
+        }
+        case UploadVaultStatus.INVALID_SIGNATURE: {
+          this.isUnsecureVaultModaleActive.set(true);
+          this.file_name.set(input.files[0].name);
+          this.loading_file.set(false);
+          break;
+        }
+        case UploadVaultStatus.MISSING_ARGUMENT: {
+          this.translate.get("login.errors.import_vault.missing_arg").subscribe((translation) => {
+            this.toast.error(translation)
+          });
+          this.local_vault_service.set(null);
+          event.target.value = null;
+          this.loading_file.set(false);
+          break;
+        }
+        case UploadVaultStatus.INVALID_ARGUMENT: {
+          this.translate.get("login.errors.import_vault.invalid_arg").subscribe((translation) => {
+            this.toast.error(translation)
+          });
+          this.local_vault_service.set(null);
+          event.target.value = null;
+          this.loading_file.set(false);
+          break;
+        }
+
+        case UploadVaultStatus.UNKNOWN: {
+          this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation) => {
+            this.toast.error(translation)
+          });
+          this.local_vault_service.set(null);
+          event.target.value = null;
+          this.loading_file.set(false);
+          break;
+        }
+
+        default: {
+          this.translate.get("login.errors.import_vault.error_unknown").subscribe((translation) => {
+            this.toast.error(translation)
+          });
+          this.local_vault_service.set(null);
+          event.target.value = null;
+          this.loading_file.set(false);
+          break;
+        }
+      }
+    });
+  }
+
+
+  openFile(event: any): void {
+    this.loading_file.set(true);
+    console.log(event)
+    this.is_importing.set(true);
+    const input = event.target;
+    const reader = new FileReader();
+    reader.readAsText(input.files[0], 'utf-8');
+    try {
+      reader.onload = (() => {
+        this.is_importing.set(false);
+        if (reader.result) {
+          try {
+            const unsecure_context = reader.result.toString();
+            const version = this.localVaultv1.extract_version_from_vault(unsecure_context);
+            if (version == null) {
+              this.translate.get("login.errors.import_vault.invalid_file").subscribe((translation) => {
+                this.toast.error(translation);
+              });
+              this.loading_file.set(false);
+
+            } else if (version == 1) {
+              this.local_vault_service.set(this.localVaultv1);
+              this.http.get(this.apiService.baseURL + "/api/v1/vault/signature/public-key", { withCredentials: true, observe: 'response' }).subscribe({
+                next: (response) => {
+                  const data = JSON.parse(JSON.stringify(response.body))
+                  this.api_public_key = data.public_key;
+                  this.openVaultV1(event, unsecure_context, input);
+                },
+                error: (error) => {
+                  console.log(error);
+                  this.loading_file.set(false);
+                  this.openVaultV1(event, unsecure_context, input);
+                }
+              });
+            } else {
+              this.translate.get("login.errors.import_vault.invalid_version").subscribe((translation) => {
+                this.toast.error(translation)
+              });
+              this.local_vault_service.set(null);
+              event.target.value = null;
+              this.loading_file.set(false);
+            }
+          } catch (e) {
+            console.log("Zero-totp vault parsing error: " + e)
+            this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation) => {
+              this.toast.error(translation)
+            });
+            this.local_vault_service.set(null);
+            event.target.value = null;
+            this.loading_file.set(false);
+          }
+        } else {
+          this.translate.get("login.errors.import_vault.parse_fail").subscribe((translation) => {
+            this.toast.error(translation)
+          });
+          this.local_vault_service.set(null);
+          event.target.value = null;
+          this.loading_file.set(false);
+        }
+      });
+      reader.onerror = (() => {
+        this.loading_file.set(false);
+      });
+    } catch {
+      this.is_importing.set(false);
+      this.local_vault_service.set(null);
+      event.target.value = null;
+      this.loading_file.set(false);
+    }
+  }
+
+
+  continue() {
+    if (this.vault_type() == "zero-totp") {
+      const current_step_index = this.vault_steps.get(this.vault_type()!)!.indexOf(this.step()!)
+      if (this.step() == "import") {
+        this.router.navigate(['/import/vault/' + this.vault_type() + '/' + this.vault_steps.get(this.vault_type()!)![current_step_index + 1]])
+      } else if (this.step() == "decrypt") {
+        this.router.navigate(['/import/vault/' + this.vault_type() + '/' + this.vault_steps.get(this.vault_type()!)![current_step_index + 1]])
+      } else if (this.step() == "encrypt") {
+        this.upload()
+      }
+    }
+  }
+
+  cancel() {
+    const current_step_index = this.vault_steps.get(this.vault_type()!)!.indexOf(this.step()!)
+    if (current_step_index == 0) {
+      this.router.navigate(['/import/vault'])
+    } else {
+      this.router.navigate(['/import/vault/' + this.vault_type() + '/' + this.vault_steps.get(this.vault_type()!)![current_step_index - 1]])
+    }
+  }
+
+  giveUp() {
+    this.router.navigate(['/import/vault'])
+  }
+
+  selectMergingOption(option: string) {
+    this.selected_merging_option = option
+    this.is_continue_disabled.set(false);
+  }
+
+  acceptUnsecureVault() {
+    this.local_vault_service()!.set_is_signature_valid(true);
+    this.isUnsecureVaultModaleActive.set(false);
+    this.is_continue_disabled.set(false);
+  }
+
+  rejectUnsecureVault() {
+    this.local_vault_service.set(null);
+    this.isUnsecureVaultModaleActive.set(false);
+    this.is_continue_disabled.set(true);
+  }
+
+
+  decrypt() {
+    if (this.is_vault_successfully_decrypted()) {
+      return;
+    }
+    this.decryption_error.set("");
+    if (this.local_vault_service() != null) {
+      this.userService.derivePassphrase(this.local_vault_service()!.get_derived_key_salt()!, this.imported_vault_passphrase()).then((derivedKey) => {
+        this.userService.decryptZKEKey(this.local_vault_service()!.get_zke_key_enc()!, derivedKey, true).then((zke_key) => {
+          this.vaultService.decryptVault(this.local_vault_service()!.get_enc_secrets()!, zke_key).then((vault_decryption_result) => {
+            if (vault_decryption_result.errors.length > 0) {
+              this.translate.get("import_vault.errors.decryption_failure").subscribe((translation) => {
+                this.decryption_error.set(translation + ". Error: " + vault_decryption_result.errors.join(". "));
+              });
+              return
+            }
+            this.decrypted_vault.set(vault_decryption_result.vault);
+            this.is_continue_disabled.set(false);
+            this.is_vault_successfully_decrypted.set(true)
+            this.selected_uuid.set(Array.from((this.decrypted_vault()!.keys())))
+
+          }, (error) => {
+            this.translate.get("import_vault.errors.decryption_failure").subscribe((translation) => {
+              this.decryption_error.set(translation + ". Error: " + error);
+            });
+
+          });
+
+        }, (error) => {
+          this.translate.get("import_vault.errors.bad_passphrase").subscribe((translation) => {
+            this.decryption_error.set(translation);
+          });
+        });
+      },
+        (error) => {
+          this.translate.get("import_vault.errors.derivation_failure").subscribe((translation) => {
+            this.decryption_error.set(translation);
+          });
+        });
+
+    } else {
+      this.translate.get("login.errors.import_vault.invalid_file").subscribe((translation) => {
+        this.toast.error(translation);
+      });
+      const current_step_index = this.vault_steps.get(this.vault_type()!)!.indexOf(this.step()!)
+      this.router.navigate(['/import/vault/' + this.vault_type() + '/' + this.vault_steps.get(this.vault_type()!)![current_step_index - 1]])
+    }
+  }
+
+
+  async upload() {
+    document.getElementById("enc-upload-title")?.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+    this.uploading.set(true);
+    this.upload_error_uuid.set([]);
+    this.import_had_error.set(false);
+    this.translate.get("import_vault.uploading.steps.encryption").subscribe((translation) => {
+      this.upload_state.set(translation);
+    });
+    const batches = await this.encryptAndBatch();
+    await this.uploadBatches(batches);
+
+    this.uploading.set(false);
+    this.userService.is_vault_in_memory = false // voluntarily invalidate cached vault to force reloading it
+    if (!this.import_had_error()) {
+      this.importSuccess.set(true);
+    }
+  }
+
+  private uploadBatch(batch: string[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.http.post("/api/v1/encrypted_secrets", { encrypted_secrets_list: batch }, {
+        withCredentials: true,
+        observe: 'response'
+      }).subscribe({
+        next: () => {
+          resolve();
+        },
+        error: (error) => {
+          this.import_had_error.set(true);
+          this.uploading.set(false);
+          this.translate.get("import_vault.uploading.errors.upload").subscribe((translation) => {
+            this.toast.error(translation, ". Error: " + error);
+          });
+          reject(error);
+        },
+      });
+    });
+  }
+
+  private async uploadBatches(batches: string[][]): Promise<void> {
+    for (const batch of batches) {
+      await this.uploadBatch(batch);
+    }
+  }
+
+
+  private async encryptAndBatch(): Promise<string[][]> {
+    const encryptionPromises = this.selected_uuid().map(uuid =>
+      this.encryptSecret(this.decrypted_vault()!.get(uuid)!).then(
+        encrypted_secret => ({ success: true, encrypted_secret } as const),
+        () => {
+          this.import_had_error.set(true);
+          this.upload_error_uuid.update(current => [...current, uuid]);
+          return { success: false } as const;
+        }
+      )
+    );
+
+    const results = await Promise.all(encryptionPromises);
+
+    const encrypted_secrets_list = results
+      .filter(r => r.success)
+      .map(r => (r as { success: true; encrypted_secret: string }).encrypted_secret);
+
+    const batches: string[][] = [];
+    for (let i = 0; i < encrypted_secrets_list.length; i += 100) {
+      batches.push(encrypted_secrets_list.slice(i, i + 100));
+    }
+    return batches;
+  }
+
+  encryptSecret(secret_properties: TOTPEntry): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const jsonProperty = TOTPEntryToJSON(secret_properties)
+      try {
+        this.crypto.encrypt(jsonProperty, this.userService.zke_key()!).then((enc_jsonProperty) => {
+          resolve(enc_jsonProperty);
+        });
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  uploadSecret(uuid: string, enc_jsonProperty: string): Promise<HttpResponse<Object>> {
+    return new Promise((resolve, reject) => {
+      this.http.post(this.apiService.baseURL + "/api/v1/encrypted_secret", { enc_secret: enc_jsonProperty }, { withCredentials: true, observe: 'response' }).subscribe({
+        next: (response) => {
+          resolve(response);
+        },
+        error: (error) => {
+          reject(error.message + error.error.message);
+        }
+      });
+    });
+  }
+
+  retryFailedOnes() {
+    for (let uuid of this.decrypted_vault()!.keys()) {
+      if (!this.upload_error_uuid().includes(uuid)) {
+        this.decrypted_vault()!.delete(uuid);
+      }
+    }
+    this.uploading.set(true);
+    this.upload_error_uuid.set([]);
+    this.import_had_error.set(false);
+    this.importSuccess.set(false);
+    this.upload();
+  }
+}

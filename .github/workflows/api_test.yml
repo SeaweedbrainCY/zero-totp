@@ -1,0 +1,54 @@
+name: "Test Zero-TOTP API"
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - "*"
+      - "**"
+      - "*/*"
+      - "**/**"
+      - "!dev"
+    paths:
+      - "api/**"
+      - ".github/workflows/api_test.yml"
+    tags-ignore:
+      - "**"
+
+  workflow_call:
+    secrets:
+      MAXMIND_PERMALINK:
+        required: true
+
+jobs:
+  python_test_and_coverage:
+    name: API Units tests and coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+
+      - name: Download GeoLite2 test DB
+        run: |
+          mkdir -p ./api/geoip
+          curl -L https://github.com/maxmind/MaxMind-DB/raw/refs/heads/main/test-data/GeoIP2-City-Test.mmdb -o ./api/geoip/GeoLite2-City.mmdb
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 #v6.3.0
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        working-directory: ./api
+        run: pip install --upgrade pip && pip install -r requirements.txt && pip install -r test-requirements.txt
+
+      - name: Moving config file
+        run: cp api/tests/ressources/test-config.yml api/config/config.yml
+
+      - name: Run tests with pytest
+        working-directory: ./api
+        run: python -m pytest --cov=. --cov-report=lcov --cov-report=term --cov-report=xml  --cov-fail-under=90
+      - name: Upload coverage report
+        uses: coverallsapp/github-action@648a8eb78e6d50909eff900e4ec85cab4524a45b # v2.3.6

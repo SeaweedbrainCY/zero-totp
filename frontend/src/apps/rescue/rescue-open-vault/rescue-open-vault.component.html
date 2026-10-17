@@ -1,0 +1,180 @@
+<section class="hero is-halfheight mt-6" style="min-height: 70vh;">
+    <div class="hero-body is-flex is-flex-direction-column	is-fullheight">
+      <div class="has-text-centered	is-full is-flex is-justify-content-center block">
+        <p class="block"><span class="title is-1 is-full has-text-centered has-text-danger has-text-weight-bold">
+          {{"rescue.openvault.title" | translate }}
+
+          </span><br />
+
+          <span class="has-text-weight-bold has-text-danger">
+             {{"rescue.openvault.subtitle" | translate }}
+          </span>
+        </p>
+      </div>
+      @if(zero_totp_maintenance()){
+      <div class="has-text-centered columns p-5">
+        <article class="message is-info">
+          <div class="message-body has-text-centered">
+            <h1 class="is-size-4 has-text-weight-bold"> <fa-icon [icon]="faPersonDigging"></fa-icon>
+             {{"rescue.openvault.error.maintenance.title" | translate }}
+
+            </h1><br>
+            <p class="has-text-weight-bold">
+              {{"rescue.openvault.error.maintenance.desc" | translate }}
+
+            </p>
+
+        </div>
+
+      </article>
+      </div>
+      }
+
+      @if(zero_totp_issue()){
+      <div class="has-text-centered columns p-5">
+        <article class="message is-warning">
+          <div class="message-body has-text-centered">
+            <h1 class="is-size-4 has-text-weight-bold"> <fa-icon [icon]="faFire"></fa-icon>
+              {{"rescue.openvault.error.unavailable.title" | translate }}
+
+            </h1><br>
+            <p class="has-text-weight-bold">
+               {{"rescue.openvault.error.unavailable.desc" | translate }}
+
+            </p>
+
+        </div>
+      </article>
+      </div>
+      }
+
+      @if(zero_totp_back_online()){
+      <div class="has-text-centered columns p-5">
+        <article class="message is-success">
+          <div class="message-body has-text-centered">
+            <h1 class="is-size-4 has-text-weight-bold"> <fa-icon [icon]="faCheckDouble"></fa-icon>
+              {{"rescue.openvault.error.up.title" | translate }}
+
+            </h1><br>
+            <p class="has-text-weight-bold"[innerHTML]="'rescue.openvault.error.up.desc' | translate">
+            </p>
+        </div>
+      </article>
+      </div>
+      }
+
+
+
+    <div class="is-flex is-flex-direction-column box">
+      <div class="is-flex is-justify-content-center has-text-centered">
+
+        <p><span class="has-text-weight-bold has-text-grey">
+          {{"rescue.openvault.openvaultbox.title" | translate }}
+
+        </span>
+      </p>
+      </div>
+      <div class="is-flex is-justify-content-center">
+        <div class="mt-3">
+          <div class="file is-boxed">
+            <label class="file-label">
+              <input class="file-input" type="file" name="resume" accept=".zero-totp,.txt" (change)="openFile($event)">
+              <span class="file-cta">
+                <span class="file-icon">
+                  <fa-icon [icon]="faCloudArrowUp"></fa-icon>
+                </span>
+                <span class="file-label">
+                   {{"rescue.openvault.openvaultbox.button" | translate }}
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
+        <br>
+      </div>
+    </div>
+
+    <div class="flex is-justify-content-center is-flex-wrap-wrap mt-4">
+      <p class="control has-text-centered ml-2 mr-2 mb-4">
+        <a class="button is-success is-outlined" href="https://status.zero-totp.com">
+          <span> {{"rescue.openvault.checkZeroTOTPStatus" | translate }}</span>
+          <span class="icon is-small">
+            <fa-icon [icon]="faCircleUp"></fa-icon>
+          </span>
+        </a>
+      </p>
+      <p class="control has-text-centered ml-2 mr-2">
+        <a class="button is-info is-outlined" href="https://zero-totp.com">
+          <span>{{"rescue.openvault.useZeroTOTP" | translate }}</span>
+          <span class="icon is-small">
+            <fa-icon [icon]="faExternalLinkAlt"></fa-icon>
+          </span>
+        </a>
+      </p>
+    </div>
+
+
+
+    </div>
+
+
+
+  </section>
+
+  <div id="confirmation" class="modal modal-fx-fadeInScale" [ngClass]="{'is-active': isUnsecureVaultModaleActive()}">
+    <div class="modal-background" (click)="isUnsecureVaultModaleActive.update(v => !v)"></div>
+    <div class="modal-content">
+        <section class="modal-card-body">
+            <h1 class="is-size-2 has-text-danger">  {{"backup.unsecure.popup.title" | translate }}
+            </h1>
+            <strong>
+              {{"backup.unsecure.popup.strong" | translate}}.
+            </strong>{{"backup.unsecure.popup.desc" | translate}}<br>
+            <strong>{{"backup.unsecure.popup.strong2" |translate}}</strong>
+            <br><br>
+        </section>
+        <footer class="modal-card-foot is-flex is-justify-content-right">
+            <button class="button is-success mr-2" (click)="isUnsecureVaultModaleActive.update(v => !v)">{{"backup.unsecure.popup.button.cancel" | translate}}</button>
+            <button class="button is-danger ml-2" (click)="local_vault_service!.set_is_signature_valid(true);isUnsecureVaultModaleActive.update(v => !v); this.isPassphraseModalActive.set(true);" >{{"backup.unsecure.popup.continue" | translate}}</button>
+        </footer>
+    </div>
+    <button class="modal-close is-large" aria-label="close" (click)="isUnsecureVaultModaleActive.update(v => !v)" ></button>
+</div>
+
+
+<div id="local_vault_passphrase" class="modal modal-fx-fadeInScale"
+  [ngClass]="{'is-active': isPassphraseModalActive()}">
+  <div class="modal-background" (click)="isPassphraseModalActive.update(v => !v)"></div>
+  <div class="modal-content">
+    <section class="modal-card-body">
+      <h1 class="is-size-2 has-text-info">{{ 'login.backup.open.popup.title' | translate }}</h1>
+      <div class="field is-flex-tablet has-addons  mt-3">
+        <div class="control has-icons-left" style="width:90%">
+          <input class="input" type="{{isLocalVaultPassphraseVisible() ? 'text' : 'password'}}"
+            placeholder="{{'passphrase' | translate}}" name="passphrase" [ngModel]="passphrase()"
+            (ngModelChange)="passphrase.set($event)" (keyup.enter)="openLocalVault()">
+          <span class="icon is-small is-left">
+            <fa-icon [icon]="faKey"></fa-icon>
+          </span>
+        </div>
+        <p class="control">
+          <a class="button" (click)="isLocalVaultPassphraseVisible.update(v => !v)">
+            @if (isLocalVaultPassphraseVisible()) {
+            <fa-icon [icon]="faEyeSlash" size="sm"></fa-icon>
+            }@if (!isLocalVaultPassphraseVisible()) {
+            <fa-icon [icon]="faEye" size="sm"></fa-icon>
+            }
+          </a>
+        </p>
+      </div>
+    </section>
+    <footer class="modal-card-foot is-flex is-justify-content-right">
+      <button class="button" (click)="isPassphraseModalActive.update(v => !v)">{{'cancel' |
+        translate}}</button>
+      <button class="button is-info"
+        (click)="local_vault_service!.set_is_signature_valid(true); isPassphraseModalActive.update(v => !v); openLocalVault();">{{
+        'unlock' | translate }}</button>
+    </footer>
+  </div>
+  <button class="modal-close is-large" aria-label="close" (click)="isPassphraseModalActive.update(v => !v)"></button>
+</div>

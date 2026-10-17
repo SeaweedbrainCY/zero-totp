@@ -1,0 +1,76 @@
+import { Injectable } from '@angular/core';
+import { Crypto } from '../../Crypto/crypto';
+import { TranslateService } from '@ngx-translate/core';
+import { TOTPEntry, TOTPEntryFromJSON } from '../../models/totp-entry';
+
+
+
+export interface DecryptedVaultResult {
+  vault: Map<string, TOTPEntry>;
+  errors: string[];
+}
+
+
+@Injectable({
+  providedIn: 'root'
+})
+export class VaultService {
+
+  vault: Map<string, Map<string, string>> | null = null;
+
+  constructor(
+    private crypto: Crypto,
+    private translate: TranslateService,
+  ) { }
+
+
+  decryptVault(encrypted_vault: Array<Map<string, string>>, zke_key: CryptoKey): Promise<DecryptedVaultResult> {
+    return new Promise((resolve, reject) => {
+      let decrypted_vault = new Map<string, TOTPEntry>();
+
+      let errors: string[] = []
+      const fakeProperty: TOTPEntry = {
+        color: "info",
+        name: "Error",
+        secret: "",
+        favicon: false,
+        uri: "",
+        tags: []
+      }
+
+      const promises = encrypted_vault.map((secret) => {
+        const uuid = secret.get("uuid");
+        const enc_secret = secret.get("enc_secret");
+        if (uuid == null) return Promise.resolve();
+
+        if (enc_secret == null) {
+          decrypted_vault.set(uuid, fakeProperty);
+          return Promise.resolve();
+        }
+        return this.crypto.decrypt(enc_secret, zke_key).then((dec_secret) => {
+          if (dec_secret != null) {
+            decrypted_vault.set(uuid, TOTPEntryFromJSON(dec_secret))
+          } else {
+            decrypted_vault.set(uuid, fakeProperty);
+            errors.push("Decrypted secret null.")
+          }
+        }, (error) => {
+          decrypted_vault.set(uuid, fakeProperty);
+          errors.push(error)
+        });
+      })
+
+      Promise.all(promises)
+        .then(() => {
+          resolve({
+            vault: decrypted_vault,
+            errors: errors
+          })
+        })
+        .catch((error) => reject(error));
+    });
+  }
+
+
+
+}

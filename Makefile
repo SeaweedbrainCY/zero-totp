@@ -6,7 +6,7 @@ install_frontend:
 
 run_frontend:
 	echo "Starting frontend server ..."
-	cd frontend && ng serve --host=127.0.0.1  --proxy-config proxy.conf.json
+	cd frontend && ng serve "zero-totp" --host=127.0.0.1  --proxy-config proxy.conf.json
 
 install_api: clean
 	echo "Installing API dependencies ..."
@@ -26,7 +26,7 @@ test:
 	mv api/config/config.yml api/config/.secret/config.yml
 	cp api/tests/ressources/test-config.yml api/config/config.yml
 	cd api && . venv/bin/activate && \
-	python -m pytest --cov=. --cov-report=term --cov-report=html -s 
+	python -m pytest --cov=. --cov-report=term --cov-report=html -s
 	mv -f api/config/.secret/config.yml api/config/config.yml
 
 run:
@@ -45,5 +45,13 @@ clean:
 
 run_ios:
 	echo "Building and running iOS application"
-	cd frontend && ng build --configuration mobile-development --subresource-integrity
+	cd frontend && ng build zero-totp --configuration mobile-development --subresource-integrity
 	cd mobile && npx cap sync ios && npx cap open ios
+
+run_rescue:
+	echo "Starting rescue frontend server ..."
+	cd frontend && ng serve rescue --host=127.0.0.1
+
+update_i18n:
+	echo "Updating en-uk i18n file"
+	cd frontend && npx ngx-translate-extract --input ./src --output ./src/assets/i18n/en-uk.json  --sort -f "json"

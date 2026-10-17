@@ -1,0 +1,15 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/rescue",
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"]
+  },
+  "files": [
+    "src/apps/rescue/main.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts"
+  ]
+}
