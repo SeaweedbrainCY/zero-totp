@@ -45,7 +45,7 @@ clean:
 
 run_ios:
 	echo "Building and running iOS application"
-	cd frontend && ng build --configuration mobile-development --subresource-integrity
+	cd frontend && ng build zero-totp --configuration mobile-development --subresource-integrity
 	cd mobile && npx cap sync ios && npx cap open ios
 
 run_rescue:

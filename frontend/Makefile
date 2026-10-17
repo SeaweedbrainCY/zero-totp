@@ -1,14 +1,14 @@
 dev:
-	ng build --configuration development --subresource-integrity
+	ng build zero-totp --configuration development --subresource-integrity
 
-prod: 
-	ng build --configuration production --subresource-integrity
+prod:
+	ng build zero-totp --configuration production --subresource-integrity
 
 mobile_dev:
-	ng build --configuration mobile-development --subresource-integrity
+	ng build zero-totp --configuration mobile-development --subresource-integrity
 
 mobile_prod:
-	ng build --configuration mobile-production --subresource-integrity
+	ng build zero-totp --configuration mobile-production --subresource-integrity
 
 rescue_dev:
 	ng build rescue --configuration development --subresource-integrity
