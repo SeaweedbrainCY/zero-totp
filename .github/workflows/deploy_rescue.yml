@@ -1,10 +1,7 @@
-name: "Build, Test and Deploy Rescue Zero-TOTP"
+name: "Build and Deploy Rescue Zero-TOTP"
 
 permissions:
   contents: read
-  packages: write
-  deployments: write
-
 
 on:
   push:
@@ -12,56 +9,68 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+"
   workflow_dispatch:
 
-env:
-  TAG: ${{ github.ref_name }}
-  REF_NAME: ${{ github.ref_name }}
-  REPOSITORY: ${{ github.repository }}
-  GITHUB_ACTOR_USERNAME: ${{ github.actor }}
-  COMMIT_SHA: ${{ github.sha}}
+concurrency:
+  group: rescue-pages
+  cancel-in-progress: false
 
 jobs:
-  setup:
+  build:
+    name: Build Rescue Zero-TOTP
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.version.outputs.version }}
     steps:
-      - name: Set VERSION
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+
+      - name: Set version
         id: version
         run: |
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            VERSION="${{ github.ref_name }}"
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            VERSION="$GITHUB_REF_NAME"
           else
             VERSION="${GITHUB_SHA::7}"
           fi
-          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "VERSION set to $VERSION"
 
-  frontend-build:
-        needs: [setup]
-        runs-on: ubuntu-latest
-        name: Build frontend
-        steps:
-          - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
-          - name: Setup Node.js
-            uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e #v6.4.0
-            with:
-              node-version: lts/*
-          - name: Create environment file
-            working-directory: ./frontend
-            run: bash generate-env.sh '${{ needs.setup.outputs.version }}' '${{secrets.RSA_PUBLIC_KEY}}'
-          - name : Install dependencies
-            working-directory: ./frontend
-            run: npm ci
-          - name: Install angular CLI
-            run : npm install -g @angular/cli
-          - name : Build app
-            working-directory: ./frontend
-            run:  ng build rescue --configuration production --subresource-integrity
-          - name: Set up all paths
-            working-directory: ./frontend/dist/rescue/browser
-            run: cp index.html 404.html
-          - name: Upload Pages artifact
-            uses: actions/upload-pages-artifact@v3
-            with:
-              path: ./rescue/dist/frontend/browser
+      - name: Create frontend environment file
+        working-directory: ./frontend/src/environments
+        env:
+          API_PUBLIC_KEY: ${{ secrets.RSA_PUBLIC_KEY }}
+          REF_NAME: ${{ steps.version.outputs.version }}
+        run: envsubst < environment.prod.ts.tpl > environment.prod.ts
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e #v6.4.0
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build app
+        working-directory: ./frontend
+        run: npx ng build rescue --configuration production --subresource-integrity
+
+      - name: Serve index.html for unknown paths (SPA routing)
+        working-directory: ./frontend/dist/rescue/browser
+        run: cp index.html 404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 #v5.0.0
+        with:
+          path: ./frontend/dist/rescue/browser
+
+  deploy:
+    name: Deploy Rescue Zero-TOTP to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 #v5.0.1
