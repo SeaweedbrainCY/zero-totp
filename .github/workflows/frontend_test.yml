@@ -1,0 +1,85 @@
+name: "Test Zero-TOTP Frontend"
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - "*"
+      - "**"
+      - "*/*"
+      - "**/**"
+      - "!dev"
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend_test.yml"
+    tags-ignore:
+      - "**"
+
+  workflow_call:
+    secrets:
+      MAXMIND_PERMALINK:
+        required: true
+
+jobs:
+  rescue_zero_totp_build_check:
+    name: Rescue Zero-TOTP build check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+      - name: Check there is no empty translation
+        run: |
+             jq -r 'to_entries[] | select(.value | type != "string" or test("^\\s*$")) | .key' frontend/src/assets/i18n/en-uk.json > missingkeys.txt
+             if [ -s missingkeys.txt ]; then
+                echo The following keys are not translated :;
+                cat missingkeys.txt;
+                exit 1;
+             else
+              echo Translations are ok;
+             fi
+      - name: Create frontend environment file
+        working-directory: ./frontend/src/environments
+        env:
+          API_PUBLIC_KEY: "Fake data"
+          REF_NAME: ${{ github.sha }}
+        run: envsubst < environment.prod.ts.tpl > environment.prod.ts
+      - name: Build
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4
+        with:
+          node-version: "24"
+      - run: npm ci
+        working-directory: ./frontend
+      - run: npm run build rescue
+        working-directory: ./frontend
+
+
+  zero_totp_frontend_build_check:
+      name: Zero-TOTP Frontend build check
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+        - name: Check there is no empty translation
+          run: |
+               jq -r 'to_entries[] | select(.value | type != "string" or test("^\\s*$")) | .key' frontend/src/assets/i18n/en-uk.json > missingkeys.txt
+               if [ -s missingkeys.txt ]; then
+                  echo The following keys are not translated :;
+                  cat missingkeys.txt;
+                  exit 1;
+               else
+                echo Translations are ok;
+               fi
+        - name: Create frontend environment file
+          working-directory: ./frontend/src/environments
+          env:
+            API_PUBLIC_KEY: "Fake data"
+            REF_NAME: ${{ github.sha }}
+          run: envsubst < environment.prod.ts.tpl > environment.prod.ts
+        - name: Build
+          uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4
+          with:
+            node-version: "24"
+        - run: npm ci
+          working-directory: ./frontend
+        - run: npm run build zero-totp
+          working-directory: ./frontend

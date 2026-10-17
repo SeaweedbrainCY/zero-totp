@@ -1,0 +1,71 @@
+name: "Test and Coverage"
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - "*"
+      - "**"
+      - "*/*"
+      - "**/**"
+      - "!dev"
+    tags-ignore:
+      - "**"
+  workflow_call:
+    secrets:
+      GITGUARDIAN_API_KEY:
+        required: true
+
+jobs:
+  semgrep_scan:
+    name: Smegrep Scan Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 #v6.3.0
+        with:
+          python-version: 3.13
+
+      - name: Install semgrep
+        run: python3 -m pip install semgrep
+
+      - name: Run semgrep
+        #  exclude dockerfile.security.missing-user.missing-user : the entrypoint must be ran as root for setup purposes but will ALWAYS switch to a non-root user for the rest of the execution.
+        run: semgrep scan --error --exclude-rule dockerfile.security.missing-user.missing-user  --exclude-rule dockerfile.security.missing-user-entrypoint.missing-user-entrypoint
+
+  gitguardian_scan:
+    name: GitGuardian scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #v7.0.0
+        with:
+          fetch-depth: 0 # fetch all history so multiple commits can be scanned
+      - name: GitGuardian scan
+        uses: GitGuardian/ggshield-action@da20be06cafe5e8633dc24744efe1efe8d30f06b
+        env:
+          GITHUB_PUSH_BEFORE_SHA: ${{ github.event.before }}
+          GITHUB_PUSH_BASE_SHA: ${{ github.event.base }}
+          GITHUB_PULL_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+
+  poutine:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: poutine - GitHub Actions SAST
+        uses: boostsecurityio/poutine-action@e240ebd3eff8b2db5a8e5f6b28f58739d7db2247 # v1.1.4
+
+      - name: Upload poutine SARIF file
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 #v4.38
+        with:
+          sarif_file: results.sarif

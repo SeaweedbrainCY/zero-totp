@@ -14,7 +14,25 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  test_frontend:
+    permissions:
+      contents: read
+    name: Frontend test
+    uses: ./.github/workflows/frontend_test.yml
+
+
+  security_scan:
+    permissions:
+      security-events: write
+      contents: read
+    name: Security Scans
+    uses: ./.github/workflows/security_scans.yml
+    secrets:
+      GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+
+
   build:
+    needs: [security_scan, test_frontend]
     name: Build Rescue Zero-TOTP
     runs-on: ubuntu-latest
     steps:

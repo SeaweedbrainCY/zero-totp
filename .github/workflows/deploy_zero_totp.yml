@@ -37,7 +37,7 @@ jobs:
             echo "is_dev=false" >> $GITHUB_OUTPUT
             echo "is_prod=true" >> $GITHUB_OUTPUT
             echo "environment=production" >> $GITHUB_OUTPUT
-          else 
+          else
             echo "is_dev=false" >> $GITHUB_OUTPUT
             echo "is_prod=false" >> $GITHUB_OUTPUT
             echo "environment=unknown" >> $GITHUB_OUTPUT
@@ -48,19 +48,35 @@ jobs:
           echo "This workflow only runs on production or development tags."
           exit 1
 
-  tests_and_security:
+  test_frontend:
+    needs: setup
+    permissions:
+      contents: read
+    name: Frontend test
+    uses: ./.github/workflows/frontend_test.yml
+
+
+  test_api:
+    needs: setup
+    permissions:
+      contents: read
+    name: API test
+    uses: ./.github/workflows/api_test.yml
+    secrets:
+      MAXMIND_PERMALINK: ${{ secrets.MAXMIND_PERMALINK }}
+
+  security_scan:
     needs: setup
     permissions:
       security-events: write
       contents: read
-    name: Tests and security analysis
-    uses: ./.github/workflows/test.yml # use the callable tests job to run tests
+    name: Security Scans
+    uses: ./.github/workflows/security_scans.yml
     secrets:
       GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-      MAXMIND_PERMALINK: ${{ secrets.MAXMIND_PERMALINK }}
 
   build-frontend:
-    needs: [setup, tests_and_security]
+    needs: [setup, security_scan, test_api, test_frontend]
     name: Build and Publish multi-arch Frontend Docker image
     strategy:
       fail-fast: false
@@ -79,7 +95,7 @@ jobs:
           echo "DATE=$(date)" >> $GITHUB_ENV
           echo "CURRENT_VERSION=$(echo "$REF_NAME" | sed 's/^v//')"  >> $GITHUB_ENV
           echo "CURRENT_SHORT_VERSION=$(echo  "$REF_NAME"  | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
-          echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+          echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
           platform=${{ matrix.os == 'ubuntu-24.04' && 'linux/amd64' || 'linux/arm64' }}
           arch=${{ matrix.os == 'ubuntu-24.04' && 'amd64' || 'arm64' }}
           echo "PLATFORM=${platform}" >> $GITHUB_ENV
@@ -185,7 +201,7 @@ jobs:
           echo "DATE=$(date)" >> $GITHUB_ENV
           echo "CURRENT_VERSION=$(echo "$REF_NAME" | sed 's/^v//')"  >> $GITHUB_ENV
           echo "CURRENT_SHORT_VERSION=$(echo "$REF_NAME" | sed -E 's/^v([0-9]+)\.([0-9]+)\.[0-9]+$/\1.\2/')" >> $GITHUB_ENV
-          echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+          echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
           platform=${{ matrix.os == 'ubuntu-24.04' && 'linux/amd64' || 'linux/arm64' }}
           arch=${{ matrix.os == 'ubuntu-24.04' && 'amd64' || 'arm64' }}
           echo "ARCH=${arch}" >> $GITHUB_ENV
@@ -272,7 +288,7 @@ jobs:
       - name: Extract Git commit
         id: vars
         run: |
-          echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+          echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
           echo "CURRENT_VERSION=$(echo "$REF_NAME" | sed 's/^v//')"  >> $GITHUB_ENV
 
       - name: Download digests
@@ -338,7 +354,7 @@ jobs:
       - name: Extract Git commit
         id: vars
         run: |
-          echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+          echo "REPOSITORY_NAME=$(echo "$REPOSITORY" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
           echo "CURRENT_VERSION=$(echo "$REF_NAME" | sed 's/^v//')"  >> $GITHUB_ENV
 
       - name: Download digests
