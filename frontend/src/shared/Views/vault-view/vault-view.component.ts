@@ -54,9 +54,10 @@ export class VaultViewComponent implements OnInit, OnDestroy {
   isVaultReadOnly = input(false);
   isVaultLoading = input(false);
   userFaviconPolicy = input('');
+  vaultTagsList = input<string[]>([]);
 
   // tags signals
-  vaultTagsList = signal<string[]>([]);
+
   selectedTags = signal<string[]>([]);
 
   // Search bar

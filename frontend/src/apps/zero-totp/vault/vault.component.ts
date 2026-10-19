@@ -245,19 +245,6 @@ export class VaultComponent implements OnInit {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   refreshUserData() {
     this.get_google_drive_option();
     this.get_preferences();

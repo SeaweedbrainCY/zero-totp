@@ -20,6 +20,7 @@
       <app-vault-view
         [vault]="userService.vault()"
         [isVaultLoading]="isVaultLoading()"
+        [vaultTagsList]="userService.vault_tags()"
       />
     </div>
   </div>

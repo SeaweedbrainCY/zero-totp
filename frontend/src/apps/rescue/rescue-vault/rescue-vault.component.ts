@@ -69,6 +69,7 @@ export class RescueVaultComponent implements OnInit {
               });
           }
           this.userService.vault.set(result.vault);
+          this.userService.updateVaultTagsList()
           this.userService.is_vault_in_memory = true;
         },
         (error) => {
