@@ -4,7 +4,7 @@ permissions:
   contents: read
   packages: write
   deployments: write
-
+#(Line: 184, Col: 13): Job 'build-api' depends on unknown job 'tests_and_security'., (Line: 351, Col: 9): Job 'merge-api-manifests' depends on job 'build-api' which creates a cycle in the dependency graph., (Line: 415, Col: 13): Job 'e2e-tests' depends on job 'merge-api-manifests' which creates a cycle in the dependency graph., (Line: 490, Col: 13): Job 'api-docker-security-scan' depends on job 'merge-api-manifests' which creates a cycle in the dependency graph., (Line: 531, Col: 9): Job 'deploy-production-sw' depends on job 'e2e-tests' which creates a cycle in the dependency graph., (Line: 532, Col: 9): Job 'deploy-production-sw' depends on job 'api-docker-security-scan' which creates a cycle in the dependency graph., (Line: 549, Col: 9): Job 'deploy-production-ca' depends on job 'e2e-tests' which creates a cycle in the dependency graph., (Line: 550, Col: 9): Job 'deploy-production-ca' depends on job 'api-docker-security-scan' which creates a cycle in the dependency graph., (Line: 567, Col: 9): Job 'deploy-production-themis' depends on job 'e2e-tests' which creates a cycle in the dependency graph., (Line: 568, Col: 9): Job 'deploy-production-themis' depends on job 'api-docker-security-scan' which creates a cycle in the dependency graph.
 on:
   push:
     tags:
@@ -181,7 +181,7 @@ jobs:
           retention-days: 1
 
   build-api:
-    needs: [tests_and_security, setup]
+    needs: [setup, security_scan, test_api, test_frontend]
     name: Build and Publish API Docker image
     strategy:
       fail-fast: false
