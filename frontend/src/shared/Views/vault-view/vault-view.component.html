@@ -81,7 +81,7 @@
           }
           {{vault().get(uuid)!.name}}
         </p>
-        <button class="card-header-icon" aria-label="edit" [routerLink]="['/edit/',uuid]">
+        <button class="card-header-icon" aria-label="edit" [routerLink]="['/vault', 'edit',uuid]">
           <span class="icon">
             <fa-icon [icon]="faPen"></fa-icon>
           </span>
