@@ -2,7 +2,7 @@
 @if(!isAMobileDevice()){
 <div style="height: 100%;" class="is-flex justify-content-center align-items-center">
 <div class="navbar-item has-dropdown lang-dropdown" [ngClass]="{'is-active': isLangDropdownExpanded()}">
-  <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded.update(v => !v)" class="button is-ghost has-text-white" style="padding-left: 0px; padding-right: 0px;">
+  <a class="navbar-link is-arrowless" (click)="isLangDropdownExpanded.update(v => !v)" class="button is-ghost has-text-white" style="padding-left: 0px; padding-right: 0px;" data-testid="lang-selector-button">
     <fa-icon [icon]="faLanguage"  size="2xl"></fa-icon>
   </a>
 
