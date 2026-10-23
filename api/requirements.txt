@@ -58,7 +58,7 @@ multidict==6.6.4
 mysqlclient==2.2.4
 nodeenv==1.9.1
 oauthlib==3.2.2
-opentelemetry-api==1.34.1
+opentelemetry-api==1.45.1
 opentelemetry-distro==0.55b1
 opentelemetry-instrumentation==0.55b1
 opentelemetry-sdk==1.34.1
