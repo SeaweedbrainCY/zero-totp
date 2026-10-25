@@ -490,7 +490,7 @@ jobs:
 
       - name: Inspect image
         run: |
-          docker buildx imagetools inspect ghcr.io/${{ env.REPOSITORY_NAME }}-rescue:${{ needs.setup.outputs.is_dev == 'true' && steps.meta-dev.outputs.version || steps.meta-prod.outputs.version }}
+          docker buildx imagetools inspect ghcr.io/${{ env.REPOSITORY_NAME }}-rescue:${{steps.meta.outputs.version }}
 
   merge-api-manifests:
     runs-on: ubuntu-latest
