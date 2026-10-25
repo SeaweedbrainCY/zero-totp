@@ -1,4 +1,4 @@
-FROM python:3.13.15-alpine3.24 AS builder
+FROM python:3.15.0-alpine3.24 AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -19,7 +19,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
 
-FROM python:3.13.15-alpine3.24
+FROM python:3.15.0-alpine3.24
 
 COPY --from=builder /api/venv /api/venv
 # Remove pip to remove pip pre-imported packages (the uv venv doesn't ship pip)
