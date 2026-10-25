@@ -147,7 +147,8 @@ jobs:
         with:
           context: ./frontend
           tags: ghcr.io/${{ env.REPOSITORY_NAME }}-rescue
-          build-args: BUILD_TARGET="rescue"
+          build-args: |
+              BUILD_TARGET="rescue"
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
           cache-from: type=gha
