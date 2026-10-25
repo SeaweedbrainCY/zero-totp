@@ -5,7 +5,7 @@
 
 version: 2
 updates:
-  - package-ecosystem: "pip"
+  - package-ecosystem: "uv"
     directory: "/api"
     schedule:
       interval: "weekly"
@@ -25,6 +25,24 @@ updates:
       default-days: 7
   - package-ecosystem: "docker"
     directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+  - package-ecosystem: "npm"
+    directory: "/e2e-tests"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+  - package-ecosystem: github-actions
+    directory: "/.github"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+  - package-ecosystem: "npm"
+    directory: "/mobile"
     schedule:
       interval: "weekly"
     cooldown:
