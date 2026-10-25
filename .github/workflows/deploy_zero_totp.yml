@@ -25,6 +25,7 @@ jobs:
       is_prod: ${{ steps.check_env.outputs.is_prod }}
       is_dev: ${{ steps.check_env.outputs.is_dev }}
       environment: ${{ steps.check_env.outputs.environment }}
+      raw_tag: ${{ steps.check_env.outputs.raw_tag }}
     steps:
       - name: Determine environment
         id: check_env
@@ -38,7 +39,7 @@ jobs:
             echo "is_dev=false" >> $GITHUB_OUTPUT
             echo "is_prod=true" >> $GITHUB_OUTPUT
             echo "environment=production" >> $GITHUB_OUTPUT
-            echo "raw_tag=prod" >> $GITHUB_OUTPUT
+            echo "raw_tag=latest" >> $GITHUB_OUTPUT
           else
             echo "is_dev=false" >> $GITHUB_OUTPUT
             echo "is_prod=false" >> $GITHUB_OUTPUT
@@ -471,6 +472,7 @@ jobs:
 
 
       - name: Generate rescue docker metadata
+        id: meta
         uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 #v6.1.0
         with:
           images: ghcr.io/${{ env.REPOSITORY_NAME }}-rescue
