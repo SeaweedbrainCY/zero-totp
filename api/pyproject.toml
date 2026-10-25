@@ -20,7 +20,6 @@ dependencies = [
     "httptools==0.6.4",
     "mysqlclient==2.2.4",
     "opentelemetry-distro==0.55b1",
-    "pre-commit>=4.2.0",
     "pycryptodome==3.19.1",
     "pyrsistent==0.20.0",
     "python-dotenv==1.2.2",
