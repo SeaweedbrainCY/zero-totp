@@ -22,7 +22,7 @@ dependencies = [
     "opentelemetry-distro==0.55b1",
     "pycryptodome==3.19.1",
     "pyrsistent==0.20.0",
-    "python-dotenv==1.2.2",
+    "python-dotenv==1.2.4",
     "ruamel-yaml-clib==0.2.15",
     "sentry-sdk==2.8.0",
     "setuptools==83.0.0",
