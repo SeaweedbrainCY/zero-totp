@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 
 hashes=$(grep -oE 'sha384-[a-zA-Z0-9+/=]*' dist/frontend/browser/index.html |  sed "s/^/'/" | sed "s/\$/'/" | tr '\n' ' ')
 
@@ -9,7 +9,7 @@ http {
 
     server {
         listen 80;
-        root /usr/share/nginx/html/frontend/browser;
+        root /usr/share/nginx/html/$1/browser;
         index index.html;
         add_header Content-Security-Policy \"default-src 'self'; style-src 'self' 'unsafe-inline'; object-src 'none' ; script-src 'strict-dynamic' 'self' $hashes; img-src 'self' https://icons.duckduckgo.com/; base-uri 'self'; frame-src 'self'; connect-src 'self' 'self' https://icons.duckduckgo.com/; manifest-src 'self'; worker-src 'self';\" always;
 

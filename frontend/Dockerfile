@@ -17,7 +17,7 @@ ARG BUILD_TARGET="zero-totp"
 RUN ng build ${BUILD_TARGET} --configuration production --subresource-integrity
 RUN chmod o+x ./generate_nginx_conf.sh
 RUN chmod +x ./docker-healthcheck.sh
-RUN ./generate_nginx_conf.sh
+RUN ./generate_nginx_conf.sh ${BUILD_TARGET}
 RUN rm generate_nginx_conf.sh
 
 
