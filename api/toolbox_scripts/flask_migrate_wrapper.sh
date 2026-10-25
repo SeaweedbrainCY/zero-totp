@@ -1,6 +1,6 @@
 #!/bin/sh
 cd ..
-FLASK_EXECUTABLE="./venv/bin/flask --app app:flask"
+FLASK_EXECUTABLE="./.venv/bin/flask --app app:flask"
 
 run_flask_command() {
     echo "running $FLASK_EXECUTABLE "$@" 2>&1"
@@ -20,7 +20,7 @@ run_flask_command() {
     fi
 }
 
-. venv/bin/activate
+. .venv/bin/activate
 case $1 in
     "db")
         case $2 in

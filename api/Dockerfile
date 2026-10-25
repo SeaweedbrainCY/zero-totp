@@ -3,23 +3,27 @@ FROM python:3.13.15-alpine3.24 AS builder
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-COPY requirements.txt /api/requirements.txt
+COPY --from=ghcr.io/astral-sh/uv:0.13.5 /uv /bin/uv
+
+# Install into /api/venv (admin-toolbox.sh relies on this path) using the image's Python only
+ENV UV_PROJECT_ENVIRONMENT=/api/venv
+ENV UV_PYTHON_DOWNLOADS=never
+ENV UV_LINK_MODE=copy
+
 WORKDIR /api
-RUN python -m venv /api/venv
-ENV PATH="/api/venv/bin:$PATH"
 
 RUN apk update && apk upgrade && apk add --no-cache mariadb-dev  gcc g++ libffi-dev openssl-dev musl-dev linux-headers make jq curl gosu && apk add --no-cache mariadb-connector-c-dev
 
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+COPY pyproject.toml uv.lock /api/
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-dev
 
 
 FROM python:3.13.15-alpine3.24
 
 COPY --from=builder /api/venv /api/venv
-# Remove pip to remove pip pre-imported packages
-RUN /api/venv/bin/python -m pip uninstall -y pip \
-&& python -m pip uninstall -y pip \
+# Remove pip to remove pip pre-imported packages (the uv venv doesn't ship pip)
+RUN python -m pip uninstall -y pip \
 && rm -rf /usr/local/lib/python3.13/ensurepip
 
 

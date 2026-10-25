@@ -10,12 +10,15 @@ run_frontend:
 
 install_api: clean
 	echo "Installing API dependencies ..."
-	python3.13 -m venv api/venv
-	api/venv/bin/pip install -r api/requirements.txt
+	cd api && uv sync --locked
+
+update_api_deps:
+	echo "Upgrading API dependencies within pyproject.toml constraints ..."
+	cd api && uv lock --upgrade && uv sync
 
 run_api:
 	echo "Starting API server ..."
-	. api/venv/bin/activate && cd api && python app.py
+	cd api && uv run python app.py
 
 run_database:
 	echo "Starting docker database container ..."
@@ -25,8 +28,7 @@ test:
 	echo "Running tests ..."
 	mv api/config/config.yml api/config/.secret/config.yml
 	cp api/tests/ressources/test-config.yml api/config/config.yml
-	cd api && . venv/bin/activate && \
-	python -m pytest --cov=. --cov-report=term --cov-report=html -s
+	cd api && uv run python -m pytest --cov=. --cov-report=term --cov-report=html -s
 	mv -f api/config/.secret/config.yml api/config/config.yml
 
 run:
@@ -36,7 +38,7 @@ run:
 
 clean:
 	echo "Cleaning up ..."
-	rm -rf api/venv
+	rm -rf api/.venv api/venv
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name "pycache" -exec rm -rf {} +
