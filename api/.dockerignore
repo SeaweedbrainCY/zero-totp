@@ -13,6 +13,10 @@ tmp/
 # Dev 
 dev/
 
+# Local virtual environments
+.venv/
+venv/
+
 # Python cache
 __pycache__/
 *.pyc
