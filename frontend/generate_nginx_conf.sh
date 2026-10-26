@@ -1,6 +1,6 @@
 #!/bin/sh
 
-hashes=$(grep -oE 'sha384-[a-zA-Z0-9+/=]*' dist/frontend/browser/index.html |  sed "s/^/'/" | sed "s/\$/'/" | tr '\n' ' ')
+hashes=$(grep -oE 'sha384-[a-zA-Z0-9+/=]*' dist/$1/browser/index.html |  sed "s/^/'/" | sed "s/\$/'/" | tr '\n' ' ')
 
 echo "events{}
 http {
