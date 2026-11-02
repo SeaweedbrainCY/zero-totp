@@ -81,11 +81,13 @@
           }
           {{vault().get(uuid)!.name}}
         </p>
+        @if (!isVaultReadOnly()) {
         <button class="card-header-icon" aria-label="edit" [routerLink]="['/vault', 'edit',uuid]">
           <span class="icon">
             <fa-icon [icon]="faPen"></fa-icon>
           </span>
         </button>
+        }
         <button class="card-header-icon" aria-label="copy" (click)="copy()"
           [cdkCopyToClipboard]="totpCodesMap().get(uuid) ?? 'An error occurred while copying the code. Try again or try to copy it manually.'">
           <span class="icon">
