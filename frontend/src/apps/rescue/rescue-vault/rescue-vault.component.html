@@ -1,7 +1,7 @@
 <section class="hero is-halfheight pb-6" style="min-height: 70vh;">
   <div class="container  is-fluid ">
     <div>
-      <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6">{{ 'vault.title.backup' | translate}}
+      <h1 class="is-size-1 has-text-centered has-text-weight-bold has-text-info pt-6 mt-4">{{ 'vault.title.backup' | translate}}
         @if (vault_date() != "") {
         <span>{{vault_date()}}</span>
         }
@@ -21,6 +21,7 @@
         [vault]="userService.vault()"
         [isVaultLoading]="isVaultLoading()"
         [vaultTagsList]="userService.vault_tags()"
+        [isVaultReadOnly]="true"
       />
     </div>
   </div>
