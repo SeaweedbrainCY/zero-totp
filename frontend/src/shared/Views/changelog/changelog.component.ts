@@ -16,6 +16,18 @@ export class ChangelogComponent {
 
   changelogs = [
   {
+    date: "02/11/2026",
+    version: "2.3",
+    added: [
+      "Improve re-usability of component between Zero-TOTP and Rescue Zero-TOTP to improve  Rescue Zero-TOTP UI and security",
+      "Improve Rescue Zero-TOTP deployment and management",
+      "Improve translation management, and add french translation of Rescue Zero-TOTP"
+    ],
+      fixed: [
+      "Dependencies security upgrade",
+    ]
+  },
+  {
     date: "01/10/2026",
     version: "2.2",
     added: [
