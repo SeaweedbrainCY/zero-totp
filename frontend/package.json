@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "0.0.0",
   "scripts": {
+    "lint": "eslint src",
     "ng": "ng",
     "start": "ng serve zero-totp",
     "build": "ng build",
