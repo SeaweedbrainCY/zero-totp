@@ -1,0 +1,45 @@
+<section data-theme="light">
+  <article
+    class="hero is-fullheight is-dark is-flex is-flex-direction-column is-justify-content-center is-align-items-center  is-hidden-mobile is-hidden-tablet-only">
+    <div class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center	">
+      <div class="is-flex is-justify-content-space-around is-flex-wrap-wrap columns" id="homeFirstHero">
+        <div class="is-one-third column">
+          <h1 class="is-size-1 has-text-weight-bold is-family-secondary	" style="line-height: normal;">
+            {{ "home.title.main" | translate }} <strong class="has-text-danger"> {{ "home.title.strong" | translate }}</strong> </h1><br>
+          <h3> {{ "home.subtitle" | translate }}</h3><br>
+          <h2><strong class="has-text-weight-semibold has-text-white is-size-5"> {{"home.trust.no.one" | translate }}</strong>
+          </h2><br><br>
+          <div class="buttons">
+            <a class="button is-info  is-medium has-text-weight-semibold" [routerLink]="['/vault']"> {{ "home.button.openVault" | translate }}</a>
+            <a class="button is-info is-light is-medium has-text-weight-semibold" [routerLink]="['/signup']"
+              > {{ "home.button.signup" | translate }}</a>
+          </div>
+        </div>
+        <div class="is-half column is-flex is-flex-direction-column is-justify-content-center">
+          <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP" />
+        </div>
+      </div>
+    </div>
+  </article>
+  <article
+    class="hero is-fullheight is-dark is-flex is-flex-direction-column is-justify-content-space-around columns is-hidden-desktop p-6">
+    <div class="column is-flex is-flex-direction-column is-justify-content-center mt-4">
+      <img src="assets/logo_zero_totp_light.png" alt="Logo of Zero TOTP" />
+    </div>
+    <div class="column has-text-centered">
+      <h1 class="is-size-2 has-text-weight-bold is-family-secondary" style="line-height: normal;" >{{"home.title.main" | translate }}
+        <span class="has-text-danger"> {{"home.title.strong" | translate }}</span> </h1><br>
+      <h3> {{"home.subtitle.main" | translate }} <strong class="has-text-danger"> {{"home.subtitle.opensource" | translate }}</strong>
+        home.subtitle.and <strong class="has-text-danger"> {{"home.subtitle.zke" | translate }}</strong> home.subtitle.platform
+      </h3><br>
+      <h2><strong class="has-text-weight-semibold is-size-5 has-text-white"> {{ "home.trust.no.one" | translate }}</strong></h2>
+      <br><br>
+      <div class="has-text-centered">
+        <a class="button is-info  is-medium has-text-weight-semibold mb-2" [routerLink]="['/vault']"
+          > {{"home.button.openVault" | translate }}</a><br>
+        <a class="button is-info is-light is-medium has-text-weight-semibold" [routerLink]="['/signup']"
+          > {{ "home.button.signup" | translate }}</a>
+      </div>
+    </div>
+  </article>
+</section>
