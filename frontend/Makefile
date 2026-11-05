@@ -5,10 +5,10 @@ prod:
 	ng build zero-totp --configuration production --subresource-integrity
 
 mobile_dev:
-	ng build zero-totp --configuration mobile-development --subresource-integrity
+	ng build mobile --configuration development --subresource-integrity
 
 mobile_prod:
-	ng build zero-totp --configuration mobile-production --subresource-integrity
+	ng build mobile --configuration production --subresource-integrity
 
 rescue_dev:
 	ng build rescue --configuration development --subresource-integrity

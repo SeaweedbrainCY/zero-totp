@@ -54,6 +54,11 @@ run_rescue:
 	echo "Starting rescue frontend server ..."
 	cd frontend && ng serve rescue --host=127.0.0.1
 
+run_mobile:
+	echo "Starting mobile frontend server ..."
+	cd frontend && ng serve mobile --host=127.0.0.1
+
+
 update_i18n:
 	echo "Updating en-uk i18n file"
 	cd frontend && npx ngx-translate-extract --input ./src --output ./src/assets/i18n/en-uk.json  --sort -f "json"
