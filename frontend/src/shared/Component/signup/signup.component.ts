@@ -3,13 +3,13 @@ import { faEnvelope, faKey, faCheck, faUser, faXmark, faFlagCheckered, faEye, fa
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { isDeviceMobile } from '../../../shared/Utils/utils';
-import { Crypto } from '../../../shared/Crypto/crypto';
+import { isDeviceMobile } from '../../Utils/utils';
+import { Crypto } from '../../Crypto/crypto';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
-import { ToastService } from '../../../shared/Services/Toast/toast.service';
-import { UserService } from '../../../shared/Services/User/user.service';
-import { ApiService } from '../services/API/api.service';
+import { ToastService } from '../../Services/Toast/toast.service';
+import { UserService } from '../../Services/User/user.service';
+import { ApiService } from 'src/shared/Services/API/api.service';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
