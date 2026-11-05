@@ -14,7 +14,7 @@ import { ToastService } from '../../../shared/Services/Toast/toast.service';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
 import { ProtectedKeychainStorageService } from '../services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
-import { DisplayPreferencesService } from '../services/DisplayPreferences/display-preferences.service';
+import { DisplayPreferencesService } from '../../../shared/Services/DisplayPreferences/display-preferences.service';
 import { FormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgClass } from '@angular/common';

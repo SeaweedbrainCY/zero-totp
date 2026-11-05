@@ -8,7 +8,7 @@ import { faLightbulb, faXmark, faVault, faLock, faKey, faGears, faUser, faSun, f
 import { HttpClient } from '@angular/common/http';
 import { ApiService } from '../services/API/api.service';
 import { isDeviceMobile } from '../../../shared/Utils/utils';
-import { DisplayPreferencesService } from '../services/DisplayPreferences/display-preferences.service';
+import { DisplayPreferencesService } from '../../../shared/Services/DisplayPreferences/display-preferences.service';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NgClass } from '@angular/common';
 import { NavbarLangSelectorComponent } from 'src/shared/Views/navbar-lang-selector/navbar-lang-selector.component';

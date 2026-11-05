@@ -1,7 +1,7 @@
 import { Injectable, WritableSignal, signal } from '@angular/core';
 import { LocalVaultV1Service } from '../upload-vault/LocalVaultv1Service.service';
 import { HttpClient } from '@angular/common/http';
-import { ApiService } from '../../../apps/zero-totp/services/API/api.service';
+import { ApiService } from '../API/api.service';
 
 import { Crypto } from '../../Crypto/crypto';
 import { TranslateService } from '@ngx-translate/core';
