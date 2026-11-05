@@ -6,7 +6,7 @@
         <div class="is-one-third column">
           <h1 class="is-size-1 has-text-weight-bold is-family-secondary	" style="line-height: normal;">
             {{ "home.title.main" | translate }} <strong class="has-text-danger"> {{ "home.title.strong" | translate }}</strong> </h1><br>
-          <h3> {{ "home.subtitle" | translate }}</h3><br>
+          <h3 [innerHTML]="'home.subtitle' | translate"> </h3><br>
           <h2><strong class="has-text-weight-semibold has-text-white is-size-5"> {{"home.trust.no.one" | translate }}</strong>
           </h2><br><br>
           <div class="buttons">
@@ -29,9 +29,7 @@
     <div class="column has-text-centered">
       <h1 class="is-size-2 has-text-weight-bold is-family-secondary" style="line-height: normal;" >{{"home.title.main" | translate }}
         <span class="has-text-danger"> {{"home.title.strong" | translate }}</span> </h1><br>
-      <h3> {{"home.subtitle.main" | translate }} <strong class="has-text-danger"> {{"home.subtitle.opensource" | translate }}</strong>
-        home.subtitle.and <strong class="has-text-danger"> {{"home.subtitle.zke" | translate }}</strong> home.subtitle.platform
-      </h3><br>
+      <h3 [innerHTML]="'home.subtitle' | translate"> </h3><br>
       <h2><strong class="has-text-weight-semibold is-size-5 has-text-white"> {{ "home.trust.no.one" | translate }}</strong></h2>
       <br><br>
       <div class="has-text-centered">
