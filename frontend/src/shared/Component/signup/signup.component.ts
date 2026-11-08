@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy, output, input } from '@angular/core';
 import { faEnvelope, faKey, faCheck, faUser, faXmark, faFlagCheckered, faEye, faEyeSlash, faFlask, faCircleQuestion, faArrowUpRightFromSquare, faDoorClosed, faArrowRight, faCircleInfo, faLink, faGlobe, faShieldHalved, faPen } from '@fortawesome/free-solid-svg-icons';
 import { faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { HttpClient } from '@angular/common/http';
@@ -10,14 +10,14 @@ import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 import { ToastService } from '../../Services/Toast/toast.service';
 import { UserService } from '../../Services/User/user.service';
 import { ApiService } from 'src/shared/Services/API/api.service';
-import { CapacitorPersistentStorageService } from '../services/Capacitor/persistentStorage/capacitor-persistent-storage.service';
+
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 
 
 @Component({
-    selector: 'app-signup',
+    selector: 'app-shared-signup',
     templateUrl: './signup.component.html',
     styleUrls: ['./signup.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,7 +28,9 @@ import { NgClass } from '@angular/common';
         TranslatePipe,
     ],
 })
-export class SignupComponent implements OnInit {
+export class SignupSharedComponent implements OnInit {
+
+
   faEnvelope = faEnvelope;
   faKey = faKey;
   faPen = faPen;
@@ -71,9 +73,8 @@ export class SignupComponent implements OnInit {
   isPasswordVisible = signal(false);
   isConfirmPasswordVisible = signal(false);
   current_domain = signal('');
-  instance_dropdown_active = signal(false);
+
   signup_enabled = signal(true);
-  instance_modal_active = signal(false)
   instance_modal_loading = signal(false)
   instance_modal_error = signal("")
   instance_modal_apiBaseURL_input = signal(this.apiService.baseURL)
@@ -88,21 +89,12 @@ export class SignupComponent implements OnInit {
     private toast: ToastService,
     private userService: UserService,
     private apiService: ApiService,
-    private persistentStorage: CapacitorPersistentStorageService
   ) { }
 
   ngOnInit(): void {
     if (this.userService.isUserLoggedIn()) {
       // If logged in redirect to /vault
       this.router.navigate(["/vault"], { relativeTo: this.route.root });
-    }
-    if (environment.isMobileApp) {
-      // Mobile app, current domain is the one of the API
-      const baseURL = new URL(this.apiService.baseURL)
-      this.current_domain.set(baseURL.host)
-    } else {
-      // webapp we use the current location
-      this.current_domain.set(window.location.host);
     }
     this.get_api_configuration();
   }
@@ -265,39 +257,4 @@ export class SignupComponent implements OnInit {
     this.isModalActive.set(false);
   }
 
-  zero_totp_instance_button_click() {
-    if (environment.isMobileApp) {
-      this.instance_modal_active.update(v => !v);
-    } else {
-      // Webapp consulted on a mobile
-      if (isDeviceMobile()) {
-        // On nonMobileDevice, it's just hoverable
-        this.instance_dropdown_active.update(v => !v);
-      }
-    }
-  }
-
-  validateNewAPIBaseURL() {
-    this.instance_modal_error.set("")
-    this.instance_modal_loading.set(true)
-    this.persistentStorage.setAPIBaseURL(this.instance_modal_apiBaseURL_input()).then(_ => {
-      this.apiService.updateBaseURL().then(success => {
-        this.instance_modal_loading.set(false)
-        if (success) {
-          this.instance_modal_active.set(false)
-          const baseURL = new URL(this.apiService.baseURL)
-          this.current_domain.set(baseURL.host)
-        } else {
-          this.translate.get("general_error").subscribe(t => {
-            this.instance_modal_error.set(t)
-          })
-        }
-      })
-    }).catch(error => {
-      console.log(error)
-      this.translate.get("invalid_url").subscribe(t => {
-        this.instance_modal_error.set(t)
-      })
-    })
-  }
 }

@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
 import { MobileHomeComponent } from './mobile-home/mobile-home.component';
 import { PagenotfoundComponent } from 'src/shared/Views/pagenotfound/pagenotfound.component';
-
+import { MobileSignupComponent } from './mobile-signup/mobile-signup.component';
 
 export const routes: Routes = [
   { path: '', component: MobileHomeComponent },
-  //{ path: 'signup', component: SignupComponent },
+  { path: 'signup', component: MobileSignupComponent },
   //{ path: 'login', component: LoginComponent },
   //{ path: 'login/:error_param', component: LoginComponent },
   //{ path: 'vault', component: VaultComponent },
