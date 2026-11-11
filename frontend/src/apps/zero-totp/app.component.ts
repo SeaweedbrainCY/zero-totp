@@ -3,7 +3,7 @@ import { environment } from 'src/environments/environment';
 import { Renderer2, Inject } from '@angular/core';
 import { AuthServiceService } from './services/AuthService/auth-service.service';
 import { UserService } from '../../shared/Services/User/user.service';
-import { Router, ActivatedRoute, RouterOutlet } from '@angular/router';
+import { Router, ActivatedRoute, RouterOutlet, NavigationEnd } from '@angular/router';
 import { ProtectedKeychainStorageService } from './services/Capacitor/ProtectedKeychainStorage/protected-keychain-storage.service';
 import { faSignal, faBriefcaseMedical } from '@fortawesome/free-solid-svg-icons';
 import { Keyboard } from '@capacitor/keyboard';
@@ -11,6 +11,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from '../../shared/Views/footer/footer.component';
 import { TranslatePipe } from '@ngx-translate/core';
+import { filter, firstValueFrom } from 'rxjs';
 
 
 
@@ -67,6 +68,16 @@ export class AppComponent implements OnInit {
     }
   }
 
+  private async currentRouteRequiresDecryptedVault(): Promise<boolean> {
+    // On a page refresh, AppComponent can init before the first navigation has resolved
+    if (!this.router.navigated) {
+      await firstValueFrom(this.router.events.pipe(filter(e => e instanceof NavigationEnd)));
+    }
+    let snap = this.router.routerState.snapshot.root;
+    while (snap.firstChild) snap = snap.firstChild;
+    return !!snap.data['requiresDecryptedVault'];
+  }
+
 
 
   ngOnInit(): void {
@@ -76,8 +87,8 @@ export class AppComponent implements OnInit {
         this.displayTroubleshootingMessage.set(true)
       }
     }, 5000)
-    this.loadUserData().then((isSuccess) => {
-      if (isSuccess) {
+    this.loadUserData().then(async (isSuccess) => {
+      if (isSuccess  && await this.currentRouteRequiresDecryptedVault()) {
         this.router.navigate(['/vault'], { relativeTo: this.route.root });
       }
       if (environment.isMobileApp) {
