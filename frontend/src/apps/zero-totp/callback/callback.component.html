@@ -1,8 +1,11 @@
 <div class="hero is-fullheight">
   <div class="hero-body is-flex is-justify-content-center">
     @if (errorMessage() !='') {
-      <div class="notification is-danger">
-        <p class="has-text-weight-bold is-size-5">{{errorMessage()}}</p>
+      <div class="box has-text-centered callback-error">
+        <p class="has-text-danger mb-4"><fa-icon [icon]="faCircleExclamation" size="3x"></fa-icon></p>
+        <h1 class="is-size-4 has-text-weight-bold mb-2">{{ 'callback.errors.title' | translate }}</h1>
+        <p class="has-text-grey mb-5">{{ errorMessage() | translate }}</p>
+        <button class="button is-info" [routerLink]="['/vault']">{{ 'callback.errors.refresh_token.vault_button' | translate }}</button>
       </div>
     }
     @if (errorMessage() =='') {
