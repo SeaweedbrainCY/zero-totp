@@ -124,7 +124,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
     google_drive_integration_db = GoogleDriveIntegrationDB()
     last_backup_clean_date = google_drive_integration_db.get_last_backup_clean_date(user_id)
     if last_backup_clean_date is not None:
-         date = datetime.datetime.strptime(last_backup_clean_date, '%Y-%m-%d')
+         date = datetime.datetime.strptime(last_backup_clean_date, '%Y-%m-%d').replace(tzinfo=datetime.UTC)
          if (datetime.datetime.now(datetime.UTC) - date).days < 1:
                 logging.info("Backup retention already cleaned today")
                 return True
@@ -162,7 +162,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
              return False
         for file in sorted_files[:-MINIMUM_NB_BACKUP]:
             date_str = file.get("name").split("_")[0]
-            date = datetime.datetime.strptime(date_str, '%d-%m-%Y-%H-%M-%S')
+            date = datetime.datetime.strptime(date_str, '%d-%m-%Y-%H-%M-%S').replace(tzinfo=datetime.UTC)
             logging.debug('Inspecting backup file ' + file.get("name") + " created on " + date_str + ". Age : " + str((datetime.datetime.now(datetime.UTC) - date).days) + " days")
 
             if (datetime.datetime.now(datetime.UTC) - date).days > MAXIMUM_BACKUP_AGE:
