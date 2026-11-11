@@ -43,25 +43,27 @@ class TestGoogleDriveAPI(unittest.TestCase):
         def setUp(self):
             if conf.database.database_uri != "sqlite:///:memory:":
                 raise Exception("Test must be run with in memory database")
+
+            self.credentials ={
+                        "token": "token",
+                        "refresh_token": "refresh_token",
+                        "token_uri": "https://oauth2.googleapis.com/token",
+                        "client_id": "client_id",
+                        "client_secret": "client_secret",
+                        "scopes": ["https://www.googleapis.com/auth/drive.file"],
+                        "expiry": "2026-11-11 05:01:03",
+                }
             self.application = app
             self.client = self.application.test_client()
             self.endpoint = "/api/v1/vault/export"
             self.from_authorized_user_info = patch("google.oauth2.credentials.Credentials.from_authorized_user_info").start()
-            self.from_authorized_user_info.return_value = "credentials"
+            self.from_authorized_user_info.return_value = self.credentials
             self.build = patch("Oauth.google_drive_api.build").start()
             self.mockedFiles = {'files': []}
             self.drive = self.MockedDriveService(mockedFiles=self.mockedFiles)
             self.build.return_value = self.drive
             self.user_id = 1
-            self.credentials ={
-                    "token": "token",
-                    "refresh_token": "refresh_token",
-                    "token_uri": "https://oauth2.googleapis.com/token",
-                    "client_id": "client_id",
-                    "client_secret": "client_secret",
-                    "scopes": ["https://www.googleapis.com/auth/drive.file"],
-                    "expiry": "2026-11-11 05:01:03",
-            }
+
 
             user_repo = UserRepo()
             zke_repo = ZKE_encryption_key_repo()
