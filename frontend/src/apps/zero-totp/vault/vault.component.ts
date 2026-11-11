@@ -387,8 +387,8 @@ export class VaultComponent implements OnInit {
         if (data.status == "ok") {
           if (data.is_up_to_date == true) {
             this.isGoogleDriveSync.set("uptodate");
-            const date_str = data.last_backup_date.split("T")[0] + " " + data.last_backup_date.split("T")[1];
-            this.lastBackupDate.set(String(formatDate(new Date(date_str), 'dd/MM/yyyy HH:mm:ss', 'en')));
+            // ISO 8601 with offset (e.g. "2026-11-11T05:31:32+00:00"); formatDate renders it in the browser's local timezone
+            this.lastBackupDate.set(formatDate(data.last_backup_date, 'dd/MM/yyyy HH:mm:ss', 'en'));
           } else {
             this.backup_vault_to_google_drive();
           }
