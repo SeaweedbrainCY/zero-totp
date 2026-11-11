@@ -12,14 +12,14 @@ import ipaddress
 
 
 class TestUtils(unittest.TestCase):
-    
+
     def setUp(self):
         self.delete_email_token = patch("database.email_verification_repo.EmailVerificationToken.delete").start()
         self.delete_email_token.return_value = True
 
         self.add_email_token = patch("database.email_verification_repo.EmailVerificationToken.add").start()
         self.add_email_token.return_value = True
-    
+
     def tearDown(self):
         patch.stopall()
 
@@ -46,7 +46,7 @@ class TestUtils(unittest.TestCase):
             with self.subTest(email=email):
                 self.assertTrue(check_email(email), f"Email '{email}' should be valid")
 
-    
+
     def test_invalid_emails(self):
         invalid_emails = [
             "invalid_email",
@@ -75,12 +75,12 @@ class TestUtils(unittest.TestCase):
         for email  in attack_emails:
             with self.subTest(email=email):
                 self.assertFalse(check_email(email), f"Email '{email}' should not pass the check")
-    
+
 
     def test_email_too_long(self):
         email = "a"*321 + "@example.com"
         self.assertFalse(check_email(email), f"Email '{email}' should be invalid")
-    
+
 #####################
 ###### sanitize tests
 #####################
@@ -123,7 +123,7 @@ class TestUtils(unittest.TestCase):
         input_data = 'Double quote " and single quote \''
         sanitized = sanitize_input(input_data)
         self.assertEqual(sanitized, 'Double quote  and single quote ')
-    
+
 ################################
 ## extract_last_backup_from_list
 ################################
@@ -151,8 +151,8 @@ class TestUtils(unittest.TestCase):
         ]
         last_backup_file,last_backup_file_date = extract_last_backup_from_list(files)
         self.assertEqual(last_backup_file.get("name"), "18-01-2021-00-00-00_backup")
-        self.assertEqual(last_backup_file_date, datetime.datetime(2021, 1, 18, 0, 0))
-    
+        self.assertEqual(last_backup_file_date, datetime.datetime(2021, 1, 18, 0, 0, tzinfo=datetime.UTC))
+
     def test_extract_last_backup_from_list_with_trashed_files(self):
         files = [
             {"name" : "06-01-2021-00-00-00_backup", "explicitlyTrashed": False},
@@ -175,13 +175,13 @@ class TestUtils(unittest.TestCase):
         ]
         last_backup_file,last_backup_file_date = extract_last_backup_from_list(files)
         self.assertEqual(last_backup_file.get("name"), "17-01-2021-00-00-00_backup")
-        self.assertEqual(last_backup_file_date, datetime.datetime(2021, 1, 17, 0, 0))
-    
+        self.assertEqual(last_backup_file_date, datetime.datetime(2021, 1, 17, 0, 0, tzinfo=datetime.UTC))
+
     def test_extract_last_backup_from_list_with_no_backup_files(self):
         files = []
         self.assertRaises(FileNotFound, extract_last_backup_from_list, files)
 
-    
+
     def test_extract_last_backup_from_list_with_bad_file_name(self):
         files = [
             {"name" : "06-01-2021_00-00-00_backup", "explicitlyTrashed": False},
