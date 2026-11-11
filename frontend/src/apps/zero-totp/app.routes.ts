@@ -17,29 +17,30 @@ import { OpenSourceLibraryComponent } from '../../shared/Views/open-source-libra
 import { EmailVerificationComponent } from './email-verification/email-verification.component';
 import { ImportVaultComponent } from './import-vault/import-vault.component';
 import { FaqComponent } from './faq/faq.component';
+const needsVault = { requiresDecryptedVault: true };
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'signup', component: SignupComponent },
   { path: 'login', component: LoginComponent },
   { path: 'login/:error_param', component: LoginComponent },
-  { path: 'vault', component: VaultComponent },
-  { path: 'vault/locked', component: VaultComponent },
-  { path: 'vault/edit/:id', component: EditTOTPComponent },
-  { path: 'vault/add', component: EditTOTPComponent },
-  { path: 'qrcode', component: QrcodeReaderComponent },
+  { path: 'vault', component: VaultComponent, data: needsVault },
+  { path: 'vault/locked', component: VaultComponent, data: needsVault },
+  { path: 'vault/edit/:id', component: EditTOTPComponent, data: needsVault },
+  { path: 'vault/add', component: EditTOTPComponent, data: needsVault },
+  { path: 'qrcode', component: QrcodeReaderComponent, data: needsVault },
   { path: "logout", component: LogoutComponent },
   { path: "lock", component: LogoutComponent },
-  { path: "account", component: AccountComponent },
+  { path: "account", component: AccountComponent, data: needsVault },
   { path: "privacy", component: PrivacyPolicyComponent },
   { path: "changelog", component: ChangelogComponent },
   { path: "oauth/callback", component: CallbackComponent },
   { path: "oauth/synchronize", component: OauthSyncComponent },
-  { path: "preferences", component: PreferencesComponent },
+  { path: "preferences", component: PreferencesComponent, data: needsVault },
   { path: "opensource", component: OpenSourceLibraryComponent },
   { path: "emailVerification", component: EmailVerificationComponent },
-  { path: "import/vault", component: ImportVaultComponent },
-  { path: "import/vault/:type/:step", component: ImportVaultComponent },
+  { path: "import/vault", component: ImportVaultComponent, data: needsVault },
+  { path: "import/vault/:type/:step", component: ImportVaultComponent, data: needsVault },
   { path: "faq", component: FaqComponent },
   { path: "faq/:id", component: FaqComponent },
   { path: '**', component: PagenotfoundComponent }
