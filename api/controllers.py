@@ -11,7 +11,7 @@ from database.preferences_repo import Preferences as PreferencesDB
 from database.notif_repo import Notifications as Notifications_db
 from database.refresh_token_repo import RefreshTokenRepo as RefreshToken_db
 from database.rate_limiting_repo import RateLimitingRepo as Rate_Limiting_DB
-from database.session_token_repo import SessionTokenRepo 
+from database.session_token_repo import SessionTokenRepo
 from database.session_repo import SessionRepo
 from CryptoClasses.hash_func import Bcrypt
 from environment import logging, conf
@@ -31,7 +31,7 @@ import datetime
 from Utils.security_wrapper import require_active_user, require_userid, ip_rate_limit
 import traceback
 from hashlib import sha256
-from CryptoClasses.encryption import ServiceSideEncryption 
+from CryptoClasses.encryption import ServiceSideEncryption
 from database.db import db
 import threading
 from uuid import uuid4
@@ -39,7 +39,7 @@ import hmac
 import hashlib
 from sqlalchemy import text
 from CryptoClasses.serverRSAKeys import ServerRSAKeys
- 
+
 
 ### WARNING
 ## This file is deprecated. New controllers should not be added here.
@@ -71,7 +71,7 @@ def signup():
     except Exception as e: # pragma: no cover
         logging.info(e)
         return {"message": "Invalid request"}, 400
-    
+
     if not username or not passphrase or not email or not derivedKeySalt or not zke_key or not passphraseSalt:
         return {"message": "Missing parameters"}, 400
     if len(username) > 250:
@@ -86,7 +86,7 @@ def signup():
     if check_username:
         return {"message": "Username already exists"}, 409
     bcrypt = Bcrypt(passphrase)
-    try : 
+    try :
         hashedpw = bcrypt.hashpw()
     except ValueError as e:
         logging.debug(e)
@@ -116,7 +116,7 @@ def signup():
                     logging.error("Unknown error while sending verification email" + str(e))
             answer_body = {"message": "User created", "email_verification_required":conf.features.emails.require_email_validation}
             if connexion.request.headers.get("Origin") == "capacitor://localhost":
-                # For requests coming from iOS application, we return the tokens in the body. 
+                # For requests coming from iOS application, we return the tokens in the body.
                 # Browsers don't need them, so we don't bother to send them. It wouldn't be a risk to do it though?
                 # Origin is a safe header for non-hijacked browser.
                 answer_body["session_token"] = session_token
@@ -151,7 +151,7 @@ def login(src_ip, body):
         logging.info("User " + str(email) + " tried to login but does not exist. A fake password is checked to avoid timing attacks")
         fakePassword = ''.join(random.choices(string.ascii_letters, k=random.randint(10, 20)))
         bcrypt.checkpw(fakePassword)
-        
+
         rate_limiting_db.add_failed_login(src_ip)
         return {"message": "generic_errors.invalid_creds"}, 403
     logging.info(f"User {user.id} is trying to logging in from gateway {request.remote_addr} and IP {src_ip}. X-Forwarded-For header is {request.headers.get('X-Forwarded-For')}")
@@ -161,13 +161,13 @@ def login(src_ip, body):
         return {"message": "generic_errors.invalid_creds"}, 403
     if user.isBlocked: # only authenticated users can see the blocked status
         return {"message": "blocked"}, 403
-    
+
     rate_limiting_db.flush_login_limit(src_ip)
 
     session_token, refresh_token = utils.generate_new_session(user=user, ip_address=src_ip)
     bearer_tokens_body = {}
     if connexion.request.headers.get("Origin") == "capacitor://localhost":
-        # For requests coming from iOS application, we return the tokens in the body. 
+        # For requests coming from iOS application, we return the tokens in the body.
         # Browsers don't need them, so we don't bother to send them. It wouldn't be a risk to do it though?
         # Origin is a safe header for non-hijacked browser.
         bearer_tokens_body["session_token"] = session_token
@@ -217,10 +217,10 @@ def get_login_specs(username):
         fake_salt = base64.b64encode(os.urandom(16)).decode("utf-8")
         return {"passphrase_salt": fake_salt}, 200
 
-    
 
-    
-    
+
+
+
 #GET /encrypted_secret/{uuid}
 @require_active_user
 def get_encrypted_secret(src_ip, user_obj, uuid):
@@ -231,17 +231,17 @@ def get_encrypted_secret(src_ip, user_obj, uuid):
     else:
         if enc_secret.user_id == user_obj.id:
             return {"enc_secret": enc_secret.secret_enc}, 200
-        else :    
+        else :
             logging.warning("User " + str(user_obj.id) + " tried to access secret " + str(uuid) + " which is not his")
             return {"message": "Forbidden"}, 403
-        
+
 
 
 #PUT /encrypted_secret/{uuid}
 @require_active_user
 def update_encrypted_secret(src_ip, user_obj,uuid, body):
     enc_secret = body.get("enc_secret")
-    
+
     totp_secretDB =  TOTP_secretDB()
     totp = totp_secretDB.get_enc_secret_of_user_by_uuid(user_obj.id, uuid)
     if not totp:
@@ -277,7 +277,7 @@ def delete_encrypted_secret(src_ip, user_obj, uuid):
         else:
             logging.warning("Unknown error while deleting encrypted secret for user " + str(user_obj.id) )
             return {"message": "Unknown error while deleting encrypted secret"}, 500
-        
+
 
 #GET /all_secrets
 @require_active_user
@@ -309,11 +309,11 @@ def get_ZKE_encrypted_key(src_ip, user_obj):
 #PUT /update/email
 @require_userid
 def update_email(src_ip, user_obj, body):
-   
+
     email = utils.sanitize_input(body.get("email", "")).strip()
     if not utils.check_email(email):
         return {"message": "This email doesn't have the right format. Check it and try again"}, 400
-         
+
     userDb = UserDB()
     already_existing_user = userDb.getByEmail(email)
     if already_existing_user:
@@ -331,7 +331,7 @@ def update_email(src_ip, user_obj, body):
             logging.error("Unknown error while sending information email" + str(e))
         if conf.features.emails.require_email_validation:
             try:
-           
+
                 send_verification_email(user_id=updated_user.id, context_={"user":updated_user.id}, token_info={"user":updated_user.id})
             except Exception as e:
                 logging.error("Unknown error while sending verification email" + str(e))
@@ -363,7 +363,7 @@ def update_username(src_ip, user_obj,body):
     else :
         logging.warning("An error occured while updating username of user " + str(updated_user.id))
         return {"message": "Unknown error while updating username"}, 500
-   
+
 
 
 @require_active_user
@@ -373,7 +373,7 @@ def export_vault(src_ip, user_obj):
     totp_secrets_list = TOTP_secretDB().get_all_enc_secret_by_user_id(user_id=user_obj.id)
     if not zkeKey:
         return {"message" : "User not found"}, 404
-    
+
     vault["derived_key_salt"] = user_obj.derivedKeySalt
     vault["zke_key_enc"] = zkeKey.ZKE_key
     secrets = utils.get_all_secrets_sorted(totp_secrets_list)
@@ -392,11 +392,11 @@ def get_role(src_ip, user_obj, *args, **kwargs):
     return {"role": user_obj.role}, 200
 
 
-    
+
 # GET /google-drive/oauth/authorization-flow
 def get_authorization_flow():
     if not conf.features.google_drive.enabled:
-        return {"message": "Oauth is disabled on this tenant. Contact the tenant administrator to enable it."}, 403 
+        return {"message": "Oauth is disabled on this tenant. Contact the tenant administrator to enable it."}, 403
     authorization_url, state = oauth_flow.get_authorization_url()
     flask.session["state"] = state
     logging.info("State stored in session : " + str(state))
@@ -408,7 +408,7 @@ def oauth_callback(src_ip, user_obj):
     if not conf.features.google_drive.enabled:
         return {"message": "Oauth is disabled on this tenant. Contact the tenant administrator to enable it."}, 403
     frontend_URI = conf.environment.frontend_URI
-    try: 
+    try:
         credentials = oauth_flow.get_credentials(request.url, flask.session["state"])
 
         if credentials == None:
@@ -420,7 +420,11 @@ def oauth_callback(src_ip, user_obj):
         creds_b64 = base64.b64encode(json.dumps(credentials).encode("utf-8")).decode("utf-8")
         sse = ServiceSideEncryption()
         encrypted_cipher = sse.encrypt(creds_b64)
-        expires_at = int(datetime.datetime.strptime(credentials["expiry"], "%Y-%m-%d %H:%M:%S.%f").timestamp())
+        expiry = datetime.datetime.fromisoformat(credentials["expiry"])
+        if expiry.tzinfo is None:
+            # google uses UTC time
+            expiry = expiry.replace(tzinfo=datetime.UTC)
+        expires_at = int(expiry.timestamp())
         token_db = Oauth_tokens_db()
         tokens = token_db.get_by_user_id(user_obj.id)
         if tokens:
@@ -467,13 +471,13 @@ def get_google_drive_option(src_ip, user_obj):
         return {"status": "enabled"}, 200
     else:
         return {"status": "disabled"}, 200
-    
+
 #PUT /google-drive/backup
 @require_active_user
 def backup_to_google_drive(src_ip, user_obj, *args, **kwargs):
     if not conf.features.google_drive.enabled:
         return {"message": "Google drive sync is not enabled on this tenant."}, 403
-    
+
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_obj.id)
     google_drive_integrations = GoogleDriveIntegrationDB()
@@ -511,8 +515,8 @@ def verify_last_backup(src_ip, user_obj):
     if creds_b64 == None:
         logging.error("Error while decrypting credentials for user " + str(user_obj.id) + ". creds_b64 = " + str(creds_b64))
         return {"error": "Error while connecting to the Google API"}, 500
-    
-    
+
+
     credentials = json.loads(base64.b64decode(creds_b64).decode("utf-8"))
     if credentials.get("refresh_token") is None:
         logging.warning(f"User {user_obj.id} tried to verify last backup but no refresh token was found in the credentials. This is a blocking error.")
@@ -543,7 +547,7 @@ def delete_google_drive_option(src_ip, user_obj):
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_obj.id)
-    
+
     if google_integration.get_by_user_id(user_obj.id) is None:
         google_integration.create(user_obj.id, 0)
     if not oauth_tokens:
@@ -570,7 +574,7 @@ def delete_google_drive_option(src_ip, user_obj):
 @require_active_user
 def get_preferences(src_ip, user_obj,fields):
     valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum", "autolock_delay"]
-    all_field = fields == "all" 
+    all_field = fields == "all"
     fields_asked = []
     if not all_field:
         fields = fields.split(",")
@@ -582,7 +586,7 @@ def get_preferences(src_ip, user_obj,fields):
 
         if len(fields_asked) == 0:
             return {"message": "Invalid request"}, 400
-    
+
     user_preferences = {}
     preferences_db = PreferencesDB()
     preferences = preferences_db.get_preferences_by_user_id(user_obj.id)
@@ -603,7 +607,7 @@ def get_preferences(src_ip, user_obj,fields):
 def set_preference(src_ip, user_obj, body):
     field = body["id"]
     value = body["value"]
-    
+
     valid_fields = [ "favicon_policy", "derivation_iteration", "backup_lifetime", "backup_minimum", "autolock_delay"]
     if field not in valid_fields:
         return {"message": "Invalid request"}, 400
@@ -676,7 +680,7 @@ def delete_google_drive_backup(src_ip, user_obj):
     google_integration = GoogleDriveIntegrationDB()
     token_db = Oauth_tokens_db()
     oauth_tokens = token_db.get_by_user_id(user_obj.id)
-    google_drive_option =google_integration.get_by_user_id(user_obj.id) 
+    google_drive_option =google_integration.get_by_user_id(user_obj.id)
     if google_drive_option == None:
         return {"message": "Google drive sync is not enabled"}, 403
     if google_drive_option.isEnabled == 0:
@@ -697,7 +701,7 @@ def delete_google_drive_backup(src_ip, user_obj):
         token_db.delete(user_obj.id)
         GoogleDriveIntegrationDB().update_google_drive_sync(user_obj.id, 0)
         return {"message": "Error while deleting backups"}, 500
-    
+
 
 # POST /account/delete
 @require_active_user
@@ -722,8 +726,8 @@ def delete_account(src_ip, user_obj, body):
     except Exception as e:
         logging.warning("Error while deleting user from database for user " + str(user_obj.id) + ". Exception : " + str(e))
         return {"message": "Error while deleting account"}, 500
-    
-    
+
+
 
 
 @require_userid
@@ -781,27 +785,27 @@ def get_whoami(src_ip, user_obj):
 
 def get_global_notification():
     notif = Notifications_db().get_last_active_notification()
-    if notif is None : 
+    if notif is None :
         return {"display_notification":False}
     if notif.authenticated_user_only:
         return {"display_notification": True, "authenticated_user_only": True}
     else:
         return {
-            "display_notification": True, 
+            "display_notification": True,
             "authenticated_user_only": False,
             "message":notif.message,
             "timestamp":float(notif.timestamp)
         }
-    
-    
+
+
 @require_active_user
 def get_internal_notification(src_ip, user_obj):
     notif = Notifications_db().get_last_active_notification()
-    if notif is None : 
+    if notif is None :
         return {"display_notification":False}
-    
+
     return {
-            "display_notification": True, 
+            "display_notification": True,
             "authenticated_user_only": False,
             "message":notif.message,
             "timestamp":float(notif.timestamp)
@@ -815,7 +819,7 @@ def get_internal_notification(src_ip, user_obj):
 def auth_refresh_token(src_ip, body={}, *args, **kwargs):
     session_token_cookie = request.cookies.get("session-token")
     refresh_token_cookie = request.cookies.get("refresh-token")
-    if request.headers.get("Origin") == "capacitor://localhost" and session_token_cookie == None and refresh_token_cookie == None: 
+    if request.headers.get("Origin") == "capacitor://localhost" and session_token_cookie == None and refresh_token_cookie == None:
         # Capacitor i.e. mobile app use bearer token instead
         session_token_cookie = body.get("session-token")
         refresh_token_cookie = body.get("refresh-token")
@@ -838,7 +842,7 @@ def auth_refresh_token(src_ip, body={}, *args, **kwargs):
     new_session_token, new_refresh_token = refresh_token_func.refresh_token_flow(refresh_token=refresh_token, session_token=session_token, ip=src_ip)
     answer_body = {"challenge":"ok"}
     if connexion.request.headers.get("Origin") == "capacitor://localhost":
-        # For requests coming from iOS application, we return the tokens in the body. 
+        # For requests coming from iOS application, we return the tokens in the body.
         # Browsers don't need them, so we don't bother to send them. It wouldn't be a risk to do it though.
         # Origin is a safe header for non-hijacked browser.
         answer_body["session_token"] = new_session_token
@@ -853,7 +857,7 @@ def health_check():
     global_healthy = True
     if conf.api.node_check_enabled:
         health_status["node"] = hmac.new(conf.api.node_name_hmac_secret.encode('utf-8'), conf.api.node_name.encode('utf-8'), hashlib.sha256).hexdigest()
-    
+
     try:
         db.session.execute(text('SELECT 1'))
         health_status["database"] = "OK"
@@ -866,9 +870,9 @@ def health_check():
 
     health_status["health"] = "OK" if global_healthy else "NOT OK"
     http_status = 200 if global_healthy else 500
-    
+
     return health_status, http_status
-    
+
 
 # GET /vault/signature/public-key
 def get_public_key():
@@ -879,4 +883,3 @@ def get_public_key():
     else:
         logging.error("This is a critical error from get_public_key(). A public key has been requested but the key is not valid. An error as been returned to the user.")
         return {"message": "Invalid"}, 403
-    

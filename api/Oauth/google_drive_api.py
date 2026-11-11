@@ -4,7 +4,7 @@ from environment import conf
 from environment import logging
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
-from datetime import datetime
+import datetime as dt
 from googleapiclient.http import MediaFileUpload
 import tempfile
 import json
@@ -19,11 +19,13 @@ FOLDER_NAME = "Zero-TOTP Backup"
 
 
 def get_drive_service(credentials):
-     try:
-        dat_obj = datetime.strptime(credentials["expiry"], '%Y-%m-%d %H:%M:%S.%f')
-        credentials["expiry"] = dat_obj.strftime('%Y-%m-%dT%H:%M:%SZ')
-     except:
-          pass
+     expiry = credentials.get("expiry")
+     if expiry:
+        # google-auth expects a naive UTC expiry formatted as "%Y-%m-%dT%H:%M:%S[Z]"
+        dat_obj = dt.datetime.fromisoformat(expiry)
+        if dat_obj.tzinfo is not None:
+            dat_obj = dat_obj.astimezone(dt.UTC)
+        credentials = {**credentials, "expiry": dat_obj.strftime('%Y-%m-%dT%H:%M:%SZ')}
      creds = Credentials.from_authorized_user_info(credentials)
      drive = build('drive', 'v3', credentials=creds)
      return drive
@@ -42,9 +44,9 @@ def backup(credentials, vault):
 
         file = create_file(name=f"{now_str}_backup", drive=drive, content=vault, folder_id=folder.get("id"))
         return file
-            
-           
-      
+
+
+
 
 
 def get_folder(name, drive):
@@ -56,7 +58,7 @@ def get_folder(name, drive):
               return None
           else:
             return result.get('files')[0]
-    else : 
+    else :
           for folder in result.get('files'):
               if folder.get('name') == name and not folder.get('explicitlyTrashed'):
                   return folder
@@ -71,9 +73,9 @@ def create_folder(name, drive):
 
 def create_file(name, drive, content, folder_id= None):
      file_metadata = {
-             'name': name,  
+             'name': name,
         }
-     if folder_id is not None:     
+     if folder_id is not None:
             file_metadata['parents'] = [folder_id]
      with tempfile.NamedTemporaryFile() as tmp:
             tmp.write(content.encode('utf-8'))
@@ -81,7 +83,7 @@ def create_file(name, drive, content, folder_id= None):
             media = MediaFileUpload(tmp.name, mimetype='text/plain')
             file = drive.files().create(body=file_metadata, media_body=media).execute()
             return file
-     
+
 def get_files_from_folder(folder_id, drive):
     result = drive.files().list(q = "'" + folder_id + "' in parents", fields="files" ).execute()
     not_trashed_files = []
@@ -98,7 +100,7 @@ def get_last_backup_file(drive)-> (any, datetime):
     if len(result) == 0:
         logging.debug("No backup file found in the drive")
         raise utils.FileNotFound("No backup file found")
-    else : 
+    else :
           return utils.extract_last_backup_from_list(result)
 
 def get_last_backup_checksum(creds):
@@ -126,7 +128,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
          if (datetime.utcnow() - date).days < 1:
                 logging.info("Backup retention already cleaned today")
                 return True
-    
+
     backup_conf_db = BackupConfigurationDB()
     user_backup_conf = backup_conf_db.get_by_user_id(user_id)
     if user_backup_conf is None: # using default values
@@ -136,7 +138,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
         MINIMUM_NB_BACKUP = user_backup_conf.backup_minimum_count
         MAXIMUM_BACKUP_AGE = user_backup_conf.backup_max_age_days
 
-   
+
     drive = get_drive_service(credentials)
     folder = get_folder(FOLDER_NAME, drive)
     if folder == None:
@@ -169,7 +171,7 @@ def clean_backup_retention(credentials, user_id) -> bool:
                 drive.files().update(fileId=file.get("id"), body=body_value).execute()
         google_drive_integration_db.update_last_backup_clean_date(user_id, datetime.utcnow().strftime('%Y-%m-%d'))
         return True
-    
+
 
 def revoke_credentials(credentials): # pragma: no cover
     creds = google.oauth2.credentials.Credentials(**credentials)
@@ -193,4 +195,3 @@ def delete_all_backups(credentials):
         body_value = {'trashed': True}
         drive.files().update(fileId=file.get("id"), body=body_value).execute()
     return True
-    
