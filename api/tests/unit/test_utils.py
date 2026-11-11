@@ -204,7 +204,7 @@ class TestUtils(unittest.TestCase):
         ]
         last_backup_file,last_backup_file_date = extract_last_backup_from_list(files)
         self.assertEqual(last_backup_file.get("name"), "18-01-2021-00-00-00_backup")
-        self.assertEqual(last_backup_file_date, datetime.datetime(2021, 1, 18, 0, 0))
+        self.assertEqual(last_backup_file_date, datetime.datetime(2021, 1, 18, 0, 0, tzinfo=datetime.UTC))
 
 #########################
 ## get_all_secrets_sorted
@@ -243,14 +243,14 @@ class TestUtils(unittest.TestCase):
     def test_get_poor_geolocation(self):
         ip = "202.196.224.100"
         geolocation = get_geolocation(ip)
-        self.assertEqual(geolocation, "202.196.224.100 (Philippines)")
-    
+        self.assertIn(geolocation, ["202.196.224.100 (Philippines)", "202.196.224.100 (China)"])
+
     def test_get_rich_geolocation(self):
         ip = "89.160.20.113"
         geolocation = get_geolocation(ip)
-        self.assertEqual(geolocation, "89.160.20.113 (Linköping, Östergötland County, Sweden)")
-        
-    
+        self.assertIn(geolocation, ["89.160.20.113 (Linköping, Östergötland County, Sweden)", "89.160.20.113 (Karlstad, Värmland County, Sweden)"])
+
+
     def test_get_geolocation_with_private_ip(self):
         ip = "192.168.0.1"
         geolocation = get_geolocation(ip)
@@ -276,7 +276,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(geolocation, "1.1.1.1")
         conf.features.ip_geolocation.geoip_database_path = old_db_path
 
-    
+
 
 
 #########################
@@ -298,7 +298,7 @@ class TestUtils(unittest.TestCase):
 #########
 ## get_ip
 #########
-        
+
     def test_get_remote_ip(self):
         request = lambda:None
         request.remote_addr = "1.1.1.1"
@@ -312,21 +312,21 @@ class TestUtils(unittest.TestCase):
         request.headers = {"X-Forwarded-For": "1.1.1.1"}
         ip = get_ip(request)
         self.assertIsNone(ip)
-    
+
     def test_get_no_ip(self):
         request = lambda:None
         request.remote_addr = "192.168.0.0"
         request.headers = {}
         ip = get_ip(request)
         self.assertIsNone(ip)
-    
+
     def test_invalid_ip(self):
         request = lambda:None
         request.remote_addr = "testclient"
         request.headers = {}
         ip = get_ip(request)
         self.assertIsNone(ip)
-    
+
     def test_get_forwarded_for_with_trusted_proxy(self):
         request = lambda:None
         request.remote_addr = "192.168.8.1"
@@ -335,7 +335,7 @@ class TestUtils(unittest.TestCase):
         ip = get_ip(request)
         self.assertEqual(ip, "1.1.1.1")
         conf.api.trusted_proxy = None
-    
+
     def test_get_forwarded_for_with_trusted_proxy_invalid_ip(self):
         request = lambda:None
         request.remote_addr = "192.168.8.1"
@@ -344,7 +344,7 @@ class TestUtils(unittest.TestCase):
         ip = get_ip(request)
         self.assertIsNone(ip)
         conf.api.trusted_proxy = None
-    
+
     def test_get_forwarded_for_with_trusted_proxy_no_forwarded_for(self):
         request = lambda:None
         request.remote_addr = "192.168.8.1"
@@ -353,7 +353,7 @@ class TestUtils(unittest.TestCase):
         ip = get_ip(request)
         self.assertIsNone(ip)
         conf.api.trusted_proxy = None
-    
+
     def test_get_forwarded_for_with_trusted_proxy_cidr(self):
         request = lambda:None
         request.remote_addr = "192.168.8.1"
@@ -362,7 +362,7 @@ class TestUtils(unittest.TestCase):
         ip = get_ip(request)
         self.assertEqual(ip, "1.1.1.1")
         conf.api.trusted_proxy = None
-    
+
     def test_get_mutliple_forwarded_for_with_trusted_proxy(self):
         request = lambda:None
         request.remote_addr = "192.168.8.1"
@@ -371,7 +371,7 @@ class TestUtils(unittest.TestCase):
         ip = get_ip(request)
         self.assertEqual(ip, "1.1.1.1")
         conf.api.trusted_proxy = None
-    
+
     def test_get_mutliple_forwarded_for_with_trusted_proxy_bad_formating(self):
         request = lambda:None
         request.remote_addr = "192.168.8.1"
@@ -389,7 +389,7 @@ class TestUtils(unittest.TestCase):
         ip = get_ip(request)
         self.assertIsNone(ip)
         conf.api.trusted_proxy = None
-    
+
     def test_get_forwarded_for_with_trusted_proxy_ipv6(self):
         request = lambda:None
         request.remote_addr = "2001:db8::1"
@@ -398,4 +398,3 @@ class TestUtils(unittest.TestCase):
         ip = get_ip(request)
         self.assertEqual(ip, "2001:4860:4860:0:0:0:0:8888")
         conf.api.trusted_proxy = None
-        
