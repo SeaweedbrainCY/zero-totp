@@ -10,7 +10,7 @@ from database.zke_repo import ZKE as ZKE_encryption_key_repo
 from database.google_drive_integration_repo import GoogleDriveIntegration as GoogleDriveIntegration_repo
 from database.preferences_repo import Preferences as Preferences_repo
 from database.email_verification_repo import EmailVerificationToken
-from database.rate_limiting_repo import RateLimitingRepo 
+from database.rate_limiting_repo import RateLimitingRepo
 from database.refresh_token_repo import RefreshTokenRepo
 from database.session_token_repo import SessionTokenRepo
 from database.backup_configuration_repo import BackupConfigurationRepo
@@ -61,7 +61,7 @@ def extract_last_backup_from_list(files_list) -> (any, datetime):
             continue
         date_str = file.get("name").split("_")[0]
         try:
-          date = datetime.datetime.strptime(date_str, '%d-%m-%Y-%H-%M-%S')
+          date = datetime.datetime.strptime(date_str, '%d-%m-%Y-%H-%M-%S').replace(tzinfo=datetime.UTC)
         except Exception as e:
               logging.info("Error while parsing date : " + str(e) + " (file name : " + file.get("name") + ". Ignoring this file")
               continue
@@ -76,7 +76,7 @@ def extract_last_backup_from_list(files_list) -> (any, datetime):
         raise FileNotFound("No backup file found")
     return last_backup_file,last_backup_file_date
 
- 
+
 
 
 
@@ -91,7 +91,7 @@ def generate_new_email_verification_token(user_id):
 def send_information_email(ip, email, reason):
     logging.info(str(reason)+ str(ip) + str(email))
     date = str(datetime.datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S")) + " UTC"
-    
+
     ip_and_geo = get_geolocation(ip)
     try:
         send_email.send_information_email(email, reason=reason, date=date, ip=ip_and_geo)
@@ -113,7 +113,7 @@ def get_geolocation(ip):
         return ""
     if conf.features.ip_geolocation.enabled == False:
         logging.info("IP Geolocation is disabled. Aborting geolocation for ip " + str(ip))
-        return str(ip) 
+        return str(ip)
     result = str(ip)
     try:
         with geoip2.database.Reader(conf.features.ip_geolocation.geoip_database_path) as reader:
@@ -121,10 +121,10 @@ def get_geolocation(ip):
             city = geo.city.name + ", " if geo.city.name != None else ""
             region = geo.subdivisions.most_specific.name + ", " if geo.subdivisions.most_specific.name != None else ""
             country = ""
-            if geo.country.name != None: 
-                country = geo.country.name 
+            if geo.country.name != None:
+                country = geo.country.name
             elif geo.registered_country.name != None:
-                country = geo.registered_country.name 
+                country = geo.registered_country.name
             result = f"{ip} ({city}{region}{country})"
     except Exception as e:
         logging.error("Error while getting geolocation for ip " + str(ip) + " : " + str(e))
@@ -222,7 +222,7 @@ def generate_new_session(user:UserModel, ip_address:str|None) -> tuple[str, str]
 
 
 def revoke_session_and_refresh_tokens(session_id=None, refresh_id=None) -> bool | None:
-    """[DEPRECATED] This method should not be used anymore. Use revoke_session instead. Revoke a session token and a refresh token entries. 
+    """[DEPRECATED] This method should not be used anymore. Use revoke_session instead. Revoke a session token and a refresh token entries.
 
     Args:
         session_id (str, optional): Session token id to revoke. Defaults to None.
