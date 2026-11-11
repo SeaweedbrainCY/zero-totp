@@ -97,6 +97,41 @@ class TestGoogleDriveAPI(unittest.TestCase):
                 }
                 self.assertEqual(google_drive_api.get_drive_service(credentials=credentials), self.drive)
 
+        def test_get_drive_service_normalizes_expiry_formats(self):
+                cases = {
+                        "2026-11-11 05:01:03.123456": "2026-11-11T05:01:03Z",
+                        "2026-11-11 05:01:03": "2026-11-11T05:01:03Z",
+                        "2026-11-11T05:01:03Z": "2026-11-11T05:01:03Z",
+                        "2026-11-11T05:01:03+00:00": "2026-11-11T05:01:03Z",
+                        "2026-11-11T06:01:03+01:00": "2026-11-11T05:01:03Z",
+                }
+                for expiry, expected in cases.items():
+                        with self.subTest(expiry=expiry):
+                                self.from_authorized_user_info.reset_mock()
+                                credentials = {"expiry": expiry}
+                                self.assertEqual(google_drive_api.get_drive_service(credentials=credentials), self.drive)
+                                self.from_authorized_user_info.assert_called_once_with({"expiry": expected})
+                                self.assertEqual(credentials["expiry"], expiry)
+
+        def test_get_drive_service_normalized_expiry_is_accepted_by_google_auth(self):
+                patch.stopall()
+                for expiry in ["2026-11-11 05:01:03", "2026-11-11 05:01:03.123456", "2026-11-11T05:01:03+00:00"]:
+                        with self.subTest(expiry=expiry):
+                                with patch("Oauth.google_drive_api.build") as build:
+                                        build.return_value = self.drive
+                                        credentials = {
+                                                "token": "token",
+                                                "refresh_token": "refresh_token",
+                                                "token_uri": "https://oauth2.googleapis.com/token",
+                                                "client_id": "client_id",
+                                                "client_secret": "client_secret",
+                                                "scopes": ["https://www.googleapis.com/auth/drive.file"],
+                                                "expiry": expiry,
+                                        }
+                                        google_drive_api.get_drive_service(credentials=credentials)
+                                        creds = build.call_args.kwargs["credentials"]
+                                        self.assertEqual(creds.expiry, datetime.datetime(2026, 11, 11, 5, 1, 3))
+
 #############
 ## get_folder
 #############
