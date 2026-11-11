@@ -4,7 +4,7 @@ from environment import conf
 from environment import logging
 from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
-import datetime as dt
+import datetime
 from googleapiclient.http import MediaFileUpload
 import tempfile
 import json
@@ -22,9 +22,9 @@ def get_drive_service(credentials):
      expiry = credentials.get("expiry")
      if expiry:
         # google-auth expects a naive UTC expiry formatted as "%Y-%m-%dT%H:%M:%S[Z]"
-        dat_obj = dt.datetime.fromisoformat(expiry)
+        dat_obj = datetime.datetime.fromisoformat(expiry)
         if dat_obj.tzinfo is not None:
-            dat_obj = dat_obj.astimezone(dt.UTC)
+            dat_obj = dat_obj.astimezone(datetime.UTC)
         credentials = {**credentials, "expiry": dat_obj.strftime('%Y-%m-%dT%H:%M:%SZ')}
      creds = Credentials.from_authorized_user_info(credentials)
      drive = build('drive', 'v3', credentials=creds)
@@ -39,7 +39,7 @@ def backup(credentials, vault):
             if folder == None:
                 logging.error("Error while creating the backup folder")
                 raise Exception("Error while creating the backup folder")
-        now = datetime.utcnow()
+        now = datetime.datetime.now(datetime.UTC)
         now_str = now.strftime('%d-%m-%Y-%H-%M-%S')
 
         file = create_file(name=f"{now_str}_backup", drive=drive, content=vault, folder_id=folder.get("id"))
