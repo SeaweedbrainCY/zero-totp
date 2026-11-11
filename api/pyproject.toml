@@ -19,7 +19,7 @@ dependencies = [
     "gunicorn==23.0.0",
     "httptools==0.6.4",
     "mysqlclient==2.2.4",
-    "opentelemetry-distro==0.55b1",
+    "opentelemetry-distro==0.66b1",
     "pycryptodome==3.19.1",
     "pyrsistent==0.20.0",
     "python-dotenv==1.2.2",
