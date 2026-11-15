@@ -28,7 +28,7 @@ class TestGetWhoami(unittest.TestCase):
         self.session_repo = SessionTokenRepo()
 
         user1 = UserModel(id=self.user_id,username=self.username, mail=self.email, password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001")
-        user2 = UserModel(id=self.user_not_verified_id,username=self.user_not_verified_email, mail=self.user_not_verified_username, password="pass", derivedKeySalt="AAA", isVerified = True, passphraseSalt = "AAAA", createdAt="01/01/2001")
+        user2 = UserModel(id=self.user_not_verified_id,username=self.user_not_verified_username, mail=self.user_not_verified_email, password="pass", derivedKeySalt="AAA", isVerified = False, passphraseSalt = "AAAA", createdAt="01/01/2001")
         with self.flask_application.app.app_context():
             db.create_all()
             db.session.add(user1)
@@ -50,7 +50,7 @@ class TestGetWhoami(unittest.TestCase):
             self.client.cookies = { "session-token": self.session_token}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json(), {"username": self.username, "email": self.email, "id": self.user_id, "isEmailVerified": True})
+            self.assertEqual (response.json(), {"username": self.username, "email": self.email, "id": self.user_id, "isEmailVerified": True})
 
 
     def test_get_whoami_not_verified_user(self):
@@ -66,7 +66,7 @@ class TestGetWhoami(unittest.TestCase):
             self.client.cookies = { "session-token": self.user_not_verified_session_token}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json(), {"username": self.user_not_verified_username, "email": self.user_not_verified_email, "id": self.user_not_verified_id, "isEmailVerified": True})
+            self.assertDictEqual(response.json(), {"username": self.user_not_verified_username, "email": self.user_not_verified_email, "id": self.user_not_verified_id, "isEmailVerified": True})
             conf.features.emails.require_email_validation = True
 
     def test_get_whoami_blocked_user(self):
