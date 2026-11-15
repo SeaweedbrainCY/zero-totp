@@ -778,6 +778,9 @@ paths:
                   email:
                     type: string
                     example: "bar"
+                  isEmailVerified:
+                    type: boolean
+                    example: false
         "401":
           description: Unauthorized
         "403":

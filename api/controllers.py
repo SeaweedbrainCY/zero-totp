@@ -780,7 +780,7 @@ def verify_email(src_ip, user_obj,body):
 
 @require_userid
 def get_whoami(src_ip, user_obj):
-    return {"username": user_obj.username, "email": user_obj.mail, "id":user_obj.id}, 200
+    return {"username": user_obj.username, "email": user_obj.mail, "id":user_obj.id, "isEmailVerified": user_obj.isVerified}, 200
 
 
 def get_global_notification():
