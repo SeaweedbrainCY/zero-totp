@@ -58,7 +58,7 @@ class TestGetWhoami(unittest.TestCase):
             self.client.cookies = { "session-token": self.user_not_verified_session_token}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json(), {"username": self.username, "email": self.email, "id": self.user_id, "isEmailVerified": False})
+            self.assertEqual(response.json(), {"username": self.user_not_verified_username, "email": self.user_not_verified_email, "id": self.user_not_verified_id, "isEmailVerified": False})
 
     def test_get_whoami_not_verified_user_but_verification_not_enforced(self):
         with self.flask_application.app.app_context():
@@ -66,7 +66,7 @@ class TestGetWhoami(unittest.TestCase):
             self.client.cookies = { "session-token": self.user_not_verified_session_token}
             response = self.client.get(self.endpoint)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json(), {"username": self.username, "email": self.email, "id": self.user_id, "isEmailVerified": True})
+            self.assertEqual(response.json(), {"username": self.user_not_verified_username, "email": self.user_not_verified_email, "id": self.user_not_verified_id, "isEmailVerified": True})
             conf.features.emails.require_email_validation = True
 
     def test_get_whoami_blocked_user(self):
