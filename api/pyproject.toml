@@ -25,7 +25,7 @@ dependencies = [
     "python-dotenv==1.2.2",
     "ruamel-yaml-clib==0.2.15",
     "sentry-sdk==2.8.0",
-    "setuptools==83.0.0",
+    "setuptools==84.1.0",
     "swagger-ui-bundle==1.1.0",
     "tomli==2.2.1",
     "uvicorn==0.34.2",
