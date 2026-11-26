@@ -98,6 +98,7 @@ export class UserService {
     this.local_vault_service.set(null);
     this.googleDriveSync.set(null);
     this.vault_tags.set([]);
+    this.isEmailVerified.set(null);
     localStorage.removeItem("email");
     this.is_vault_in_memory = false
   }

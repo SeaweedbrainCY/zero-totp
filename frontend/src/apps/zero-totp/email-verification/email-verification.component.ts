@@ -82,6 +82,7 @@ export class EmailVerificationComponent implements OnInit {
       next: (response) => {
         if (response.status == 200) {
           this.verifyLoading.set(false);
+          this.user.isEmailVerified.set(true);
           this.toast.success(this.translate.instant("email_verif.verify.success"));
           this.router.navigate(['/vault'], { queryParams: { returnUrl: this.router.url } });
         }
