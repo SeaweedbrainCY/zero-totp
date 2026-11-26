@@ -259,6 +259,7 @@ export class LoginComponent implements OnInit {
         try {
           this.userService.id.set(response.body!.id!);
           this.userService.email.set(this.email());
+          this.userService.isEmailVerified.set(response.body!.isVerified);
           if (!response.body!.isVerified) {
             this.router.navigate(["/emailVerification"], { relativeTo: this.route.root });
             return;

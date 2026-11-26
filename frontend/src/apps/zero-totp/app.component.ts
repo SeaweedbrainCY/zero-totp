@@ -88,18 +88,29 @@ export class AppComponent implements OnInit {
       }
     }, 5000)
     this.loadUserData().then(async (isSuccess) => {
+      console.log("reloded" + this.userService.isEmailVerified())
+      if (isSuccess && this.userService.isEmailVerified() == false) {
+        this.router.navigate(['/emailVerification'], { relativeTo: this.route.root });
+        this.isAppLoading.set(false)
+        return
+      }
       if (isSuccess  && await this.currentRouteRequiresDecryptedVault()) {
         this.router.navigate(['/vault'], { relativeTo: this.route.root });
+        this.isAppLoading.set(false)
+        return
       }
       if (environment.isMobileApp) {
         this.router.navigate(['/login'], { relativeTo: this.route.root });
+        this.isAppLoading.set(false)
+        return
       }
       this.isAppLoading.set(false)
     }, (error) => {
       if (environment.isMobileApp) {
         this.router.navigate(['/login'], { relativeTo: this.route.root });
+        this.isAppLoading.set(false)
+        return
       }
-      this.isAppLoading.set(false)
     })
 
     if (environment.isMobileApp) {

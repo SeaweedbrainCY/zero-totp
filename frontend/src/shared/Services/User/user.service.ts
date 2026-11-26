@@ -34,6 +34,7 @@ export class UserService {
   public local_vault_service: WritableSignal<LocalVaultV1Service | null> = signal(null);
   public googleDriveSync: WritableSignal<boolean | null> = signal(null);
   public vault_tags: WritableSignal<string[]> = signal([]);
+  public isEmailVerified:  WritableSignal<boolean | null> = signal(null);
 
   public is_vault_in_memory: boolean = false;
 
@@ -50,9 +51,10 @@ export class UserService {
       this.http.get(this.apiService.baseURL + '/api/v1/whoami', { withCredentials: true, observe: 'response' }).subscribe({
         next: (response) => {
           if (response.status === 200) {
-            const userData = response.body as { id: number, email: string, username: string };
+            const userData = response.body as { id: number, email: string, username: string, isEmailVerified: boolean };
             this.id.set(userData.id);
             this.email.set(userData.email);
+            this.isEmailVerified.set(userData.isEmailVerified)
             localStorage.setItem("email", userData.email);
             resolve(true);
           } else {
@@ -96,6 +98,7 @@ export class UserService {
     this.local_vault_service.set(null);
     this.googleDriveSync.set(null);
     this.vault_tags.set([]);
+    this.isEmailVerified.set(null);
     localStorage.removeItem("email");
     this.is_vault_in_memory = false
   }

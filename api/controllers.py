@@ -780,7 +780,9 @@ def verify_email(src_ip, user_obj,body):
 
 @require_userid
 def get_whoami(src_ip, user_obj):
-    return {"username": user_obj.username, "email": user_obj.mail, "id":user_obj.id}, 200
+    # If we don't require user verification, then fake it to true
+    isEmailVerified = user_obj.isVerified or not conf.features.emails.require_email_validation
+    return {"username": user_obj.username, "email": user_obj.mail, "id":user_obj.id, "isEmailVerified": isEmailVerified}, 200
 
 
 def get_global_notification():
